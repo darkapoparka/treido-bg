@@ -92,7 +92,7 @@ Batch checks: source/requirement coverage reviewed against the accessible stills
 
 Remaining: owner/design review of the captured discovery slice and proposed catalog/operations/commercial decisions; visual screen-by-screen review; measured typography/geometry/content viewport; complete interaction, transition, playback and platform mapping; and resolution or explicit acceptance of the one missing flow occurrence. The source archive is evidence for the selected capture, not source/brand approval or proof of web/Android/desktop parity. The connector's paid-plan error and upgrade banner were not treated as a browser blocker; no upgrade or download-all action was used.
 
-Commit/worktree: initial preparation is in `793ef22`; the commit titled `Correct Mobbin browser access findings` records the browser verification and removes the unsupported access blocker. The current capture/archive and documentation changes are on local `main` pending the final local commit; no push/deploy. Continue Task 2 for review and approval before implementing discovery components. No UI-writing helpers have been launched for this source-only batch.
+Commit/worktree: initial preparation is in `793ef22`; the commit titled `Correct Mobbin browser access findings` records the browser verification and removes the unsupported access blocker. The capture/documentation checkpoint is local commit `acb4138` on `main`; private archive/index files remain ignored local evidence. No push/deploy. Continue Task 2 for review and approval before implementing discovery components. No UI-writing helpers have been launched for this source-only batch.
 
 ## Task 3 - Build Shop discovery frontend
 
