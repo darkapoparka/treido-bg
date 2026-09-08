@@ -30,6 +30,7 @@ auth-state/
 **/auth-state/
 
 # Private source references and operational evidence do not belong in public Git.
+/mobbin-shop/
 .local/
 **/.local/
 reference-assets/
