@@ -94,6 +94,8 @@ Remaining: owner/design review of the captured discovery slice and proposed cata
 
 Commit/worktree: initial preparation is in `793ef22`; the commit titled `Correct Mobbin browser access findings` records the browser verification and removes the unsupported access blocker. The initial capture/documentation checkpoint is local commit `acb4138`; the 2026-09-09 correction is the local commit titled `Audit Shop archive and acquire missing flow recordings` on `main`; private archive/index files remain ignored local evidence. No push/deploy. Continue Task 2 for review and approval before implementing discovery components. No UI-writing helpers have been launched for this source-only batch.
 
+Owner-requested GitHub copy (2026-09-09): prepared `references/shop/` with all 755 canonical media files, a standalone index and sanitized manifests. All copied media hashes and local gallery links passed; signed URL/private-path scan and targeted owning-document link test passed. Publication is explicitly authorized for this copy on `main`; the original archive remains ignored. Commit: `Publish sanitized Shop reference archive`. This is reference publication only; frontend implementation remains stopped.
+
 ## Task 3 - Build Shop discovery frontend
 
 **Prerequisites:** Task 1; Task 2's approved discovery reference. No completed backend required.

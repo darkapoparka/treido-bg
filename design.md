@@ -75,6 +75,8 @@ Additional browser evidence: [onboarding introduction](https://mobbin.com/screen
 
 ### Private source acquisition inventory (audited 2026-09-09)
 
+Owner-requested GitHub publication (2026-09-09): [references/shop/README.md](references/shop/README.md) describes the public copy containing the 755 canonical media files, offline gallery and sanitized catalogues. Every copied media file was SHA-256 checked against the local archive. Signed download URLs, temporary machine paths and private acquisition logs are excluded. The original `mobbin-shop/` archive stays ignored. This specific publication request does not change the handling of other private evidence or establish visual/source approval.
+
 The browser capture was crawled through ordinary navigation and saved in Git-ignored `mobbin-shop/`, identified by capture `7b6adbde-de48-47c5-979b-f629f1eb87a9`. The exact counts below are acquisition/integrity facts, not source-fidelity approval:
 
 | Source surface | Browser observation and local evidence | Boundary |
