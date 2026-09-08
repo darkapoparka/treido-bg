@@ -12,6 +12,16 @@ Buyer sequence: Shop reference -> reviewed fidelity -> Treido branding/food adap
 
 **Next local task: BOOT-001.** REF-001, SPEC-001 and POL-001 are independent preparation tasks. Optional reference code is not a prerequisite for any task.
 
+## Execution priorities
+
+The architecture decision is closed for routine work: clean Next.js + Expo monorepo, one authoritative commerce backend, separate browser/native presentation. Optional reference material may answer a specific question; building does not depend on an old repository. A demonstrated incompatibility is reported with evidence, not hidden by changing frameworks.
+
+The first local assignment is bounded to BOOT-001. Install only the workspace/framework/styling/test foundation and consumed shared packages. Do not install every future provider SDK, build empty feature modules or create substitute marketplace screens. A neutral, labeled bootstrap screen is not the Shop frontend. No database account, paid cloud build or Mobbin access is required to prove this scaffold.
+
+After bootstrap, prioritize BOOT-002 -> CONTRACT-001 -> BOOT-004 so the actual identity/API/native connection is tested before the full catalog/inventory module. BOOT-003 establishes repeatable database/browser checks in parallel with that work once its prerequisites are available. Local checks needed by BOOT-002 belong in that task; CI expansion in BOOT-003 is not a reason to defer its tests. Missing credentials or a device block only the corresponding proof; record the platform separately and continue independent authorized work.
+
+Next implement the initial complete transaction using CORE-001, REF-002/003, MER-001, PAY-001, ORD-001 and NAT-001. Prove it in FLOW-001 before completing every account/support/communication reference state in REF-004. PAY-001 and ORD-001 own the first web transaction screens; NAT-001 wires the native equivalents. REF-004 extends those same components, rather than rebuilding them. Full source approval still requires all frozen reference states under REF-005; branding still waits for that approval.
+
 ## Status and ownership
 
 ready = task can start. in-progress = claimed by one agent. blocked = a named predecessor, input, environment or approval is missing. review = implementation exists but required proof/review is outstanding. done = acceptance for the declared scope is recorded.
@@ -32,17 +42,17 @@ Dependencies below are task IDs. Additional commercial/design decisions are stat
 | POL-001 | Approve testable checkout grouping, fee/rounding, charge/payout, fulfillment and refund rules with numerical examples and sandbox plan. | None | BUY-007, BUY-009, MER-005, MER-009; DEC-002 | ready |
 | BOOT-002 | Verify fresh isolated PostgreSQL/development auth, initial user/business schema, safe synthetic seeds and negative authorization checks. | BOOT-001 | ACC-001, ACC-003, QUA-001 | blocked |
 | BOOT-003 | Establish CI, actual PostgreSQL and built-web/browser harness, safe artifacts and production-build performance instrumentation. | BOOT-002 | QUA-001 | blocked |
-| CORE-001 | Implement catalog/variants/publication and exact quantity/inventory rules in the new schema; constraints, concurrency and persisted-state tests. | BOOT-002, SPEC-001 | BUY-005, BUY-006, MER-002, MER-004 | blocked |
-| CONTRACT-001 | Implement catalog/identity HTTP contracts, validation/errors/pagination and web/native consumers; test tenant-negative cases. | CORE-001 | BUY-002, BUY-005, ACC-001, NAT-001, NAT-002 | blocked |
+| CONTRACT-001 | Implement the initial authenticated identity/context HTTP API, shared error/response contracts and web/native consumers; test tenant-negative cases. Catalog endpoints follow in CORE-001. | BOOT-002 | ACC-001, ACC-003, NAT-001, NAT-002 | blocked |
 | BOOT-004 | Prove declared iOS/Android development builds, device API origin, secure sessions and cold/deep links. | BOOT-002, CONTRACT-001 | NAT-002, NAT-003 | blocked |
+| CORE-001 | Implement catalog/variants/publication, exact quantity/inventory rules and real paginated public catalog API in the new schema; constraints, output contracts, concurrency and persisted-state tests. | BOOT-002, SPEC-001, CONTRACT-001 | BUY-002, BUY-005, BUY-006, MER-002, MER-004 | blocked |
 | REF-002 | Build measured buyer primitives/navigation/overlays on web/native, without Treido rebranding or old frontend imports. | BOOT-001, REF-001 | BUY-001, NAT-001 | blocked |
 | REF-003 | Implement reference home/discovery/store/product flows and states, integrated with the new catalog. | REF-002, CORE-001, CONTRACT-001 | BUY-002, BUY-003, BUY-004, BUY-005, NAT-001 | blocked |
-| REF-004 | Implement remaining reference cart/checkout/account/order/communication presentations and interactions; label fixture-only states. | REF-002, CONTRACT-001 | BUY-006, BUY-007, BUY-008, BUY-009, BUY-010, ACC-001, ACC-002, COM-001, COM-002 | blocked |
 | MER-001 | Build real merchant onboarding, product publication, inventory and order-queue shell from the reviewed operational design. | CORE-001, SPEC-001 | MER-001, MER-002, MER-004, MER-005, ACC-003 | blocked |
-| PAY-001 | Implement approved server quotes/reservations/order/payment protocol, signature/dedupe/reconciliation and retry-safe effects. | CORE-001, CONTRACT-001, POL-001 | BUY-006, BUY-007, MER-005 | blocked |
-| ORD-001 | Implement canonical buyer/merchant order details, timelines, permissions and allowed fulfillment transitions. | PAY-001, MER-001 | BUY-008, MER-005 | blocked |
-| NAT-001 | Integrate native discovery-to-order against the real API with source-matched UI and interruption recovery. | BOOT-004, REF-002, PAY-001, ORD-001 | NAT-001, NAT-002, BUY-005, BUY-006, BUY-007, BUY-008 | blocked |
-| FLOW-001 | Prove the new web/native-to-merchant transaction, stock/payment/quote/idempotency/permission failures and populated performance baselines. | BOOT-003, REF-003, REF-004, MER-001, PAY-001, ORD-001, NAT-001 | BUY-005, BUY-006, BUY-007, BUY-008, MER-005, NAT-001, QUA-001 | blocked |
+| PAY-001 | Implement approved quotes/reservations/order/payment protocol and the initial reference-matched web cart/auth-return/checkout screens; prove signature/dedupe/replay and retry-safe effects. | CORE-001, CONTRACT-001, POL-001, REF-002 | BUY-006, BUY-007, MER-005 | blocked |
+| ORD-001 | Implement canonical buyer/merchant order details, initial source-matched buyer order screens, timelines, permissions and allowed fulfillment transitions. | PAY-001, MER-001 | BUY-008, MER-005 | blocked |
+| NAT-001 | Integrate native discovery/cart/auth-return/checkout/order screens against the real API using the measured components and interruption recovery. | BOOT-004, REF-003, PAY-001, ORD-001 | NAT-001, NAT-002, BUY-005, BUY-006, BUY-007, BUY-008 | blocked |
+| FLOW-001 | Prove the new web/native-to-merchant transaction, stock/payment/quote/idempotency/permission failures and populated performance baselines. | BOOT-003, REF-003, MER-001, PAY-001, ORD-001, NAT-001 | BUY-005, BUY-006, BUY-007, BUY-008, MER-005, NAT-001, QUA-001 | blocked |
+| REF-004 | Complete the remaining frozen reference cart/checkout/account/order/communication states using the initial transaction components; label fixture-only states and do not create another frontend. | REF-002, CONTRACT-001, FLOW-001 | BUY-006, BUY-007, BUY-008, BUY-009, BUY-010, ACC-001, ACC-002, COM-001, COM-002 | blocked |
 | REF-005 | Review all frozen reference-required flows/states on declared targets; owner approves exact scope/evidence/exceptions. | REF-001, REF-002, REF-003, REF-004, NAT-001, FLOW-001 | BUY-001, NAT-001; G3 visual/interaction gate | blocked |
 | BRAND-001 | Adapt accepted components to approved Treido identity/colors/food labels and content; reverify and remove reference-only release artifacts. | REF-005, SPEC-001 | BUY-001, BUY-002, BUY-005, QUA-001 | blocked |
 | DISC-001 | Complete real search quality, facets/sort, location/map/storefront discovery and truthful promotion placement integration. | REF-003, CORE-001 | BUY-002, BUY-003, BUY-004 | blocked |
@@ -51,7 +61,7 @@ Dependencies below are task IDs. Additional commercial/design decisions are stat
 | RECOV-001 | Complete cancellations/returns/refunds/support under approved policy; test provider/race/amount/item/seller allocations. | ORD-001, POL-001 | BUY-009, MER-005 | blocked |
 | FIN-001 | Complete operational dashboard, finance/payout definitions, business/store/team configuration and traceable metrics. | ORD-001, CAT-002, ACC-001 | MER-001, MER-007, MER-008 | blocked |
 | COM-001 | Decide transport and build durable authorized chat, attachments/read state/blocking and reconnect; document reliability/cost evidence. | CONTRACT-001, ACC-001, ORD-001 | COM-001, MER-006, NAT-002; DEC-005 | blocked |
-| NOTIF-001 | Decide work delivery/retry mechanism; implement in-app/email/push preferences, dedupe, replay and secure deep links. | ORD-001, COM-001 | COM-002, MER-008, NAT-002; DEC-005 | blocked |
+| NOTIF-001 | Select notification delivery/retry support and extend the existing payment replay foundation with in-app/email/push preferences, dedupe and secure deep links. | ORD-001, COM-001 | COM-002, MER-008, NAT-002; DEC-005 | blocked |
 | TRUST-001 | Build verified reviews/replies, reports/moderation, seller verification and privileged admin/support tools. | ORD-001, RECOV-001, COM-001 | BUY-009, BUY-010, MER-006, ADM-001 | blocked |
 | PREM-001 | Implement configured Free/Premium billing, entitlements, portal/invoices and downgrade/failure recovery. | ACC-001, POL-001, FIN-001 | MER-009; DEC-004 | blocked |
 | AI-001 | Build scoped listing, operational, metric/inventory and reply copilots with approval, audit, cost limits and failures. | CAT-002, FIN-001, COM-001, PREM-001 | MER-010 | blocked |
@@ -72,6 +82,10 @@ Read product/design intent, architecture and techstack. Inspect the new working 
 
 Implement the initial scripts, meaningful unit/import tests, lint/format/typecheck, env examples and ignores. Verify dependency resolution inside each app, production web build/rendered shell and Expo doctor/export. Record a clean frozen-lockfile install. No provider or native-build success claims based on fixture startup. Do not install another architecture or start rebranding.
 
+For this first task, establish `dev:web`, `dev:mobile`, `build:web`, `typecheck`, `lint`, `format:check`, `format`, `test:unit`, `native:check` and `check` with their real behavior. The initial `check` aggregates only implemented mandatory checks, including document links/references. Database, full browser/visual and device suites arrive in their owning tasks; do not add fake passing placeholders or demand their completion to close BOOT-001.
+
+Use one root lockfile and framework-supported workspace resolution. Run native export for iOS and Android and record it as JavaScript export, not native compilation. Inspect the built web shell and shared-package resolution. Keep dev and build output directories separate or serialize them. Do not invent exact Shop tokens without source evidence; bootstrap token consumers may use clearly temporary neutral values, replaced before reference work.
+
 ### SPEC-001
 
 Write a concrete catalog definition: food hierarchy and BG/EN labels, category attributes, units/package/minimum/increment/precision, allowed publication rules and representative fixtures. Define merchant/admin navigation and representative draft/editor/queue/finance states from the product workflows. Propose the partner-operation details as a named subtask, not an old-code discovery exercise.
@@ -86,11 +100,15 @@ Inspect the selected Mobbin capture or authorized owner-provided assets. Fill de
 
 Specify DEC-002 from the product policy: order/seller/payment grouping, fees and rounding, supported methods/fulfillment, cancellation/refund allocation and reconciliation. Include normal, weighted, multi-seller and failure examples with expected totals. Inspect sandbox provider configuration where authorized; a previous implementation may be an optional example but does not decide the policy. Missing commercial decisions require owner approval, not guesses.
 
-### BOOT-002 / CORE-001 / CONTRACT-001
+### BOOT-002 / CONTRACT-001 / CORE-001
 
-Verify fresh isolated PostgreSQL and development identity targets. Create the new user/business schema first, then product-led catalog/variant/inventory tables through reviewed migrations. Use synthetic actors and products. Test actual constraints/permissions and ambiguous/production-target rejection. No source-schema reproduction or old ID preservation is required.
+BOOT-002 verifies fresh isolated PostgreSQL and development identity targets and implements the new user/business membership schema with reviewed migrations and synthetic actors. Test actual constraints/permissions and ambiguous/production-target rejection. No source-schema reproduction or old ID preservation is required.
 
-Define explicit v1 public catalog and authenticated context contracts, response parsing/errors/pagination and web/native consumers. Verify current-context and cross-business negative cases. Add authentic sandbox providers as their feature tasks need them; never fall back to live configuration.
+CONTRACT-001 then exposes a small real `/api/v1/me` identity/business-context query (or a documented equivalent). Verify unauthenticated, expired-session, wrong-business and revoked-membership behavior. Consume and validate the response from native; server-rendered web code calls the same authorized function directly. Standardize safe errors and correlation IDs. This proves the client/server boundary using actual development identity and database data, without waiting for inventory or payment implementation. Test fixtures are not represented as live catalog endpoints.
+
+CORE-001 subsequently implements the product-led catalog/variant/inventory schema and public catalog/category/store DTOs, real paginated read endpoints, response parsing and web/native data integration. Include publication filtering, quantity/stock rules, private-field exclusion and concurrency tests. REF-003 cannot claim catalog integration using only the earlier identity proof.
+
+Add authentic sandbox providers as their feature tasks need them; never fall back to live configuration.
 
 ### BOOT-003 / BOOT-004
 
@@ -98,9 +116,15 @@ Establish the CI/PostgreSQL/browser/visual/native lanes with secret-safe artifac
 
 Performance harness results cover only implemented routes. Before FLOW-001, measure populated discovery/product/cart/checkout and merchant paths and define provisional API/native budgets. Empty scaffold results are not production-product acceptance.
 
+### PAY-001: correctness cannot wait for notification infrastructure
+
+Before FLOW-001, prove recoverable payment ingestion: signature checks, durable event/operation identity, duplicate/out-of-order handling, bounded retry or authorized replay, and reconciliation after provider success followed by application failure. Implement the smallest supported processing mechanism that meets this protocol; critical payment recovery cannot wait for NOTIF-001. Do not assume detached promises or an in-process timer survive a hosted request. Any managed worker/runtime must be appropriate to the host and separately authorized when provisioning is required.
+
+Build only the initial buyer transaction screens needed for the approved journey, using the measured reference components and existing API/domain rules. REF-004 completes the wider reference-state matrix after this flow is proved. This is staged integration, not permission to mark the full checkout or all reference states complete early.
+
 ## Implementation and approval rules
 
-REF tasks own reference presentation. CORE/PAY/ORD and other feature tasks own real behavior. Use the same components/contracts as integration progresses. Fixtures can represent deterministic source states but never create fake production functionality.
+REF tasks own source measurements, shared presentation and the remaining reference-state matrix. PAY-001/ORD-001/NAT-001 build the first transaction screens against those measured components while implementing real behavior. REF-004 extends them after FLOW-001; no second checkout frontend is created. Fixtures can represent deterministic source states but never create fake production functionality.
 
 FLOW-001 proves the first integrated transaction. A one-seller example does not finish multi-seller or weighted checkout; PAY-001 and QUAL-001 require their approved edge cases. Further features extend the same testing foundation.
 
@@ -113,6 +137,8 @@ RELEASE-PREP-001 proves recovery for this new application's data and providers. 
 ## Evidence ledger
 
 No implementation task is currently claimed or completed. Documentation correction: requirements.md is replaced by product.md; mandatory migration planning is removed. The selected stack, full product scope, Shop-first buyer target and safety/quality requirements remain explicit. No application tests were run as part of editing documentation.
+
+Documentation audit on 2026-09-08 (source: `934348bfe92f0c8710b56a079752ac62eca48e9d`): read all eight current Markdown documents and `.gitignore`; reviewed document ownership, clean-build scope, full buyer/account/merchant/admin/native requirements, reference-before-brand rules, safety and runtime boundaries. Rechecked official Next.js HTTP/auth/testing, Expo monorepo/development-build and Clerk native guidance. The selected architecture is unchanged. Corrected initial identity/API proof being gated on complete inventory, and first-transaction proof being gated on the remaining reference screens. Clarified first-task script scope and payment replay ownership. Validation: copied task-source bytes matched the Git blob SHA; a local Python parser verified 35 tasks, 97 dependency edges, 34/34 explicitly mapped product requirement IDs, zero undefined dependencies and zero cycles. Assertions proved early native/API verification no longer depends on CORE-001, FLOW-001 no longer depends on REF-004, and reference-before-brand and quality/recovery-before-release ordering still hold. Reviewed canonical relative-link targets across all eight documents. Git check-ignore tests passed for 12 sensitive/generated paths and six intended source/example paths. These are structural checks, not proof that feature contracts are fully implemented or all commercial/design decisions are resolved. Application installs, builds, database/provider/device tests and source-reference fidelity remain NOT RUN.
 
 Record concise entries here, not raw logs or new report files:
 
