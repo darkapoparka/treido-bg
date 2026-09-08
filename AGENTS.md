@@ -20,6 +20,8 @@ Discover and read relevant installed skills for the current work: Next.js/React,
 
 Use official CLIs for scaffolding/installing: create-next-app, create-expo-app, shadcn init/add and Expo's compatible package installer. Use the selected package manager and current supported options. Preserve root docs and one lockfile; inspect generated changes. Prefer supported defaults and current version-matched docs. Do not install every skill/provider, guess APIs, or create custom scaffolding/validation frameworks when existing tools suffice.
 
+For every Next.js task, follow [apps/web/AGENTS.md](apps/web/AGENTS.md) and read the relevant installed documentation in `apps/web/node_modules/next/dist/docs/`. Current official workflow skills come from `vercel/next.js/skills`; older cached plugin examples are secondary to the installed framework docs. Use the cache adoption/optimization skills only for their applicable work, not as a reason to add caching to a provider-free bootstrap. For native tasks follow [apps/mobile/AGENTS.md](apps/mobile/AGENTS.md) and Expo SDK 57 documentation. Recheck these version pointers when upgrading.
+
 ## Fixed product and architecture
 
 Build [product.md](product.md) from a clean foundation. `apps/web` is the full browser platform: shopping, personal/business accounts, merchant dashboard, admin and backend. `apps/mobile` is the Expo native buyer app. Follow [architecture.md](architecture.md) and [techstack.md](techstack.md). No routine framework debate; a necessary architecture change needs evidence and an explicit decision.

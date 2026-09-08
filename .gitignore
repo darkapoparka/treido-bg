@@ -1,4 +1,4 @@
-# Public-repository safety baseline. Extend deliberately during BOOT-001.
+# Public-repository safety baseline. Extend deliberately with each numbered task.
 # Example files must contain placeholders only.
 .env
 .env.*

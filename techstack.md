@@ -35,14 +35,60 @@ Pin direct dependencies initially and commit one pnpm-lock.yaml, packageManager,
 
 | Component | Actual version | Evidence owner |
 | --- | --- | --- |
-| Node / pnpm / Turbo / TypeScript | Not installed | Task 1 |
-| Next.js / React / React DOM | Not installed | Task 1 |
-| Expo / React Native / React / Expo Router | Not installed | Task 1 |
-| Styling / validation / lint / initial tests | Not installed | Task 1; add only used components |
+| Node / pnpm / Turbo / TypeScript | 24.20.0 / 12.3.4 / 2.10.12 / 6.0.3 | Task 1 |
+| Next.js / React / React DOM | 16.3.4 / 19.2.3 / 19.2.3 | Task 1 |
+| Expo / React Native / React / Expo Router | 57.0.21 / 0.86.3 / 19.2.3 / 57.0.20 | Task 1 |
+| Styling / validation / lint / initial tests | Tailwind/PostCSS 4.3.3; Zod 4.5.4; ESLint 9.39.5; Prettier 3.9.6; Vitest 5.0.0; Playwright 1.63.0 | Task 1; shadcn deferred until a reference-measured primitive needs it |
 | Prisma CLI/client/adapter / Clerk / localization / native query | Not installed | Task 4 or the first actual consumer |
 | Payment / files / delivery / billing / AI tools | Not installed | Their implementing numbered tasks |
 
-Fill exact versions, source links and check results after installation. Current manifests/lockfile establish runtime facts; documentation is not a claim that the combination already works.
+Versions resolved on 2026-09-08 from official package metadata. [Expo SDK 57](https://docs.expo.dev/versions/v57.0.0/) determines the shared React/RN pair. Next 16.3.4 supports that React version. TypeScript 7 and ESLint 10 were deliberately not selected: typescript-eslint 8.70.0 supports TypeScript below 6.1, and the React/import/accessibility ESLint plugins still require ESLint 9. ESLint 9 is the compatible maintenance line and carries an upstream deprecation notice. Direct dependencies are exact; pnpm-lock.yaml owns the complete graph.
+
+Expo's installer selected Reanimated 4.5.1, Worklets 0.10.1 and Gesture Handler 2.32.0 to satisfy Router's transitive native requirements; these are not product animation implementations. @react-native/metro-config 0.86.3 satisfies the matching RN CLI peer. No hoisting, Metro resolver override or suppressed peer check was added. Expo config/doctor is 57.0.2 / 1.20.4. pnpm's generated exact release-age exceptions cover the selected current framework/tooling packages; only unrs-resolver's required native-resolver postinstall is allowed. No arbitrary dependency build scripts are enabled.
+
+### Verified setup and local commands
+
+Use Node 24.20.0 (`.node-version` / `.nvmrc`) and pnpm 12.3.4. On this Windows host, a portable Node runtime was installed at `C:\Users\radev\.codex\tools\node-v24.20.0-win-x64`; the system Node installation was not changed. To use it in PowerShell:
+
+```powershell
+$env:Path = 'C:\Users\radev\.codex\tools\node-v24.20.0-win-x64;' + $env:Path
+```
+
+`pnpm --version` should report 12.3.4 through the packageManager pin. On a machine without pnpm, bootstrap with `npm install --global pnpm@12.3.4`, or use `npx --yes pnpm@12.3.4` for the commands below.
+
+```sh
+pnpm install --frozen-lockfile
+pnpm dev:web          # http://localhost:3100
+pnpm dev:mobile       # Expo/Metro on 8081
+pnpm check            # lint, code/config formatting, types, unit/import/doc-link tests
+pnpm build:web
+pnpm start:web        # production build on http://127.0.0.1:3100
+pnpm exec playwright install chromium
+pnpm test:smoke:web   # starts/stops its own production server; port 3100 must be free
+pnpm native:check     # dependency check, Doctor, then iOS + Android JS exports
+```
+
+For installed Chrome on Windows, set `$env:PLAYWRIGHT_CHANNEL='chrome'` before `pnpm test:smoke:web`; CI installs Chromium explicitly. Stop web dev/start before a production build or smoke test. The smoke harness refuses to reuse an unknown listener. Shared contracts have real consumers in both clients; tests verify one React instance and Router/native module resolution. Formatting owns code/config; existing Markdown prose is preserved and owning-document relative links are tested.
+
+The provider-free bootstrap needs no environment values. Each app includes a safe `.env.example`. Task 4 will introduce and validate the actual API origin; physical devices require a reachable LAN/HTTPS address, Android emulators commonly use `10.0.2.2` for the host. No native API calls exist yet. `pnpm --filter @treido/mobile android` opens an available Android emulator/device; the `ios` script requires an iOS simulator on macOS. Exports are under `apps/mobile/dist/ios` and `apps/mobile/dist/android` and are ignored. No native OS build/device acceptance is claimed.
+
+Official generators used (host pnpm 11.24.0 before the project pin was established):
+
+```sh
+pnpm dlx create-next-app@16.3.4 apps/web --ts --tailwind --eslint --app --src-dir --import-alias '@/*' --use-pnpm --skip-install --disable-git --empty --yes
+pnpm dlx create-expo-app@4.0.0 apps/mobile --template default@sdk-57 --no-install --yes
+pnpm --filter @treido/mobile exec expo install react-native-reanimated react-native-worklets react-native-gesture-handler --pnpm
+```
+
+Starter demo modules/assets were removed from app source and retained only in ignored local storage. No Shop assets or product styling were introduced; design tokens and shadcn components wait for Task 3's actual measured consumers.
+
+### Agent documentation and skills
+
+[Official Next.js skills](https://github.com/vercel/next.js/tree/canary/skills) now live with the framework. Installed globally for this Codex host: `next-dev-loop`, `next-cache-components-adoption`, and `next-cache-components-optimizer`. They are discoverable on subsequent turns. Their upstream source uses the canary branch, so each skill's version prerequisites still matter; the app itself uses stable Next 16.3.4. Existing plugin-cache files were preserved.
+
+[Next.js agent guidance](https://nextjs.org/docs/app/guides/ai-agents) now favors bundled, version-matched docs over the retired standalone `next-best-practices` skill. `apps/web/AGENTS.md` points to `node_modules/next/dist/docs/`; root AGENTS requires it for every Next task. The generated native AGENTS points to SDK 57. No connected framework runtime MCP was assumed; official docs and registry metadata were available. Runtime `/_next/mcp` can be used with `next dev` in later feature work. Agent-browser 0.37.1 was available through pinned pnpm dlx for local browser inspection.
+
+The older installed cache skill contains legacy examples: use the installed docs for `revalidateTag(tag, "max")` stale-while-revalidate semantics and experimental/private-cache restrictions. Cache Components are not enabled just for a static bootstrap. Skills support verification; they do not guarantee perfect software.
 
 ## 3. Installation by work package
 

@@ -1,0 +1,16 @@
+node_modules
+.next
+.expo
+.turbo
+dist
+coverage
+test-results
+playwright-report
+pnpm-lock.yaml
+next-env.d.ts
+expo-env.d.ts
+.local
+private-evidence
+reference-assets
+# Keep the existing product/specification prose unchanged; links are checked in tests.
+**/*.md

@@ -2,11 +2,13 @@
 
 A new food-first marketplace, full merchant operating dashboard, personal/business accounts, administration and native buyer app. Start in Bulgaria with Bulgarian and English; model additional markets explicitly.
 
-**Current state: documentation only. No stack installation, application, database/provider integration or production readiness has been verified.**
+**Current state: Task 1 foundation implemented and locally verified. Next.js and Expo have neutral bootstrap screens, shared contracts, pinned dependencies and CI configuration. Product UI, providers and production readiness are not implemented.**
 
 ## How to start
 
-Open this repository in local Codex and say **Execute Task 1**. Later say **Execute Task 2**, **Execute Task 3**, or **Continue Task 3**. [tasks.md](tasks.md) tells the agent what to read, what to build, which tools to use, what checks close the batch and where to stop.
+Use Node 24.20.0 and pnpm 12.3.4, run `pnpm install --frozen-lockfile`, then `pnpm dev:web` (port 3100) or `pnpm dev:mobile` (port 8081). [techstack.md](techstack.md) records setup, checks and native limitations.
+
+The next assignment is **Execute Task 2** for source/flow mapping; frontend implementation remains stopped until that reference slice is approved. Later say **Execute Task 3** or **Continue Task 3**. [tasks.md](tasks.md) tells the agent what to read, what to build, which tools to use, what checks close the batch and where to stop.
 
 Tasks are meaningful work packages, not individual file edits. The agent implements a batch before running its closing checks; the full product regression is a later numbered task. No extra long prompt or separate task-code lookup is needed.
 
@@ -42,4 +44,4 @@ Build from this specification. Old repositories are optional references, not man
 
 The repository is public. Never commit secrets, customer data, authentication recordings, private logs, signed URLs or restricted screenshot/font collections. Use fresh isolated development data and safe reference storage. Installation does not authorize paid infrastructure, live payments, production deployment or store submission.
 
-The instruction to start is **Execute Task 1**. No task is completed merely because it is documented.
+Task 1 has local evidence recorded in tasks.md. Hosted CI and native installed-device behavior have not been verified. No task is completed merely because it is documented.
