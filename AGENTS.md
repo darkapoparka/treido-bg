@@ -2,6 +2,8 @@
 
 ## Execute the requested numbered task
 
+Owner instruction (2026-09-08): work directly on `main` for all subsequent tasks. Preserve existing work, fetch and inspect upstream changes before synchronization, and use fast-forward-only updates where possible. Do not create feature branches or separate writing worktrees unless the owner changes this instruction. Helpers may inspect independently; serialize edits on the shared main checkout. Local commits are authorized; pushing or deploying still requires the applicable authorization.
+
 When the user says **Execute Task N**, open [tasks.md](tasks.md), locate Task N, read its listed sources and implement that work package. Do not return another proposal, ask the user to name files, or execute the entire roadmap. **Continue Task N** resumes its recorded progress. Task numbers are the only execution interface; feature IDs in [product.md](product.md) describe requirements, not a second queue.
 
 Read README.md and product.md on the first session. Thereafter read this file, the selected task and the relevant document sections, plus actual changed code. Do not reread every document or audit another repository for every small change. Inspect Git status, current scripts and concurrent edits; preserve unrelated work. Keep one writer per feature, schema, lockfile or visual baseline.

@@ -106,6 +106,70 @@ Build a hierarchical food taxonomy with stable identifiers, Bulgarian/English la
 
 Food facts can include ingredients/allergens, origin, unit/package, storage and applicable expiry/lot information. Required fields depend on the approved category/market policy. Seller-supplied evidence determines certification/organic/origin claims; AI and photographs do not establish them. Appropriate food, consumer, privacy and tax review precedes release; this document is not legal approval.
 
+### Task 2 catalog proposal (DEC-003, 2026-09-08, not approved)
+
+The following is a concrete initial taxonomy for review, not published production data. IDs remain stable when display labels change. Leaf IDs use the parent prefix plus the suffix shown below; assign products to a leaf and derive ancestor filters. Store synonyms separately by locale; transliteration improves retrieval but must not rewrite the seller's original identity or claim a translated certification.
+
+| Parent ID | Bulgarian / English | Proposed leaf suffix: Bulgarian / English |
+| --- | --- | --- |
+| produce | Плодове и зеленчуци / Fruit and vegetables | fruit: Плодове / Fruit; vegetables: Зеленчуци / Vegetables; herbs: Пресни подправки / Fresh herbs; mushrooms: Гъби / Mushrooms |
+| dairy-eggs | Млечни продукти и яйца / Dairy and eggs | milk: Мляко / Milk; yogurt: Кисело мляко / Yogurt; cheese: Сирене и кашкавал / Cheese; butter: Масло и сметана / Butter and cream; eggs: Яйца / Eggs |
+| meat | Месо / Meat | poultry: Птиче месо / Poultry; pork: Свинско / Pork; beef: Говеждо и телешко / Beef and veal; lamb: Агнешко / Lamb; prepared: Месни продукти / Prepared meats |
+| seafood | Риба и морски дарове / Fish and seafood | fish: Риба / Fish; shellfish: Морски дарове / Shellfish |
+| bakery | Хляб и печива / Bread and bakery | bread: Хляб / Bread; pastries: Закуски и печива / Pastries; sweets: Сладки и десерти / Sweets and desserts |
+| pantry | Основни храни / Pantry | grains: Зърнени и бобови / Grains and legumes; flour-pasta: Брашно и паста / Flour and pasta; oils: Масла и оцет / Oils and vinegar; preserves: Консерви и туршии / Preserves and pickles; honey-jam: Мед и сладка / Honey and jam; nuts-spices: Ядки, семена и подправки / Nuts, seeds and spices |
+| beverages | Напитки / Beverages | water: Вода / Water; juice: Сокове / Juices; tea-coffee: Чай и кафе / Tea and coffee; other: Други безалкохолни / Other non-alcoholic drinks |
+| prepared-food | Готова храна / Prepared food | meals: Ястия / Meals; salads: Салати / Salads; soups: Супи / Soups |
+
+Alcohol, supplements, live animals and non-food products are outside this proposed initial seed list; adding them needs an explicit category/publication policy. This is a seed proposal, not a silent reduction of the full product roadmap.
+
+Common structured fields: producer/seller identity, origin, sold unit, net content/package count, ingredients/allergen declaration with applicability, storage instructions and fulfillment eligibility. Produce adds variety/grade where supplied; dairy adds milk source/fat content where applicable; meat/seafood adds species/cut and fresh/frozen state; bakery/prepared food adds ingredients, storage and applicable preparation/use-by details; pantry/drinks add composition and net content. Lot/expiry belong to applicable inventory lots rather than one misleading universal product date. Search facets use validated typed attributes, not unstructured marketing text. Certification claims require the merchant's evidence and review status. The final market/category compliance checklist is DEC-004 work; these proposed fields alone do not certify legal compliance.
+
+| Sale mode | Stored quantity and proposed defaults | Example and validation |
+| --- | --- | --- |
+| Piece / брой | Integer; minimum 1, increment 1 | 3 apples sold per piece; never accept 1.5 pieces |
+| Package / опаковка | Integer; minimum 1, increment 1; explicit count/net content | 2 packages of 6 eggs or 2 jars of 500 g; price is per package, not per egg/kg |
+| Weight / kg | Exact decimal with maximum 3 fractional digits; proposed minimum/increment 0.100 kg | 0.300 kg at EUR 8.00/kg produces EUR 2.40; represent as 300 integer grams for arithmetic |
+| Volume / l | Exact decimal with maximum 3 fractional digits; proposed minimum/increment 0.100 l | 0.500 l at EUR 4.00/l produces EUR 2.00; represent as 500 integer millilitres for arithmetic |
+
+Merchants may configure positive minimums/increments on the permitted precision grid. Require minimum to be a multiple of increment; a requested quantity must be at least the minimum and an exact multiple of increment. The server enforces the same rule for publication, cart, quote and inventory. Unit price uses integer cents per declared sale unit; calculate a quantity line with exact rational arithmetic and round once to cents, half up. Keep the exact quantity, unit price and charged line amount in the purchase snapshot.
+
+Proposed first weighted-sale behavior is exact ordered weight/volume, fulfilled as quoted. Fixed 500 g packs use integer package quantity. Actual-weight-after-picking adjustments, substitutions or surcharges require a separately approved buyer-consent/payment flow; they are not silently applied to a completed quote.
+
+Proposed publication gates: authorized active business; reviewed BG/EN title and required buyer facts; leaf category; at least one valid variant with currency/positive price/unit/minimum/increment; available media with publication rights; applicable food facts; explicit fulfillment offer and stock policy. Translations stay draft until reviewed. An unknown allergen field is not equivalent to allergen-free; absent facts cannot become AI-generated claims. Missing stock may yield a visible unavailable listing if the merchant chooses, but never an orderable offer. Publication states are draft -> in review (where required) -> published, with rejected/changes-required, suspended and archived states; only authorized actors may transition them. Product publication and business verification remain separate.
+
+### Task 2 commerce proposal (DEC-002, 2026-09-08, not approved)
+
+**Preferred interpretation for review:** one checkout creates a parent purchase and one seller order per business, with one buyer payment and separate fulfillment per seller. The headline's EUR 0.50 applies once to that parent purchase. Applying EUR 0.50 to each seller order is a different policy and is not assumed. Display seller groups, each fulfillment charge and the single fee before confirmation.
+
+Let `B` be the sum of merchandise line amounts after seller-funded discounts, in EUR cents. Allocate an order discount to eligible lines proportionally using largest remainder, capped by each line's value; reject a discount above the eligible base. Proposed fee: `F = floor((5 * B + 50) / 100) + 50` for a nonempty positive-value purchase. This is 5% rounded half up to a cent, plus 50 cents. Fulfillment is excluded from `B`; add its configured charges separately. Zero-value checkouts are not supported in this proposal. Displayed merchandise prices are the buyer's payable amounts; tax breakdown and invoicing still require DEC-004 configuration. No additional processor surcharge is silently added.
+
+Allocate the entire fee `F` to seller orders in proportion to their discounted merchandise totals, using floor shares then distributing remaining cents by largest fractional remainder (ties by stable seller-order key). Repeat within each seller order across its lines, using stable line keys for ties. Persist the original allocations; their sum must equal the charged fee. Seller commission remains zero. Proposed settlement entitlement is seller merchandise plus seller-provided fulfillment, before that seller's refunds; the platform retains the buyer fee and bears provider processing costs in this proposal. Partner-provided fulfillment has a separately configured payee; it cannot be paid to a seller by assumption. Reserve, settlement timing, dispute liability and provider charges must be approved before live activation.
+
+Proposed cancellation/refund behavior: before payment, cancel the unpaid operation and release reservations idempotently. After payment, full cancellation of an unfulfilled seller order returns its merchandise, allocated fee and charged fulfillment. Partial item refunds return the original refundable merchandise plus its proportional original fee; delivery remains charged when delivery still occurs. A full failed fulfillment returns its charged delivery; post-delivery quality/return disputes follow an approved decision with explicit refundable amounts and reasons. This is a commercial proposal, not an assertion of statutory return eligibility.
+
+For line fee allocation `A`, original merchandise `L > 0` and cumulative refunded merchandise `R`, cumulative fee refund is `roundHalfUp(A * R / L)`, capped at `A`. Send only the difference from the previously refunded amount. Fully refunded lines return their entire allocated fee, including the allocated fixed portion; never recalculate a new fee on the remaining cart. The final refund returns exactly the original remaining refundable amount. Concurrent/repeated requests share one durable refund operation; a failed provider refund remains pending/failed, not completed. Restock only after the applicable physical/cancellation disposition, not merely because money was refunded.
+
+| Example (EUR) | Merchandise / fulfillment | Fee | Buyer total or refund |
+| --- | --- | --- | --- |
+| Single seller | 19.99 / 3.00 | 1.50 | Charge 24.49 |
+| Seller discount | 25.00 less 5.00 / 3.00 | 1.50 | Charge 24.50 |
+| Rounding boundary (arithmetic only) | 0.10 / 0.00 | 0.51 | 0.61; provider minimum-charge eligibility still applies |
+| Two sellers A/B | A 20.00 + 3.00 delivery; B 10.00 + free pickup | 2.00; A allocation 1.33, B 0.67 | Charge 35.00; seller entitlements 23.00 and 10.00 before provider/settlement adjustments |
+| A partial refund, one original line | Refund 10.00 of A's 20.00; delivery still occurs | Refund 0.67 | Refund 10.67 |
+| A remainder cancelled before fulfillment | Remaining 10.00 plus A delivery 3.00 | Remaining 0.66 | Further refund 13.66; A cumulative refund 24.33 |
+| B fully cancelled | B 10.00; pickup charge 0.00 | Refund 0.67 | Refund 10.67; combined full A+B refunds total 35.00 |
+
+The two A rows illustrate sequential refunds of the same original line, with remaining fulfillment subsequently cancelled; they do not promise automatic delivery refunds after delivery. All amounts are policy examples, not executed payments or approved merchant settlements.
+
+Proposed initial sandbox methods: provider-managed cards with authentication/challenge and decline recovery; eligible Apple Pay/Google Pay only after device/account/domain verification. Cash-on-delivery, delayed bank methods and split buyer tenders need explicit collection/reconciliation decisions before being enabled. Keep personal/business checkout context, one currency and a confirmed fulfillment offer for every seller. If any seller fails quote validation before payment, return an actionable error for a new confirmed quote rather than silently dropping that seller.
+
+Technical candidate: Stripe Connect separate charges/transfers supports a platform charge with transfers to multiple connected accounts. Account eligibility, region/capability checks and the platform's actual financial responsibilities require verified sandbox/provider setup; this proposal does not establish merchant-of-record or tax status. See [Stripe's separate charges and transfers documentation](https://docs.stripe.com/connect/separate-charges-and-transfers).
+
+Use one durable internal checkout/payment operation across web/native and interrupted returns, provider idempotency and authenticated server callbacks. Stripe documents reuse of an existing PaymentIntent for an interrupted purchase, idempotency keys and server webhook status tracking; its current docs recommend evaluating Checkout Sessions for most integrations. Choose the compatible web/native integration in Task 5 without duplicating the commerce engine. A client success page is not payment proof. See [Stripe payment lifecycle guidance](https://docs.stripe.com/payments/payment-intents).
+
+Sandbox acceptance must cover the EUR examples above, exact quantities, last-stock competition, successful/declined/challenged payment, interrupted return, duplicate/out-of-order callbacks, seller cancellation, partial/full refunds, failed refund retry, transfers/reversals and reconciliation after provider interruption. Use disposable PostgreSQL and verified sandbox accounts with synthetic buyers/sellers. No provider resources or SDKs are provisioned by this documentation batch.
+
 ## 6. Partner operations
 
 These are explicit product workstreams, not instructions to search another repository for hidden features. Task 2 settles their business rules and activation scope with the owner. Work on the core marketplace need not wait for optional operational configuration.
@@ -117,6 +181,8 @@ These are explicit product workstreams, not instructions to search another repos
 | OPS-003 | Assigned driver workflow | An assigned operator sees the minimum necessary job/contact details, records allowed pickup/handoff/delivery/exception events and cannot access unrelated orders or finances. Events feed the canonical order timeline. |
 
 No invented nationwide logistics service, routing optimizer or autonomous fleet management. Product planning records the intended workflows; a limited release must label any deferred work explicitly rather than call the full platform complete.
+
+Task 2 activation proposal, awaiting owner review: core catalog uses each merchant's configured pickup/delivery offers. Task 11 introduces explicitly accepted business-to-business relationships, pickup-point/run capacity and assigned-driver work. Relationship states: invited, accepted, suspended, ended; each agreement names shared resources and allowed actions. Dispatch states: unassigned, assigned, accepted, collected, delivered or exception, with reassignment history. Driver updates cannot mark payment paid or issue refunds. Capacity is reserved/released against the canonical fulfillment booking; repeated handoff events are idempotent. Partner payee/fee responsibility, service area, schedules, capacity unit and exception ownership must be configured per activated service. No partner account or regional service is activated by the proposal.
 
 ## 7. Native and quality
 
@@ -133,9 +199,9 @@ The product must be understandable without another repository. An unresolved val
 
 | ID | Required decision | Blocks | State |
 | --- | --- | --- | --- |
-| DEC-001 | Inspect selected Shop screens/recordings; record exact flow coverage and web/Android differences; separately approve merchant/admin presentation. | Affected fidelity claims and brand pass | Owner-selected URL known; complete capture not yet inspected. |
-| DEC-002 | Fee base/rounding, multi-seller order/payment grouping, charge/payout responsibility, supported methods and cancellation/refund allocation with numerical examples. | Payment/recovery acceptance and live money | Headline policy specified; detailed calculation/flow approval outstanding. |
-| DEC-003 | Food hierarchy/attributes/quantity precision, publication rules and partner-operation business scope. | Affected catalog/content and partner acceptance | Task 2 produces a complete proposal for owner review; no dependency on another codebase. |
+| DEC-001 | Inspect selected Shop screens/recordings; record exact flow coverage and web/Android differences; separately approve merchant/admin presentation. | Affected fidelity claims and brand pass | 11 of the listed 323 stills inspected; full source access restricted. Partial inventory, discovery scope and operational presentation proposals in design.md; not approved. |
+| DEC-002 | Fee base/rounding, multi-seller order/payment grouping, charge/payout responsibility, supported methods and cancellation/refund allocation with numerical examples. | Payment/recovery acceptance and live money | Concrete proposal and checked arithmetic in section 5; owner approval outstanding. |
+| DEC-003 | Food hierarchy/attributes/quantity precision, publication rules and partner-operation business scope. | Affected catalog/content and partner acceptance | Core catalog and partner activation proposals in sections 5-6; owner review outstanding, later service configuration explicit. |
 | DEC-004 | Launch market/legal/privacy terms, billing/advertising prices and quotas, retention/account-deletion rules and release identities. | Affected commercial activation and public release | Owner/provider/reviewer configuration outstanding. |
 | DEC-005 | Realtime and retryable-job provider based on reliability, reconnect, workload and cost requirements. | Communication/delivery production acceptance | Resolve payment replay needs in Task 5 and communication/delivery choices in Task 9; no speculative provider installation. |
 

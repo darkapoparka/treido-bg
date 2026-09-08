@@ -2,7 +2,9 @@
 
 A new food-first marketplace, full merchant operating dashboard, personal/business accounts, administration and native buyer app. Start in Bulgaria with Bulgarian and English; model additional markets explicitly.
 
-**Current state: Task 1 foundation implemented and locally verified. Next.js and Expo have neutral bootstrap screens, shared contracts, pinned dependencies and CI configuration. Product UI, providers and production readiness are not implemented.**
+**Current state: Task 1 foundation implemented and locally verified on `main`. Task 2 has reference findings and product/operations proposals for review; full Mobbin access is still needed. Next.js and Expo have neutral bootstrap screens, shared contracts, pinned dependencies and CI configuration. Work is stopped before product frontend implementation.**
+
+Work directly on `main` for subsequent tasks, per the owner's instruction. [tasks.md](tasks.md) records the current checkpoint; [design.md](design.md) records the partial source inventory; [product.md](product.md) section 5 contains the catalog and commerce proposals. No product provider integration or production readiness is claimed.
 
 ## How to start
 
