@@ -16,12 +16,12 @@ Execute the requested task, not the entire roadmap. Report a missing prerequisit
 
 ## Current state and index
 
-Task 1 is implemented and locally verified. Task 2 has a partial source inventory and concrete product/operations proposals for review; full source access remains restricted. Work is directly on `main` per the owner's 2026-09-08 instruction. Both apps contain only neutral bootstrap screens; no product frontend or provider integration has started. This numbered list is the only active task queue.
+Task 1 is implemented and locally verified. Task 2 has a partial source inventory and concrete product/operations proposals for review; browser screens/flow images are accessible and source mapping can continue. Work is directly on `main` per the owner's 2026-09-08 instruction. Both apps contain only neutral bootstrap screens; no product frontend or provider integration has started. This numbered list is the only active task queue.
 
 | Task | Work package | Deliverable | Status |
 | --- | --- | --- | --- |
 | 1 | Initialize the stack | Runnable Next.js/Expo workspace and basic checks | Done |
-| 2 | Specify Shop and product details | Source-mapped screens/flows, catalog and operational decisions | Review (partial source access) |
+| 2 | Specify Shop and product details | Source-mapped screens/flows, catalog and operational decisions | In progress (browser mapping) |
 | 3 | Build Shop discovery frontend | Working shell, home, search, storefront and product UI | Not started |
 | 4 | Build data, identity and catalog | Real isolated backend, native API, authentication and basic merchant publishing | Not started |
 | 5 | Build the complete purchase journey | Real cart, checkout, orders, fulfillment and approved recovery on web/native | Not started |
@@ -84,15 +84,15 @@ Commit pointer: the local commit titled `Initialize verified Next.js and Expo fo
 
 **Done when:** Required reference and core catalog/commercial/operational decisions are recorded and reviewed. Task 3 may start once the reference slice is ready even if commercial approval is pending; Task 4 needs the catalog contract; Task 5 needs the approved commerce contract. Do not make the owner wait for unrelated partner details before discovery work.
 
-**Task 2 - Review (partial source access, 2026-09-08).** Per the owner's request, safely fast-forwarded local `main` to foundation commit `3ea7bbaf3c0e3f1f788c7b6cbeb5d66e55fc0cd5`. AGENTS.md now requires main-only work. The historical foundation branch contains no separate pending implementation; no push/deploy was performed.
+**Task 2 - In progress (browser mapping, 2026-09-08).** Per the owner's request, safely fast-forwarded local `main` to foundation commit `3ea7bbaf3c0e3f1f788c7b6cbeb5d66e55fc0cd5`. AGENTS.md now requires main-only work. The historical foundation branch contains no separate pending implementation; no push/deploy was performed.
 
 Prepared: design.md records the exact selected 323-screen capture, 11 inspected highlighted stills with canonical screen URLs, observed flow anchors, verified resolution labels/home upload date, missing evidence and proposed first discovery slice. It also proposes merchant/admin navigation and representative operational states. product.md sections 5-6 contain proposed BG/EN taxonomy, attributes, units/quantity/publication gates, partner activation rules and detailed multi-seller fee/refund examples. All unapproved product/design choices are explicitly proposals.
 
 Batch checks: source/requirement coverage reviewed against the accessible stills; numerical examples independently checked with integer-cent assertions (single/discounted/boundary/multi-seller charge, allocation, sequential/full refunds and weight/volume examples), all passed. `pnpm exec vitest run tests/workspace.test.ts -t 'keeps the owning'`: owning-document relative-link test passed, three unrelated resolution tests skipped. `git diff --check`: passed. This batch changes documentation only; Task 1 application evidence remains scoped to its earlier commit, and no application suites were rerun.
 
-Remaining: full authorized capture/recording access, additional screen/state IDs, measured typography/geometry/assets/motion, complete interaction mapping, platform adaptation review and owner review of the proposed discovery/operational/catalog/commercial decisions. Mobbin MCP explicitly requires a paid plan; the browser exposes previews with an upgrade prompt. Eleven stills do not prove full flow coverage. The selected capture is open for the owner to sign into an account with access; no purchase was made. No source/brand approval or provider/device evidence is implied.
+Remaining: inspect additional browser screen/flow content, record screen/state IDs, measure typography/geometry/assets/motion, complete interaction mapping and review platform/discovery/operational/catalog/commercial decisions. Correction after the owner's challenge: browser navigation renders a non-highlight onboarding screen, a six-image Home flow and a ten-image Filtering results flow. The Flows tab lists 97 flows. The connector's paid-plan error and upgrade banner do not prove that the browser content is blocked; continue through ordinary browser navigation without requiring a new login or purchase. Full coverage and source/brand approval remain unverified.
 
-Commit pointer: the local commit titled `Record main-only workflow and Task 2 preparation` contains this record. Resume **Continue Task 2** with authorized source access and review comments. **Stop before Task 3 frontend implementation as requested.** The later source-cloning phase will use the requested focused subagents once its scope is reviewed, with shared main edits serialized and one owner per component family. No UI-writing helpers have been launched for this documentation batch.
+Commit pointer: initial preparation is in `793ef22`; the commit titled `Correct Mobbin browser access findings` records the browser verification and removes the unsupported access blocker. Resume source mapping through the browser; no new login is required for the verified pages. The owner has reiterated the browser-based 1:1 cloning request. Complete the discovery source specification before implementing its components, using the requested focused subagents with shared main edits serialized and one owner per component family. No UI-writing helpers have been launched for this documentation batch.
 
 ## Task 3 - Build Shop discovery frontend
 
