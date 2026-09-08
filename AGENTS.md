@@ -17,10 +17,20 @@ An older project may be consulted for a specific question, just like another tec
 1. Read README.md, product.md, design.md and this file on the first session; subsequently read the current task and its owning contracts. Inspect actual files, Git status, branch, scripts and concurrent changes.
 2. Choose a ready task whose dependencies are satisfied. Record a claim in tasks.md. One agent owns a feature/schema/root lockfile/visual baseline at a time; preserve unrelated work.
 3. State the feature's acceptance criteria, implement the smallest complete behavior and test the actual failure boundary. Do not merely generate route placeholders.
-4. Check current official guidance for installed versions when using SDKs/framework APIs. Skills are implementation references, not authority to change product scope or install unrelated services.
+4. Discover and use the relevant available skills, plugins/MCP tools and official CLIs as described below. Check current official guidance for installed versions instead of guessing SDK APIs. Tools are implementation aids, not authority to change product scope or install unrelated services.
 5. Run the applicable checks in verification.md. Inspect changed UI in a browser/device; inspect persisted records for data/commerce work. A proposed command is not an executed result.
 6. Review the diff for dead code, speculative abstractions, unrelated edits and sensitive content. Update only the owning documentation when a decision changes.
 7. Record commands/results, commit, environment/dataset, browser/device/locale, evidence, limitations and next task in tasks.md; commit with the task ID. Do not create another handoff/backlog.
+
+## Skills, plugins and official CLIs
+
+Inspect the capabilities actually available in the local session; do not assume they match another agent's environment. Read and apply relevant installed skills before the corresponding task: Next.js/React for web, Expo/React Native for mobile, Turborepo for workspace configuration, shadcn for web primitives, and browser/device verification for UI. Use database/auth/payment guidance when those features begin, not all skills at every session.
+
+Use connected documentation tools such as Context7 or framework MCP when available and helpful. Use Mobbin tools or an authorized browser session for the exact Shop reference, and browser/device tools to inspect the implementation. A plugin listing is not a successful source read or a verification result. If a tool is unavailable, use current official docs or authorized supplied assets and record the precise limitation. Do not bulk-install unrelated skills/plugins or bypass access restrictions.
+
+Prefer the official generators and installers over hand-written framework scaffolding: create-next-app for apps/web, create-expo-app for apps/mobile, shadcn init/add for needed web primitives, and expo install/check for Expo-compatible native packages. Invoke through the selected package manager, check current CLI help/options and existing files, then inspect the generated diff. Preserve the root docs and one workspace lockfile. Do not generate over completed work or overwrite approved component styling.
+
+Prefer supported starter defaults within the selected architecture. Customize configuration only for a concrete requirement or reproduced issue. Record the actual resolved versions and commands once; do not turn compatibility checks into a framework-comparison project. Skills and CLI defaults do not override Shop geometry, approved product policy or safe environment boundaries.
 
 ## Code ownership and design discipline
 
@@ -56,6 +66,12 @@ A done task names the requirement IDs, implemented behavior, commands/results, e
 
 Reference and brand approval belong to the owner/design reviewer, not the implementation agent. Do not claim unbounded 1:1, perfect software or production readiness. State exactly what passed and what remains unknown.
 
-## First local run
+## First local run and when Shop work begins
 
-Read README.md -> product.md -> design.md -> architecture.md -> techstack.md -> tasks.md. Execute BOOT-001: scaffold compatible official Next.js/Expo workspaces, establish scripts and meaningful checks, and record actual results. Do not require access to an old project; do not begin branding or touch production.
+Read README.md -> product.md -> design.md -> architecture.md -> techstack.md -> tasks.md. Execute BOOT-001 using the relevant skills and official CLIs: a runnable web/native scaffold, compatible workspace resolution, basic checks and recorded results. Do not require an old project, provider accounts, paid infrastructure or the complete release test suite for this task. Use existing tooling for checks; do not create an elaborate framework merely to validate documentation.
+
+REF-001 (inspect and specify Shop) can run alongside BOOT-001 without conflicting file edits. Once BOOT-001 and REF-001 are accepted, begin REF-002 immediately: source-measured buyer shell, navigation, cards/shelves and overlays on web/native, using isolated deterministic fixtures where needed. This is the beginning of reproducing Shop. It does not wait for BOOT-002, payment integration, the merchant dashboard or full device-release acceptance.
+
+The backend lane BOOT-002 -> CONTRACT-001 -> BOOT-004 can progress alongside ready reference work. Build feature logic and connect the same UI incrementally; REF-003 and later tasks retain their real-data acceptance requirements. Do not call a fixture-backed screen a finished commerce feature. Complete the frozen reference scope and obtain REF-005 approval before BRAND-001 applies Treido colors and food content. This is one implementation developed in stages, not a disposable clone followed by another app.
+
+A local assignment bounded to BOOT-001 ends at its stated checkpoint; report REF-001/REF-002 as next work rather than silently broadening the assignment. An assignment that includes reference implementation may proceed once those prerequisites are met. No additional documentation phase or full backend completion is required before the first source-matched UI.
