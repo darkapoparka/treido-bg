@@ -1,0 +1,63 @@
+# Public-repository safety baseline. Extend deliberately during BOOT-001.
+# Example files must contain placeholders only.
+.env
+.env.*
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.sample
+!**/.env.template
+
+# Provider linkage, local credentials and authentication recordings.
+.vercel/
+**/.vercel/
+.neon
+**/.neon
+.expo/
+**/.expo/
+*.pem
+*.key
+*.p12
+*.p8
+*.keystore
+*.jks
+*.mobileprovision
+credentials.json
+**/credentials.json
+playwright/.auth/
+**/playwright/.auth/
+auth-state/
+**/auth-state/
+
+# Private source references and operational evidence do not belong in public Git.
+.local/
+**/.local/
+reference-assets/
+**/reference-assets/
+references/raw/
+private-evidence/
+**/private-evidence/
+
+# Generated dependencies, build outputs and test artifacts.
+node_modules/
+**/node_modules/
+.next/
+**/.next/
+.turbo/
+**/.turbo/
+.cache/
+**/.cache/
+dist/
+**/dist/
+build/
+**/build/
+coverage/
+**/coverage/
+test-results/
+**/test-results/
+playwright-report/
+**/playwright-report/
+*.log
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
