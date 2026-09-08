@@ -1,156 +1,224 @@
-# Implementation queue
+# Numbered execution tasks
 
-[product.md](product.md) specifies WHAT to build. This file alone owns task order/status and execution evidence. [AGENTS.md](AGENTS.md) defines the local work loop. Updated: 2026-09-08.
+Say **"Execute Task 1"**, **"Execute Task 2"**, or **"Continue Task 3"**. The agent reads the matching task below and implements its work package. You do not need to paste another long prompt, translate internal task codes, or direct individual file edits.
 
-## Current checkpoint
+[product.md](product.md) defines the features. [design.md](design.md) defines the frontend. [architecture.md](architecture.md) and [techstack.md](techstack.md) define implementation boundaries and tools. [AGENTS.md](AGENTS.md) defines execution; [verification.md](verification.md) defines the checks at the end of a batch.
 
-Documentation only: no application installation, feature implementation, provider configuration, database test, CI or device acceptance is claimed. G0 through G6 in verification.md are unverified.
+## How execution works
 
-Build the selected Next.js/Expo monorepo from official starters and implement this product specification. No mandatory old-project inventory, code port, schema import, route mapping or compatibility audit exists in this queue. The prior migration-first queue is superseded by this clean-build queue.
+Task numbers are stable. Follow numerical order by default. A task is a coherent batch, not one component or one file. Read its listed sources, inspect current work, use relevant skills/plugins/official CLIs, implement the batch, then run its closing checks. Do not stop after each small edit to rerun the full test suite or request permission for the next component.
 
-Buyer sequence: Shop reference -> reviewed fidelity -> Treido branding/food adaptation. Product and backend work proceeds from its specified rules, not from preserving another implementation.
+Write tests with the behavior where useful; run focused checks when debugging and run the specified batch checks before declaring the task done. Broad product regression is Task 12. Immediate environment/permission checks before consequential operations still apply; batching is not permission to perform unsafe writes or postpone payment/tenant correctness until release.
 
-**Next local task: BOOT-001.** REF-001, SPEC-001 and POL-001 are independent preparation tasks. Optional reference code is not a prerequisite for any task.
+If a task exceeds one session, record finished portions, remaining work and check results under that same task. `Continue Task N` resumes there without replanning or creating another backlog. Internal steps such as 5.1 and 5.2 are progress markers, not additional assignments the owner must manage. Do not mark a whole task done for partial work.
 
-## Execution priorities
+Execute the requested task, not the entire roadmap. Report a missing prerequisite rather than silently executing a different task. Independent preparation in Task 2 can run during Task 1 when requested, without conflicting edits. Missing source assets do not block installation; missing payment policy does not block discovery UI. An agent can complete available portions but must label missing evidence and approvals.
 
-The architecture decision is closed for routine work: clean Next.js + Expo monorepo, one authoritative commerce backend, separate browser/native presentation. Optional reference material may answer a specific question; building does not depend on an old repository. A demonstrated incompatibility is reported with evidence, not hidden by changing frameworks.
+## Current state and index
 
-The first local assignment is bounded to BOOT-001. Install only the workspace/framework/styling/test foundation and consumed shared packages. Do not install every future provider SDK, build empty feature modules or create substitute marketplace screens. A neutral, labeled bootstrap screen is not the Shop frontend. No database account, paid cloud build or Mobbin access is required to prove this scaffold.
+Documentation only. No application or provider is installed or verified. All task numbers below are new execution packages, not completed work. This numbered list replaces the former internal-code task queue; there is no second active task list.
 
-After bootstrap, prioritize BOOT-002 -> CONTRACT-001 -> BOOT-004 so the actual identity/API/native connection is tested before the full catalog/inventory module. BOOT-003 establishes repeatable database/browser checks in parallel with that work once its prerequisites are available. Local checks needed by BOOT-002 belong in that task; CI expansion in BOOT-003 is not a reason to defer its tests. Missing credentials or a device block only the corresponding proof; record the platform separately and continue independent authorized work.
+| Task | Work package | Deliverable | Status |
+| --- | --- | --- | --- |
+| 1 | Initialize the stack | Runnable Next.js/Expo workspace and basic checks | Ready |
+| 2 | Specify Shop and product details | Source-mapped screens/flows, catalog and operational decisions | Ready |
+| 3 | Build Shop discovery frontend | Working shell, home, search, storefront and product UI | Not started |
+| 4 | Build data, identity and catalog | Real isolated backend, native API, authentication and basic merchant publishing | Not started |
+| 5 | Build the complete purchase journey | Real cart, checkout, orders, fulfillment and approved recovery on web/native | Not started |
+| 6 | Complete and review the Shop frontend | Remaining buyer/account states and full declared reference review | Not started |
+| 7 | Adapt the approved frontend to Treido | Treido branding and food content on the same components | Not started |
+| 8 | Build the full merchant workspace | Bulk tools, inventory operations, finance, teams and storefront settings | Not started |
+| 9 | Build communication, trust and administration | Real chat, notifications, reviews, support and admin workflows | Not started |
+| 10 | Build Premium and AI | Working subscriptions, entitlements and permissioned copilots | Not started |
+| 11 | Build partner operations and promotions | Configured supplier/delivery/driver and promotion workflows | Not started |
+| 12 | Verify and optimize the complete product | Full functional, visual, security, performance and device regression | Not started |
+| 13 | Prepare and rehearse release | Tested deployment, backup/restore and recovery procedures | Not started |
+| 14 | Release the authorized artifacts | Approved hosted release and native submissions, verified separately | Not started |
 
-Next implement the initial complete transaction using CORE-001, REF-002/003, MER-001, PAY-001, ORD-001 and NAT-001. Prove it in FLOW-001 before completing every account/support/communication reference state in REF-004. PAY-001 and ORD-001 own the first web transaction screens; NAT-001 wires the native equivalents. REF-004 extends those same components, rather than rebuilding them. Full source approval still requires all frozen reference states under REF-005; branding still waits for that approval.
+Statuses: Ready, Not started, In progress, Blocked, Review, Done. A task with implemented code but missing required checks/approval is Review or Blocked, not Done. Record the precise reason; do not label the whole project blocked. Visual fixture approval and live feature acceptance are distinct results.
 
-## Status and ownership
+## Task 1 - Initialize the stack
 
-ready = task can start. in-progress = claimed by one agent. blocked = a named predecessor, input, environment or approval is missing. review = implementation exists but required proof/review is outstanding. done = acceptance for the declared scope is recorded.
+**Prerequisites:** None; no old repository, Mobbin access or provider account required.
 
-When a predecessor completes, verify task-specific inputs and mark the downstream task ready. Do not falsely mark a skipped device/provider check as successful. Work on independent tasks when a narrow blocker exists. Only one agent edits a feature/schema/root lockfile/baseline at a time.
+**Read:** README.md, AGENTS.md, techstack.md sections 1-4, architecture.md sections 1-2; skim product.md/design.md to understand the target, not to start styling it.
 
-Requirement IDs are defined in product.md; task IDs below identify work. Split tasks into numbered subtasks here when needed, without losing their acceptance criteria. Do not create parallel backlogs or quietly reduce product scope. Product/design decisions belong in their owning documents, not an unexplained task note.
+**Execute:** Use relevant Next.js, Expo, Turborepo and tooling skills, then official CLI generators inside `apps/web` and `apps/mobile`. Resolve supported compatible versions, pin them, use one pnpm lockfile and private workspace manifests. Add shared contracts/tokens only with real smoke-test consumers. Set up strict TypeScript, ESLint/Prettier, minimal CI, ignores and safe placeholder env examples. Remove demo screens, use a neutral labeled bootstrap shell, and establish the Task 1 scripts in techstack.md. Record exact versions and commands there once. Do not hand-build a framework scaffold or install every future provider SDK.
 
-## Task graph
+**Check at batch end:** Frozen-lockfile clean install; lint/format/typecheck and meaningful import/contract unit tests; production web build and one browser smoke inspection; Expo dependency/doctor checks and iOS/Android JavaScript exports. Check client-safe imports and React/native module resolution. Export is not native OS compilation. Do not require database, payment, visual-regression or device-release suites yet.
 
-Dependencies below are task IDs. Additional commercial/design decisions are stated in the work/exit column and product.md; a task cannot claim the affected behavior until those decisions are recorded.
+**Done when:** Both clients have a runnable foundation, all available required checks pass and actual commands/versions are recorded. Stop before feature work; next is Task 2.
 
-| Task | Work and required exit | Depends on | Main requirements | State |
-| --- | --- | --- | --- | --- |
-| BOOT-001 | Scaffold compatible Next.js/Expo workspaces, commands, ignores, version matrix and meaningful import/build checks. | None | QUA-001, NAT-001 | ready |
-| REF-001 | Inspect the exact Shop capture; freeze screen/state/flow coverage, measurements and explicit platform differences. | None | BUY-001, NAT-001; DEC-001 | ready |
-| SPEC-001 | Specify catalog taxonomy/attributes/quantity/publication rules and merchant/admin navigation from product.md; propose the partner-workflow details for review. | None | BUY-002, BUY-005, MER-001, MER-002, OPS-001, OPS-002, OPS-003; DEC-003 | ready |
-| POL-001 | Approve testable checkout grouping, fee/rounding, charge/payout, fulfillment and refund rules with numerical examples and sandbox plan. | None | BUY-007, BUY-009, MER-005, MER-009; DEC-002 | ready |
-| BOOT-002 | Verify fresh isolated PostgreSQL/development auth, initial user/business schema, safe synthetic seeds and negative authorization checks. | BOOT-001 | ACC-001, ACC-003, QUA-001 | blocked |
-| BOOT-003 | Establish CI, actual PostgreSQL and built-web/browser harness, safe artifacts and production-build performance instrumentation. | BOOT-002 | QUA-001 | blocked |
-| CONTRACT-001 | Implement the initial authenticated identity/context HTTP API, shared error/response contracts and web/native consumers; test tenant-negative cases. Catalog endpoints follow in CORE-001. | BOOT-002 | ACC-001, ACC-003, NAT-001, NAT-002 | blocked |
-| BOOT-004 | Prove declared iOS/Android development builds, device API origin, secure sessions and cold/deep links. | BOOT-002, CONTRACT-001 | NAT-002, NAT-003 | blocked |
-| CORE-001 | Implement catalog/variants/publication, exact quantity/inventory rules and real paginated public catalog API in the new schema; constraints, output contracts, concurrency and persisted-state tests. | BOOT-002, SPEC-001, CONTRACT-001 | BUY-002, BUY-005, BUY-006, MER-002, MER-004 | blocked |
-| REF-002 | Build measured buyer primitives/navigation/overlays on web/native, without Treido rebranding or old frontend imports. | BOOT-001, REF-001 | BUY-001, NAT-001 | blocked |
-| REF-003 | Implement reference home/discovery/store/product flows and states, integrated with the new catalog. | REF-002, CORE-001, CONTRACT-001 | BUY-002, BUY-003, BUY-004, BUY-005, NAT-001 | blocked |
-| MER-001 | Build real merchant onboarding, product publication, inventory and order-queue shell from the reviewed operational design. | CORE-001, SPEC-001 | MER-001, MER-002, MER-004, MER-005, ACC-003 | blocked |
-| PAY-001 | Implement approved quotes/reservations/order/payment protocol and the initial reference-matched web cart/auth-return/checkout screens; prove signature/dedupe/replay and retry-safe effects. | CORE-001, CONTRACT-001, POL-001, REF-002 | BUY-006, BUY-007, MER-005 | blocked |
-| ORD-001 | Implement canonical buyer/merchant order details, initial source-matched buyer order screens, timelines, permissions and allowed fulfillment transitions. | PAY-001, MER-001 | BUY-008, MER-005 | blocked |
-| NAT-001 | Integrate native discovery/cart/auth-return/checkout/order screens against the real API using the measured components and interruption recovery. | BOOT-004, REF-003, PAY-001, ORD-001 | NAT-001, NAT-002, BUY-005, BUY-006, BUY-007, BUY-008 | blocked |
-| FLOW-001 | Prove the new web/native-to-merchant transaction, stock/payment/quote/idempotency/permission failures and populated performance baselines. | BOOT-003, REF-003, MER-001, PAY-001, ORD-001, NAT-001 | BUY-005, BUY-006, BUY-007, BUY-008, MER-005, NAT-001, QUA-001 | blocked |
-| REF-004 | Complete the remaining frozen reference cart/checkout/account/order/communication states using the initial transaction components; label fixture-only states and do not create another frontend. | REF-002, CONTRACT-001, FLOW-001 | BUY-006, BUY-007, BUY-008, BUY-009, BUY-010, ACC-001, ACC-002, COM-001, COM-002 | blocked |
-| REF-005 | Review all frozen reference-required flows/states on declared targets; owner approves exact scope/evidence/exceptions. | REF-001, REF-002, REF-003, REF-004, NAT-001, FLOW-001 | BUY-001, NAT-001; G3 visual/interaction gate | blocked |
-| BRAND-001 | Adapt accepted components to approved Treido identity/colors/food labels and content; reverify and remove reference-only release artifacts. | REF-005, SPEC-001 | BUY-001, BUY-002, BUY-005, QUA-001 | blocked |
-| DISC-001 | Complete real search quality, facets/sort, location/map/storefront discovery and truthful promotion placement integration. | REF-003, CORE-001 | BUY-002, BUY-003, BUY-004 | blocked |
-| ACC-001 | Complete personal account, addresses, preferences, saved items, identity recovery and business membership/selling switch. | REF-004, BOOT-002 | ACC-001, ACC-002, ACC-003, BUY-010 | blocked |
-| CAT-002 | Complete catalog/media, bulk tools, relevant locations/lots/expiry and auditable inventory adjustment workflows. | MER-001, CORE-001 | MER-002, MER-003, MER-004 | blocked |
-| RECOV-001 | Complete cancellations/returns/refunds/support under approved policy; test provider/race/amount/item/seller allocations. | ORD-001, POL-001 | BUY-009, MER-005 | blocked |
-| FIN-001 | Complete operational dashboard, finance/payout definitions, business/store/team configuration and traceable metrics. | ORD-001, CAT-002, ACC-001 | MER-001, MER-007, MER-008 | blocked |
-| COM-001 | Decide transport and build durable authorized chat, attachments/read state/blocking and reconnect; document reliability/cost evidence. | CONTRACT-001, ACC-001, ORD-001 | COM-001, MER-006, NAT-002; DEC-005 | blocked |
-| NOTIF-001 | Select notification delivery/retry support and extend the existing payment replay foundation with in-app/email/push preferences, dedupe and secure deep links. | ORD-001, COM-001 | COM-002, MER-008, NAT-002; DEC-005 | blocked |
-| TRUST-001 | Build verified reviews/replies, reports/moderation, seller verification and privileged admin/support tools. | ORD-001, RECOV-001, COM-001 | BUY-009, BUY-010, MER-006, ADM-001 | blocked |
-| PREM-001 | Implement configured Free/Premium billing, entitlements, portal/invoices and downgrade/failure recovery. | ACC-001, POL-001, FIN-001 | MER-009; DEC-004 | blocked |
-| AI-001 | Build scoped listing, operational, metric/inventory and reply copilots with approval, audit, cost limits and failures. | CAT-002, FIN-001, COM-001, PREM-001 | MER-010 | blocked |
-| OPS-001 | Implement specified supplier relationships, configured delivery/pickup coordination and least-privilege assigned-driver workflows. | CORE-001, MER-001, ORD-001, SPEC-001 | OPS-001, OPS-002, OPS-003; approved DEC-003 details | blocked |
-| PROMO-001 | Implement promotion eligibility/scheduling, tenant-safe management, disclosures and honest attribution; activate commercial terms only when approved. | CORE-001, MER-001, TRUST-001 | ADM-002, BUY-002; DEC-004 | blocked |
-| NAT-002 | Complete all remaining native buyer flows, support/notifications/offline/lifecycle handling and Android adaptations. | NAT-001, DISC-001, ACC-001, RECOV-001, NOTIF-001, TRUST-001, BRAND-001 | NAT-001, NAT-002, NAT-003 | blocked |
-| QUAL-001 | Verify every declared product feature on populated web/native/merchant/admin paths: functional, visual, accessibility, locales, security and performance. | BRAND-001, DISC-001, ACC-001, CAT-002, FIN-001, RECOV-001, NOTIF-001, TRUST-001, PREM-001, AI-001, OPS-001, PROMO-001, NAT-002 | All product requirement IDs; G5 | blocked |
-| RELEASE-PREP-001 | Rehearse new-app schema deployment, backup/restore, provider reconciliation and rollback; finish exact-environment release runbook. | QUAL-001 | QUA-001, NAT-003 | blocked |
-| REL-001 | Obtain owner authorization and release exact web/native artifacts with verified live configuration/hosted checks; store submission only as authorized. | RELEASE-PREP-001 | All approved release requirements; G6, DEC-004 | blocked |
+## Task 2 - Specify Shop and product details
 
-All declared features are in the queue. A restricted pilot can be approved separately without marking deferred work done. No source-system comparison is required for QUAL-001. Optional import/takeover work is added only if separately requested; do not smuggle it back into these dependencies.
+**Prerequisites:** None for inspection. Authorized reference access and owner decisions are required for their respective approvals; do not invent them.
 
-## First implementation tasks
+**Read:** product.md sections 2-8 and design.md. Use Mobbin/authorized browser tools, available design skills, current provider documentation for technical feasibility, and old project examples only when they answer a specific question.
 
-### BOOT-001
+**Execute three deliverables in the existing owning documents:**
 
-Read product/design intent, architecture and techstack. Inspect the new working directory and existing changes. Resolve stable compatible Node/pnpm/Next/Expo/React/TypeScript versions from current official guidance. Scaffold the two official starter apps, actual consumed shared packages, one lockfile and strict private/server import boundaries.
+- **Reference:** Inspect the selected Shop capture and recordings. Map source screens, states, transitions, content viewport, typography, geometry, navigation and platform differences. Cover discovery through checkout/account/orders/support; mark Treido-specific screens explicitly. Record the exact first discovery slice needed by Task 3 and get its scope reviewed.
+- **Catalog and operations:** Propose and record BG/EN food hierarchy, attributes, units/packages, quantity precision/minimum/increment, publication requirements, merchant/admin navigation and representative operational states. Separate later partner activation details from core catalog decisions.
+- **Commercial policy:** Resolve DEC-002 with fee/rounding and multi-seller payment/order/fulfillment/refund examples; record selected methods and sandbox plan. Propose unanswered values for owner review rather than reading unstated requirements into old code. DEC-004 release/business approvals and DEC-005 service choices can be completed when their features need them.
 
-Implement the initial scripts, meaningful unit/import tests, lint/format/typecheck, env examples and ignores. Verify dependency resolution inside each app, production web build/rendered shell and Expo doctor/export. Record a clean frozen-lockfile install. No provider or native-build success claims based on fixture startup. Do not install another architecture or start rebranding.
+**Check at batch end:** Review the reference/requirement coverage and numerical policy examples; identify exactly which deliverables are approved or still missing. No application suite is required for a documentation-only batch.
 
-For this first task, establish `dev:web`, `dev:mobile`, `build:web`, `typecheck`, `lint`, `format:check`, `format`, `test:unit`, `native:check` and `check` with their real behavior. The initial `check` aggregates only implemented mandatory checks, including document links/references. Database, full browser/visual and device suites arrive in their owning tasks; do not add fake passing placeholders or demand their completion to close BOOT-001.
+**Done when:** Required reference and core catalog/commercial/operational decisions are recorded and reviewed. Task 3 may start once the reference slice is ready even if commercial approval is pending; Task 4 needs the catalog contract; Task 5 needs the approved commerce contract. Do not make the owner wait for unrelated partner details before discovery work.
 
-Use one root lockfile and framework-supported workspace resolution. Run native export for iOS and Android and record it as JavaScript export, not native compilation. Inspect the built web shell and shared-package resolution. Keep dev and build output directories separate or serialize them. Do not invent exact Shop tokens without source evidence; bootstrap token consumers may use clearly temporary neutral values, replaced before reference work.
+## Task 3 - Build Shop discovery frontend
 
-### SPEC-001
+**Prerequisites:** Task 1; Task 2's approved discovery reference. No completed backend required.
 
-Write a concrete catalog definition: food hierarchy and BG/EN labels, category attributes, units/package/minimum/increment/precision, allowed publication rules and representative fixtures. Define merchant/admin navigation and representative draft/editor/queue/finance states from the product workflows. Propose the partner-operation details as a named subtask, not an old-code discovery exercise.
+**Read:** design.md sections 1-4; product.md BUY-001 through BUY-005; architecture.md sections 1, 2 and 6. Use web/native UI skills, measured reference assets and browser/device inspection tools.
 
-Record approved decisions in product.md/design.md. Separate required catalog decisions from later partner activation details; a still-pending partner subtask must not block catalog/bootstrap that has its own approved contract. Amend the task into explicit subtasks with dependencies when needed rather than pretending the entire specification is approved.
+**Build the whole batch:** Source-measured tokens and primitives; buyer shell/navigation; home shelves/cards; search and discovery/filter/sort states; storefront; product images/options/quantity/add feedback; sheets and back/scroll behavior. Build the web/mobile-web and native presentation with a reviewed desktop/Android adaptation. Use deterministic, visibly isolated reference data through client-safe contracts. Navigation and local state must work, not just look correct. Mark an add-to-cart sample as a reference interaction, not a server-persisted purchase. Implement in the canonical routes/components that later receive real data.
 
-### REF-001
+**Check at batch end:** A connected home -> search/store -> product -> back journey; compare the changed screen set against source; check keyboard/safe areas and the relevant viewports; scoped lint/typecheck and UI/interaction tests. Use native tooling available and explicitly record unavailable native proof. No payment or full-platform suite. Iterate within the batch without rerunning all checks after each card edit.
 
-Inspect the selected Mobbin capture or authorized owner-provided assets. Fill device/OS/version/content dimensions and exact source screens, states and recordings. Record entry/back/dismissal/keyboard/scroll behavior, measured components and explicit platform adaptations. Installation and unrelated product work proceed without waiting for source access; fidelity claims do not.
+**Done when:** The declared discovery slice works and its comparison/limitations are recorded. No Treido rebrand, duplicate demo frontend or unmeasured replacement layout. Next: Task 4.
 
-### POL-001
+## Task 4 - Build data, identity and catalog
 
-Specify DEC-002 from the product policy: order/seller/payment grouping, fees and rounding, supported methods/fulfillment, cancellation/refund allocation and reconciliation. Include normal, weighted, multi-seller and failure examples with expected totals. Inspect sandbox provider configuration where authorized; a previous implementation may be an optional example but does not decide the policy. Missing commercial decisions require owner approval, not guesses.
+**Prerequisites:** Task 1; Task 2's approved catalog contract; authorized fresh development database/auth configuration. Task 3 supplies the UI consumers; backend work need not wait for missing unrelated reference assets.
 
-### BOOT-002 / CONTRACT-001 / CORE-001
+**Read:** product.md ACC-001/ACC-003, BUY-002 through BUY-006, MER-001/MER-002/MER-004; architecture.md sections 2-5 and 7; techstack.md data/identity/native API instructions. Use database, Clerk, Next.js/Expo and contract skills as applicable.
 
-BOOT-002 verifies fresh isolated PostgreSQL and development identity targets and implements the new user/business membership schema with reviewed migrations and synthetic actors. Test actual constraints/permissions and ambiguous/production-target rejection. No source-schema reproduction or old ID preservation is required.
+**Build the whole batch:** New user/business/membership schema and development auth; explicit context/permission functions; secure native session and `/api/v1` identity contract. Prove web/native identity connectivity early in this batch. Then add product/variant/publication, exact quantity and inventory records, paginated catalog DTOs and synthetic seeds. Implement real search/filter/sort, storefront and map/location reads with category facets, eligibility and a BG/EN typo/synonym/transliteration query set; do not leave discovery backed by mock search. Build the basic merchant setup/editor/publish/inventory screens under their own reviewed layout. Connect Task 3's same components to real catalog data; no silent fixture fallback. Set up real PostgreSQL tests and a production-build browser harness as needed.
 
-CONTRACT-001 then exposes a small real `/api/v1/me` identity/business-context query (or a documented equivalent). Verify unauthenticated, expired-session, wrong-business and revoked-membership behavior. Consume and validate the response from native; server-rendered web code calls the same authorized function directly. Standardize safe errors and correlation IDs. This proves the client/server boundary using actual development identity and database data, without waiting for inventory or payment implementation. Test fixtures are not represented as live catalog endpoints.
+**Check at batch end:** Schema from migrations on verified disposable PostgreSQL; publishing and persisted catalog visibility on web/native; cross-user/business/revoked-role failures; quantity/constraint/concurrent inventory tests, search relevance/filter/sort/pagination and location-denied cases; affected build/typecheck and browser/API integration. Exercise secure sessions, deep links and device API origins in actual authorized iOS/Android development builds; unavailable platforms stay explicitly unverified. Do not demand a release signing/submission result.
 
-CORE-001 subsequently implements the product-led catalog/variant/inventory schema and public catalog/category/store DTOs, real paginated read endpoints, response parsing and web/native data integration. Include publication filtering, quantity/stock rules, private-field exclusion and concurrency tests. REF-003 cannot claim catalog integration using only the earlier identity proof.
+**Done when:** Real identity/catalog/publishing works, client-safe boundaries hold and required checks pass. Missing device/provider proof is not a reason to replace functioning code with mocks. Next: Task 5.
 
-Add authentic sandbox providers as their feature tasks need them; never fall back to live configuration.
+## Task 5 - Build the complete purchase journey
 
-### BOOT-003 / BOOT-004
+**Prerequisites:** Tasks 3 and 4; Task 2's approved checkout/recovery policy and corresponding Shop screens; authorized sandbox providers.
 
-Establish the CI/PostgreSQL/browser/visual/native lanes with secret-safe artifacts. Prove actual installed iOS/Android development builds and API/session/deep-link behavior; record any unavailable platform evidence. A source export is not an OS build.
+**Read:** product.md BUY-006 through BUY-009, MER-005, sections 4-5; architecture.md inventory/checkout/orders/API; design.md transaction flows; verification.md failure matrix. Use payment/database/auth and web/native interaction skills.
 
-Performance harness results cover only implemented routes. Before FLOW-001, measure populated discovery/product/cart/checkout and merchant paths and define provisional API/native budgets. Empty scaffold results are not production-product acceptance.
+**Build the whole batch:** Guest/cart persistence and deterministic sign-in merge; cart quantity/removal and stale-state recovery; address/pickup/fulfillment selection; server quote; idempotent order/reservation/payment flow; verified webhook ingestion, replay/reconciliation and timeouts; buyer order history/detail/timeline; merchant order queue and allowed fulfillment actions. Implement initial reference-matched cart/checkout/order screens for both clients using existing components. Add the approved cancellation/refund/issue workflow with durable allocation/state, not a fake button. An initially simplified fixture is not the final multi-seller contract.
 
-### PAY-001: correctness cannot wait for notification infrastructure
+**Check at batch end:** Full merchant-publishes -> web/native buyer-purchases -> merchant-fulfills journey on real PostgreSQL and sandbox payment; last-stock competition, quote changes, same-key retries, interrupted payment return, duplicate/out-of-order callbacks, unauthorized access and approved refund/cancel races/allocations. Test weighted and multi-seller cases. Measure populated discovery/checkout/order paths once as the initial performance baseline. Do not defer money/inventory correctness to Task 12.
 
-Before FLOW-001, prove recoverable payment ingestion: signature checks, durable event/operation identity, duplicate/out-of-order handling, bounded retry or authorized replay, and reconciliation after provider success followed by application failure. Implement the smallest supported processing mechanism that meets this protocol; critical payment recovery cannot wait for NOTIF-001. Do not assume detached promises or an in-process timer survive a hosted request. Any managed worker/runtime must be appropriate to the host and separately authorized when provisioning is required.
+**Done when:** The new transaction and approved recovery work end to end with persisted evidence. Provider request success alone is not a completed order. Next: Task 6.
 
-Build only the initial buyer transaction screens needed for the approved journey, using the measured reference components and existing API/domain rules. REF-004 completes the wider reference-state matrix after this flow is proved. This is staged integration, not permission to mark the full checkout or all reference states complete early.
+## Task 6 - Complete and review the Shop frontend
 
-## Implementation and approval rules
+**Prerequisites:** Tasks 3-5 and Task 2's complete frozen reference coverage. The full source comparison requires the declared platform evidence.
 
-REF tasks own source measurements, shared presentation and the remaining reference-state matrix. PAY-001/ORD-001/NAT-001 build the first transaction screens against those measured components while implementing real behavior. REF-004 extends them after FLOW-001; no second checkout frontend is created. Fixtures can represent deterministic source states but never create fake production functionality.
+**Read:** design.md sections 3-5; product.md BUY-001 through BUY-010, ACC-001 through ACC-003, COM-001/COM-002 and NAT-001/NAT-002.
 
-FLOW-001 proves the first integrated transaction. A one-seller example does not finish multi-seller or weighted checkout; PAY-001 and QUAL-001 require their approved edge cases. Further features extend the same testing foundation.
+**Build the whole batch:** Finish all remaining reference states: account, saved items, addresses/preferences, purchases, empty/error/loading, notification/inbox/support entry where present, and all recorded navigation/overlay variations. Implement real profile/address/saved/preferences, sessions/recovery, account-removal request, receipts and enabled provider-managed payment-method views, plus selling entry on the established identity backend. Keep purchase screens connected to Task 5. Communication service states not yet implemented may use explicitly isolated fixtures for source review; document that Task 9 owns their real delivery. Every reference row receives evidence or a named, approved platform/Treido-specific exception.
 
-REF-005 is owner/design-reviewer approval for the declared source scope and any fixture-only distinctions. BRAND-001 cannot start before it. Food branding changes accepted tokens/copy/data rather than introducing another frontend. Merchant/backend work can progress independently when its own inputs are available.
+**Check at batch end:** Review the entire frozen screen/flow set against source in batches; run affected UI/account tests and a transaction regression after shared-navigation changes. Check required small/large widths, long copy, safe areas, keyboard/back/scroll and declared native platforms. Do not approve only a homepage or auto-update screenshots to make failures disappear.
 
-QUAL-001 maps product requirement IDs to implemented routes/API behavior and evidence. The mapping is new-product coverage, not old-route compatibility. All declared capabilities must have evidence for full product completion. Relevant payment/privacy/food/legal, configured rates/quotas and actual native release decisions remain explicit release blockers.
+**Done when:** Scope/evidence/commit and accepted exceptions are explicitly approved by the owner/design reviewer. Otherwise status is Review. This approval is a visual/interaction milestone, not a claim that fixture-only communication is functional. Task 7 requires this recorded approval.
 
-RELEASE-PREP-001 proves recovery for this new application's data and providers. REL-001 is separate authorization; no old-system cutover or real-data import is implied. Existing systems remain untouched.
+## Task 7 - Adapt the approved frontend to Treido
 
-## Evidence ledger
+**Prerequisites:** Task 6's explicit source approval; Task 2's approved food content; approved brand values.
 
-No implementation task is currently claimed or completed. Documentation correction: requirements.md is replaced by product.md; mandatory migration planning is removed. The selected stack, full product scope, Shop-first buyer target and safety/quality requirements remain explicit. No application tests were run as part of editing documentation.
+**Read:** design.md section 6, product.md section 5. Use UI/accessibility skills and the same components/tokens.
 
-Documentation audit on 2026-09-08 (source: `934348bfe92f0c8710b56a079752ac62eca48e9d`): read all eight current Markdown documents and `.gitignore`; reviewed document ownership, clean-build scope, full buyer/account/merchant/admin/native requirements, reference-before-brand rules, safety and runtime boundaries. Rechecked official Next.js HTTP/auth/testing, Expo monorepo/development-build and Clerk native guidance. The selected architecture is unchanged. Corrected initial identity/API proof being gated on complete inventory, and first-transaction proof being gated on the remaining reference screens. Clarified first-task script scope and payment replay ownership. Validation: copied task-source bytes matched the Git blob SHA; a local Python parser verified 35 tasks, 97 dependency edges, 34/34 explicitly mapped product requirement IDs, zero undefined dependencies and zero cycles. Assertions proved early native/API verification no longer depends on CORE-001, FLOW-001 no longer depends on REF-004, and reference-before-brand and quality/recovery-before-release ordering still hold. Reviewed canonical relative-link targets across all eight documents. Git check-ignore tests passed for 12 sensitive/generated paths and six intended source/example paths. These are structural checks, not proof that feature contracts are fully implemented or all commercial/design decisions are resolved. Application installs, builds, database/provider/device tests and source-reference fidelity remain NOT RUN.
+**Build the whole batch:** Apply Treido identity and green/yellow/red roles, neutrals and accessible states; replace reference content with approved food categories, producers, owned media and BG/EN copy. Place food units, minimums, fulfillment and fees without concealing commercial facts. Keep approved geometry and interactions unless a specific change is approved. Remove reference marks and restricted assets from release paths; do not create a second theme or alternate homepage.
 
-Record concise entries here, not raw logs or new report files:
+**Check at batch end:** Review the complete adapted buyer screen set, long/localized food content, accessibility and shared navigation; run relevant visual/UI and purchase regressions once. Record brand review and any explicit exceptions.
+
+**Done when:** The owner/design reviewer approves the adapted UI and the affected behavior still works. This does not complete remaining service/dashboard tasks. Next: Task 8.
+
+## Task 8 - Build the full merchant workspace
+
+**Prerequisites:** Tasks 4-5 and Task 2's reviewed merchant design. Default sequence is after Task 7; it can proceed independently of pending buyer brand review when expressly assigned.
+
+**Read:** product.md MER-001 through MER-008, ACC-003 and daily merchant journey; architecture.md permissions, inventory, finance and files; design.md section 7.
+
+**Build the whole batch:** Extend the existing basic dashboard, not a replacement: complete catalog/media editors, bulk import/export with row errors, locations/lots/expiry and auditable adjustments, configured fulfillment, operational queues, customer/order context, storefront management, business settings, team invitation/removal/roles, and traceable sales/refund/fee/cost/profit/payout views. Unknown cost stays unavailable. Use the existing order/recovery rules and stable interfaces for Task 9's messaging, not pretend-live chat.
+
+**Check at batch end:** Merchant publishes/edits/imports -> adjusts stock -> processes/reconciles orders -> manages team/store; test import atomicity, financial definitions and cross-tenant/export/file access on real data. Check desktop and urgent mobile-web workflows, affected suites and buyer catalog/order regressions.
+
+**Done when:** Declared merchant operations work with real records and permissions; missing messaging/Premium/AI is explicitly owned by Tasks 9-10. Next: Task 9.
+
+## Task 9 - Build communication, trust and administration
+
+**Prerequisites:** Tasks 5, 6 and 8; approved DEC-005 delivery choices for the implemented paths.
+
+**Read:** product.md COM-001/COM-002, BUY-009/BUY-010, MER-006/MER-008 and ADM-001; architecture.md communication/outbox/authorization/files; existing reference and operational designs.
+
+**Build the whole batch:** Durable authorized conversations, private attachments, send/retry/reconnect/read state and blocking; in-app/email/push notifications and preferences; verified reviews/replies; seller/product/report moderation; support/commerce exception queues and privileged operator actions. Choose required managed delivery/worker tools using current skills/docs and measured constraints. Connect the previously built screens. The outbox/payment replay foundation is extended, not replaced or duplicated.
+
+**Check at batch end:** Buyer/merchant live exchange on declared clients, reconnect/dedupe/blocking/private-file failures; actual sandbox/sink notification delivery and deep links; eligibility/moderation and admin-permission tests; repeat a purchase/issue journey. No testing against real customers.
+
+**Done when:** Communication/trust/support/admin controls operate on real authorized data and their required provider/device evidence exists. No production fixture fallbacks remain for these features. Next: Task 10.
+
+## Task 10 - Build Premium and AI
+
+**Prerequisites:** Tasks 8-9; approved billing prices/limits and supported model/provider configuration.
+
+**Read:** product.md MER-009/MER-010 and commercial rules; architecture.md finance/AI/auth and provider boundaries. Use relevant billing, AI SDK, structured-tool and UI skills.
+
+**Build the whole batch:** Free/Premium subscriptions, configured entitlements/portal/invoices, lifecycle/downgrade/retry behavior; listing/photo/translation assistance, operational summaries, metric-backed analytics/inventory answers and reply drafts. Use the established permissions, queries and commands. Require human approval for consequential writes; bound cost/time and provide useful unavailable/error states. Do not make normal commerce depend on AI or Premium.
+
+**Check at batch end:** Sandbox billing lifecycle and server entitlement tests; deterministic permission/tool/approval/failure tests plus a bounded authorized live-model smoke; wrong-business/prompt-injection cases and cost accounting. Verify underlying commerce still works when billing/AI is unavailable.
+
+**Done when:** Configured billing and all declared AI jobs work within their explicit permissions and evidence limits. Next: Task 11.
+
+## Task 11 - Build partner operations and promotions
+
+**Prerequisites:** Tasks 5, 8 and 9; approved partner workflows and promotion commercial configuration from product.md.
+
+**Read:** product.md section 6, OPS-001 through OPS-003 and ADM-002; architecture.md permissions, orders and reporting. No old-route inventory is required.
+
+**Build the whole batch:** Authorized supplier relationships; eligible pickup points/scheduled runs/capacity and dispatch; least-privilege driver assignment/handoff/delivery/exception states; promotion eligibility/scheduling/management/disclosure and truthful attribution. Do not invent a nationwide logistics or advertising network. Use shared order/fulfillment records and reviewed operational UI.
+
+**Check at batch end:** Assigned versus unassigned partner access, capacity/fulfillment conflicts, repeated delivery updates and canonical tracking; tenant-safe promotion management, scheduling/disclosure/attribution and discovery integration. Run relevant order/catalog regressions.
+
+**Done when:** The specified operations work, commercial activation is approved where needed and no false delivery/promotion claims are shown. Next: Task 12.
+
+## Task 12 - Verify and optimize the complete product
+
+**Prerequisites:** Tasks 1-11 completed for the declared full-product scope, including source and brand approvals. A restricted pilot requires a separate explicit scope, not secretly skipping tasks.
+
+**Read:** verification.md in full; all product.md requirement IDs; approved design scope; actual stack and architecture. Use browser/device, performance, security and database skills/tools.
+
+**Execute a consolidated quality batch:** Run full unit/contract/PostgreSQL/web/native suites, populated visual/responsive/accessibility/BG-EN checks, provider faults/reconciliation, signed-out/buyer/business/merchant/admin/partner permissions and supported API-version compatibility. Exercise real installed iOS/Android builds, lifecycle/deep links/offline recovery. Profile production builds and fix measured query/asset/client/rendering problems without a framework rewrite. Complete any cross-cutting acceptance not proven in earlier tasks.
+
+**Done when:** Every declared requirement maps to working code and appropriate evidence; critical failures are fixed; accepted residual issues and actual field/lab/native performance scope are recorded. Missing device or provider checks are not green results. No release is implied. Next: Task 13.
+
+## Task 13 - Prepare and rehearse release
+
+**Prerequisites:** Task 12; authorized non-production resources and proposed release targets.
+
+**Read:** verification.md release/recovery sections, architecture.md section 7, product.md DEC-004.
+
+**Execute the batch:** Write the environment-specific runbook, validate least privilege and configuration, rehearse fresh-schema install/forward migrations and backup/restore, simulate interrupted provider operations and recovery, verify compatible application rollback, prepare exact web/native artifacts and sanitized monitoring/support procedures. Confirm no fixture endpoints, sandbox keys/origins or restricted assets enter release artifacts. Record target-specific approvals still needed. Any import of real existing data or domain takeover is separate authorized scope.
+
+**Check at batch end:** Rehearsed deployment/recovery on isolated targets, old/new API-client compatibility, build-time public configuration, delayed payment reconciliation and alert checks. Code rollback and database restoration are not interchangeable.
+
+**Done when:** The exact release candidate, runbook, rollback/reconciliation and outstanding authorizations are documented and verified. No live activation yet. Next: Task 14.
+
+## Task 14 - Release the authorized artifacts
+
+**Prerequisites:** Task 13 plus explicit owner approval of exact artifacts, environments and consequential actions. A generic "execute Task 14" does not identify or authorize unknown live payment/DNS/store targets.
+
+**Read:** The Task 13 runbook, product.md DEC-004 and verification.md release rules.
+
+**Execute the batch:** Carry out only the approved release steps for the new web application and separately authorized native builds/submissions. Verify hosted identity, order/payment/fulfillment behavior, enabled callbacks/jobs, monitoring and recovery readiness. Stop or follow the approved recovery path if a required check fails. Do not touch old systems or transfer real data unless specifically included in the authorization.
+
+**Done when:** Hosted outcomes and native submission/store status are reported separately against exact artifacts and targets. Submission is not store approval. Record any platform still pending rather than declaring an unbounded global launch.
+
+## Coverage and progress records
+
+Requirement IDs stay in product.md; task numbers are execution packages, not duplicate feature definitions. Cross-cutting native and quality requirements apply throughout and close in Tasks 12-14. In particular, NAT-001/NAT-002 close through Tasks 3-6/9/12, NAT-003 through Tasks 12-14, and QUA-001 through Tasks 1/4/12-14. All other requirement IDs are named in their owning task reads.
+
+No implementation work is completed by this documentation update. Add one concise record below each active task or here; do not paste entire logs or create another handoff file:
 
 ```text
-Task / claim owner / date:
-Status and precise blocker:
-Requirement IDs and commit tested:
-Commands -> actual results:
-Environment/provider/dataset/platform:
-Persisted effects and evidence identifiers:
-Reviewer result / exceptions / limitations:
-Next ready work:
+Task N - In progress / Review / Blocked / Done
+Built: ...
+Remaining/resume point: ...
+Batch checks: command -> result; environment/device and evidence pointer
+Approval or blocker: ...
+Commit/worktree: ...
+Next: Task N or Task N+1
 ```
 
-A task is done because its observable behavior and required proof are complete, not because it was written confidently or because another application once had the feature.
+The next user prompt can be just: **Execute Task 1.**

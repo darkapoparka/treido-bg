@@ -102,13 +102,13 @@ Support the approved multi-seller shopping model. Before payment implementation,
 
 A Product contains listing content; a ProductVariant is the sellable SKU. A no-option product has one default variant. Quantity minimums/increments and units are explicit. Store exact monetary/quantity values and purchased snapshots; never trust client prices or totals. Separate commercial acceptance, payment and fulfillment states. Configure actual pickup/delivery offers; a screenshot does not authorize same-day delivery claims.
 
-Build a hierarchical food taxonomy with stable identifiers, Bulgarian/English labels, ordering, category attributes and search synonyms. SPEC-001 records the approved categories and quantity/attribute rules in this document before catalog publication acceptance. Example families are fruit/vegetables, dairy/eggs, meat/fish, bakery, pantry and beverages; they are illustrative, not an approved production seed list. The food model exists from the beginning; reference comparison data does not require a temporary fashion schema.
+Build a hierarchical food taxonomy with stable identifiers, Bulgarian/English labels, ordering, category attributes and search synonyms. Task 2 records the approved categories and quantity/attribute rules in this document before catalog publication acceptance. Example families are fruit/vegetables, dairy/eggs, meat/fish, bakery, pantry and beverages; they are illustrative, not an approved production seed list. The food model exists from the beginning; reference comparison data does not require a temporary fashion schema.
 
 Food facts can include ingredients/allergens, origin, unit/package, storage and applicable expiry/lot information. Required fields depend on the approved category/market policy. Seller-supplied evidence determines certification/organic/origin claims; AI and photographs do not establish them. Appropriate food, consumer, privacy and tax review precedes release; this document is not legal approval.
 
 ## 6. Partner operations
 
-These are explicit product workstreams, not instructions to search another repository for hidden features. SPEC-001 settles their business rules and activation scope with the owner. Work on the core marketplace need not wait for optional operational configuration.
+These are explicit product workstreams, not instructions to search another repository for hidden features. Task 2 settles their business rules and activation scope with the owner. Work on the core marketplace need not wait for optional operational configuration.
 
 | ID | Build | Required observable behavior |
 | --- | --- | --- |
@@ -135,8 +135,8 @@ The product must be understandable without another repository. An unresolved val
 | --- | --- | --- | --- |
 | DEC-001 | Inspect selected Shop screens/recordings; record exact flow coverage and web/Android differences; separately approve merchant/admin presentation. | Affected fidelity claims and brand pass | Owner-selected URL known; complete capture not yet inspected. |
 | DEC-002 | Fee base/rounding, multi-seller order/payment grouping, charge/payout responsibility, supported methods and cancellation/refund allocation with numerical examples. | Payment/recovery acceptance and live money | Headline policy specified; detailed calculation/flow approval outstanding. |
-| DEC-003 | Food hierarchy/attributes/quantity precision, publication rules and partner-operation business scope. | Affected catalog/content and partner acceptance | SPEC-001 produces a complete proposal for owner review; no dependency on another codebase. |
+| DEC-003 | Food hierarchy/attributes/quantity precision, publication rules and partner-operation business scope. | Affected catalog/content and partner acceptance | Task 2 produces a complete proposal for owner review; no dependency on another codebase. |
 | DEC-004 | Launch market/legal/privacy terms, billing/advertising prices and quotas, retention/account-deletion rules and release identities. | Affected commercial activation and public release | Owner/provider/reviewer configuration outstanding. |
-| DEC-005 | Realtime and retryable-job provider based on reliability, reconnect, workload and cost requirements. | Communication/delivery production acceptance | Evaluate during COM-001/NOTIF-001; no speculative provider installation. |
+| DEC-005 | Realtime and retryable-job provider based on reliability, reconnect, workload and cost requirements. | Communication/delivery production acceptance | Resolve payment replay needs in Task 5 and communication/delivery choices in Task 9; no speculative provider installation. |
 
 Resolve decisions here with approved values, examples and date; update affected tasks/tests. Do not duplicate the feature contract in another document. Full product completion means all declared requirements have evidence; a restricted pilot is a separate, explicitly approved scope.

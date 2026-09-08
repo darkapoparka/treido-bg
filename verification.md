@@ -1,122 +1,89 @@
-# Verification and release
+# Batch verification and release
 
-Verify the NEW product against [product.md](product.md) and its frontend against [design.md](design.md). Success is not similarity to an older codebase or preservation of its route tree. [tasks.md](tasks.md) records results; [techstack.md](techstack.md) defines the command interface.
+Verify the product against [product.md](product.md) and its appearance/flows against [design.md](design.md). [tasks.md](tasks.md) defines the numbered batches and their closing checks. This file defines the evidence standard, not a requirement to run everything after every edit.
 
-## 1. Evidence standard
+## 1. Testing cadence
 
-A completed task records requirement IDs, tested commit, changed behavior, exact commands/exit results, dataset, provider/environment mode and relevant device/browser/viewport/locale. Include observed persisted effects, safe screenshot/trace/recording identifiers, limitations and reviewer result.
+**Implement a coherent batch, then verify it.** A component, file, CSS change or internal checklist item is not automatically a test checkpoint. Use normal compiler/editor feedback and targeted tests when debugging. Write focused regression tests with risky behavior, but do not repeatedly run the full suite while constructing the same flow.
 
-Distinguish unit mocks, actual PostgreSQL, real sandbox providers, installed native builds, physical devices, hosted previews and production. Evidence at one layer does not establish another. Empty/skipped suites, HTTP 200, a sign-in redirect, generated screenshot or Expo export alone are not end-to-end proof. Missing resources are NOT RUN/BLOCKED for the specific check; continue independent work.
+At the end of a numbered task, run the applicable checks listed in that task, fix failures and rerun the affected checks. Include consumers when a shared contract/component changed. A cross-cutting change may justify a wider regression; explain the scope rather than defaulting to every release test. Task 12 runs the comprehensive product verification; Tasks 13-14 cover release rehearsal and authorized deployment.
 
-Fixtures must be reproducible and isolated per worker. Do not make tests depend on another test's order or retry flakes until they happen to pass. Public artifacts must exclude secrets, real customer data and restricted reference imagery.
+The exception is operational safety: verify the destination, permissions and environment BEFORE a database write or external action. Batch testing cannot make a mistaken production write safe afterward. Money, inventory, authorization and provider retry behavior must pass focused checks before their implementing batch is Done, not wait until Task 12.
 
-## 2. Checks by change
+## 2. Evidence and scope
 
-| Change | Required evidence |
+Record in tasks.md: what was built, what remains, actual commands/results, commit or worktree, environment/dataset and relevant browser/device. Link concise sanitized captures/traces when they support a claim. Do not paste full logs or produce a new report for each component.
+
+Distinguish unit mocks, real PostgreSQL, sandbox providers, JavaScript exports, installed native builds, physical devices, hosted previews and production. Missing evidence is Not run/Blocked for that specific claim. A skipped suite, HTTP 200, signed-out redirect, screenshot capture or Expo Go preview is not proof of a broader feature.
+
+Use reproducible synthetic fixtures with isolated state. Do not depend on earlier tests' orders or retry flakes until green. Private assets, auth state and personal records never enter public evidence. No auto-approved visual baselines or weakened assertions just to pass CI.
+
+## 3. Batch checkpoints
+
+| Batch | Closing checks |
 | --- | --- |
-| Documentation | Valid relative links, defined requirement/task references, acyclic dependencies, consistent ownership and no invented completion claims. |
-| Bootstrap | Clean install, dependency/import checks, lint/typecheck/unit tests, production web build, Expo doctor/export; actual native builds separately. |
-| UI | Actual browser/device inspection, Shop comparison or approved Treido baseline, navigation/back/focus/keyboard/scroll, BG/EN and loading/error states. |
-| Domain/database | Unit calculations plus real PostgreSQL constraints, concurrency/retry tests and persisted-state verification. |
-| Auth/API | Input/output contracts, missing/expired auth, cross-user/business attempts, revoked membership, limits and meaningful errors. |
-| Provider | Fault injection plus actual sandbox requests/callbacks/reconciliation. Live activation needs separate authorization. |
-| Native | Installed app/build/device evidence, secure sessions, navigation/deep links, keyboard, interrupted/background flows and connectivity failure. |
-| Release | Full declared product evidence, production-target configuration, backup/restore and rollback rehearsal, exact artifact and owner authorization. |
+| Task 1 | Clean frozen install; basic lint/format/typecheck/import tests; production web build/smoke; Expo doctor/dependency/export. No provider/device-release suite. |
+| Task 2 | Source/flow coverage, meaningful product decisions and correct worked examples. No application suite for documentation alone. |
+| Task 3 | Discovery screen-set comparison and a connected navigation journey; scoped UI/type checks. Fixture evidence is labeled. |
+| Task 4 | Real schema/identity/catalog and tenant/quantity/constraint tests; web/native API connectivity and declared development-build evidence. |
+| Task 5 | Full real-database/sandbox purchase and approved recovery journey; stock/payment/idempotency/permission failures. Initial populated performance baseline. |
+| Task 6 | Full frozen reference screen/flow review plus affected account/transaction regression. Source approval recorded separately from service completion. |
+| Task 7 | Branded/food-adapted screen set, localization/accessibility and affected purchase/navigation regression. Brand approval recorded. |
+| Tasks 8-11 | The completed feature batch's domain/provider/UI/device checks and relevant regression, not every unrelated release suite. |
+| Task 12 | Consolidated all-feature functional, security, visual, accessibility, localization, performance and web/native regression. |
+| Task 13 | Isolated deployment/schema, backup/restore, provider reconciliation and rollback rehearsals. |
+| Task 14 | Exact authorized live artifact/configuration and hosted results; native submission and store acceptance distinguished. |
 
-Required scripts cannot be hidden behind --if-present, continue-on-error or empty success. Device/export/fixture checks are labeled with their actual scope. New-schema migrations are verified database changes, not a requirement to transfer another application's data.
+Implement scripts as the feature/test infrastructure needs them. Do not create fake green commands for unimplemented suites. Use supported existing tools, not a custom verification framework built for its own sake. Minimal CI may run normal checks on pushes; it need not run after each file save.
 
-## 3. First complete commerce proof
+## 4. Commerce and failure coverage
 
-FLOW-001 runs on synthetic actors/catalog and isolated PostgreSQL/sandbox providers:
+Task 5's complete journey: merchant drafts and publishes a product/variant/fulfillment offer; a buyer discovers it on web/native; guest selection survives sign-in; a reviewed server quote leads to one order/payment operation; verified sandbox outcomes reconcile; the authorized merchant fulfills it; both clients see matching purchased facts, timeline and inventory. Include approved weighted and multi-seller cases before full checkout acceptance. Later batches extend the same foundation, not disconnected demos.
 
-1. A merchant creates a draft, variant and fulfillment offer; invalid publication is rejected.
-2. Eligible published data appears on web/native with correct price, unit, variant and availability.
-3. Guest cart and intended destination survive sign-in under the defined merge policy.
-4. The buyer reviews a server quote and confirms an idempotent operation; tampered quantities/totals are rejected.
-5. Real sandbox payment and applicable challenge/return reconcile to the existing operation/order.
-6. The merchant receives the order and permitted actions; another merchant cannot access it.
-7. Fulfillment advances and buyer/merchant views reflect the same state and inventory effect.
-
-Include applicable stock, changed-quote, duplicate-submit, payment-failure and authorization cases below. The initial proof may use one seller/variant, but approved multi-seller grouping and weighted/increment quantities must be exercised before full checkout acceptance. Later tasks extend the same integrated fixture with recovery, reviews, messages and notifications; do not build disconnected demos.
-
-## 4. Failure matrix
-
-| Boundary | Tests |
+| Boundary | Required relevant cases before the owning batch closes |
 | --- | --- |
-| Inventory | Two buyers/last quantity; expired lot; adjustment race; repeated consume/release; reservation expiry versus payment success; no overselling/double restoration. |
-| Cart/quote | Changed price/publication/variant/address/fulfillment; invalid or repeated fields; guest merge conflicts; removed product; currency mismatch; explicit requote. |
-| Idempotency | Concurrent same key/input; same key with different input; provider success then application crash; client timeout and resumed operation; no duplicate charge/order. |
-| Payments | Invalid signatures, duplicate/late/out-of-order events, provider timeout/rate limit, cancellation versus capture/refund; durable replay and reconciliation. |
-| Recovery | Amount/item/seller/fee allocation, duplicate requests, provider success before local finalization, fulfillment constraints; unsupported partial operations blocked honestly. |
-| Permissions | Buyer A reads B; merchant A guesses B's IDs; role/member removal; stale business tab; seller attempts admin; private attachment/export/chat alternatives. |
-| Identity | Provisioning/webhook race, out-of-order/deleted identity, expired session, account switch/logout, no duplicated records or restored privileges. |
-| Messaging | Double send, reconnect/replay, ordering, removed/blocked member, unauthorized file/subscription, read cursor races. |
-| Delivery/jobs | Dedupe/retry, expired lease, abandoned work, preference changes and terminal failures; no silent loss of important intents. |
-| Environment | Wrong/missing secrets, fixture flag or sandbox origin in release, ambiguous DB target, unsigned job; fail closed. |
+| Inventory | Competing buyers/last stock, expired lots, adjustments racing reservations, repeated consume/release, expiry versus payment success; no overselling or double restoration. |
+| Cart/quote | Changed price/publication/variant/address/fulfillment, malformed/repeated quantity input, guest merge conflicts, removed products/currency mismatch; explicit requote or rejection. |
+| Idempotency | Same key/input concurrently, different input with same key, client timeout, provider success before local crash; reconcile without duplicate charges/orders. |
+| Payments/recovery | Invalid signatures, duplicate/late/out-of-order callbacks, provider timeout/rate limit, capture/cancel/refund races and supported item/seller/fee allocation. |
+| Permissions/identity | Cross-user/business IDs, revoked membership/stale context, provisioning/webhook races, expired sessions, seller attempting admin, unauthorized export/file/message entry points. |
+| Communication/jobs | Double send, reconnect/replay/order/read cursor, removed/blocked recipient, unauthorized attachment/subscription, abandoned/expired work lease and terminal failures. |
+| Environment | Wrong/missing credentials, ambiguous DB target, fixture mode or sandbox origin in release, unsigned job triggers; fail closed. |
 
-Use sandbox providers and delivery sinks; tests do not authorize contacting customers or refunding live payments.
+Providers use sandbox accounts or delivery sinks. Tests are not authorization to contact real customers, refund live payments or stress production.
 
-## 5. Visual and accessibility checks
+## 5. Visual and accessibility review
 
-Source matching and regression are separate. Inspect the selected Shop capture at documented logical viewport/density with explicitly approved browser/Android exceptions. Stabilize data/time/media/fonts/rendering versions. Do not auto-accept a screenshot to make CI green; do not mask the UI difference being reviewed.
+Source matching and regression are separate. First compare with the actual selected Shop source at its recorded logical viewport/density and named browser/Android adaptations. Then approve our own deterministic regression baselines. Matching our own output alone proves consistency, not reference fidelity.
 
-Web coverage includes 320, 360, 390 and 430 CSS-pixel widths, relevant landscape and tablet/desktop widths including 768, 1024 and 1440. The exact source comparison uses its measured viewport. Test important flows on real iOS Safari and Android Chrome; emulated WebKit is not proof of physical-device behavior.
+Review related screens/flows as a batch. Task 3 reviews discovery; Task 6 reviews the whole declared reference; Task 7 reviews the Treido adaptation. Smaller checks while refining are useful, not a mandatory full test pass after each edit. Mask only justified volatile/system pixels, not differences under review.
 
-Native coverage includes declared iOS/Android build/device classes, smaller/larger screens, safe areas, platform back, text scaling, keyboard, background/resume and unreliable networks. Use installed builds, not just a web preview or Expo Go.
+Cover relevant web widths 320/360/390/430, landscape, and tablet/desktop examples 768/1024/1440. Task 12 covers the full required matrix; each earlier UI batch checks representative widths and affected shared consumers. Verify important paths on actual iOS Safari/Android Chrome; emulated WebKit is not a physical-device result. Native needs installed iOS/Android builds, safe areas, keyboard/back, text scaling, deep links and interrupted/background/network states.
 
-Check semantics/labels, keyboard access, visible focus and focus return/containment, contrast, reduced motion and text expansion including 200% web text sizing. Spot-check screen-reader core journeys. Verify the release accessibility target against applicable current standards. Source fidelity is not an excuse for an inaccessible control.
+Check semantics, labels, keyboard/focus containment and return, contrast, reduced motion, long BG/EN content and 200% web text sizing. Task 12 includes screen-reader core journeys and the recorded applicable accessibility target. Similarity to an inaccessible source is not a reason to ship an inaccessible control.
 
-Owner/design-reviewer evidence approves both the source phase and the later Treido adaptation. Visual approval cannot certify a fixture-only payment or unimplemented merchant operation.
+The owner/design reviewer approves source fidelity at Task 6 and branding at Task 7. Missing source/platform evidence is recorded; no unbounded entire-app 1:1 claim. Fixture-only states can be visually reviewed but their real services remain unfinished until their owning tasks pass.
 
 ## 6. Performance
 
-Separate cold local compilation, deployed cold/warm requests and in-app navigation. Use production builds with realistic synthetic data and documented CPU/network/device/cache/region/provider conditions. Do not blame a framework or monorepo without traces.
+Separate development cold compilation, deployed cold/warm loads and in-app navigation. Use production builds and realistic synthetic data with stated CPU/network/device/cache/region/provider conditions. Do not blame the framework or monorepo without traces.
 
-Browser targets are LCP <= 2.5 seconds, INP <= 200 milliseconds and CLS <= 0.1 at the 75th percentile once sufficient field data exists, segmented by mobile/desktop and meaningful routes. Before traffic, use repeatable lab/interaction evidence; a Lighthouse run is not field INP proof. These are targets, not observed Treido results.
+Browser targets: LCP <= 2.5s, INP <= 200ms, CLS <= 0.1 at the 75th percentile when sufficient field data exists, segmented by mobile/desktop and meaningful routes. Before traffic, use repeatable lab/interaction evidence; a Lighthouse run is not field INP proof. These are targets, not observed results.
 
-BOOT-003 establishes a harness for existing routes. Before FLOW-001 approval measure populated discovery/product/cart/checkout and merchant queue; record provisional server/API/native startup and interaction budgets with conditions. Repeat at QUAL-001. A fast empty scaffold is not a completed-product result.
+Task 4 establishes needed instrumentation; Task 5 records populated discovery/checkout/orders and merchant queue baselines plus provisional API/native budgets; Task 12 profiles and verifies the complete product. Empty scaffold timings are not populated-product acceptance. Inspect transferred JS/media, blocking work, auth/provider calls, query count/duration, cache behavior, TTFB and usable navigation. A skeleton is feedback, not proof of speed. Native startup/interaction is measured on native builds, not by browser metrics.
 
-Inspect initial JS, images/transfer, blocking work, provider/auth requests, query count/duration, cache behavior, TTFB and navigation usability. Core navigation stays useful while personalization loads. A skeleton is feedback, not proof of speed. Load-test only explicitly authorized non-production systems. Native startup metrics are measured on native builds, not browser Core Web Vitals.
+## 7. Acceptance states
 
-## 7. Gates
+Task 1 proves the scaffold, not the backend. Task 5 proves the transaction, not every feature. Task 6 approves the reference, not fixture-only services. Task 7 approves the Treido adaptation. Task 12 proves the declared product scope; Task 13 prepares a release; Task 14 requires explicit live authorization. These are outcomes within the numbered queue, not another set of gate tasks.
 
-| Gate | Requires | Does not establish |
-| --- | --- | --- |
-| G0 Foundation | BOOT-001 through BOOT-004 and CONTRACT-001: compatible stack, isolated identity/data, CI and actual declared web/native proof. | Complete features or production readiness. |
-| G1 Reference specification | REF-001: actual selected source inventory, coverage and named adaptations. | Implemented source match. |
-| G2 Commerce slice | FLOW-001: web/native/merchant transaction and applicable failure proof. | Every feature or reference flow. |
-| G3 Reference approval | REF-005: frozen source-required flows/states reviewed with evidence and approved exceptions. | Treido branding or backend acceptance for fixture-only states. |
-| G4 Treido design | BRAND-001 after G3: branding/food adaptation through accepted components and renewed checks. | Full merchant/admin/provider completion. |
-| G5 Product quality | QUAL-001: all declared product requirements, source/sandbox/device/visual/security/performance evidence. | Permission to activate live services. |
-| G6 Release | RELEASE-PREP-001 and REL-001: tested production configuration, recovery and exact authorized artifact/activation. | Guarantee against future defects. |
+Full product completion includes every declared feature. An explicitly authorized restricted pilot can name deferred scope, but cannot mark it Done or claim full acceptance. A failed/missing check is fixed or reported accurately; confidence is not evidence.
 
-All gates start unverified. Independent backend/merchant tasks can proceed during reference collection. A restricted pilot must specify limitations and cannot be labeled full product completion.
+## 8. Release and recovery
 
-## 8. CI and new-application operations
+Task 13 prepares an environment-specific runbook with exact approved target identities, least-privilege roles, deployment regions, provider modes, private storage, signed callbacks/work triggers, limits, alerts and recovery. Prove schema installation and forward migration, backup/restore and application rollback on isolated data. Never run migrations/seeds during application build.
 
-Initial CI checks frozen install, lint/format/typecheck, unit/contracts, built-web smoke, disposable PostgreSQL and Expo dependency/export. Add real visual/device lanes as implemented. Unavailable hardware/provider checks remain visible release blockers, not falsely green jobs. Public/fork PRs receive no live secrets.
+Rehearse interrupted provider operations, including success before local finalization and delayed callbacks. Restoring a database can erase later valid payments/orders; recovery must reconcile, not blindly restore. Installed mobile clients may outlive a web release: test compatibility with supported contracts.
 
-RELEASE-PREP-001 creates a release-specific runbook for THIS application: verified targets/least-privilege credentials, regions, private storage, signed callbacks/work triggers, rate limits, tracing/alerts, backup/restore and application/data/provider recovery. Test installing this schema from its migrations and updating it safely. No database writes during application build.
+Release artifacts must exclude reference-only data/routes, restricted assets, sandbox public keys/origins and private cache leaks. Do not blindly promote a preview build. Task 14 requires explicit approval of the exact web/native artifacts, targets and live actions. Native submission is not store approval. Importing existing real data or taking over an old domain is separately scoped and authorized.
 
-Rehearse recovery using synthetic orders and sandbox events, including a crash after provider success and a delayed callback. Restoring a database snapshot can erase later valid records; recovery must reconcile payment/order state rather than blindly restore over live transactions.
-
-Production configuration must exclude fixture routes/data, sandbox origins/keys and private cache leaks. Verify the exact web artifact and native API/key configuration; do not blindly promote a preview. Live deployment, domains/callbacks, billing and store actions require owner authorization recorded at REL-001.
-
-There is no mandatory old-system parity audit, data import or cutover in these gates. Any later import or domain takeover needs a separately scoped plan and explicit authorization; leave existing systems untouched during this clean build.
-
-## 9. Task record
-
-Record in tasks.md, not another report:
-
-```text
-Task and requirement IDs:
-Commit tested and behavior changed:
-Commands -> actual results:
-Environment/provider/dataset:
-Browser/device/viewport/locale:
-Persisted effects and evidence identifiers:
-Reviewer decision and exceptions:
-Limitations / next ready work:
-```
-
-References for implementation: [Playwright baselines](https://playwright.dev/docs/test-snapshots), [Next.js/Vitest](https://nextjs.org/docs/app/guides/testing/vitest), [Core Web Vitals](https://web.dev/articles/vitals), [Expo development builds](https://docs.expo.dev/develop/development-builds/introduction/), [Prisma transactions](https://www.prisma.io/docs/orm/prisma-client/queries/transactions). Only recorded Treido results establish acceptance.
+Implementation references: [Playwright baselines](https://playwright.dev/docs/test-snapshots), [Next.js testing](https://nextjs.org/docs/app/guides/testing/vitest), [Core Web Vitals](https://web.dev/articles/vitals), [Expo development builds](https://docs.expo.dev/develop/development-builds/introduction/), [Prisma transactions](https://www.prisma.io/docs/orm/prisma-client/queries/transactions). Current installed-version guidance informs the checks; actual Treido results establish acceptance.
