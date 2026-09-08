@@ -1,8 +1,8 @@
 # Architecture
 
-Selected foundation: **small monorepo, two clients, one authoritative commerce backend**. This is a deliberate tradeoff with shared web releases, not a guarantee of perfect software or a claim that next-forge is slow. [requirements.md](requirements.md) owns scope; [techstack.md](techstack.md) owns installation; [verification.md](verification.md) owns proof.
+Build a small monorepo with two clients and one authoritative commerce implementation. [product.md](product.md) defines behavior; [design.md](design.md) defines presentation; [techstack.md](techstack.md) defines installation; [verification.md](verification.md) defines proof. The architecture is selected, not a guarantee of perfect performance or correctness.
 
-## 1. Boundaries and repository shape
+## 1. Structure and ownership
 
 ```text
 apps/
@@ -11,150 +11,137 @@ apps/
       app/
         layout.tsx
         [locale]/
-          (buyer)/                 marketplace, account, purchases, checkout
+          (buyer)/                 discovery, shopping, account and purchases
           (merchant)/merchant/     full selling dashboard
-          (platform)/admin/        separately authorized platform operations
-        api/v1/                    supported native/client HTTP contract
+          (platform)/admin/        privileged operations
+        api/v1/                    supported native/client HTTP endpoints
         api/webhooks/              signed provider callbacks
-        api/jobs/                  authorized scheduled/durable work entry points
+        api/jobs/                  authorized work triggers
       features/
-        catalog/                   feature UI, queries, commands and tests
-        cart/
-        checkout/
-        orders/
-        inventory/
-        identity/
-        conversations/
-        notifications/
-        finance/
-      components/ui/               selected web presentation primitives
-      lib/                         provider clients, env, small shared helpers
-    prisma/                        schema and reviewed migration history
-    tests/                         integration and web journey tests
-  mobile/                          Expo Router application; native buyer UI
+        catalog/ cart/ checkout/ orders/ inventory/
+        identity/ conversations/ notifications/ finance/
+      components/ui/               selected web primitives
+      lib/                         provider clients, env and small utilities
+    prisma/                        new schema and its reviewed migrations
+    tests/
+  mobile/                          Expo Router buyer application
 packages/
-  contracts/                       public DTOs, input/output schemas, error codes
+  contracts/                       client-safe inputs, DTOs and error schemas
   design-tokens/                   platform-neutral semantic values
-  locales/                         shared plain messages when both clients use them
+  locales/                         messages actually consumed by both clients
 ```
 
-This tree defines ownership, not an instruction to generate empty modules. Create a feature when its task begins. Package names use `@treido/*`; explicit exports limit accidental imports. The web database client/schema is not a shared native package. A server package is extracted only when another actual server deployment needs it.
+Create modules when their task starts, not empty folders for the whole roadmap. Packages use explicit @treido/* exports and cannot depend on applications. A database package is not needed by native. Extract a server package only if another actual server runtime becomes a consumer.
 
-`apps/web` is the complete browser platform, not the old marketplace-only meaning. Marketplace, personal account, merchant and admin keep distinct navigation and layout. Prefer a common minimal root and nested area layouts; do not load merchant charts/editor dependencies in the buyer root. Roles are not inferred from layouts or URL prefixes.
+The browser platform has distinct buyer, merchant and admin layouts below a minimal root. Shopping must not import merchant chart/editor dependencies into its initial path. A URL prefix or layout is not an authorization boundary. The native app is an independent presentation client, not a second backend.
 
-Native is a separate client, not another backend and not the old `apps/app` directory renamed. Native browser-dashboard handoff is explicit where provided. Domain and API compatibility are planned now, so mobile does not require rewriting commerce later.
+## 2. Request flow
 
-## 2. Dependency and operation flow
+Web Server Components and Server Actions call named, authorized feature functions directly. Native calls authenticated /api/v1 Route Handlers that invoke the same functions. Webhooks and workers invoke domain operations through verified entry points. Do not make server-rendered web pages call their own HTTP API unnecessarily. Do not expose Server Action internals as the native API.
 
-```text
-Web Server Component / Server Action -> authorized feature query/command -> DB/provider
-Native or interactive HTTP client   -> Route Handler -> same query/command -> DB/provider
-Scheduled worker / verified webhook -> feature command -> DB/outbox -> delivery
-```
+A feature may have queries.server.ts, commands.server.ts, policy.ts, components and tests. These are useful conventions, not mandatory layers. Guard server-only modules; pure calculations have no framework dependency. Avoid generic repositories/controllers/interfaces around straightforward queries.
 
-Server-rendered web reads call server functions directly; no avoidable HTTP call back into the same Next.js application. Native uses supported HTTP endpoints, never Server Action internals. Browser writes use one documented adapter per operation; business validation is not duplicated between the action and HTTP handler.
+Client contracts are explicit projections, not generated ORM entity types. Shared code cannot import Prisma, credentials, next/headers, server-only or Node-only modules. React Native components and DOM components are separate implementations following the same design values and API meanings.
 
-A typical feature contains a small public surface such as `queries.server.ts`, `commands.server.ts`, `policy.ts`, and local components/tests where useful. These names are a convention, not mandatory layers. Server code is guarded with `server-only`; shared pure calculations have no Next/browser dependency. No framework of generic controllers/repositories/interfaces around simple queries.
+## 3. Identity and permissions
 
-Client-safe exports may depend on Zod and other deliberately portable utilities, but not Prisma, secrets, Node-only modules, `next/headers`, or server packages. Native/web views never import each other. Sensitive entity models are projected into explicit DTOs; no returning `include: everything` or generated ORM objects directly.
+Clerk authenticates a person. The server resolves local identity, current business membership and resource permissions. Map external/local identities uniquely and handle disabled/deleted state. A business ID from a cookie, form or token is a requested context, not authority by itself.
 
-## 3. Identity, tenancy and authorization
+Authorize every private read/write/export/subscription/file request in its owning function. Queries scope records by actor/business; mutations recheck current ownership and allowed state. Handle membership/seller-status changes racing consequential writes. Platform privileges are separately granted; a premium plan or seller role never grants administration.
 
-Clerk authenticates identity. Treido resolves local user/business membership and resource permissions. An authenticated identity is not merchant authority. Maintain one coherent mapping between external identity and local records; uniqueness, deleted/suspended state, and membership revocation must be handled.
+Native uses provider-supported bearer authentication over HTTPS with signature/expiry and applicable issuer/audience validation. Browser cookie writes need same-origin/CSRF protection. CORS is not authentication. Logout, account change or workspace switching clears private caches/subscriptions; late responses cannot populate another account's state.
 
-Construct server-verified actor context at the entry point, then enforce resource-specific permissions in the owning query/command. Validate selected workspace membership and current role. Do not trust a workspace ID from a form, cookie or token claim without the required live authorization check. For sensitive writes, handle membership/status changes racing the write in the transaction/locking design.
+Identity callbacks use verified signatures, durable event identity and safe reconciliation. First-login provisioning and callbacks cannot create duplicate users or resurrect revoked membership. Audit consequential actions with actor, resource, action, time, result and correlation ID, without private message bodies or secrets.
 
-Queries scope private records by actor and business; mutations recheck ownership/current state. Keep explicit permission checks for finance, refunds, publishing, team management and admin. Platform admin is a separate privileged capability, not a seller plan or UI toggle. Audit consequential actions with actor, target, action, timestamp, result and correlation ID; exclude secrets/private message bodies.
+## 4. New data model
 
-Native sends provider-supported bearer sessions over HTTPS; the server verifies authenticity, expiry and configured audience/issuer/origin properties as applicable. Browser cookie mutations require appropriate same-origin/CSRF protection. CORS is not authentication and must never be wildcard credentials access. Logout, member removal and workspace switch clear private client caches and subscriptions.
+Design the schema from product.md. Start in fresh isolated development PostgreSQL with synthetic users, businesses, products and orders. No import of another schema, table names, routes or identifiers is a prerequisite. The model must work independently.
 
-Auth webhooks are signed, idempotent and reconciled; duplicated/out-of-order identity events cannot recreate deleted membership or grant privileges. Initial account creation and webhook sync must not race into duplicates.
+Use real foreign keys, appropriate uniqueness/check constraints, indexes and explicit transaction boundaries. Catalog deletion must not cascade away purchased history. Apply forward migrations for this application's schema; do not rewrite already-applied migration history. Transferring real data from any existing system is a separately authorized project with explicit mapping and reconciliation, not a hidden gate for building Treido.
 
-## 4. Data ownership and commerce invariants
+### Catalog, quantities and money
 
-Use the legacy schema as an inspected migration input, not a mandate to recreate every table. Begin with the required baseline and preserve identifiers/history when adopting existing data. Do not reset or rebaseline a retained database casually. New PostgreSQL relations use real foreign keys, plus appropriate unique/check constraints and indexes. Investigate orphaned legacy rows before enabling new constraints. Financial and order history should not cascade away with ordinary catalog deletion.
+Product owns shared listing content; ProductVariant owns sellable options/SKU, unit/package, quantity rules and commercial identity. Every product has a default variant when it has no visible choices. Inventory/cart/order relationships must agree on product, variant and business ownership.
 
-### Catalog and money
+Store money in integer minor units with an explicit currency and safe bounds. Use exact decimal/scaled arithmetic for weighted quantities; serialize API quantities as validated decimal strings. Approved precision, increments, minimums and rounding are explicit policy and test cases, not binary floating-point comparisons.
 
-Product owns shared listing identity/content; ProductVariant owns the sellable SKU, option selection, unit/package and commercial/inventory identity. No-option products have a default variant, not a second checkout model. Tenant and product/variant relationships must agree, including in inventory and cart rows.
-
-Represent monetary amounts in integer minor units with explicit currency, bounded to safe serialization ranges; never floating-point currency. Use exact decimal/scaled quantity arithmetic for weighted products, stored/serialized consistently (API quantities are decimal strings). Define allowed quantity precision, increments, minimums and rounding in the approved policy before implementation. Never use binary float comparisons as the business rule.
-
-Every cart/order/quote enforces its market/currency contract. Mixed currency checkout is rejected initially; additional markets use explicit policy rather than string replacements. Store timestamps in UTC and fulfillment/business time zones separately. Locale is not currency, market, or timezone.
+Every quote/order enforces market/currency rules. Reject mixed-currency checkout initially. Locale, market, currency and time zone are separate values. Persist UTC event timestamps and explicit local fulfillment/business zones.
 
 ### Inventory
 
-Availability is a projection of authoritative variant inventory/reservations and sellability. On-hand, reserved, consumed and released effects must have explicit semantics. Adapt legacy stock that already represents net availability without subtracting reservations twice. Lots/expiry/location apply only where the product/workflow requires them.
+Define on-hand, reserved and available quantities without double subtraction. Reservations have durable identities, state, quantity, expiry and order/variant relationships. Successful consumption and cancellation/expiry release have distinct mutually valid transitions. Lots, expiry and locations apply where the product/workflow calls for them.
 
-Use database transactions and guarded updates/locks to prevent overselling. Lock related resources in a stable order where necessary; use bounded retry for classified transaction conflicts. Never rely on an in-memory lock across requests. Persist reservation identity, quantity, state and expiry; consume/release transitions are idempotent and mutually valid. Expiry and checkout success races require tests. Adjustments are audited and cannot create negative available stock silently.
+Prevent overselling using transactions and conditional updates/locks. Acquire related resources in a stable order where needed, with bounded retries for classified transaction conflicts. In-memory locks and disabled client buttons are insufficient. Audit manual adjustments and reject changes that silently violate availability. Test expiry/payment races and repeated consume/release.
 
-### Checkout, payments and orders
+### Checkout and payments
 
-The checkout protocol is: authenticate/authorize -> validate submitted selection -> calculate server quote with policy/version and expiry -> lock/revalidate current cart, buyer, seller, catalog and inventory -> persist pending order/reservations and operation identity -> provider request outside the DB transaction -> reconcile/finalize from verified provider state with current-state checks.
+Protocol: resolve actor/context -> validate cart/selection -> calculate a server quote with policy/version and expiry -> lock/revalidate current buyer, seller, product, fulfillment and inventory facts -> persist pending order/reservations and operation identity -> provider request outside the database transaction -> reconcile/finalize using verified provider evidence and current-state checks.
 
-A quote is not guaranteed inventory or a paid order. Confirmations bind to the reviewed quote/selection; changed money, stock, address, seller status or fulfillment yields explicit revalidation, not a silent changed purchase. Required payment model and fee/refund allocation are DEC-002 in `requirements.md`.
+A quote is not reserved inventory or a paid order. Confirmation binds to the reviewed selection/quote. Changed price, address, availability or fulfillment results in an explicit requote/rejection, not a silent different purchase. DEC-002 in product.md must define grouping, charges, fees and recovery calculations before acceptance.
 
-Idempotency keys are scoped to actor/business and operation, bound to a canonical request hash, and backed by a database uniqueness rule. Same key + same request returns the existing operation/result; same key + different request is a conflict. Persist in-progress/provider correlation so a crash can be reconciled. Do not hide duplicate operations behind client button disabling.
+Scope an idempotency key to actor/context and operation; bind it to a canonical input hash under a uniqueness constraint. Repeated identical input returns the existing operation/result; changed input with the same key conflicts. Record in-progress/provider correlation so timeouts/crashes can be reconciled.
 
-Verify webhook signatures over the raw body. Durably record provider event identity and processing outcome; acknowledge only according to a recoverable ingestion contract. Repeated/delayed/out-of-order callbacks cannot regress the order or apply a money effect twice. Provider idempotency and local transactions do not create magical distributed exactly-once execution: retries, dedupe and reconciliation establish effectively-once business effects.
+Verify provider signatures over the raw body. Durably record received event identities and processing state; acknowledge according to a recoverable ingestion protocol. Duplicate, late or out-of-order events cannot apply money effects twice or regress state. There is no assumed distributed exactly-once guarantee: database constraints, idempotent provider requests, retries and reconciliation establish the required business outcome.
 
-Preserve immutable purchased line, seller, currency, price, fee, address/fulfillment and policy snapshots. Keep commercial acceptance, payment and fulfillment as distinct state dimensions with one shared projection for buyers/merchants. Seller-scoped fulfillment visibility must not expose another seller's buyer/private data unnecessarily.
+### Orders and recovery
 
-Cancellation/refund must respect captured/authorized/fulfilled state and allocation. Do not free inventory on an unconfirmed provider cancellation. Refunds have durable identity, supported amount/item/seller allocation and reconciliation. Unsupported partial multi-seller operations are unavailable with explicit explanation, not simulated full success.
+Order lines contain immutable product/variant, seller, quantity, unit, currency and price facts; orders also snapshot fees, fulfillment/address and applicable policy. Separate commercial acceptance, payment and fulfillment dimensions. Derive buyer and merchant timelines from one canonical projection with permission-appropriate details.
 
-### Messaging, notifications, finance and AI
+Cancellation/refund depends on current authorized/captured/fulfilled state and approved allocation. Do not release stock on an unconfirmed provider cancellation. Refunds have durable identity, amount/item/seller/fee allocation and reconciliation. Unsupported partial operations must be unavailable with a clear explanation rather than fake success.
 
-Messages/participants and read cursors are durable database truth. Authorize every conversation read/write/subscription/attachment. Stable message/client operation IDs support retry/deduplication; reconnect resumes with a cursor. Delivery acknowledgments are not read receipts. Blocking/removal must revoke applicable realtime access. Keep transport replaceable under DEC-005, without building a generic transport framework in advance.
+### Communication, delivery, reporting and AI
 
-Use an application outbox written with domain changes for important notifications/provider follow-up. A worker claims work with leases, bounded retry/backoff and terminal failure visibility. A cron trigger is not a durable queue. Function memory, detached promises and process timers are not guaranteed background execution. Long-lived chat/worker requirements may need an appropriate managed runtime; Next.js hosting limits must be tested, not ignored.
+Persist conversations, participant authority, messages and read cursors. Authorize reads/writes/subscriptions/attachments. Stable client/message identities and cursors support retry/deduplication/reconnect. Delivery is not read state. Blocking/member removal revokes applicable access.
 
-Metrics are derived from canonical transactions. Gross/net sales, discounts, refunds, fees, COGS, profit and payouts are different quantities with one definition. Unknown COGS means profit is unavailable. Do not make analytics writable duplicate truth.
+Write important delivery intents to an outbox in the same transaction as the domain change. A worker claims durable work with leases, bounded retry/backoff and observable terminal failure. A cron trigger, detached promise or process timer is not guaranteed background execution. Select transport/worker services under DEC-005; do not create a universal framework before requirements warrant it.
 
-AI uses authorized query/command tools; it cannot bypass workspace, price, inventory or refund policy. Treat merchant/customer content as untrusted input. Require explicit approval before publishing, sending replies, changing prices, refunds or other consequential mutations unless an owner-approved bounded automation exists. Define token/cost/time limits and fallbacks; ordinary commerce never depends on AI availability.
+Finance has one definition per metric derived from canonical records. Unknown COGS makes profit unavailable. Reporting is not a second editable copy of financial truth.
 
-## 5. HTTP contract and native compatibility
+AI reads only permitted data through bounded tools and obeys the same command rules as manual actions. Treat supplied content as untrusted. Require approval before publishing, sending messages, changing money/stock or other consequential mutations unless a separately approved bounded automation exists. Limit cost/time and keep ordinary commerce usable when AI fails.
 
-Prefix the supported API with `/api/v1`. Public catalog DTOs are distinct from private/account/merchant ones. In CONTRACT-001 implement explicit request AND response validation, pagination, authorization tests and representative fixtures in `@treido/contracts`.
+## 5. HTTP API
 
-Initial resource families are products/categories/stores, identity/context, cart items, checkout quotes/confirmation, orders, conversations/messages and notifications. Add endpoints per implemented feature; do not generate empty CRUD routes for every database model. Provider callbacks are under `/api/webhooks/<provider>`, not the client API.
+Use /api/v1 for supported client endpoints and /api/webhooks/<provider> for callbacks. Implement resource families as features arrive: catalog/categories/stores, identity/context, cart, checkout quotes/confirmation, orders, messages and notifications. Do not generate unused CRUD endpoints for every table.
 
-Use meaningful HTTP results: 401 unauthenticated, 403 or deliberate non-disclosing 404 unauthorized, 409 state/idempotency conflict, 422 invalid business input, 429 throttled, 503 temporary dependency failure. Errors use `{ error: { code, message, fieldErrors? }, requestId }`; localization maps stable codes to client copy. Do not leak stack traces, SQL or private values. Success payloads are explicitly typed; pagination includes a stable cursor and bounded page size.
+Define request and response schemas in @treido/contracts with units, decimal strings, currency, UTC times, limits, optional/required values and idempotency. Public DTOs exclude private commercial/account fields. Bound pagination with stable cursors and deterministic ordering.
 
-Contracts specify units/currency, decimal quantity representation, UTC timestamps, required/optional fields, limits and idempotency. User-facing errors retain recovery details without disclosing other tenants. Rate-limit and bound uploads, queries, chat and expensive operations; protect sensitive endpoints, not just the public shell.
+Errors use { error: { code, message, fieldErrors? }, requestId }. Codes support client localization and recovery. Use meaningful HTTP statuses: 401 unauthenticated, 403 or deliberate non-disclosing 404 forbidden, 409 state/idempotency conflict, 422 invalid input, 429 rate limit, 503 temporary dependency failure. Never leak SQL, stack traces or another tenant's data.
 
-Prefer additive API evolution. Supported installed mobile builds may outlive a web deployment. Preserve compatibility with recorded supported versions, test old contract fixtures, and plan explicit retirement before breaking removal. Keep app build identity and API compatibility observable without transmitting secrets. Native logout/account change clears data; abandoned requests cannot populate another account's cache.
+Validate and test outputs as well as inputs. Enforce upload/query/action limits. Prefer additive evolution: installed mobile versions can outlive web releases. Test supported contract fixtures and plan retirement before breaking changes. Public/native packages never contain server keys or database access.
 
-## 6. Rendering, styling and performance
+## 6. Rendering and design implementation
 
-One buyer shell, explicit merchant/admin layouts, narrow Client Component boundaries. Basic navigation renders without a blank viewport-detection phase. Use CSS for ordinary responsive layout. Do not render two complete device trees and merely hide one; share data/composition where appropriate while allowing intentionally different layouts.
+Use one buyer shell and separate merchant/admin layouts. Basic navigation should render without waiting for viewport detection or unrelated personalization. Use CSS for ordinary responsive web layout and narrow Client Component boundaries. Do not build two entire device trees and hide one merely to simulate responsiveness.
 
-Choose cache behavior per route/data projection. Public catalog may cache only public, bounded data with market/locale/filter keys and documented invalidation. Personalization, cart, checkout and private business data are not globally cached. Keep checkout revalidation authoritative even when discovery uses cached catalog. Do not spread request cookies/auth dependencies into every public component unnecessarily.
+Specify caching for each public projection and its market/locale/filter keys plus invalidation after publication/price/availability changes. Private account/cart/checkout/merchant data are not globally shareable cache entries. Checkout always revalidates commercial truth.
 
-Document a CSP/security-header decision with the actual framework version. Nonces have rendering/caching consequences; do not accidentally promise a static shell and request-specific nonce simultaneously. Do not remove protections or enable unsafe production settings just to reach a timing target. Scope provider integration scripts and measure costs.
+Choose CSP and security headers deliberately for the installed framework and providers; request nonces and static caching have tradeoffs. Do not remove protections for a timing score. Scope optional scripts/provider work and avoid spreading auth/cookie dependencies into public content needlessly.
 
-Use sized/compressed media, prioritized above-fold imagery, lazy offscreen maps/charts, stable skeleton geometry and bounded list queries. Test production builds, not development compilation times. Keep functions near the database initially; introduce regional/data architecture based on actual workloads, not a global label. Budgets live in `verification.md`.
+Use properly sized media, stable loading geometry, bounded queries and lazy noncritical maps/charts/editors. Measure production builds separately from dev compilation. Locate compute with database access in mind; global ambition does not justify speculative multi-region writes. Budgets and evidence are in verification.md.
 
-## 7. Files, environments and deployment
+The buyer design authority is the selected Shop reference, followed by its approved Treido adaptation. Previous Treido layouts, CSS, navigation and components are not specifications or required inputs.
 
-Public product media and private conversation/invoice content are different capabilities. Authorize uploads server-side, enforce type/size/count, verify content rather than trusting filename/MIME, and use unguessable scoped object names. Private access uses short-lived authorized delivery; possession of a public URL is not our authorization model. Never store raw payment card details.
+## 7. Files, environments and release
 
-Separate runtime, migration, test and operator credentials; validate effective least privilege. No public/native DB keys. No production mutations during build/install. Identity tokens, payment secrets, logs, reference assets and customer data stay out of this public repository.
+Public catalog images and private attachments/invoices use separate access policies. Authorize uploads/downloads; verify content type/size/count, not just filename or claimed MIME. Private delivery is short-lived and permission-checked. Do not store raw payment card data.
 
-Initial hosted architecture is one Next.js deployment plus native builds consuming its stable API. Web release coordination is shared; future independent services require recorded evidence. CI/source checks do not authorize release. Verify preview and production provider modes explicitly. Promoting a preview must not accidentally retain sandbox API origins, embedded public keys or fixture flags. Build the approved production configuration and verify the exact artifact before cutover.
+Separate runtime, migration, test and operator credentials with least privilege. Verify actual environment/target before writes. Install/build cannot mutate databases or activate providers. Public/native configuration is extractable; secrets and personal data stay out of the public repository and build caches.
 
-## 8. Architecture decision log
+Initial hosting is one Next.js deployment plus native builds using its API. Deploy the exact approved production configuration, not a preview artifact with sandbox origins/keys embedded. Source checks do not authorize live release. Backup/restore, provider reconciliation and rollback are required for this new application even without importing any old data.
 
-| ID | Selected decision | Reason / reconsideration trigger |
+## 8. Decision log
+
+| ID | Decision | Reason / change trigger |
 | --- | --- | --- |
-| ADR-001 | Small Next.js + Expo monorepo | Native is near-term; avoid later client-contract retrofit. Reconsider only for a demonstrated requirement/incompatibility. |
-| ADR-002 | One initial Next.js browser/backend deployment | Distinct layouts without cross-app release/auth coordination. Reconsider for independent teams/releases or runtime/security isolation need, not folder count. |
-| ADR-003 | Shared client-safe contracts/tokens, separate web/native UI | Reuse meaning without importing DOM/server code into native. Universal UI requires demonstrated net benefit and owner approval. |
-| ADR-004 | Neon/Prisma and selective behavior reuse | Preserve needed commerce invariants and data history; no provider/ORM migration for novelty. |
-| ADR-005 | Real constraints, idempotency, outbox and integration tests | Protect money/inventory/tenancy; no generic event-sourcing or microservice platform. |
-| ADR-006 | Reference approval before branding | Prevent repeated layout/style churn; exact process in `design.md`. |
+| ADR-001 | Small pnpm/Turborepo Next.js + Expo monorepo | Web/native are actual clients. Change only for a demonstrated need or incompatibility. |
+| ADR-002 | One browser/backend deployment initially | Distinct experiences without unnecessary cross-app coordination. Review for independent releases/runtime/security needs. |
+| ADR-003 | Shared contracts/tokens; separate platform UI | Portable meanings without a universal-component framework. |
+| ADR-004 | New product-led schema on Neon/Prisma | Clear model ownership and a tested transaction system; no automatic legacy-schema import. |
+| ADR-005 | Constraints, idempotency, outbox and real integration tests | Protect stock, money and permissions without an event-sourcing/microservice platform. |
+| ADR-006 | Shop approval before Treido visual adaptation | Stabilize flows and geometry before branding. |
 
-To amend: record requirement, evidence, rejected alternatives, consequences, owner approval and affected tasks here. Routine task difficulty is not permission for another rewrite.
+Changes record evidence, alternatives, impact, owner approval and affected tasks here. This is not a second task queue.
 
-## Primary implementation references
+## Implementation references
 
-[Next.js route groups](https://nextjs.org/docs/app/api-reference/file-conventions/route-groups), [backend for frontend and hosting limits](https://nextjs.org/docs/app/guides/backend-for-frontend), [authentication](https://nextjs.org/docs/app/guides/authentication), [CSP](https://nextjs.org/docs/app/guides/content-security-policy), [Prisma transactions](https://www.prisma.io/docs/orm/prisma-client/queries/transactions), [relation modes](https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/relation-mode), [Stripe Connect](https://docs.stripe.com/connect/charges), [Clerk Expo](https://clerk.com/docs/expo/getting-started/quickstart), [Expo monorepos](https://docs.expo.dev/guides/monorepos/). Verify details against the installed versions. These references support mechanisms, not a claim that Treido's implementation already satisfies this contract.
+Verify mechanisms against installed versions: [Next.js structure](https://nextjs.org/docs/app/getting-started/project-structure), [HTTP backend](https://nextjs.org/docs/app/guides/backend-for-frontend), [authorization](https://nextjs.org/docs/app/guides/authentication), [CSP](https://nextjs.org/docs/app/guides/content-security-policy), [Prisma transactions](https://www.prisma.io/docs/orm/prisma-client/queries/transactions), [PostgreSQL relation constraints](https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/relation-mode), [Stripe Connect](https://docs.stripe.com/connect/charges), [Clerk Expo](https://clerk.com/docs/expo/getting-started/quickstart), [Expo monorepos](https://docs.expo.dev/guides/monorepos/). These references do not substitute for Treido acceptance evidence.

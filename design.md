@@ -1,114 +1,93 @@
-# Design and reference acceptance
+# Frontend design specification
 
-This document owns visual and interaction decisions. [requirements.md](requirements.md) owns product behavior; [verification.md](verification.md) owns the evidence method. **The owner's sequence is reference fidelity first, Treido branding and food terminology second.** A beautiful approximation is not approval.
+**Build the buyer frontend from the selected Shop reference, not from a previous Treido frontend.** The reference supplies styling AND interaction design: hierarchy, typography, spacing, colors, card proportions, navigation, overlays, transitions and screen flows. A generic ecommerce layout with similar colors is not the target.
 
-## 1. Reference identity and current evidence
+[product.md](product.md) defines the required capabilities. [verification.md](verification.md) defines evidence. [tasks.md](tasks.md) owns execution. Buyer work has two design phases: source fidelity, then approved Treido adaptation through the same implementation.
 
-Selected source: [Shop iOS capture on Mobbin](https://mobbin.com/apps/shop-ios-1f1a3d5b-cb65-4c7e-af4b-e4cdf1c03e4d/7b6adbde-de48-47c5-979b-f629f1eb87a9/screens).
+## 1. Reference
 
-- App collection ID: `shop-ios-1f1a3d5b-cb65-4c7e-af4b-e4cdf1c03e4d`.
-- Selected capture ID: `7b6adbde-de48-47c5-979b-f629f1eb87a9`.
-- Platform: iOS reference; actual device, OS, app version, screenshot dimensions, date and complete flow inventory still require capture verification.
-- Evidence state: the URL is owner-selected. The complete selected screen/interaction set has NOT been inspected or approved in this repository. No dimensions, fonts, timings or screenshot IDs are asserted here.
+[Owner-selected Shop iOS capture on Mobbin](https://mobbin.com/apps/shop-ios-1f1a3d5b-cb65-4c7e-af4b-e4cdf1c03e4d/7b6adbde-de48-47c5-979b-f629f1eb87a9/screens)
 
-A free website preview does not establish connector access or rights to redistribute assets. Use authorized browser access or owner-provided captures/recordings. If access fails, record the exact limitation; never claim source inspection from a different Shop version or search thumbnail. Missing source blocks affected fidelity approval, not unrelated setup/backend work.
+Collection: shop-ios-1f1a3d5b-cb65-4c7e-af4b-e4cdf1c03e4d. Capture: 7b6adbde-de48-47c5-979b-f629f1eb87a9.
 
-## 2. What 1:1 means
+The source URL is selected. The complete capture, actual device/OS/app version, dimensions, fonts, timings and source screen/flow IDs are not yet verified. REF-001 records those facts from authorized screenshots/recordings. Do not invent measurements or substitute another Shop version/search thumbnail without approval.
 
-Reference acceptance requires faithful hierarchy, geometry, typography, card/image proportions, spacing, surfaces, navigation, overlays, states and interaction sequence for the recorded scope. Measure instead of inventing values. Review actual transitions, dismissal, back navigation, focus, scrolling and keyboard behavior; screenshots alone do not specify them.
+Missing source material blocks its fidelity claim, not bootstrap or independent backend work. Use authorized access or owner-supplied captures. Record the limitation rather than claim inspection that did not happen.
 
-A native iOS capture cannot automatically be the literal pixel baseline for mobile web or Android. Record source device pixels versus logical viewport/density, system chrome and safe areas. Platform differences must be named and approved, not used as blanket permission to redesign. Do not paint a fake iOS status bar inside the mobile website.
+## 2. Phase A: reproduce Shop
 
-Use two comparisons:
+REF-001 inventories every screen/state/action in the declared reference scope, measures shared components and freezes the mapping. Then REF-002 through REF-004 implement the actual UI and behavior on web/native. Do not use an existing Treido layout, stylesheet, component family, tab count or route behavior as a fallback specification.
 
-1. Source-reference review at a matched content viewport with explicit assets/platform exceptions.
-2. Regression comparison against our own baseline AFTER that source review is approved.
+Use the reference's typography, palette, geometry and content during comparison, subject to explicitly recorded asset/platform substitutions. No early Treido green/yellow/red palette, food badge redesign, enlarged cards, new hero sections or invented navigation. The underlying model can be food-capable from day one; fixture content does not require a disposable fashion database.
 
-The second comparison alone can only show consistency with ourselves. It does not prove similarity to Shop. No blanket pixel-difference percentage constitutes acceptance; rendering/font differences require bounded, explained tolerances, while material geometry/state differences are defects.
+Deterministic fixtures may drive isolated reference states. The same components and contracts must accept real catalog/account/order data as backend features are implemented. Do not build a throwaway screenshot replica followed by a second production frontend. Clearly distinguish visual/interaction approval from backend completion.
 
-No unbounded claim such as "the whole app is 1:1." Acceptance states which capture, flow IDs, clients, viewports, states, exceptions and commit were verified.
+A complete source match is bounded to a capture, flow IDs, states, clients, viewports and explicit exceptions. Classify each screen as reference-match, approved-platform-adaptation, Treido-specific, or explicitly out of scope. Required product capabilities absent from Shop need their own design; they do not disappear.
 
-## 3. Work sequence and gates
+## 3. Reference coverage registry
 
-### A. Inventory and freeze (REF-001)
+These IDs are internal work labels, NOT asserted Mobbin IDs. REF-001 fills actual source IDs and expands rows to individual states/actions.
 
-Collect authorized screenshots and flow recordings, enumerate screens/states/actions, assign exact source identifiers, and measure shared components. Record the source's tab model and routes; do not carry over the old Treido five-tab assumptions merely because they exist.
+| ID | Required family | Source / state |
+| --- | --- | --- |
+| REF-HOME | Home, source-measured tab navigation, shelves/cards, scrolling | Not captured / unverified |
+| REF-DISC | Category/discovery, facets, filter/sort sheets and result states | Not captured / unverified |
+| REF-SEARCH | Search entry, suggestions/results, clear/back, no results and recovery | Not captured / unverified |
+| REF-STORE | Seller storefront, product entry, save/follow where present | Not captured / unverified |
+| REF-PDP | Detail/images/options, quantity, add/save, unavailable state | Not captured / unverified |
+| REF-CART | Items/quantities/removal, empty cart, seller grouping and recovery | Not captured / unverified |
+| REF-CHECKOUT | Authentication return, address, fulfillment, review/payment and return | Not captured / unverified |
+| REF-ACCOUNT | Personal profile, saved items, addresses and settings | Not captured / unverified |
+| REF-ORDERS | Purchases/detail/tracking and issue entry | Not captured / unverified |
+| REF-COMMS | Notification/message/support entry where present; explicit Treido-specific designs otherwise | Not captured / unverified |
+| REF-DESKTOP | Desktop/tablet buyer adaptation of approved patterns | Separate reviewed composition required |
+| REF-MERCHANT | Operational dashboard/catalog/order/finance/account/team layouts | SPEC-001 proposes from product.md workflows; not Shop buyer parity |
+| REF-ADMIN | Moderation/verification/support and privileged action states | SPEC-001 proposes from product.md workflows; not Shop buyer parity |
 
-Classify each target as `reference-match`, `approved-platform-adaptation`, `treido-specific`, or `out-of-scope-by-owner`. A required feature missing from Shop is `treido-specific`, not silently omitted. It needs an explicit design decision and cannot be marked reference-matched.
+Each detailed entry records requirement ID, source/capture/screen, platform/content viewport/density, fixture state, entry/action/outcome, back/dismissal behavior, keyboard/scroll/focus, destination, component ownership, exceptions, implementation evidence and reviewer/date/commit.
 
-Freeze this matrix and obtain owner approval of coverage and unavoidable differences before claiming fidelity. Installation and independent commerce tests may continue meanwhile.
+Native iOS screenshots include device density/system chrome. Record logical content viewport separately; do not paint a fake iOS status bar in a website. Browser and Android differences require specific approval, not blanket permission to redesign.
 
-### B. Reference implementation and review (REF-002..REF-005)
+## 4. Interaction and component specification
 
-Build one canonical set of buyer components per platform. Implement complete navigation/state behavior with deterministic fixtures where needed, while integrating real sandbox commerce incrementally. Do not defer all integration until after every visual screen is built.
+Derive spacing, type scales, radius, surfaces, shadows, icons and motion from inspected evidence. Tokens are platform-neutral; web CSS and React Native consume them separately. Build only the primitives/components needed by the measured screens, with one canonical component per repeated role on each platform.
 
-Reference content/imagery may be simulated only in a visibly identified, isolated reference/test environment, with appropriate asset permission. The underlying commerce model can already be food-capable; there is no need to create a fashion database and later rename tables. Snapshot adapters must implement the same client contracts and must not bypass validation in real application paths.
+For each navigation/overlay flow specify entry, loading, success/failure, direct link, browser/native back, dismiss/Escape, scroll lock, focus containment/return, keyboard clearance, nested overlays and form persistence. A product direct link must work without the feed that normally opens it. Record whether tabs restore their scroll/navigation state.
 
-Use the selected source palette and copy during the reference pass, or record permitted substitutions that affect comparison. Do not introduce Treido green/yellow/red, new food card layouts, extra badges, bigger cards, new hero sections, or replacement navigation yet.
+Payment return must resume the existing operation. It must not accidentally submit checkout again. Poor connectivity must produce truthful retry or offline information. Reference screenshots alone do not establish these behaviors; inspect recordings or approve explicit product-specific interaction details.
 
-The reference milestone covers the frozen required matrix, not just the homepage. Owner/design-reviewer approval is recorded at REF-005 with exact evidence and accepted exceptions. The agent that produced the screenshots cannot self-approve the design gate.
+Measure motion duration/easing from recordings where available. Honor reduced motion and accessibility. No global shadow/blur/class-substring overrides or universal !important corrections. Fix the owning component/token instead.
 
-### C. Treido adaptation (BRAND-001)
+## 5. Phase A approval: REF-005
 
-Only after REF-005 approval, change branding/content through the same components and tokens. Apply green/yellow/red roles, Treido identity, lawful owned imagery and the actual food taxonomy/copy. Keep the accepted geometry, interactions and responsive rules unless the owner separately approves a measured change.
+First compare the implementation with the authorized source at matched content dimensions and declared exceptions. Only AFTER that review establish our own deterministic screenshot baselines. Matching our own screenshots alone proves consistency, not Shop fidelity.
 
-Initial color-role intent, NOT approved hex values: green for brand/primary actions; yellow for selected accents/highlights; red for error/destructive semantics and explicitly approved brand accents. Do not make red mean both success and failure. Neutral surfaces, readable text, focus, contrast and disabled states are separately defined. Exact colors and typography are measured/approved at this stage, not invented now. Do not copy the legacy override stylesheet.
+The owner/design reviewer approves the frozen scope, records outstanding defects/exceptions and identifies the tested commit and platforms. Implementation agents do not self-approve the design they generated. A homepage screenshot cannot approve the entire flow set. A blanket pixel-difference threshold cannot excuse changed geometry/navigation; tolerances must name real rendering differences.
 
-Categories become the approved food categories; generic stores/brands become the appropriate sellers/producers; product content becomes real food listing information. Preserve stable technical identifiers and route mappings. Food-specific units/MOQ/fulfillment need approved placement; they cannot disappear for screenshot similarity.
+Reference fixtures may support visual approval, but their feature remains incomplete until real data/provider behavior is verified. FLOW-001 proves an initial integrated transaction before this full reference milestone; subsequent feature tests cover the rest. Unavailable screenshots/devices are explicitly unverified, never auto-passed.
 
-Re-run geometry, interactions, localization, accessibility, real-data and performance checks after adaptation. Remove Shop names/marks and reference-only data from release paths. Keep the reference approval in Git history/evidence, not a second shipping theme or alternate homepage.
+## 6. Phase B: Treido adaptation
 
-### D. Final buyer acceptance
+BRAND-001 starts only after REF-005. Apply Treido identity, owned imagery, approved food categories, seller/producer terminology and necessary commerce copy THROUGH THE SAME accepted components. Keep geometry, navigation and interactions unless a separate deliberate change is approved.
 
-Brand approval is not feature completion. Verify actual owned media, long BG/EN copy, unavailable stock, authentic account/order data, error recovery and physical-device behavior. The shipping UI must have no reference-only mode reachable in production/native release. Approval is recorded under BRAND-001 and subsequent feature acceptance.
+Color-role intent: green for primary brand/action roles; yellow for approved highlights; red for error/destructive roles and specifically approved brand accents. Exact values, readable neutrals, focus/contrast/disabled states and any typography adjustment are approved here during this phase, not guessed during the Shop pass.
 
-## 4. Reference coverage registry
+Product and Category remain useful technical concepts; renaming visible labels is not a database architecture rewrite. SPEC-001 provides the approved food category hierarchy/attributes/copy. Units, package sizes, minimum quantities, seller grouping and pickup/delivery facts get deliberate placements rather than being hidden for visual similarity.
 
-The following rows are internal work IDs, NOT verified Mobbin screen IDs. REF-001 must fill the source column and state list. Add rows for every necessary source state; do not reduce coverage to this summary. Candidate mappings remain unverified until inspected.
+Test long Bulgarian/English labels and real food product images, empty/unavailable stock and actual orders/account data. Recheck reference geometry, interaction behavior, accessibility and performance. Remove Shop marks/names and reference-only assets/data from shipping paths. Do not ship alternate Shop/Treido themes or parallel homepages; historical reference approval lives in review evidence/Git.
 
-| ID | Journey/component family | Source screen/flow IDs | Clients | Current state |
-| --- | --- | --- | --- | --- |
-| REF-HOME | Launch/home, tab navigation, shelves, scrolling | Not captured | Web mobile / iOS / Android adaptation | Unverified |
-| REF-DISC | Category/discovery, filter/sort sheets, result states | Not captured | Web mobile / native | Unverified |
-| REF-SEARCH | Search entry, suggestions, results, no results, clear/back | Not captured | Web mobile / native | Unverified |
-| REF-STORE | Seller/storefront, catalog entry, follow/save | Not captured | Web mobile / native | Unverified |
-| REF-PDP | Product detail, images, variants, quantities, add/saved | Not captured | Web mobile / native | Unverified |
-| REF-CART | Cart, quantity/remove, seller grouping, empty/recovery | Not captured | Web mobile / native | Unverified |
-| REF-CHECKOUT | Auth handoff, address, fulfillment, review/payment, return | Not captured | Web mobile / native | Unverified |
-| REF-ACCOUNT | Profile, saved items, settings and addresses | Not captured | Web mobile / native | Unverified |
-| REF-ORDERS | Purchases, detail, tracking, issue/refund entry | Not captured | Web mobile / native | Unverified |
-| REF-COMMS | Messages, notifications, support entry if present | Not captured; may require Treido-specific design | Web mobile / native | Unverified |
-| REF-DESKTOP | Responsive desktop buyer composition | Owner-approved adaptation required | Desktop web | Unverified |
-| REF-MERCHANT | Account/selling/admin layouts and key editor/queue states | Legacy inventory + explicit owner review; not Shop buyer parity | Desktop/mobile web | Unverified |
+## 7. Merchant and admin
 
-For each detailed row record: requirement IDs; source capture/screen/flow; content viewport and density; state/fixture ID; entry action; expected action/result; back/close behavior; keyboard/scroll behavior; destination route; reusable components; exceptions; reference and implementation evidence IDs; reviewer/date/commit; status. Screens that only exist in another Shop version need explicit acceptance as a changed source.
+Design these as new operational experiences based on product.md: account/workspace switching, draft/publication validation, inventory, order queues/detail, refunds, finance, inbox, teams and privileged review. SPEC-001 provides their navigation/route map and representative screens for review. Reference buyer styling does not specify an inventory table or finance workflow.
 
-## 5. Component and interaction ownership
+Desktop should support operational density; mobile web must support urgent actions and usable forms, not a clipped desktop dashboard. Repeated controls use agreed tokens and primitives, but buyers and merchants do not share a giant universal shell. A previous dashboard is optional inspiration, not required component reuse or acceptance authority.
 
-Establish the source-measured typography, spacing, radius, color, icon, shadow and motion scales before duplicating their values across screens. Shared tokens are platform-neutral; CSS and React Native consume them through platform adapters. One semantic token source should not import web CSS into native.
+## 8. Assets and evidence
 
-Build only needed primitives: app chrome, navigation, product cards, store identity, shelves/grids, buttons/inputs, quantity/variant controls, dialogs/sheets, feedback states and transaction summaries. Do not turn a product card into a universal component with dozens of historical-design flags. Reuse repeated patterns, not unrelated layouts.
+Keep third-party screenshots/recordings/fonts in an authorized private or ignored local location. Public Git may contain permitted source URLs and nonsecret evidence identifiers/measurements, not credentials, signed downloads or restricted asset collections. Use lawful assets and preserve applicable license notices for any optional reused material.
 
-For a sheet/modal define open source, dismiss/back/Escape behavior, scroll locking, focus containment/restoration, browser history/deep-link behavior, nested overlay handling and persistent form state. A direct product URL must work without its opening feed. Native hardware back and browser back must not be swallowed by decorative animations.
+Sanitized screenshots of our own synthetic-data UI can serve as regression artifacts when they do not contain restricted imagery/private data. Otherwise store the comparison privately and record a reference. Masks cannot hide the defect under review. Fix volatile fixtures rather than approving noisy comparisons automatically.
 
-Record whether tabs preserve their scroll/navigation state. Payment return must resolve to the existing operation, not create a new checkout. A keyboard must not obscure the active field or submit action. Make safe-area clearance part of component layout, not late global padding overrides.
+A flow approval records source and implementation captures, interactions when needed, device/browser/version, viewport/density, locale/data, commit, deviations and reviewer decision. Missing evidence is a narrow blocker, not permission to invent the source.
 
-Motion duration/easing comes from inspected recordings or an explicitly accepted adaptation. Honor reduced motion without disabling unrelated page feedback. Do not claim animation parity from still screenshots.
-
-## 6. Evidence and public-repository handling
-
-Store source screenshots, recordings and any licensed fonts in an owner-controlled private location or ignored local directory. Record reference IDs, hashes/measurements and nonsecret relative evidence identifiers here; never commit private signed download URLs or access tokens. Public Mobbin URLs may be linked, but raw third-party assets are not automatically publishable.
-
-Sanitized screenshots of OUR application and synthetic fixture metadata may be committed for regression tests when they contain no restricted reference imagery, personal data or secrets. Otherwise keep the comparison artifact private and record its identifier. A unavailable private asset makes that test explicitly blocked, not auto-passed.
-
-Evidence for each accepted flow includes source comparison, implementation captures, interaction recording where needed, target device/browser/version, fixture and locale, commit, defect list and reviewer result. Mask only proven volatile/system areas with justification; never mask the UI difference under review. Control fixture time/images/fonts/network state for repeatability.
-
-## 7. Forbidden shortcuts
-
-No screenshot-only homepage approval; generic ecommerce template substituted for Shop; auto-updated baselines; new color themes before REF-005; global shadow/blur/class-name patches; hidden duplicate device trees; synthetic ratings/stock in production; silent omitted merchant/account screens; or claiming Android/browser-native equivalence without declared platform review.
-
-A source gap is recorded. An intentional deviation is approved. A defect is fixed. These are different outcomes.
-
-## Reference methodology
-
-[Playwright visual comparisons](https://playwright.dev/docs/test-snapshots) describes baseline mechanics; it does not decide our source fidelity. [Expo development builds](https://docs.expo.dev/develop/development-builds/introduction/) defines the native development environment. Product navigation/content decisions remain in the selected Mobbin capture and this document's approval records.
+[Playwright visual comparisons](https://playwright.dev/docs/test-snapshots) describes regression mechanics; [Expo development builds](https://docs.expo.dev/develop/development-builds/introduction/) describes native development builds. Neither substitutes for the selected source or actual Treido review.

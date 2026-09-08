@@ -1,123 +1,116 @@
-# Technology stack and installation contract
+# Technology stack and bootstrap
 
-This file owns technology selection and bootstrap. Application boundaries are in [architecture.md](architecture.md); sequence and evidence are in [tasks.md](tasks.md). **Nothing is installed or runtime-verified when this document is introduced.**
+This file owns tools, compatibility and installation. [product.md](product.md) owns the product; [architecture.md](architecture.md) owns structure; [tasks.md](tasks.md) owns progress. No toolchain is installed or tested merely because it is selected here.
 
-## 1. Selected foundation
+## 1. Selected tools
 
-| Area | Selected choice | Constraint |
+| Area | Choice | Boundary |
 | --- | --- | --- |
-| Repository | pnpm workspaces + Turborepo | Two application workspaces; shared packages only when they have a real consumer. No full next-forge scaffold. |
-| Runtime | Supported Node.js LTS + TypeScript strict mode | Select a mutually supported version during BOOT-001; pin Node and pnpm. No Bun runtime migration. |
-| Browser platform | Next.js App Router + React | `apps/web` contains marketplace, buyer account, full merchant dashboard, admin and HTTP endpoints. Server Components by default where appropriate. |
-| Native buyer | Expo + React Native + Expo Router | `apps/mobile`; official Expo starter and SDK compatibility, iOS/Android development builds. |
-| Web styling | Tailwind CSS + selected shadcn/ui primitives | Custom reference-matched buyer components. No all-components installation, overwrite updates, template styling or universal web/native UI. |
-| Native styling | React Native StyleSheet + shared design tokens | Native primitives; introduce gesture/animation modules only where the selected flow needs them and Expo supports them. No extra styling framework at bootstrap. |
-| Validation/contracts | Zod + TypeScript | One explicit client-safe contract package. Parse untrusted input server-side; never export Prisma entities directly as API types. |
-| Persistence | PostgreSQL on Neon + Prisma | One server-owned schema/client; native never imports it. Real PostgreSQL integration tests. |
-| Identity | Clerk Next.js and Expo SDKs | Managed sessions; resource/workspace authorization remains Treido server logic. Do not replace the provider during bootstrap. |
-| Payments | Stripe | Marketplace and Premium are distinct flows. DEC-002 must settle charge/refund/fee behavior. Sandbox only until release approval. |
-| Media/email | Vercel Blob + Resend/React Email | Retain suitable provider choices; public catalog images and private attachments have different access rules. No production sending in tests. |
-| Localization | next-international for web; shared plain BG/EN messages | Verify compatibility before install. Native uses framework-free shared messages through a small adapter; do not import Next-specific localization code into Expo. |
-| Client server-state | TanStack Query for native remote data when API work starts | Query keys include actor/business context, cleared on logout/switch. Web uses server data and local state by default, not a second universal cache. |
-| Forms | Semantic/native controls + server validation | Add React Hook Form only for a demonstrably complex editor; not mandatory around every input. |
-| Tests | Vitest, PostgreSQL integration tests, Playwright | Native component tests use the compatible Expo/Jest toolchain and React Native Testing Library when needed; device journeys use Maestro or equivalent documented device automation. |
-| Lint/format | ESLint flat config + Prettier | Use compatible Next/Expo rules. One formatter; no concurrent Biome/Ultracite installation. |
-| CI/hosting | GitHub Actions; Vercel for Next.js; Expo tooling/EAS for native builds | CI does not deploy production by default. Build/service accounts and paid actions require explicit authorization. |
-| Observability | Structured sanitized logs + Sentry when deployed | Web/native setup is separate; scrub PII and disable session replay by default. Measure performance with a minimal chosen collector, not multiple overlapping analytics SDKs. |
+| Workspace | pnpm workspaces + Turborepo | Next.js and Expo apps; packages only for actual shared consumers. Official starters, not the full next-forge scaffold. |
+| Runtime/types | Supported Node.js LTS + strict TypeScript | Resolve compatible versions in BOOT-001, then pin. |
+| Browser | Next.js App Router + React | Marketplace, personal accounts, full merchant dashboard, admin and server/API in apps/web. |
+| Native | Expo + React Native + Expo Router | Buyer application in apps/mobile with actual iOS/Android development-build verification. |
+| Web styling | Tailwind + selected shadcn/ui primitives | New Shop-matched components. No generic template look, bulk component install or overwrite update. |
+| Native styling | React Native StyleSheet + shared tokens | Platform components; supported gesture/animation libraries only as selected flows require them. |
+| Contracts | Zod + TypeScript | Explicit client-safe request/response types, not ORM entity exports. |
+| Data | Neon PostgreSQL + Prisma | Product-led new schema, real constraints/transactions and synthetic isolated development data. |
+| Identity | Clerk Next.js and Expo SDKs | Sessions/identity; resource/business authorization belongs to Treido. |
+| Payments | Stripe | Separate marketplace and Premium flows; approved DEC-002 policy, sandbox before live activation. |
+| Files/email | Vercel Blob + Resend/React Email | Public images versus private files, authorized storage and non-production sending. |
+| Localization | next-international on web; shared plain BG/EN messages | Verify compatibility; native uses framework-neutral messages, never Next-specific imports. |
+| Native server-state | TanStack Query when API consumption begins | Actor/business-scoped keys; clear private data on identity/context changes. |
+| Forms | Accessible platform controls + server validation | Add React Hook Form for justified complex editors, not around every input. |
+| Tests | Vitest, real PostgreSQL integration, Playwright | Native uses compatible Expo/Jest + React Native Testing Library where needed; Maestro/device automation for installed-app journeys. |
+| Lint/format | ESLint flat config + Prettier | Compatible Next/Expo rules, one formatter. |
+| CI/build/hosting | GitHub Actions, Vercel, Expo tooling/EAS | No implicit production deploy or paid cloud build authorization. |
+| Observability | Sanitized structured logs; Sentry for deployed web/native | Scrub personal data; replay disabled by default; avoid overlapping analytics collectors. |
 
-Chat transport and durable job execution are requirements, but their providers are not predetermined. Compare the real requirements under DEC-005. No speculative Ably, Inngest, Redis, separate search cluster, NestJS, GraphQL, or standalone API app. Pure business modules and durable outbox records do not require a workflow framework.
+No database/provider choice implies an import from another project. Chat and durable work need a technical decision under DEC-005, not speculative installation. Ably/Inngest remain candidates. Do not add Redis, separate search clusters, NestJS, GraphQL, a standalone API app or universal web/native UI at bootstrap.
 
-## 2. Compatibility lock: resolve once, prove, then pin
+## 2. Resolve compatibility, prove it, pin it
 
-Do not copy version numbers from the old repository, from this conversation, or from a starter's stale manifest. BOOT-001 resolves current stable releases and checks their actual compatibility. Security patches matter more than chasing the newest minor version.
+BOOT-001 uses current official docs and package metadata to select stable, security-supported versions. Do not copy another project's lockfile or force incompatible peers.
 
-1. Select the supported Expo SDK; obtain its required React Native, React and native module versions using official Expo guidance and `expo install` checks.
-2. Select a stable Next.js/React combination with compatible peers. Prefer a common React version where supported. Do not force Expo onto web's preferred version. Different app versions may be used only with isolated, verified resolution; each app must resolve one React instance, and duplicate native module versions must be eliminated.
-3. Select an actively supported Node LTS, pnpm, TypeScript and lint/test versions compatible with both apps and Prisma. Read official release requirements and package metadata.
-4. Pin direct dependencies initially; commit one root `pnpm-lock.yaml`, `.node-version`, `packageManager` and workspace config. Never keep npm/yarn/bun lockfiles alongside it.
-5. Verify framework generation, typecheck, production web build, native dependency checks and export. Record the actual matrix below and in BOOT-001 evidence. A peer warning is investigated, not suppressed with force flags.
-6. Start with supported pnpm/Expo defaults. Change node linker, Metro resolution or hoisting only for a reproduced issue with documented evidence. Avoid ancient monorepo workarounds copied from tutorials.
+1. Select an Expo SDK and its supported React Native, React and native-module versions; use Expo's supported install/check process.
+2. Choose a compatible stable Next.js/React pair. Prefer compatible common React resolution; never force Expo onto a web-preferred version. Any separate app versions need verified isolation, one React instance per app and no duplicate native module versions.
+3. Select Node LTS, pnpm, TypeScript, lint/test tools and Prisma adapters supported by the selected framework versions.
+4. Pin direct dependencies initially. Commit one pnpm-lock.yaml, packageManager, workspace configuration and Node version file. No competing lockfiles.
+5. Verify a clean install, package imports, lint/typecheck/unit tests, production web build and Expo doctor/dependency/export checks. Native OS builds are separately proved in BOOT-004.
+6. Use supported Expo/pnpm defaults. Add Metro/hoisting/node-linker workarounds only for a reproduced, documented incompatibility.
 
-| Component | Installed version | Compatibility/evidence |
+| Component | Actual version | Evidence |
 | --- | --- | --- |
-| Node / pnpm / Turbo / TypeScript | Not installed | BOOT-001 fills this row. |
-| Next.js / React / React DOM | Not installed | BOOT-001 fills this row. |
-| Expo SDK / React Native / React / Expo Router | Not installed | BOOT-001 fills this row. |
-| Prisma CLI / client / adapter | Not installed | BOOT-002 fills this row. |
-| Clerk web / native; Zod; localization | Not installed | BOOT-002 fills this row. |
-| Tailwind / shadcn primitive versions; test tools | Not installed | Owning bootstrap task records actual versions. |
+| Node / pnpm / Turbo / TypeScript | Not installed | BOOT-001 fills from verified setup. |
+| Next.js / React / React DOM | Not installed | BOOT-001. |
+| Expo SDK / React Native / React / Expo Router | Not installed | BOOT-001. |
+| Prisma CLI/client/adapter; Clerk SDKs | Not installed | BOOT-002. |
+| Validation/localization/styling/test tooling | Not installed | Owning bootstrap/feature task. |
 
-Update this table with verified values, not aspirations. Version selection is bounded engineering work, not permission to redesign the stack. Prefer the latest mutually compatible stable, security-supported combination over experimental releases.
+Record exact versions and supporting URLs after verification. An unresolved compatibility issue is a narrow blocker, not permission to restart the architecture discussion.
 
-## 3. Safe installation order
+## 3. Install in this order
 
-### BOOT-001: workspace and local runtime
+### BOOT-001: workspace
 
-Inspect the repo/branch, preserve these documents and other work, and establish ignore rules before generating credentials or assets. Initialize the official Next.js and Expo starters under `apps/web` and `apps/mobile`; do not run a root starter that overwrites the repository. Disable nested Git repos and remove unused sample screens.
+Inspect branch/Git status and preserve unrelated work and committed documentation. Generate the official Next.js and Expo projects inside their application directories, not over the repository root. Remove starter demo screens and nested Git repositories. No access to old source is required.
 
-Create shared `@treido/contracts` and `@treido/design-tokens` packages only with actual smoke-test consumers; introduce `@treido/locales` with locale work. Mark workspaces private, use `workspace:*` dependencies and explicit package exports. Shared packages do not depend on either app. Do not create an empty package for every future concern.
+Create @treido/contracts and @treido/design-tokens only with actual smoke-test consumers; create shared messages with localization work. Use private workspace manifests, workspace:* dependencies and explicit exports. Do not generate a package for every future feature.
 
-Configure build/typecheck/lint/format tasks and minimal CI. Add a meaningful import/contract smoke test rather than a suite that exits successfully because it found no tests. Resolve compatible local ports and document them. Prefer port 3000 for web; let Expo's supported tooling choose its port. Do not stop an unknown existing process.
+Establish lint/format/typecheck, meaningful import/contract tests, safe ignores/env examples and a minimal CI lane. Document local ports, with web port 3000 as the default when free. Do not stop unknown processes.
 
-An isolated fixture shell may demonstrate installation without real provider accounts. Label it explicitly; it is not an authenticated or commerce acceptance environment. Build and dev configuration must never fall through from missing test configuration to live providers.
+A visibly labeled isolated fixture shell may run without provider accounts. It must not claim working authentication/commerce or silently fall back to live resources. Local fixture verification does not require provisioning billable infrastructure.
 
-### BOOT-002: verified non-production resources
+### BOOT-002: new isolated data and identity
 
-Inventory existing authorized resources first. Use distinct development/preview provider modes, a disposable test PostgreSQL database or authorized Neon development branch, and synthetic users/catalog. Verify actual target/role before any migration. Do not reuse production connection strings from the old repository.
+Use an explicitly authorized fresh development database or isolated Neon development target with no production/customer rows. Build this application's initial user/business membership schema and reviewed migrations; catalog tables follow CORE-001. Seed synthetic actors. No inspection, schema import, ID mapping or porting from another repository is a prerequisite.
 
-Establish one Prisma client and a compatible supported PostgreSQL adapter for the Node runtime; document the selected adapter and pooled-runtime/direct-migration connection conventions. Configure env loading explicitly for Prisma, tests and Next.js. Keep Prisma migrations in `apps/web/prisma/migrations`.
+Verify actual project/database/branch and effective credential roles before writes. Configure one server Prisma client with a supported Node/PostgreSQL adapter and document runtime/migration connection conventions. Keep schema/migrations in apps/web/prisma and explicitly configure env loading for Prisma/tests/Next.js.
 
-Use Clerk development configuration for both apps, Expo's supported secure token persistence, and server verification of native session tokens. Prove wrong-user/wrong-business rejection before private features. Only then wire sandbox payment/media/email as their tasks require them.
+Use development Clerk configuration and supported secure native token storage. Test wrong-user/business and stale membership rejection. Add Stripe/storage/email sandbox integrations when their tasks require them, not just to fill env templates.
 
-Inspect/link Vercel or Expo projects only when authorized and needed. Verify team/project and environment before pulling credentials. Never let Git integration deploy `main` to live production during setup. A new Vercel project or EAS build can consume resources; it is not implicitly authorized by these docs.
+Inspect/link Vercel or Expo projects only when authorized and needed. Verify the correct team/project and credential mode before pulling secrets. Do not connect main to live public production or change an existing deployment as a setup side effect.
 
-### BOOT-003 and BOOT-004: reproducible checks
+### BOOT-003 / BOOT-004: verification lanes
 
-Implement CI and browser verification against a production build and disposable PostgreSQL. Fork PR jobs receive no provider secrets. Native dependency/export checks are not native release compilation: run authorized iOS/Android development builds and record actual platform results separately.
+Build repeatable PostgreSQL and built-web browser tests, safe visual artifacts and a production-build performance harness. Public fork jobs receive no provider secrets. Prove real authorized iOS/Android development builds/device connectivity separately; Expo export/Go is not native release compilation.
 
-## 4. Required root command interface
+## 4. Script contract
 
-These are REQUIRED script names to implement during bootstrap, **not commands that already exist**. Prefer package scripts and small portable Node orchestration only where necessary; support local Windows/macOS/Linux without Bash-only wrappers. `--if-present` and empty-suite success must not hide missing mandatory checks.
+These scripts are requirements to implement, not claims that commands already exist. Use package scripts and small portable Node orchestration where needed; support local Windows/macOS/Linux. Missing mandatory scripts/tests must not be concealed with --if-present or empty-suite success.
 
-| Command | Contract |
+| Command | Required behavior |
 | --- | --- |
-| `pnpm dev:web` | Start only the web application on the documented non-production configuration. |
-| `pnpm dev:mobile` | Start the Expo app; document emulator/device API origin separately from browser localhost. |
-| `pnpm build:web` | Reproducible Next.js production build, no mutations/seeds or automatic deployment. |
-| `pnpm typecheck` | All existing workspaces. |
-| `pnpm lint` / `pnpm format:check` | Non-mutating checks; `pnpm format` is the explicit formatting write. |
-| `pnpm test:unit` | Meaningful unit/contract tests; explicit native runner integration where installed. |
-| `pnpm test:integration` | Real PostgreSQL behavior against verified disposable database; fail or explicitly report blocked when missing, never silent success. |
-| `pnpm test:e2e:web` | Playwright against a built app, synthetic data and declared provider mode. |
-| `pnpm test:visual` | Approved deterministic UI baselines; no auto-update. |
-| `pnpm test:e2e:mobile` | Declared installed app/device journey suite; missing device/tools produce an explicit blocked result. |
-| `pnpm native:check` | Expo dependency/doctor checks and export for declared platforms; not a store build claim. |
-| `pnpm db:generate` / `pnpm db:validate` | Prisma client generation/schema validation; no database mutation. |
-| `pnpm db:migrate:dev` | Target-checked migrations on disposable development data. |
-| `pnpm db:migrate:deploy` | Apply reviewed migrations to an explicitly authorized target; never invoked from install/build. |
-| `pnpm db:seed:test` | Idempotent synthetic seed on allowlisted test/development target only. |
-| `pnpm check` | lint, format check, typecheck, unit/contract checks and documentation/link checks. It is not full release acceptance. |
+| pnpm dev:web | Start only the web app in its explicit non-production mode. |
+| pnpm dev:mobile | Start Expo; document emulator/device API origin separately from browser localhost. |
+| pnpm build:web | Reproducible production web build without database mutation or deployment. |
+| pnpm typecheck | Check all existing workspaces. |
+| pnpm lint / pnpm format:check | Non-mutating checks; pnpm format is an explicit write. |
+| pnpm test:unit | Actual unit/contract tests and explicit native-runner integration where configured. |
+| pnpm test:integration | Real verified disposable PostgreSQL; unavailable target fails/reports blocked, never silent success. |
+| pnpm test:e2e:web | Built application with synthetic data and declared provider mode. |
+| pnpm test:visual | Approved deterministic baselines; no automatic updates. |
+| pnpm test:e2e:mobile | Installed-app/device journey checks; unavailable hardware/tools explicitly reported. |
+| pnpm native:check | Expo dependency/doctor/export checks, not a store-build claim. |
+| pnpm db:generate / pnpm db:validate | Client generation and schema validation, no data mutation. |
+| pnpm db:migrate:dev | Target-checked forward migrations for this new development schema. |
+| pnpm db:migrate:deploy | Reviewed migrations on an explicitly authorized target; never from install/build. |
+| pnpm db:seed:test | Idempotent synthetic data on allowlisted isolated targets. |
+| pnpm check | lint, format check, typecheck, unit/contracts and documentation/link checks; not full release acceptance. |
 
-Keep migrations, seeds, deployments and native cloud builds noncached and opt-in. Declare Turbo outputs and behavior-affecting environment inputs correctly. Keep live secrets out of logs and caches; do not cache provider responses or fixture data with private content.
+Install script families with their owning task; absent later-platform checks stay visibly not implemented/blocked rather than green placeholders. Migrations/seeds/deployments/cloud builds are opt-in and noncached. Configure Turbo outputs and behavior-affecting environment inputs; never cache sensitive provider responses/logs.
 
-## 5. Environment contract
+## 5. Environment and operational safety
 
-Use `apps/web/.env.local` for local web secrets and `apps/mobile/.env.local` for public native configuration only. Templates contain names/placeholders, never usable credentials. CI/provider secret stores supply hosted values. Do not duplicate the old repo's env wrapper ecosystem.
+Web secrets live in local/hosted secret stores; native env contains public configuration only. Templates contain names/placeholders. NEXT_PUBLIC_* and EXPO_PUBLIC_* values are extractable; no tokens, server credentials or database URLs there.
 
-The web environment schema distinguishes local/test/preview/staging/production and validates enabled capabilities. Typical keys include `DATABASE_URL`, a dedicated migration connection value, Clerk server/publishable keys, Stripe sandbox secrets, upload/email credentials and canonical origins. Exact SDK key names must match the installed version and be recorded in env examples.
+Validate local/test/preview/staging/production configuration and enabled capabilities explicitly. Missing provider configuration disables/explains an unavailable feature; it never simulates success or uses another project's production credentials. Real integration errors must not trigger mock fallbacks.
 
-Native public configuration includes the API origin and Clerk publishable configuration; anything prefixed `EXPO_PUBLIC_` or `NEXT_PUBLIC_` is assumed extractable by users. Secret tokens, DB URLs and server credentials never belong there. Payment configuration must use SDK-appropriate public values and server-created intents, not embedded secrets.
+Fixture/reference mode is isolated, labeled, unable to send payments/emails or touch live data, and excluded from production/native release. Test wrong-environment rejection. Separate runtime/migration/operator roles and verify the actual destination, not just an APP_ENV string.
 
-Fixture/reference mode must be development/test only, visibly labeled, excluded from live deployments and release builds, and unable to send payments/emails or write production data. No silent mock fallback when real integrations fail. BOOT-002 must verify wrong-environment rejection.
+Code installation does not authorize data import, old-system cutover, DNS changes, paid resources, live payments or store submissions. Those operations require separate explicit authorization when actually needed.
 
-## 6. Primary references
+## 6. Official implementation references
 
-Reviewed for this foundation on 2026-09-08; recheck against installed versions at setup:
+Use the installed version as the basis for verification: [Next.js installation](https://nextjs.org/docs/app/getting-started/installation), [AI agent guidance](https://nextjs.org/docs/app/guides/ai-agents), [Expo monorepos](https://docs.expo.dev/guides/monorepos/), [Expo Router](https://docs.expo.dev/router/introduction/), [development builds](https://docs.expo.dev/develop/development-builds/introduction/), [Turborepo Next.js](https://turborepo.dev/docs/guides/frameworks/nextjs), [Clerk Expo](https://clerk.com/docs/expo/getting-started/quickstart), [next-international](https://next-international.vercel.app/docs/app-setup), [shadcn](https://ui.shadcn.com/docs), [Neon docs index](https://neon.com/docs/llms.txt), [Prisma transactions](https://www.prisma.io/docs/orm/prisma-client/queries/transactions), [Stripe Connect](https://docs.stripe.com/connect/charges), [Next.js tests](https://nextjs.org/docs/app/guides/testing/vitest), [Playwright baselines](https://playwright.dev/docs/test-snapshots).
 
-- [Next.js installation](https://nextjs.org/docs/app/getting-started/installation), [project structure](https://nextjs.org/docs/app/getting-started/project-structure), [backend for frontend](https://nextjs.org/docs/app/guides/backend-for-frontend), [AI agent guidance](https://nextjs.org/docs/app/guides/ai-agents).
-- [Expo monorepos](https://docs.expo.dev/guides/monorepos/), [Expo Router](https://docs.expo.dev/router/introduction/), [development builds](https://docs.expo.dev/develop/development-builds/introduction/), [Clerk Expo quickstart](https://clerk.com/docs/expo/getting-started/quickstart).
-- [Turborepo Next.js guide](https://turborepo.dev/docs/guides/frameworks/nextjs), [next-international documentation](https://next-international.vercel.app/docs/app-setup), [shadcn documentation](https://ui.shadcn.com/docs).
-- [Neon documentation index](https://neon.com/docs/llms.txt), [Prisma relation modes](https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/relation-mode), [Prisma transactions](https://www.prisma.io/docs/orm/prisma-client/queries/transactions).
-- [Stripe Connect charge models](https://docs.stripe.com/connect/charges), [Next.js Vitest guidance](https://nextjs.org/docs/app/guides/testing/vitest), [Playwright visual comparisons](https://playwright.dev/docs/test-snapshots).
-
-No documentation sentence is a claim that these tools have already been installed, tested together, or configured in this repository.
+These links support setup work; no compatibility or provider test is claimed until its actual evidence is recorded.

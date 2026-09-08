@@ -1,66 +1,61 @@
 # Agent execution contract
 
-Read this file at the start of every session. Work in this repository, not in `treido-next`. The canonical document map is in [README.md](README.md). Current work and evidence live only in [tasks.md](tasks.md).
+## Mission
 
-## Mission and fixed boundaries
+Build the product specified in [product.md](product.md), in this repository, from a clean foundation. Build the buyer frontend against [design.md](design.md): selected Shop styling and flows first, approved Treido adaptation second. Build full account, merchant and admin functionality from the explicit feature contracts. Do not treat a previous application as the target to preserve.
 
-Build the full Treido product, not a demo. The selected architecture is a small pnpm/Turborepo monorepo: `apps/web` is the COMPLETE browser platform; `apps/mobile` is the Expo native buyer application. The account, full selling dashboard, and admin capabilities are retained in scope. Follow [architecture.md](architecture.md) and [requirements.md](requirements.md).
+The architecture is the selected Next.js + Expo pnpm/Turborepo monorepo. `apps/web` is the complete browser platform; `apps/mobile` is the native buyer app. Follow [architecture.md](architecture.md) and [techstack.md](techstack.md). The task/evidence authority is [tasks.md](tasks.md).
 
-The buyer design sequence is mandatory: exact selected Shop reference -> documented fidelity approval -> Treido branding and food terminology -> renewed verification. Follow [design.md](design.md). Do not rebrand early or improvise a different buyer composition. Merchant and admin screens have their own explicit acceptance; Shop buyer screenshots are not their specification.
+## Clean-build rule
 
-A new repository does not make old code worthless or new code correct. Reuse only relevant, inspected behavior under [migration.md](migration.md). Do not import the old application, global CSS, service wrappers, or historical instructions wholesale.
+These documents must be sufficient to understand what to build without another repository. No old-route audit, compatibility mapping, backend port, schema import or preservation check is mandatory. Do not import an earlier frontend or call this a reskin. Do not create new features merely because an old route exists.
 
-## Session protocol
+An older project may be consulted for a specific question, just like another technical reference. New code is the default. Optional reuse must satisfy the current requirement, code ownership, tests and publication rights; it must not introduce undocumented dependencies. Access to old code is never a prerequisite for bootstrap or feature completion. If an unspecified business detail is genuinely needed, record the precise question in product.md instead of delegating it to unspecified old behavior.
 
-1. Read `tasks.md` and the owning documents for the selected task. Inspect current files, scripts, Git status, branch, and uncommitted work. Do not overwrite another agent's changes.
-2. Select the earliest ready task whose dependencies and required decisions are satisfied. Record the task claim and touched areas in the existing task ledger. Only one agent edits a given feature, schema, root dependency configuration, or visual baseline at a time.
-3. State the acceptance criteria and intended boundary of the change before coding. Inspect existing implementations and tests before creating alternatives.
-4. Verify current official documentation and package metadata for the relevant installed versions. Use available Next.js, Expo, database, auth, browser, and testing guidance. Generic skill examples do not authorize changing our product, installing extra services, resetting databases, or changing themes.
-5. Implement the smallest complete behavior for the task. Add or adjust tests at the real failure boundary. Thin routes are useful; an arbitrary number of layers is not.
-6. Execute the applicable checks from [verification.md](verification.md), inspect the actual UI when it changed, and examine persisted state when commerce changed. Missing credentials or devices are blockers to the corresponding proof, not permission to mark it passed.
-7. Review the diff for regressions, unused code, accidental dependencies, secrets, and unrelated edits. Update the owning contract only when the behavior/decision intentionally changed.
-8. Update `tasks.md` with exact commands/results, platform/environment scope, evidence references, limitations, and the next ready task. Commit with the task ID. Do not write another handoff/backlog file.
+## Every session
 
-## Decision discipline
+1. Read README.md, product.md, design.md and this file on the first session; subsequently read the current task and its owning contracts. Inspect actual files, Git status, branch, scripts and concurrent changes.
+2. Choose a ready task whose dependencies are satisfied. Record a claim in tasks.md. One agent owns a feature/schema/root lockfile/visual baseline at a time; preserve unrelated work.
+3. State the feature's acceptance criteria, implement the smallest complete behavior and test the actual failure boundary. Do not merely generate route placeholders.
+4. Check current official guidance for installed versions when using SDKs/framework APIs. Skills are implementation references, not authority to change product scope or install unrelated services.
+5. Run the applicable checks in verification.md. Inspect changed UI in a browser/device; inspect persisted records for data/commerce work. A proposed command is not an executed result.
+6. Review the diff for dead code, speculative abstractions, unrelated edits and sensitive content. Update only the owning documentation when a decision changes.
+7. Record commands/results, commit, environment/dataset, browser/device/locale, evidence, limitations and next task in tasks.md; commit with the task ID. Do not create another handoff/backlog.
 
-The architecture is selected, not infallible. Do not restart the framework debate during routine feature work. Propose a change only with a concrete requirement, measured failure or incompatibility, alternatives, migration impact, and owner approval recorded in the decision log in `architecture.md`.
+## Code ownership and design discipline
 
-Do not invent business answers to unblock yourself. Use the decision register in `requirements.md`. When evidence can answer a question, inspect it first. When a decision is missing, work on independent ready tasks and report the narrow blocker. Do not ask again for a decision already recorded here.
+- One server owner for identity, authorization, quantity/price/stock, allowed order transitions, review eligibility and entitlements. Web/native are clients, not separate commerce engines.
+- Do not trust client totals or a selected workspace ID as authority. Authorize inside the owning query/command, including every HTTP or Server Action entry.
+- Native uses the supported HTTP API. Client-safe packages cannot import Prisma, secrets, server-only, next/headers or Node-only dependencies. Do not import web UI into native.
+- Add dependencies for named current needs. No speculative microservices, generic repository/controller framework, event-sourcing platform, global state layer or universal web/native UI system.
+- Implement one canonical component per visual role on each platform. No permanent alternate homes, v2/new/legacy skins or a fixture frontend separate from the eventual real frontend.
+- Shop is the buyer reference, not generic inspiration. Source access and evidence are required to claim a match. No early Treido colors, homemade spacing or substitute navigation. Merchant/admin use explicitly reviewed operational designs.
+- Fix styling at its owner. No global class-substring overrides, broad shadow/blur resets or blanket !important patches. Explicit accessibility/reduced-motion support is not permission to disable all feedback.
+- Reference fixtures are allowed only in marked, isolated test/reference environments. No fake success, payments, ratings, stock, profit or delivery promises in real application paths. Integration failure must not silently become mock success.
+- Do not hide missing functionality by weakening tests, deleting feature scope or automatically approving new screenshots. Review visual changes against the actual reference, then against approved regression baselines.
 
-Current manifests and verified provider configuration establish actual runtime facts. These documents establish product and engineering intent. A mismatch is something to resolve and record, not silently reinterpret. Legacy documents and generic tutorials never override the new owner-approved direction.
+## Decisions and blockers
 
-## Implementation rules
+Do not reopen the architecture debate during normal work. A change needs concrete evidence, alternatives, impact and owner approval recorded in architecture.md. Product/commercial decisions and intentional design deviations are recorded in their owning document. A narrow blocker blocks only dependent work; continue independent ready tasks.
 
-- Server code owns identity, authorization, stock, money, allowed transitions, review eligibility, and entitlements. Never trust a client-supplied workspace ID or total as authority.
-- One owner per business rule. Web and native use the same commerce behavior. Do not expose Server Actions as the native API or call our own HTTP API from Server Components unnecessarily.
-- Client-safe packages must not transitively import database clients, provider secrets, `next/headers`, `server-only`, or Node-only modules. Do not import web UI into native.
-- Add dependencies for a named current requirement. No speculative microservices, generic repository pattern, CQRS/event-sourcing framework, universal web/native component system, or broad state store by default.
-- Use one authoritative component per visual role. Avoid `new-*`, `v2-*`, alternate homes, and permanent legacy/reference skins. Delete replaced active code after its replacement is accepted; preserve history in Git.
-- Correct styles at their owner. Do not add global class-substring overrides or universal `!important` patches. Accessibility/reduced-motion styles are explicit, scoped exceptions, not excuses to disable all transitions.
-- No fake production data, fake success toasts, invented review counts, profits, delivery promises, or simulated payments. Deterministic fixtures are allowed only in visibly marked, isolated test/reference environments.
-- Use explicit errors and recovery. Do not hide exceptions behind successful empty responses. Log sanitized diagnostic context, not private payloads.
-- Keep dependencies, schema changes, design changes, and unrelated feature work in separate reviewable commits whenever possible. Do not bulk upgrade during a fidelity task.
+The user has already selected the stack direction and reference-before-brand sequence. Do not ask for those decisions again. Exact missing screenshots, payment rules or approved taxonomy are genuine inputs; do not invent them or pretend they were verified.
 
-## Safety and public-repository rules
+## Safe operations
 
-The repository is public. Never commit `.env` values, authentication state, API tokens, connection strings, customer data, private logs, signed media URLs, licensed font files, or third-party reference screenshot collections. BOOT-001 must establish ignore rules and a secret check before credentials/assets enter the workspace. Use placeholders only in env examples.
+This is a public repository. No usable secrets, connection strings, customer rows, private logs, authenticated browser state, signed asset URLs, third-party screenshot collections or licensed fonts in Git. Establish ignores and secret checks before handling credentials/assets; env templates contain placeholders only.
 
-Before any database write, verify the exact project, branch/database, role, and environment through trusted configuration. A hostname, database name, or an `APP_ENV` label alone is not proof. Fail closed when the target is ambiguous. Use synthetic non-production data. No automatic `db push`, reset, migration repair, history rewrite, production seed, or copying production rows.
+Use fresh synthetic development/test data. Before a database write verify the actual authorized project/database/branch, role and environment; an environment label alone is insufficient. Never fall back to production credentials. Database migration commands are for the new schema, not permission to import or reset another application's database.
 
-No live provider registration, DNS/domain changes, production deployments, app-store submission, billing activation, destructive cleanup, or visibility changes are implied by installing the stack. Those require separate owner authorization. Do not provision billable infrastructure just to run an isolated fixture screen.
+Do not edit applied migrations, reset shared data, seed production, force-push, kill unknown processes or overwrite concurrent work. Do not run dev/build against the same .next directory concurrently. Serialize schema/code generation and lockfile work.
 
-Do not run a dev server and build against the same `.next` output concurrently. Do not kill unknown processes. Serialize migrations/code generation and root lockfile changes. Keep the old repo/database intact. Never force-push.
+Paid provisioning, live providers, DNS/domain changes, release deployment, billing activation, store submission and real-data transfer require explicit authorization. A documentation or installation task does not authorize them. Existing repositories/databases remain untouched unless separately requested.
 
-## Verification and reporting
+## Acceptance and reporting
 
-Use the real scripts after BOOT-001 establishes them. Do not report a proposed command as executed. An empty suite, skipped database tests, Expo Go preview, screenshot capture, or HTTP 200 alone does not prove the relevant feature.
+A done task names the requirement IDs, implemented behavior, commands/results, exact test scope and evidence. Unit mocks, real PostgreSQL, provider sandbox, device builds and production checks are different evidence. Empty/skipped suites, HTTP 200, a screenshot capture or Expo Go alone do not establish their broader claims.
 
-Every task completion includes: requirement IDs; changed files; actual commands and exit results; fixture/provider mode; browser/device and viewport where applicable; persisted effects checked; evidence reference; unresolved limitations. Use `ready`, `in-progress`, `blocked`, `review`, and `done` as defined in `tasks.md`.
+Reference and brand approval belong to the owner/design reviewer, not the implementation agent. Do not claim unbounded 1:1, perfect software or production readiness. State exactly what passed and what remains unknown.
 
-Never auto-accept changed screenshots merely to make CI green. Source-reference approval and rebrand approval belong to the owner/design reviewer, not the implementation agent that generated them. Tests may be improved when wrong, but never weakened without a documented explanation.
+## First local run
 
-If a check fails, fix the cause or leave the task blocked/review with exact evidence. A confident explanation is not a passing result. Never promise perfect software, 100% reference fidelity, production readiness, or a code-reduction percentage without the corresponding bounded evidence.
-
-## First local Codex run
-
-Read `README.md`, this file, `techstack.md`, `architecture.md`, and BOOT-001 in `tasks.md`. Establish the compatible stack and required scripts, validate the repository/environment, run the stated bootstrap checks, and record evidence. Do not begin arbitrary homepage styling, install next-forge, or connect the existing production database.
+Read README.md -> product.md -> design.md -> architecture.md -> techstack.md -> tasks.md. Execute BOOT-001: scaffold compatible official Next.js/Expo workspaces, establish scripts and meaningful checks, and record actual results. Do not require access to an old project; do not begin branding or touch production.
