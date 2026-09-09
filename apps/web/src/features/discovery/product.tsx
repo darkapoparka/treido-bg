@@ -61,8 +61,10 @@ export function ProductDetail({
   const photos = shea
     ? [
         "/api/reference-media/shea-gallery-hero",
-        "/api/reference-media/shea-gallery-benefits",
         "/api/reference-media/shea-gallery-testimonial",
+        "/api/reference-media/shea-gallery-benefits",
+        "/api/reference-media/shea-gallery-hand",
+        "/api/reference-media/shea-gallery-shower",
       ]
     : product.images;
   const price =
@@ -352,6 +354,11 @@ export function ProductDetail({
                       ? "Girlfriend loves it and I can breathe."
                       : "Curly Hair Shampoo Bar"}
                   </p>
+                  {bag && (
+                    <footer className="pdp-preview-reviewer">
+                      <span aria-hidden="true">J</span>Jessica · Jun 22, 2026
+                    </footer>
+                  )}
                 </article>
                 <article>
                   <span className="rating">★★★★★</span>

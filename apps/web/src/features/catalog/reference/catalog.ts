@@ -1,3 +1,4 @@
+import { homeProducts, homeStores } from "./home-fixtures";
 import expanded from "./expanded.json";
 import type { Catalog, Product } from "../types";
 // Presentation fixtures from the owner's frozen capture. Not catalog/service data.
@@ -25,6 +26,98 @@ const product = (
 });
 export const referenceCatalog: Catalog = {
   stores: [
+    {
+      id: "lange-hair",
+      name: "L’ange Hair",
+      logo: "",
+      ratingCount: "",
+      description: "",
+      categories: ["Shop all"],
+    },
+    {
+      id: "hanacure",
+      name: "Hanacure",
+      logo: "",
+      ratingCount: "",
+      description: "",
+      categories: ["Shop all"],
+    },
+    {
+      id: "bubble-skincare",
+      name: "Bubble Skincare",
+      logo: "",
+      ratingCount: "",
+      description: "",
+      categories: ["Shop all"],
+    },
+    {
+      id: "bare-minerals",
+      name: "Bare Minerals",
+      logo: "",
+      ratingCount: "",
+      description: "",
+      categories: ["Shop all"],
+    },
+    {
+      id: "buffy",
+      name: "Buffy",
+      logo: "",
+      ratingCount: "",
+      description: "",
+      categories: ["Shop all"],
+    },
+    {
+      id: "the-citizenry",
+      name: "The Citizenry",
+      logo: "",
+      ratingCount: "",
+      description: "",
+      categories: ["Shop all"],
+    },
+    {
+      id: "true-classic",
+      name: "True Classic",
+      logo: "",
+      ratingCount: "",
+      description: "",
+      categories: ["Shop all"],
+    },
+    {
+      id: "kicks-crew",
+      name: "KICKS CREW",
+      logo: "",
+      ratingCount: "",
+      description: "",
+      categories: ["Shop all"],
+    },
+
+    ...homeStores,
+    {
+      id: "city-jeans",
+      name: "City Jeans",
+      logo: "",
+      rating: 4.8,
+      ratingCount: "3.7K",
+      description: "",
+      categories: ["Shop all", "Jeans"],
+    },
+    {
+      id: "fenty-beauty",
+      name: "Fenty Beauty",
+      logo: "",
+      ratingCount: "",
+      description: "",
+      categories: ["Shop all", "Makeup"],
+    },
+    {
+      id: "juvias-place",
+      name: "Juvia’s Place",
+      logo: "",
+      ratingCount: "",
+      description: "",
+      categories: ["Shop all", "Makeup"],
+    },
+
     {
       id: "chemical-guys",
       name: "Chemical Guys",
@@ -385,5 +478,6 @@ export const referenceCatalog: Catalog = {
       rating: 4.8,
       ratingCount: "984",
     }),
+    ...homeProducts,
   ],
 };

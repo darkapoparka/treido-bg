@@ -49,29 +49,45 @@ test("photo assistant entry retains a local preview and opens the captured answe
   await expect(page.getByText("Searched for products")).toBeVisible();
 });
 
-test("captured outfit selection changes the product family", async ({
+test("captured outfit labels scroll the complete result groups", async ({
   page,
 }) => {
   await page.goto("/minis/look");
   await page.getByRole("button", { name: "Choose Photo", exact: true }).click();
   await page.getByRole("button", { name: "Use reference outfit" }).click();
   await page.getByRole("button", { name: "View captured matches" }).click();
-  const products = page.locator("[data-look-selection]");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const products = page.locator(".look-results");
   await expect(
     products.locator('a[href="/products/look-sculpt"]').first(),
   ).toBeVisible();
-  await page
-    .getByRole("button", {
-      name: "Women’s Black Crew Neck T-shirt",
-      exact: true,
-    })
-    .click();
+  for (const label of [
+    "Women’s Black Crew Neck T-shirt",
+    "Women’s Black and White Gingham Mini Skirt",
+  ]) {
+    await page.getByRole("button", { name: label, exact: true }).click();
+    const section = page
+      .locator(".look-results section")
+      .filter({ has: page.getByRole("heading", { name: label, exact: true }) });
+    await expect
+      .poll(async () => {
+        const rect = await section.boundingBox();
+        return Math.round(rect?.y ?? -1);
+      })
+      .toBeGreaterThanOrEqual(0);
+    await expect
+      .poll(async () => {
+        const rect = await section.boundingBox();
+        return Math.round(rect?.y ?? 999);
+      })
+      .toBeLessThan(120);
+  }
+  await expect(
+    products.locator('a[href="/products/look-sculpt"]').first(),
+  ).toHaveCount(1);
   await expect(
     products.locator('a[href="/products/look-black-crew"]').first(),
-  ).toBeVisible();
-  await expect(products.locator('a[href="/products/look-sculpt"]')).toHaveCount(
-    0,
-  );
+  ).toHaveCount(1);
   await expect(page.locator("body")).not.toContainText(/â€™|â€¦|dÃ©/);
 });
 
@@ -122,4 +138,156 @@ test("people draft follows nickname and birthday browser stages", async ({
   await expect(
     page.getByRole("textbox", { name: "Nickname", exact: true }),
   ).toHaveValue("Taylor");
+});
+
+test("search suggestions replace the entry and keep captured store choices", async ({
+  page,
+}) => {
+  await page.goto("/search");
+  await expect(
+    page.getByRole("link", { name: /Finding the right pair of jeans/ }),
+  ).toBeVisible();
+  const searchInput = page.getByRole("textbox", { name: "Search products" });
+  await searchInput.click();
+  await page.keyboard.type("Jeans", { delay: 90 });
+  await expect(searchInput).toHaveValue("Jeans");
+  await expect(searchInput).toBeFocused();
+  await expect(
+    page.getByRole("heading", { name: "Suggestions" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: /City Jeans 4.8/ }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /Recently viewed/ }),
+  ).toHaveCount(0);
+  await page.getByRole("link", { name: "jeans baggy", exact: true }).click();
+  await expect(page).toHaveURL(/q=jeans%20baggy/);
+});
+
+test("gift questions retain prior choices and use the bottom composer", async ({
+  page,
+}) => {
+  await page.goto("/minis/gift");
+  await page.getByRole("button", { name: /Let’s Begin/ }).click();
+  await page.getByRole("button", { name: "Friend", exact: true }).click();
+  await page.getByRole("button", { name: "Creative", exact: true }).click();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByRole("button", { name: "Under $25", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Under $25", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "Under $25", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    page.getByText("What’s your budget for this gift?", { exact: true }),
+  ).toHaveCount(1);
+  await expect(page.locator("textarea")).toHaveCount(0);
+  await page
+    .getByRole("textbox", { name: "Optional gift notes" })
+    .fill("He likes black color");
+  await expect(page.locator(".gift-composer input")).toHaveValue(
+    "He likes black color",
+  );
+});
+
+test("Sol advances the entered captured example to source product cards", async ({
+  page,
+}) => {
+  await page.goto("/minis/sol");
+  await page.getByRole("button", { name: "Agree", exact: true }).click();
+  await page.getByRole("button", { name: /Allow & Continue/ }).click();
+  await page
+    .getByRole("button", { name: "Continue with text", exact: true })
+    .click();
+  await page.getByRole("textbox", { name: "Message Sol" }).fill("sunglasses");
+  await page.getByRole("button", { name: "Send local message" }).click();
+  await expect(
+    page.getByText("Nice, sunglasses are a fun pick.", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "View captured choices" }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Gold rimless glasses", exact: true })
+    .click();
+  await expect(
+    page.locator('.sol-product-results a[href="/products/u-see-me"]').first(),
+  ).toBeVisible();
+  await expect(page.locator(".sol-product-results")).toContainText("$14.90");
+  await expect(
+    page
+      .locator('.sol-product-results a[href="/products/round-sunglasses"]')
+      .first(),
+  ).toHaveCount(1);
+});
+
+for (const [store, product] of [
+  ["princess-polly", "home-princess-top"],
+  ["drmtlgy", "home-drmtlgy-eye"],
+  ["city-jeans", "city-duaa-denim"],
+]) {
+  test(`store ${store} opens its product with decoded media and no empty logo`, async ({
+    page,
+  }) => {
+    await page.goto(`/stores/${store}`);
+    await expect(page.locator('img[src=""]')).toHaveCount(0);
+    await page.locator(`a[href="/products/${product}"]`).first().click();
+    await expect(page).toHaveURL(new RegExp(`/products/${product}$`));
+    await expect(page.locator('img[src=""]')).toHaveCount(0);
+    await expect
+      .poll(async () =>
+        page
+          .locator(".product-gallery img")
+          .evaluateAll(
+            (nodes) =>
+              nodes.length > 0 &&
+              nodes.every(
+                (n) =>
+                  (n as HTMLImageElement).complete &&
+                  (n as HTMLImageElement).naturalWidth > 0,
+              ),
+          ),
+      )
+      .toBeTruthy();
+    await expect(page.getByRole("link", { name: /More options/ })).toHaveCount(
+      0,
+    );
+  });
+}
+
+test("pickup payment follows card deletion when returning from account", async ({
+  page,
+}) => {
+  await page.goto("/checkout?store=white-rock");
+  await expect(
+    page.getByText("Visa •••• 4242", { exact: false }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Edit payment method" }).click();
+  for (let i = 0; i < 2; i++) {
+    await page.locator(".payment-card-button").first().click();
+    await page
+      .getByRole("button", { name: "Delete card", exact: true })
+      .click();
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Delete", exact: true })
+      .click();
+  }
+  await expect(page.locator(".payment-card-button")).toHaveCount(0);
+  for (let i = 0; i < 6 && !page.url().includes("/checkout"); i++) {
+    await page.goBack();
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+        ),
+    );
+  }
+  await expect(page).toHaveURL(/checkout\?store=white-rock/);
+  await expect(
+    page.getByText("Add payment method", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: /Pay now/ })).toBeDisabled();
 });

@@ -2,8 +2,12 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { TrackingDetail } from "./tracking";
 import type { Catalog } from "../catalog/types";
 import { formatMoney } from "../catalog/types";
+import { Icon } from "../discovery/icons";
+import { capturedReceipts } from "./receipt-data";
 import { Sheet, ProductCard } from "../discovery/components";
 import { AccountPage, Row, Boundary } from "../account/forms";
 import { useAccount, type ReferenceOrder } from "../account/state";
@@ -20,6 +24,7 @@ export function OrdersPage({
   const [menu, setMenu] = useState(false);
   const [search, setSearch] = useState(false);
   const [query, setQuery] = useState("");
+  const [deal, setDeal] = useState<number | null>(null);
   const visible = orders.filter(
     (o) =>
       (history || o.archived === archive) &&
@@ -27,16 +32,26 @@ export function OrdersPage({
   );
   return (
     <AccountPage
-      title={history ? "Order history" : archive ? "Archived orders" : "Orders"}
+      back={archive || history}
+      title={history ? "Order history" : archive ? "Archived" : "Orders"}
+      className={archive ? "archive-page" : "source-orders-page"}
       action={
-        <div className="order-actions">
-          <button aria-label="Search orders" onClick={() => setSearch(!search)}>
-            ⌕
-          </button>
-          <button aria-label="More order options" onClick={() => setMenu(true)}>
-            •••
-          </button>
-        </div>
+        !archive && (
+          <div className="order-actions">
+            <button
+              aria-label="Search orders"
+              onClick={() => setSearch(!search)}
+            >
+              ⌕
+            </button>
+            <button
+              aria-label="More order options"
+              onClick={() => setMenu(true)}
+            >
+              •••
+            </button>
+          </div>
+        )
       }
     >
       {search && (
@@ -52,6 +67,44 @@ export function OrdersPage({
       )}
       {visible.map((o) => {
         const p = catalog.products.find((p) => p.id === o.productId);
+        if (archive)
+          return (
+            <Link
+              key={o.id}
+              className="archive-order-row"
+              href={`/orders/${o.id}`}
+            >
+              {p && <img src={p.images[0]} alt="" />}
+              <span>
+                <strong>Ordered Jul 27</strong>
+                <small>
+                  KITSCH · 1 item ·{" "}
+                  {formatMoney({
+                    amount:
+                      capturedReceipts[o.id]?.total ?? p?.price.amount ?? 0,
+                    currency: "USD",
+                  })}
+                </small>
+              </span>
+            </Link>
+          );
+        if (history)
+          return (
+            <Link
+              className="order-history-row"
+              key={o.id}
+              href={`/orders/${o.id}`}
+            >
+              {p && <img src={p.images[0]} alt="" />}
+              <span>
+                <strong>{o.name}</strong>
+                <small>
+                  {o.status === "Delivered" ? "Delivered" : "Order placed"}
+                </small>
+              </span>
+              <small>Jul 27</small>
+            </Link>
+          );
         return (
           <Link
             className="account-panel tracking-card"
@@ -59,51 +112,143 @@ export function OrdersPage({
             key={o.id}
           >
             <div>
-              <strong>KITSCH</strong>
+              <strong className="order-seller-label">
+                {p && <img src="/api/reference-media/kitsch-logo" alt="" />}
+                {p ? "KITSCH" : o.name}
+              </strong>
               <h2>
                 {o.status === "Delivered"
-                  ? "Delivered Aug 1"
+                  ? "Review your order"
                   : o.status === "Ordered"
-                    ? "Order placed"
+                    ? p
+                      ? "Order placed"
+                      : "Label created"
                     : "Expected by Aug 3"}
               </h2>
-              <div className="tracking-line">
-                <span
-                  style={{ width: o.status === "Delivered" ? "100%" : "35%" }}
-                >
-                  ▣
-                </span>
-              </div>
+              {o.status === "Delivered" ? (
+                <span className="review-stars">★★★★★</span>
+              ) : (
+                <div className="tracking-line">
+                  <span
+                    style={{ width: o.status === "Ordered" ? "10%" : "35%" }}
+                  >
+                    <img src="/api/reference-media/parcel" alt="" />
+                  </span>
+                </div>
+              )}
             </div>
             {p && <img src={p.images[0]} alt={o.name} />}
           </Link>
         );
       })}
       {!visible.length && (
-        <div className="notification-empty">
-          <h2>{query ? "No orders found" : "No orders yet"}</h2>
+        <div
+          className={
+            archive || query ? "notification-empty" : "order-empty-source"
+          }
+        >
+          {!archive && !query && (
+            <img src="/api/reference-media/order-empty-art" alt="" />
+          )}
+          {archive && !query && (
+            <img
+              className="archive-empty-package"
+              src="/api/reference-media/onboarding-package"
+              alt=""
+            />
+          )}
+          <h2>
+            {query
+              ? "No orders found"
+              : archive
+                ? "No archived orders yet"
+                : "Track all your orders here"}
+          </h2>
           <p>
             {query
               ? "Try another name or order number."
-              : "Your tracked orders will appear here."}
+              : archive
+                ? "Clean up your orders tab, by moving your past orders to the archive."
+                : "Connect your account, and Shop will automatically track your orders."}
           </p>
+          {!archive && !query && (
+            <>
+              <Link className="primary form-submit" href="/account/connections">
+                Connect account
+              </Link>
+              <Link className="form-cancel" href="/orders/new">
+                Add a package manually
+              </Link>
+            </>
+          )}
         </div>
       )}
-      {(archive || history) && (
+      {history && (
+        <div className="history-email-link">
+          <Link href="/account/connections">
+            Connect email to see more deliveries ›
+          </Link>
+        </div>
+      )}
+      {!history && !archive && visible.some((o) => o.status !== "Ordered") && (
         <>
-          <h2>Buy again ›</h2>
-          <div className="product-rail">
-            {catalog.products
-              .filter((p) => orders.some((o) => o.productId === p.id))
-              .map((p) => (
-                <ProductCard product={p} key={p.id} compact />
+          <section className="orders-deals">
+            <h2>Deals based on your orders ›</h2>
+            <div className="orders-deal-grid">
+              {[5, 30, 5, 25, 25, 35].map((amount, i) => (
+                <button
+                  key={i}
+                  aria-label={`View deal ${i + 1}`}
+                  onClick={() => setDeal(i)}
+                >
+                  <img src={`/api/reference-media/order-deal-${i}`} alt="" />
+                  <span>Save ${amount}</span>
+                  <i>
+                    <Icon name="cart" />
+                  </i>
+                </button>
               ))}
-          </div>
+            </div>
+          </section>
+          <section className="orders-past">
+            <h2>Past orders ›</h2>
+            {orders
+              .filter((o) => o.archived)
+              .map((o) => (
+                <Link href={`/orders/${o.id}`} key={o.id}>
+                  <img src="/api/reference-media/parcel" alt="" />
+                  <span>
+                    Delivered Jul 28<small>{o.name}</small>
+                  </span>
+                </Link>
+              ))}
+          </section>
         </>
       )}
-      <Link className="form-cancel order-archive-link" href="/orders/archived">
-        View archived orders
-      </Link>
+      <Sheet
+        open={deal !== null}
+        title="Your deal"
+        onClose={() => setDeal(null)}
+      >
+        {deal !== null && (
+          <img
+            className="deal-preview-image"
+            src={`/api/reference-media/order-deal-${deal}`}
+            alt="Selected deal"
+          />
+        )}
+        <Link className="primary form-submit" href="/search">
+          Shop products
+        </Link>
+      </Sheet>
+      {!archive && !history && !visible.some((o) => o.status !== "Ordered") && (
+        <Link
+          className="form-cancel order-archive-link"
+          href="/orders/archived"
+        >
+          View archived orders
+        </Link>
+      )}
       <Sheet open={menu} title="More options" onClose={() => setMenu(false)}>
         <Row label="View order archive" href="/orders/archived" />
         <Row label="Connect email accounts" href="/account/connections" />
@@ -117,7 +262,11 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
   const order = orders.find((o) => o.id === id);
   const [menu, setMenu] = useState(false);
   const [delivered, setDelivered] = useState(false);
-  const [progress, setProgress] = useState(false);
+  const router = useRouter(),
+    params = useSearchParams();
+  const progress = params.get("view") === "tracking";
+  const setProgress = () =>
+    router.push(`/orders/${id}?view=tracking`, { scroll: false });
   const [edit, setEdit] = useState(false);
   const [boundary, setBoundary] = useState(false);
   const [copied, setCopied] = useState("");
@@ -129,6 +278,30 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
       </AccountPage>
     );
   const product = catalog.products.find((p) => p.id === order.productId);
+  if (progress)
+    return (
+      <>
+        <TrackingDetail
+          catalog={catalog}
+          order={order}
+          onEdit={() => setEdit(true)}
+        />
+        <Sheet
+          open={edit}
+          title="Edit tracking details"
+          onClose={() => setEdit(false)}
+        >
+          <ManualOrderForm
+            initial={order}
+            editing
+            onSave={(v) => {
+              saveOrder(v);
+              setEdit(false);
+            }}
+          />
+        </Sheet>
+      </>
+    );
   return (
     <AccountPage>
       <section
@@ -161,10 +334,7 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
           <span className="review-stars">★★★★★</span>
         </Link>
       )}
-      <button
-        className="account-panel order-status"
-        onClick={() => setProgress(true)}
-      >
+      <button className="account-panel order-status" onClick={setProgress}>
         <span>
           <strong>
             {order.status === "Delivered"
@@ -213,7 +383,13 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
             <ProductCard product={p} key={p.id} />
           ))}
       </div>
-      <Sheet open={menu} title="Manage order" onClose={() => setMenu(false)}>
+      <Sheet open={menu} title="Your order" onClose={() => setMenu(false)}>
+        {capturedReceipts[id] && (
+          <Row
+            label="View order confirmation"
+            href={`/orders/${id}/confirmation`}
+          />
+        )}
         <Row
           label="Copy order number"
           onClick={async () => {
@@ -227,10 +403,23 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
         />
         {copied && <p role="status">{copied}</p>}
         <Row
-          label="Mark as delivered"
+          label="Contact merchant"
           onClick={() => {
             setMenu(false);
-            setDelivered(true);
+            setBoundary(true);
+          }}
+        />
+        <Row
+          label={
+            order.status === "Delivered"
+              ? "Unmark as delivered"
+              : "Mark order as delivered"
+          }
+          onClick={() => {
+            setMenu(false);
+            if (order.status === "Delivered")
+              saveOrder({ ...order, status: "In transit" });
+            else setDelivered(true);
           }}
         />
         <Row
@@ -245,6 +434,20 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
           onClick={() => {
             saveOrder({ ...order, archived: !order.archived });
             setMenu(false);
+          }}
+        />
+        <Row
+          label="Report an issue with this order"
+          onClick={() => {
+            setMenu(false);
+            setBoundary(true);
+          }}
+        />
+        <Row
+          label="Report this order as fraudulent"
+          onClick={() => {
+            setMenu(false);
+            setBoundary(true);
           }}
         />
       </Sheet>
@@ -265,61 +468,13 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
         </button>
       </Sheet>
       <Sheet
-        open={progress}
-        title="Delivery progress"
-        onClose={() => setProgress(false)}
-      >
-        <div className="delivery-timeline">
-          {[
-            "Order placed",
-            "Shipped",
-            "In transit",
-            "Out for delivery",
-            "Delivered",
-          ].map((s, i) => (
-            <div key={s}>
-              <span
-                className={
-                  i <=
-                  (order.status === "Delivered"
-                    ? 4
-                    : order.status === "In transit"
-                      ? 2
-                      : 0)
-                    ? "complete"
-                    : ""
-                }
-              >
-                ●
-              </span>
-              <div>
-                <strong>{s}</strong>
-                <p>
-                  {i === 0
-                    ? "Jul 27"
-                    : i === 4 && order.status === "Delivered"
-                      ? "Aug 1 · 8:04 AM"
-                      : i === 1
-                        ? "Package shipped"
-                        : i === 2
-                          ? "In transit"
-                          : "Pending"}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-        <p className="form-note">
-          {order.carrier} · {order.tracking}
-        </p>
-      </Sheet>
-      <Sheet
         open={edit}
-        title="Tracking details"
+        title="Edit tracking details"
         onClose={() => setEdit(false)}
       >
         <ManualOrderForm
           initial={order}
+          editing
           onSave={(v) => {
             saveOrder(v);
             setEdit(false);
@@ -337,7 +492,9 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
 function ManualOrderForm({
   initial,
   onSave,
+  editing = false,
 }: {
+  editing?: boolean;
   initial: ReferenceOrder;
   onSave: (o: ReferenceOrder) => void;
 }) {
@@ -352,7 +509,7 @@ function ManualOrderForm({
         onSave(value);
       }}
     >
-      <h2>Manually add order</h2>
+      {!editing && <h2>Manually add order</h2>}
       <label className="form-field">
         Tracking number
         <input
@@ -371,29 +528,31 @@ function ManualOrderForm({
           onChange={(e) => setValue({ ...value, name: e.target.value })}
         />
       </label>
-      <button
-        type="button"
-        className="form-field carrier-selector"
-        onClick={() => setCarrierOpen(!carrierOpen)}
-      >
-        Carrier <strong>{value.carrier || "Select carrier"}</strong>
-      </button>
+      <label className="form-field carrier-selector">
+        Carrier
+        <input
+          aria-label="Carrier"
+          value={carrierOpen ? carrierQuery : value.carrier}
+          onFocus={() => {
+            setCarrierQuery(value.carrier);
+            setCarrierOpen(true);
+          }}
+          onChange={(e) => {
+            setCarrierQuery(e.target.value);
+            setCarrierOpen(true);
+          }}
+        />
+      </label>
       {carrierOpen && (
         <div className="carrier-search">
-          <label className="form-field">
-            Search carriers
-            <input
-              value={carrierQuery}
-              onChange={(e) => setCarrierQuery(e.target.value)}
-              placeholder="Search carriers"
-            />
-          </label>
           <h3>Recommended carriers</h3>
           {[
             "DHL Active Tracing",
             "DHL Benelux",
             "DHL 2-Man-Handling",
             "DHL eCommerce",
+            "DHL eCommerce Vietnam",
+            "DHL Spain Domestic",
             "DHL Express",
             "USPS",
             "FedEx",
@@ -419,99 +578,149 @@ function ManualOrderForm({
             ))}
         </div>
       )}
-      <p className="form-note">
-        Saves a local tracking entry. It does not contact a carrier.
-      </p>
-      <button className="primary form-submit">Save order</button>
+      <button
+        className="primary form-submit"
+        disabled={
+          !value.tracking.trim() ||
+          !value.name.trim() ||
+          !value.carrier.trim() ||
+          (editing &&
+            value.tracking === initial.tracking &&
+            value.name === initial.name &&
+            value.carrier === initial.carrier)
+        }
+      >
+        {editing ? "Update tracking details" : "Add order"}
+      </button>
+      {!editing && (
+        <div className="forward-orders">
+          <p>or</p>
+          <h2>Forward shipping emails</h2>
+          <a href="mailto:track-reference@example.test">
+            track-reference@example.test
+          </a>
+          <p>
+            Copy your unique address to forward shipping emails and Shop will
+            track your orders. Learn more
+          </p>
+          <a
+            className="primary form-submit"
+            href="mailto:track-reference@example.test"
+          >
+            Open email app
+          </a>
+          <Link href="/account/connections">
+            Track orders automatically instead
+          </Link>
+        </div>
+      )}
     </form>
   );
 }
 export function NewOrder() {
   const { saveOrder } = useAccount();
-  const [created, setCreated] = useState("");
+  const router = useRouter();
   return (
     <AccountPage title="Add order manually">
-      {created ? (
-        <>
-          <p role="status">Order added.</p>
-          <Link className="primary form-submit" href={`/orders/${created}`}>
-            View order
-          </Link>
-        </>
-      ) : (
-        <ManualOrderForm
-          initial={{
-            id: "",
-            productId: "",
-            name: "",
-            carrier: "DHL",
-            tracking: "",
-            status: "Ordered",
-            archived: false,
-            rating: 0,
-            review: "",
-          }}
-          onSave={(o) => {
-            const id = `REF-${crypto.randomUUID().slice(0, 8)}`;
-            saveOrder({ ...o, id });
-            setCreated(id);
-          }}
-        />
-      )}
+      <ManualOrderForm
+        initial={{
+          id: "",
+          productId: "",
+          name: "",
+          carrier: "",
+          tracking: "",
+          status: "Ordered",
+          archived: false,
+          rating: 0,
+          review: "",
+        }}
+        onSave={(o) => {
+          const id = `REF-${crypto.randomUUID().slice(0, 8)}`;
+          saveOrder({ ...o, id });
+          router.push("/orders");
+        }}
+      />
     </AccountPage>
   );
 }
-export function OrderReview({ id }: { id: string }) {
-  const { orders, saveOrder } = useAccount();
+export function OrderReview({ id, catalog }: { id: string; catalog: Catalog }) {
+  const { orders, saveOrder, profile } = useAccount();
   const order = orders.find((o) => o.id === id);
+  const product = catalog.products.find((p) => p.id === order?.productId);
   const [rating, setRating] = useState(order?.rating ?? 0);
   const [review, setReview] = useState(order?.review ?? "");
   const [saved, setSaved] = useState(false);
+  const editing = !!order?.rating;
   return (
-    <AccountPage title="Review your order">
-      {order ? (
-        <>
-          <h2>{order.name}</h2>
-          <form
-            className="account-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              saveOrder({ ...order, rating, review });
-              setSaved(true);
-            }}
-          >
-            <div className="rating-picker">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <button
-                  type="button"
-                  aria-label={`${n} stars`}
-                  aria-pressed={rating === n}
-                  onClick={() => setRating(n)}
-                  key={n}
-                  className={n <= rating ? "selected" : ""}
-                >
-                  ★
-                </button>
-              ))}
+    <AccountPage dock={false} className="order-review-page">
+      <Link
+        className="review-close"
+        href={`/orders/${id}`}
+        aria-label="Close review"
+      >
+        <Icon name="close" />
+      </Link>
+      <h1>{editing ? "Edit your review" : "Review your order"}</h1>
+      {!editing && <p className="review-count">1 of 1 products</p>}
+      {order && product ? (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            saveOrder({ ...order, rating, review });
+            setSaved(true);
+          }}
+        >
+          <div className="review-product">
+            <img src={product.images[0]} alt={order.name} />
+            <div>
+              <small>KITSCH</small>
+              <p>{order.name}</p>
+              <span>
+                {formatMoney({
+                  amount:
+                    capturedReceipts[id]?.itemAmount ?? product.price.amount,
+                  currency: "USD",
+                })}
+              </span>
+              <div className="rating-picker">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button
+                    type="button"
+                    aria-label={`${n} stars`}
+                    aria-pressed={rating >= n}
+                    className={rating >= n ? "selected" : ""}
+                    onClick={() => setRating(n)}
+                    key={n}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
             </div>
-            <label className="form-field">
-              Tell us about your purchase
-              <textarea
-                value={review}
-                onChange={(e) => setReview(e.target.value)}
-                maxLength={2000}
-              />
-            </label>
-            <button className="primary form-submit" disabled={!rating}>
-              Save review
-            </button>
-            {saved && (
-              <p role="status">
-                Review saved in this page session. It has not been published.
-              </p>
-            )}
-          </form>
-        </>
+          </div>
+          <label className="review-text">
+            <strong>Tell us about the product</strong>
+            <textarea
+              aria-label="Tell us about the product"
+              placeholder="What did you like or dislike?"
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+              maxLength={2000}
+            />
+          </label>
+          <p className="review-identity">
+            Reviewing as {profile.firstName}{" "}
+            <span title="Your public profile name">?</span>
+          </p>
+          <button className="primary review-submit" disabled={!rating}>
+            {editing ? "Update review" : "Submit"}
+          </button>
+          {saved && (
+            <p role="status" className="form-note">
+              Review saved locally. It has not been published.
+            </p>
+          )}
+        </form>
       ) : (
         <p>Order not found.</p>
       )}
@@ -519,12 +728,11 @@ export function OrderReview({ id }: { id: string }) {
   );
 }
 export function Receipt({ catalog, id }: { catalog: Catalog; id: string }) {
-  const { orders, addresses } = useAccount();
-  const order = orders.find((o) => o.id === id);
+  const { orders } = useAccount();
+  const order = orders.find((o) => o.id === id),
+    data = capturedReceipts[id];
   const product = catalog.products.find((p) => p.id === order?.productId);
-  const address = addresses.find((a) => a.isDefault) ?? addresses[0];
-  const amount = product?.price.amount ?? 0;
-  const money = (n: number) => formatMoney({ amount: n, currency: "USD" });
+  const money = (amount: number) => formatMoney({ amount, currency: "USD" });
   const [shareMessage, setShareMessage] = useState("");
   return (
     <AccountPage
@@ -543,66 +751,165 @@ export function Receipt({ catalog, id }: { catalog: Catalog; id: string }) {
             }
           }}
         >
-          ↥
+          <Icon name="share" />
         </button>
       }
     >
-      {order ? (
+      {order && data ? (
         <>
-          <p>Order #{order.id}</p>
-          <p className="form-note">Jul 27, 2026</p>
+          <div className="receipt-order-meta">
+            <strong>Order #{id}</strong>
+            <p>{data.date}</p>
+          </div>
           {shareMessage && <p role="status">{shareMessage}</p>}
           <div className="receipt-product">
             {product && <img src={product.images[0]} alt="" />}
             <strong>{order.name}</strong>
-            <span>{money(amount)}</span>
+            <span>{money(data.itemAmount)}</span>
           </div>
           <div className="receipt-totals">
             <p>
               <span>Subtotal</span>
-              <span>{money(amount)}</span>
+              <span>{money(data.itemAmount)}</span>
+            </p>
+            <p>
+              <span>Discount</span>
+              <span>
+                {data.discount ? "-" : ""}
+                {money(data.discount)}
+              </span>
             </p>
             <p>
               <span>Shipping</span>
-              <span>{money(682)}</span>
+              <span>{money(data.shipping)}</span>
             </p>
             <p>
-              <span>Taxes</span>
-              <span>{money(35)}</span>
+              <span>Tax</span>
+              <span>{money(data.tax)}</span>
             </p>
             <p className="receipt-total">
               <strong>Total</strong>
-              <strong>{money(amount + 717)}</strong>
+              <strong>{money(data.total)}</strong>
             </p>
           </div>
-          <section className="receipt-section">
+          <section className="receipt-section receipt-method">
             <h2>Payment method</h2>
             <p className="receipt-payment">
-              <strong>shop Pay</strong>
-              <span>{money(amount + 717)}</span>
+              <strong>Shop Pay</strong>
+              <span>{money(data.total)}</span>
             </p>
-            <p>VISA ···· 4242</p>
+            <p className="receipt-card-line">
+              <b>VISA</b> ···· ···· ···· {data.cardLast4} <span>ⓘ</span>
+            </p>
           </section>
           <section className="receipt-section">
             <h2>Shipping address</h2>
-            {address ? (
-              <p>
-                {address.firstName} {address.lastName}
-                <br />
-                {address.street}
-                <br />
-                {address.city}, {address.region} {address.postalCode}
-                <br />
-                {address.country}
-              </p>
-            ) : (
-              <p>No shipping address in this reference session.</p>
-            )}
+            <p>
+              {data.name}
+              <br />
+              {data.street}
+              <br />
+              {data.city}, {data.region} {data.postalCode}
+              <br />
+              {data.country}
+              <br />
+              {data.phone}
+            </p>
           </section>
-          <p className="form-note"></p>
+          <section className="receipt-section">
+            <h2>Billing address</h2>
+            <p>Same as shipping address</p>
+          </section>
+          <section className="receipt-section">
+            <h2>Shipping method</h2>
+            <p>{data.shippingMethod}</p>
+          </section>
+          <section className="receipt-section">
+            <h2>Email address</h2>
+            <p>{data.email}</p>
+          </section>
+          <section className="receipt-section">
+            <h2>KITSCH</h2>
+            <Link className="receipt-seller" href="/stores/kitsch">
+              <img src="/api/reference-media/kitsch-logo" alt="" />
+              KITSCH
+            </Link>
+          </section>
         </>
       ) : (
-        <p>Receipt not found.</p>
+        <p>No receipt is available for this tracked order.</p>
+      )}
+    </AccountPage>
+  );
+}
+export function OrderConfirmation({
+  id,
+  catalog,
+}: {
+  id: string;
+  catalog: Catalog;
+}) {
+  const { orders } = useAccount();
+  const order = orders.find((o) => o.id === id),
+    data = capturedReceipts[id];
+  const product = catalog.products.find((p) => p.id === order?.productId);
+  const money = (amount: number) => formatMoney({ amount, currency: "USD" });
+  return (
+    <AccountPage className="order-confirmation-page">
+      <Link
+        className="review-close"
+        href={`/orders/${id}`}
+        aria-label="Close confirmation"
+      >
+        <Icon name="close" />
+      </Link>
+      {order && data ? (
+        <>
+          <header className="confirmation-heading">
+            <div>
+              <h1>Order confirmed</h1>
+              <small>Order No. {id}</small>
+            </div>
+            <img src="/api/reference-media/kitsch-logo" alt="KITSCH" />
+          </header>
+          <section className="confirmation-destination">
+            <small>Ships to</small>
+            <div>
+              <strong>
+                {data.street}, {data.city}, CA, {data.postalCode}, US
+              </strong>
+              {product && <img src={product.images[0]} alt="" />}
+            </div>
+          </section>
+          <section className="confirmation-delivery">
+            <small>Estimated delivery</small>
+            <strong>Expected by Aug 3</strong>
+          </section>
+          <div className="confirmation-total">
+            <p>
+              <span>Total</span>
+              <span>{money(data.total)}</span>
+            </p>
+            <p>
+              <span>Shop Pay — {data.cardLast4}</span>
+              <span>{money(data.total)}</span>
+            </p>
+          </div>
+          <Link className="muted-button" href={`/orders/${id}/receipt`}>
+            View order receipt
+          </Link>
+          <h2>Popular at KITSCH ›</h2>
+          <div className="product-rail">
+            {["black-conditioner-bag", "chocolate-body-bag", "shower-caddy"]
+              .map((id) => catalog.products.find((p) => p.id === id))
+              .filter((p) => !!p)
+              .map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+          </div>
+        </>
+      ) : (
+        <p>No confirmation is available for this tracked order.</p>
       )}
     </AccountPage>
   );

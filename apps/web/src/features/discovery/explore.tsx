@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Catalog } from "../catalog/types";
 import { FloatingNav, ProductCard } from "./components";
 import { Icon } from "./icons";
+import { BeautySections } from "./beauty";
 const categories = [
   { name: "Deals", color: "#251168", images: ["explore-deals-art"] },
   {
@@ -54,6 +55,13 @@ export function Explore({
               key={c}
               href={`/search?q=${encodeURIComponent(c)}`}
             >
+              {beauty && (
+                <img
+                  className="beauty-category-icon"
+                  src={`/api/reference-media/beauty-pill-${c === "Skin care" ? "skin" : c === "Hair care" ? "hair" : c === "Makeup" ? "makeup" : "scent"}`}
+                  alt=""
+                />
+              )}
               {c}
             </Link>
           ))}
@@ -143,11 +151,33 @@ export function Explore({
                         : "Beauty"),
               )
               .map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <ProductCard
+                  key={p.id}
+                  product={p}
+                  showPromotion
+                  storeName={
+                    catalog.stores.find((s) => s.id === p.storeId)?.name
+                  }
+                />
               ))}
           </div>
         </section>
       ))}
+      {beauty && <BeautySections catalog={catalog} />}
+      {!category && (
+        <section className="explore-shelf">
+          <h2>Top rated in womenswear ›</h2>
+          <div className="product-rail explore-women-partials">
+            <div />
+            <div>
+              <img
+                src="/api/reference-media/explore-womenswear-partial"
+                alt="Captured womenswear photograph detail"
+              />
+            </div>
+          </div>
+        </section>
+      )}
       <FloatingNav back={!!category} />
     </main>
   );

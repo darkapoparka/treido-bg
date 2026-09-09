@@ -58,7 +58,7 @@ test("card preferences and deletion retain the selected card identity", async ({
 }) => {
   await page.goto("/account/payments");
   await page.getByRole("button", { name: /VISA.*1881/ }).click();
-  const receipts = page.getByRole("checkbox", { name: /In-store receipts/ });
+  const receipts = page.getByRole("switch", { name: /In-store receipts/ });
   await receipts.uncheck();
   await page.goBack();
   await page.getByRole("button", { name: /VISA.*4242/ }).click();

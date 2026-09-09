@@ -1,5 +1,5 @@
 import { readCatalog } from "@/features/catalog/queries.server";
-import { OrderReview } from "@/features/commerce/orders";
+import { OrderConfirmation } from "@/features/commerce/orders";
 export default async function Page({
   params,
 }: {
@@ -7,5 +7,5 @@ export default async function Page({
 }) {
   const catalog = await readCatalog();
   const { id } = await params;
-  return <OrderReview id={id} catalog={catalog} />;
+  return <OrderConfirmation id={id} catalog={catalog} />;
 }

@@ -277,6 +277,181 @@
       "verified": true,
       "verification": "Actual viewed exact package, bar, lighting and composition match to related grid in frozen flow a99e7161-595d-466c-b0b1-bc1183f1d4d7/008.webp. Full original has no interface controls.",
       "localFile": "reference-assets/shop/products/charcoal-body-wash.jpg"
+    },
+    {
+      "id": "shea-gallery-hero",
+      "localFile": "reference-assets/shop/products/shea-gallery-hero-original.jpg",
+      "sourcePage": "https://www.mykitsch.com/products/shea-butter-solid-body-wash",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/0104/6904/8384/files/9852-SheaButterSolidBodyWashBar-BottleFreeBeauty-Moisturizing-Hero-1280x1280px_8d065d67-4e39-44f7-8158-b7be14187326.jpg?v=1778097098",
+      "width": 1280,
+      "height": 1280,
+      "sha256": "2382998c1eaff59c603fb104fcb2ac20275a1ee2a232768363b16a4881e419d9",
+      "verification": "Visually matched exact packaging and composition to frozen screenshots066/067/060. Clean official original; no interface overlays."
+    },
+    {
+      "id": "shea-gallery-testimonial",
+      "localFile": "reference-assets/shop/products/shea-gallery-testimonial-original.jpg",
+      "sourcePage": "https://www.mykitsch.com/products/shea-butter-solid-body-wash",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/0104/6904/8384/files/Shea_Butter_Infographic-1.png?v=1778182313",
+      "width": 1400,
+      "height": 1400,
+      "sha256": "e3384fe2a7e5dac2c291d52085dbe72f7fd35d5d8cc7b5b34c8728f0de4165c8",
+      "verification": "Visually matched exact packaging and composition to frozen screenshots066/067/060. Clean official original; no interface overlays."
+    },
+    {
+      "id": "shea-gallery-benefits",
+      "localFile": "reference-assets/shop/products/shea-gallery-benefits-original.jpg",
+      "sourcePage": "https://www.mykitsch.com/products/shea-butter-solid-body-wash",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/0104/6904/8384/files/Shea_Butter-Bar-Infographic.png?v=1778182314",
+      "width": 4167,
+      "height": 4167,
+      "sha256": "f3d111a78c18d67a82e4b17db33d3e653331e62aab5bf5aeab2c5e74c2563437",
+      "verification": "Visually matched exact packaging and composition to frozen screenshots066/067/060. Clean official original; no interface overlays."
+    },
+    {
+      "id": "beauty-athena-product",
+      "localFile": "reference-assets/shop/products/beauty-athena.png",
+      "sourcePage": "https://athenaclub.com/products/razor-kit",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/0763/3774/2108/files/Coral_Razor_ShopAllATC.webp?v=1744836974",
+      "width": 2092,
+      "height": 2092,
+      "sha256": "a9d59e29df6d79404285051cbbfd365026ba84d0290a35283b32228b93cdcd2f",
+      "verification": "Visually matched source flow51/003-006 product composition; source colors/prices remain frozen."
+    },
+    {
+      "id": "beauty-crown-product",
+      "localFile": "reference-assets/shop/products/beauty-crown.jpg",
+      "sourcePage": "https://www.crownaffair.com/products/the-hydrating-conditioner",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/0088/0368/0319/files/TheHydratingConditioner-OnGrey01.jpg?v=1762269264",
+      "width": 1200,
+      "height": 1200,
+      "sha256": "7fc6d80ee25befae45ff469631a2e6ed16dfc5a9582cdc1ad6b3fae8a8d0baae",
+      "verification": "Visually matched source flow51/003-006 product composition; source colors/prices remain frozen."
+    },
+    {
+      "id": "beauty-necessaire-product",
+      "localFile": "reference-assets/shop/products/beauty-necessaire.jpg",
+      "sourcePage": "https://necessaire.com/products/the-body-wash-pump-santal",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/0034/8812/0947/files/01_TheBodyWashJumbo_SA.jpg?v=1758837585",
+      "width": 1116,
+      "height": 1302,
+      "sha256": "75257a07cbf89116bdcf10f473c400e3bd54aea4381fcc871f6b852e551cb5a4",
+      "verification": "Visually matched source flow51/003-006 product composition; source colors/prices remain frozen."
+    },
+    {
+      "id": "beauty-fenty-partial",
+      "localFile": "reference-assets/shop/products/beauty-fenty.jpg",
+      "sourcePage": "https://fentybeauty.com/products/eaze-drop-lightweight-blurring-skin-tint-2",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/0341/3458/9485/products/FB30031_FB002.jpg?v=1762198669",
+      "width": 1200,
+      "height": 1500,
+      "sha256": "e1bb759c09f5edaed3786e4656a9b6608aec1adbf99358fc83ce4f12386f228b",
+      "verification": "Visually matched source flow51/003-006 product composition; source colors/prices remain frozen."
+    },
+    {
+      "id": "beauty-juvia-partial",
+      "localFile": "reference-assets/shop/products/beauty-juvia.jpg",
+      "sourcePage": "https://www.juviasplace.com/products/blushed-blonzing-stick",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/1476/5372/files/1200765_CartonComponent_01_BLOZINGSTICK_BurntSugar_68e1fcd9-68a3-4ae2-aafe-55c9d615129c.jpg?v=1774794448",
+      "width": 1512,
+      "height": 1512,
+      "sha256": "bfc14b42c6eacbdd0032df59ef5670650fe4783570ccb60331a344cc24cc129b",
+      "verification": "Visually matched source flow51/003-006 product composition; source colors/prices remain frozen."
+    },
+    {
+      "id": "beauty-starface-product",
+      "localFile": "reference-assets/shop/products/beauty-starface.png",
+      "sourcePage": "https://starface.world/products/big-pink-bundle",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/0070/8388/4615/files/starface-big-pink-hydro-star-bundle.png?v=1743780890",
+      "sha256": "3ba1be6c7540570b0dfee53a4f73e46c102161bd33d3813e388b07f8ce28d916",
+      "width": 1080,
+      "height": 1350,
+      "verification": "Exact source51/005: perfect pink bundle closed compact lowerleft, four stars upperleft, pink cartonright."
+    },
+    {
+      "id": "shea-gallery-hand",
+      "localFile": "reference-assets/shop/products/shea-gallery-hand.jpg",
+      "sourcePage": "https://www.mykitsch.com/products/shea-butter-solid-body-wash",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/0104/6904/8384/files/9852-CreativeProductShoot-SheaButterSolidBodyWashBar-BottleFreeBeauty-4-1280x1280px.jpg?v=1787354738",
+      "width": 1280,
+      "height": 1280,
+      "sha256": "d512a6cd249eed7f37c98ec469fec7ede8dc9e7c73190346f953c90de6958ff6",
+      "verification": "Current official merchant gallery continuation. Product identity verified; frozen archive exposes five dots but does not reveal these final two compositions or their historical positions."
+    },
+    {
+      "id": "shea-gallery-shower",
+      "localFile": "reference-assets/shop/products/shea-gallery-shower.jpg",
+      "sourcePage": "https://www.mykitsch.com/products/shea-butter-solid-body-wash",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/0104/6904/8384/files/65768-9852-ShowerFilterAttachment-SheaButterBodyWashBar-Model-BottleFreeBeauty-Terracotta-1280x1280px.jpg?v=1787354800",
+      "width": 1280,
+      "height": 1280,
+      "sha256": "c1a88609a59d664b5bcb1f4bc2e5d035e8d18d696e63339ee323533d9d90cd74",
+      "verification": "Current official merchant gallery continuation. Product identity verified; frozen archive exposes five dots but does not reveal these final two compositions or their historical positions."
+    },
+    {
+      "id": "home-drmtlgy-retinol",
+      "sourcePage": "https://www.drmtlgy.com/products/retinol-body-lotion",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/1462/0006/files/01_Hero_DTC_a01cad47-dc6e-4fef-bfed-2dded75ae612.jpg?v=1785871029",
+      "width": 2000,
+      "height": 2000,
+      "sha256": "eb67ca25d71fe17584484fbb53f75e90199d9bbd79b1f5d76395f7bd2e31e71a",
+      "verification": "Confirmed black tube, same forward-facing angle and cap; matches flow2/001 and004.",
+      "sourcePrice": 36,
+      "localFile": "reference-assets/shop/products/home-drmtlgy-retinol.jpg"
+    },
+    {
+      "id": "home-drmtlgy-needleless",
+      "sourcePage": "https://www.drmtlgy.com/products/needle-less-growth-factor-serum",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/1462/0006/files/01_Hero_DTC_Cosmo_Holy_Grail_Seal.jpg?v=1779125673",
+      "width": 2000,
+      "height": 2000,
+      "sha256": "fd5b7382064fbc0656c4e11b057dce1fea43dfa037c9e009cc26e3dfcd25e5d1",
+      "verification": "Confirmed black/gold pump and black Cosmopolitan seal in upper-left, matches source2/001 second thumbnail. Seal is intrinsic merchant art.",
+      "sourcePrice": 69,
+      "localFile": "reference-assets/shop/products/home-drmtlgy-needleless.jpg"
+    },
+    {
+      "id": "home-drmtlgy-eye",
+      "sourcePage": "https://www.drmtlgy.com/products/spf-undereye-corrector-deep",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/1462/0006/files/01_Hero_DTC_7b015fb9-c69b-4782-b871-c31ecbe59eaf.jpg?v=1787331830",
+      "width": 2000,
+      "height": 2000,
+      "sha256": "2e663d25b094f127237be04ef11e9748f21ad3791eb7bb607ee5531f931146af",
+      "verification": "Bottle family and gold applicator/angle match source2/004 first thumbnail. Retailer page is Deep shade, but frozen source does not expose shade; do not assign Deep as captured variant.",
+      "sourcePrice": 44,
+      "localFile": "reference-assets/shop/products/home-drmtlgy-eye.jpg"
+    },
+    {
+      "id": "home-drmtlgy-tinted",
+      "sourcePage": "https://www.drmtlgy.com/products/universal-tinted-moisturizer-spf-46",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/1462/0006/files/01_Hero_DTC_Cloud_Background.jpg?v=1783716602",
+      "width": 2000,
+      "height": 2002,
+      "sha256": "daef6dc2e678d729542581766d8b2a27d6c510abc883115265399629211861f2",
+      "verification": "White bottle, rose-gold exposed pump and typography match visible clipped third thumbnail. Cap to right is outside frozen visible card portion; full square cannot be verified from clipped source.",
+      "sourcePrice": 31,
+      "localFile": "reference-assets/shop/products/home-drmtlgy-tinted.jpg"
+    },
+    {
+      "id": "home-curl-cream",
+      "sourcePage": "https://www.mykitsch.com/products/kitsch-moisturizing-curl-cream",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/0104/6904/8384/files/504001-CurlCream-Moisturizing-hero-1280x1280px.jpg?v=1767136802",
+      "width": 1280,
+      "height": 1280,
+      "sha256": "47c56455894f818fd2b977a8d237916c30ce3a30b4d5d0848726cb10815193ce",
+      "verification": "Confirmed exact yellow tube, ribbed cap and white swirl on left matches source2/006 second thumbnail.",
+      "sourcePrice": 16,
+      "localFile": "reference-assets/shop/products/home-curl-cream.jpg"
+    },
+    {
+      "id": "home-air-dry-cream",
+      "sourcePage": "https://www.mykitsch.com/products/kitsch-smoothing-air-dry-cream",
+      "sourceUrl": "https://cdn.shopify.com/s/files/1/0104/6904/8384/files/500904-AirDryCream-Consumables-hero-1280x1280px.jpg?v=1779490582",
+      "width": 1280,
+      "height": 1280,
+      "sha256": "c00b64fac2c19325282ae3f2167d66210ca4c9a929a73e48ed3544f167dcfdb5",
+      "verification": "Visually matches flow2/006 peach tube, ribbed cap, pale cream smear; source price21 takes precedence over current retailer price.",
+      "localFile": "reference-assets/shop/products/home-air-dry-cream.jpg"
     }
   ],
   "catalogFacts": {

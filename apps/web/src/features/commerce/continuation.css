@@ -1,0 +1,1392 @@
+/* Source-owned account and commerce continuation surfaces. */
+.privacy-page section {
+  margin: 28px 0 18px;
+}
+.privacy-page section h2 {
+  font-size: 16px;
+  font-weight: 400;
+  margin: 0 0 4px;
+}
+.privacy-page section p {
+  font-size: 14px;
+  line-height: 1.3;
+  margin: 0 0 18px;
+}
+.privacy-page section a {
+  font-size: 14px;
+  color: #5734ff;
+}
+.privacy-page > .account-row {
+  padding: 16px 0;
+  min-height: 56px;
+  border: 0;
+}
+.gmail-connect {
+  padding: 0 32px;
+  min-height: 793px;
+  position: relative;
+}
+.gmail-connect .account-heading {
+  display: none;
+}
+.connection-close {
+  position: absolute;
+  right: 16px;
+  top: 12px;
+  background: none;
+  border: 0;
+  font-size: 22px;
+}
+.connection-brands {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 171px;
+  gap: 5px;
+}
+.connection-brands > span,
+.connection-brands > strong {
+  width: 56px;
+  height: 56px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+}
+.connection-brands > span {
+  background: #f3f4f4;
+  border: 1px solid #e6e6e6;
+}
+.connection-brands img {
+  width: 32px;
+  height: 32px;
+}
+.connection-brands > strong {
+  background: #5431f4;
+  color: white;
+  font-size: 23px;
+  letter-spacing: -1px;
+}
+.connection-brands > i {
+  color: #e4dfff;
+  font-style: normal;
+  letter-spacing: 3px;
+}
+.gmail-connect h1 {
+  text-align: center;
+  font-size: 20px;
+  line-height: 24px;
+  margin: 23px 0 8px;
+}
+.gmail-connect > p {
+  text-align: center;
+  font-size: 14px;
+  color: #737373;
+  line-height: 18px;
+  margin: 0;
+}
+.connection-benefits {
+  margin: 33px 0 32px;
+  padding: 16px;
+  border: 1px solid #ededed;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px #00000005;
+}
+.connection-benefits p {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  line-height: 16px;
+  margin: 0 0 16px;
+}
+.connection-benefits p:last-child {
+  margin: 0;
+}
+.connection-benefits svg {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 8px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+.gmail-connect > .primary {
+  height: 44px;
+  background: #5630ee;
+  font-size: 16px;
+  margin: 0;
+  font-weight: 500;
+}
+.connection-mini {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 7px;
+  margin-right: 12px;
+}
+.connection-provider-marks {
+  margin-left: auto;
+  display: flex;
+  gap: 3px;
+}
+.connection-choices > button {
+  display: flex;
+  width: 100%;
+  border-radius: 12px;
+  padding: 12px;
+  gap: 12px;
+  text-align: left;
+  margin: 8px 0;
+  align-items: center;
+  background: white;
+  border: 1px solid #ececec;
+  box-shadow: 0 2px 6px #00000005;
+}
+.connection-choices strong {
+  flex: 1;
+  font-size: 14px;
+}
+.connection-choices small {
+  display: block;
+  font-weight: 400;
+  font-size: 12px;
+  color: #888;
+}
+.connection-choices b {
+  font-weight: 400;
+}
+.delete-account-page > h1 {
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 500;
+  margin: 0;
+  text-align: center;
+}
+.delete-account-page .delete-identity {
+  height: 44px;
+  margin: 68px 32px 48px;
+  gap: 16px;
+  font-size: 16px;
+  justify-content: flex-start;
+}
+.delete-account-page .delete-copy {
+  margin: 0 19px;
+  font-size: 16px;
+  line-height: 22px;
+}
+.delete-account-page > .danger-button {
+  margin-top: 40px;
+  margin: 48px 19px 12px;
+  width: calc(100% - 38px);
+  height: 44px;
+  font-size: 16px;
+  background: #c9361a;
+}
+.delete-account-confirm .sheet-body > p {
+  font-size: 14px;
+}
+.delete-account-confirm .form-cancel,
+.delete-account-confirm .form-submit {
+  height: 40px;
+  margin: 6px 0;
+}
+.delete-code {
+  margin-top: 80px;
+  margin: 70px 33px 0;
+}
+.delete-code h2 {
+  margin-bottom: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+  white-space: nowrap;
+  margin: 0 0 32px;
+}
+.delete-code .code-input {
+  max-width: 320px;
+}
+.public-profile .profile-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.cart-line-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+}
+.cart-line-title > a {
+  color: inherit;
+}
+.cart-line-title > span {
+  white-space: nowrap;
+}
+.cart-discount {
+  display: flex;
+  justify-content: space-between;
+}
+.cart-later {
+  margin: 24px 0;
+}
+.cart-later h2 {
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+.cart-later .commerce-line > img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+.cart-later .commerce-line > div {
+  flex: 1;
+}
+.cart-later .cart-controls {
+  margin-top: 14px;
+}
+.cart-later .cart-controls > button {
+  border: 0;
+  border-radius: 20px;
+  min-height: 28px;
+  background: #333;
+  color: white;
+  display: grid;
+  place-items: center;
+  padding: 5px;
+}
+.cart-later .cart-controls > button.move-to-cart {
+  padding: 5px 12px;
+  margin-left: auto;
+  font-size: 11px;
+}
+.cart-stepper svg {
+  width: 12px;
+  height: 12px;
+}
+.seller-cart .cart-discount {
+  font-size: 11px;
+  margin: 8px 0;
+}
+.seller-cart .commerce-line .cart-line-title strong {
+  font-size: 12px;
+}
+.cart-later .cart-controls svg {
+  width: 14px;
+  height: 14px;
+}
+.initial-payment {
+  padding-top: 43px;
+}
+.initial-card-fields {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.initial-card-fields input,
+.initial-card-name {
+  height: 57px;
+  border: 0;
+  background: white;
+  padding: 14px 12px;
+  min-width: 0;
+  width: 100%;
+  font-size: 16px;
+}
+.initial-card-fields > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 8px solid #f6f6f6;
+}
+.initial-card-fields > div input + input {
+  border-left: 1px solid #ddd;
+}
+.initial-card-name {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  margin: 16px 0 26px;
+}
+.initial-billing {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 16px;
+}
+.initial-billing input {
+  width: 20px;
+  height: 20px;
+  accent-color: black;
+}
+.initial-billing small {
+  display: block;
+  color: #666;
+  font-size: 14px;
+}
+.initial-payment .checkout-pay .primary {
+  justify-content: center;
+}
+.payment-illustration svg {
+  width: 32px;
+  height: 25px;
+  fill: #9584d8;
+  stroke: #7d6ac4;
+  stroke-width: 1;
+}
+.payment-illustration.entered {
+  background: linear-gradient(135deg, #32206c, #23146a);
+}
+.payment-illustration > span {
+  font-size: 12px;
+  color: #ded8f6;
+}
+.payment-illustration > b {
+  position: absolute;
+  bottom: 18px;
+  right: 16px;
+  background: #8f82ce;
+  color: #3b2d77;
+  font-style: italic;
+  border-radius: 5px;
+  padding: 8px;
+  font-size: 21px;
+}
+.checkout-recommendations {
+  margin: 40px 0 32px;
+}
+.checkout-recommendations header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.checkout-recommendations h2 {
+  font-size: 14px;
+  flex: 1;
+  margin: 0;
+}
+.checkout-recommendations header button {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #ddd;
+  background: #f5f6f6;
+  border-radius: 50%;
+}
+.checkout-recommendations header svg {
+  width: 20px;
+  height: 20px;
+}
+.checkout-recommendations article {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin: 12px 0 20px;
+}
+.checkout-recommendations article > img {
+  width: 64px;
+  height: 64px;
+  border: 1px solid #ddd;
+  border-radius: 13px;
+  object-fit: cover;
+}
+.checkout-recommendations article > div {
+  flex: 1;
+  font-size: 14px;
+  line-height: 18px;
+}
+.checkout-recommendations article strong {
+  font-weight: 600;
+}
+.checkout-recommendations article p {
+  margin: 2px 0 0;
+  white-space: nowrap;
+}
+.checkout-recommendations article p span {
+  font-size: 17px;
+  letter-spacing: -2px;
+}
+.checkout-recommendations article em {
+  font-size: 13px;
+  color: #888;
+  margin-left: 5px;
+}
+.checkout-recommendations article > button {
+  border: 0;
+  border-radius: 28px;
+  min-width: 70px;
+  height: 49px;
+  background: black;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+}
+.checkout-recommendations article > button:disabled {
+  opacity: 0.35;
+}
+.loyalty-details {
+  padding: 16px;
+  border: 1px solid #ddd;
+  background: #f6f6f6;
+  border-radius: 13px;
+  margin: 12px 0 20px;
+}
+.loyalty-details summary {
+  font-size: 14px;
+  font-weight: 600;
+}
+.loyalty-details p {
+  font-size: 13px;
+}
+.checkout-totals p {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin: 8px 0;
+}
+.checkout-savings {
+  display: block;
+  font-size: 14px;
+  margin: 8px 0;
+}
+.checkout-terms {
+  font-size: 14px;
+  line-height: 18px;
+}
+.checkout-terms a {
+  color: #5930ee;
+}
+.fulfillment-tabs {
+  display: flex;
+  gap: 8px;
+  background: #f5f5f5;
+  padding: 3px;
+  border-radius: 17px;
+  margin: 16px 0 14px;
+}
+.fulfillment-tabs button {
+  flex: 1;
+  height: 52px;
+  border: 0;
+  border-radius: 13px;
+  font-weight: 600;
+  background: none;
+  font-size: 14px;
+}
+.fulfillment-tabs button[aria-selected="true"] {
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 3px #0002;
+}
+.pickup-warning {
+  background: #f6f6f6;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 14px;
+  height: 70px;
+  line-height: 18px;
+  padding: 15.5px 16px;
+}
+.pickup-count {
+  display: flex;
+  justify-content: space-between;
+  color: #777;
+  font-size: 14px;
+  margin: 9px 0 10px;
+}
+.pickup-count button {
+  border: 0;
+  background: none;
+  color: #5c32ff;
+}
+.pickup-details {
+  border: 1px solid #ddd;
+  border-radius: 18px;
+  overflow: hidden;
+}
+.pickup-details > div {
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+}
+.pickup-details > div:last-child {
+  border: 0;
+}
+.pickup-details small {
+  font-size: 14px;
+  color: #777;
+  min-width: 71px;
+}
+.pickup-details p {
+  margin: 0;
+  flex: 1;
+  line-height: 18px;
+}
+.pickup-details p > span {
+  color: #777;
+}
+.pickup-details a {
+  color: #5930ee;
+}
+.pickup-details > div > a {
+  margin-left: auto;
+}
+.pickup-offers {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  margin: 18px 0;
+}
+.pickup-offers input {
+  width: 20px;
+  height: 20px;
+  accent-color: black;
+}
+.pickup-total {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: 0;
+  background: none;
+  margin: 18px 0;
+  padding: 0;
+  text-align: left;
+  gap: 16px;
+}
+.pickup-total img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+.pickup-total strong {
+  font-size: 18px;
+}
+.pickup-total small {
+  display: block;
+  color: #777;
+  font-size: 14px;
+}
+.pickup-total b {
+  margin-left: auto;
+  font-size: 20px;
+}
+.pickup-total b small {
+  display: inline;
+  font-size: 11px;
+}
+.pickup-checkout .checkout-pay {
+  padding-top: 16px;
+}
+.tracking-detail {
+  padding: 0 16px 110px;
+  background: #f8f8f8;
+}
+.tracking-detail .account-heading {
+  display: none;
+}
+.tracking-body {
+  position: relative;
+}
+.tracking-status-card {
+  background: white;
+  border: 0;
+  border-radius: 24px;
+  width: 100%;
+  text-align: left;
+  padding: 18px 16px;
+  margin: 10px 0;
+}
+.tracking-status-card h1 {
+  font-size: 22px;
+  line-height: 25px;
+  margin: 0;
+}
+.tracking-status-card small {
+  font-size: 12px;
+}
+.tracking-status-card p {
+  font-size: 12px;
+  margin: 2px 0;
+}
+.tracking-progress {
+  height: 8px;
+  background: #eee;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+.tracking-progress span {
+  display: block;
+  width: 40%;
+  height: 8px;
+  background: #6235ef;
+  border-radius: 8px;
+}
+.tracking-progress.delivered span {
+  width: 100%;
+  background: #67b551;
+}
+.tracking-carrier {
+  padding: 16px;
+  background: white;
+  border-radius: 24px;
+  margin-bottom: 14px;
+}
+.carrier-wordmark {
+  font-size: 22px;
+  letter-spacing: -1px;
+}
+.tracking-carrier > p {
+  margin: 4px 0 14px;
+  font-size: 14px;
+}
+.tracking-carrier > small {
+  color: #777;
+  font-size: 11px;
+}
+.tracking-carrier > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+.tracking-carrier > div > span {
+  flex: 1;
+}
+.tracking-carrier button {
+  border: 0;
+  background: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+}
+.tracking-carrier svg {
+  width: 16px;
+  height: 16px;
+}
+.tracking-empty {
+  padding: 16px;
+  border-radius: 20px;
+  background: #eee;
+  margin-bottom: 16px;
+}
+.tracking-empty h2 {
+  font-size: 14px;
+  margin: 0 0 6px;
+}
+.tracking-empty p {
+  font-size: 12px;
+  color: #666;
+}
+.tracking-order-card {
+  padding: 22px 16px 14px;
+  border-radius: 24px;
+  margin-bottom: 16px;
+  background-size: 100% 157px;
+  background-repeat: no-repeat;
+  background-position: top;
+  background-color: #e7e7e4;
+}
+.tracking-order-card > .order-store-mark {
+  display: block;
+  font-size: 44px;
+  text-align: center;
+  color: white;
+  margin-bottom: 12px;
+}
+.tracking-order-card > strong,
+.tracking-order-card > p {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  margin: 0;
+}
+.tracking-order-card .order-item {
+  margin-top: 40px;
+}
+.tracking-order-card .muted-button {
+  height: 40px;
+  line-height: 20px;
+  background: #ffffff8c;
+  margin: 6px 0;
+  min-height: 40px;
+}
+.delivery-preview {
+  background: white;
+  padding: 20px 16px;
+  border: 1px solid #eee;
+  border-radius: 28px;
+  margin: 16px 0 12px;
+}
+.delivery-preview h2 {
+  font-size: 16px;
+  margin: 0 0 18px;
+}
+.delivery-destination {
+  padding-left: 44px;
+  margin-bottom: 18px;
+}
+.delivery-destination small,
+.delivery-destination strong {
+  display: block;
+  font-size: 12px;
+}
+.delivery-destination small {
+  color: #888;
+}
+.source-activity > div {
+  display: flex;
+  gap: 12px;
+  position: relative;
+  padding-bottom: 26px;
+}
+.source-activity > div:not(:last-child):before {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 20px;
+  bottom: -4px;
+  width: 1px;
+  background: #693df5;
+}
+.source-activity i {
+  border: 1px solid #6334f4;
+  color: #6334f4;
+  min-width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-style: normal;
+  background: #fff;
+  z-index: 1;
+}
+.source-activity small {
+  display: block;
+  color: #888;
+  font-size: 12px;
+  line-height: 16px;
+}
+.source-activity strong {
+  display: block;
+  font-size: 14px;
+  line-height: 18px;
+}
+.source-activity > div:last-child {
+  padding-bottom: 0;
+}
+.delivery-preview .muted-button {
+  margin-top: 14px;
+}
+.tracking-action-panel {
+  border-radius: 26px;
+  background: white;
+  border: 1px solid #eee;
+  padding: 0 16px;
+  margin-bottom: 24px;
+}
+.tracking-action-panel .account-row {
+  padding: 14px 0;
+  font-weight: 600;
+}
+.tracking-body > h2 {
+  font-size: 18px;
+}
+.full-activity-sheet .source-activity {
+  margin-top: 10px;
+}
+.tracking-map {
+  height: 230px;
+  margin: 0 -16px;
+  position: relative;
+  overflow: hidden;
+  background: #f4f5f4;
+}
+.map-fragment {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 140px;
+  height: 210px;
+  max-width: none;
+}
+.tracking-map > svg {
+  position: absolute;
+  inset: 0;
+  width: 393px;
+  height: 230px;
+}
+.map-product {
+  position: absolute;
+  left: 148px;
+  top: 59px;
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border: 5px solid white;
+  border-radius: 19px;
+  box-shadow: 0 2px 5px #0002;
+}
+.map-location {
+  position: absolute;
+  left: 184px;
+  top: 170px;
+  width: 25px;
+  height: 25px;
+  border: 7px solid black;
+  background: white;
+  border-radius: 50%;
+}
+.tracking-map > small {
+  position: absolute;
+  right: 24px;
+  top: 22px;
+  color: #777;
+}
+.tracking-map-view .tracking-body {
+  margin-top: -12px;
+}
+.forward-orders {
+  text-align: center;
+  margin: 20px 0;
+}
+.forward-orders h2 {
+  font-size: 16px;
+}
+.forward-orders p {
+  font-size: 12px;
+}
+.forward-orders > a {
+  font-size: 13px;
+  color: #5630ee;
+}
+.forward-orders > a.primary {
+  background: black;
+  color: white;
+}
+.order-empty-source {
+  text-align: center;
+  padding-top: 42px;
+  border: 1px solid #ececec;
+  border-radius: 28px;
+  background: white;
+  box-shadow: 0 3px 16px #00000005;
+  padding: 34px 16px 16px;
+}
+.order-empty-source img {
+  object-fit: contain;
+  display: block;
+  width: 135px;
+  height: 234px;
+  margin: 0 auto;
+}
+.order-empty-source h2 {
+  font-size: 28px;
+  letter-spacing: -1px;
+  line-height: 28px;
+  max-width: 280px;
+  margin: 40px auto 14px;
+}
+.order-empty-source p {
+  color: #888;
+  margin: 0 auto 14px;
+  font-size: 16px;
+  line-height: 22px;
+  max-width: 280px;
+  margin-bottom: 16px;
+}
+.order-empty-source .primary {
+  background: #5930ee;
+  height: 44px;
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+.order-history-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 16px 0;
+}
+.order-history-row img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.order-history-row span {
+  flex: 1;
+}
+.order-history-row strong,
+.order-history-row small {
+  display: block;
+  font-size: 12px;
+}
+.order-history-row small {
+  color: #888;
+}
+.orders-deals {
+  margin: 22px 0;
+}
+.orders-deals h2 {
+  font-size: 16px;
+  margin: 0 0 10px;
+}
+.orders-deal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.orders-deal-grid img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 16px;
+}
+.orders-past {
+  margin: 22px 0;
+}
+.orders-past h2 {
+  font-size: 16px;
+}
+.orders-past a {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  align-items: center;
+}
+.orders-past img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+.orders-past small {
+  display: block;
+  color: #777;
+}
+.order-review-link {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-top: 8px;
+}
+.order-review-link span {
+  color: #d4d4d4;
+}
+.orders-deal-grid > button {
+  position: relative;
+  border: 1px solid #ddd;
+  padding: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #f1f1f1;
+  aspect-ratio: 1;
+}
+.orders-deal-grid > button > img {
+  border-radius: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+.orders-deal-grid > button > span {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  font-size: 11px;
+  border-radius: 15px;
+  color: white;
+  background: #5831ef;
+  padding: 2px 6px;
+}
+.orders-deal-grid > button > i {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: black;
+  border-radius: 50%;
+  padding: 8px;
+  color: white;
+  height: 33px;
+  width: 33px;
+  display: grid;
+  place-items: center;
+}
+.orders-deal-grid svg {
+  width: 17px;
+  height: 17px;
+}
+.deal-preview-image {
+  display: block;
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  margin: 20px auto;
+}
+.pickup-checkout .fulfillment-tabs svg,
+.pickup-checkout > .pill svg,
+.pickup-count svg,
+.pickup-warning svg {
+  width: 17px;
+  height: 17px;
+  vertical-align: middle;
+  display: inline;
+}
+.pickup-details input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  accent-color: black;
+  margin: 3px -8px 0 -7px;
+}
+.initial-billing-selection {
+  font-size: 14px;
+  margin: 20px 0;
+}
+.privacy-choices-mark {
+  width: 32px;
+  height: 16px;
+  vertical-align: middle;
+}
+.connection-provider-marks img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+.connection-choices > button > span {
+  width: 44px;
+  height: 44px;
+  background: #f3f4f4;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+}
+.connection-choices img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+.connection-choices > button > b {
+  display: grid;
+  place-items: center;
+  border: 1px solid #eee;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+}
+.signout-confirm .editor-actions {
+  margin-top: 16px;
+}
+.signout-confirm .form-cancel,
+.signout-confirm .form-submit {
+  margin: 0;
+  height: 40px;
+}
+.auth-phone-alternatives > p {
+  font-size: 11px;
+  color: #888;
+}
+.auth-phone-alternatives > p button {
+  display: inline;
+  color: #5830f0;
+  width: auto;
+  padding: 0;
+  font-size: 11px;
+}
+.privacy-page {
+  padding-top: 16px;
+}
+.privacy-page .account-heading h1 {
+  margin: 0;
+}
+.privacy-page .privacy-choices-mark {
+  display: inline-block;
+}
+.privacy-page .account-row > span:last-child {
+  font-size: 23px;
+}
+.gmail-connect .connection-benefits {
+  margin-top: 31px;
+  margin-bottom: 31px;
+}
+.source-orders-page {
+  padding-top: 16px;
+}
+.source-orders-page .account-heading {
+  height: 32px;
+  margin-bottom: 14px;
+}
+.source-orders-page .account-heading h1 {
+  margin: 0;
+}
+.source-orders-page .tracking-card {
+  border-radius: 22px;
+  min-height: 114px;
+}
+.source-orders-page .tracking-card h2 {
+  font-size: 16px;
+  margin: 10px 0 12px;
+}
+.order-seller-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.order-seller-label img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.source-orders-page .tracking-line span {
+  background: #7247f8;
+}
+.source-orders-page .tracking-line span > img {
+  width: 20px;
+  height: 18px;
+  display: block;
+  float: right;
+  margin-top: -7px;
+}
+.source-orders-page .order-actions button {
+  width: 44px;
+  height: 44px;
+}
+.source-orders-page .order-archive-link {
+  font-size: 14px;
+}
+.checkout-page .checkout-pay {
+  bottom: 26px;
+}
+.checkout-page .checkout-pay button {
+  background: #5932f3;
+  font-size: 16px;
+  font-weight: 500;
+  height: 49px;
+}
+.checkout-page .checkout-pay button:disabled {
+  opacity: 0.4;
+}
+.pickup-checkout .checkout-header h1 {
+  font-size: 20px;
+}
+.pickup-checkout .checkout-header {
+  margin-top: -14px;
+}
+.pickup-checkout .pickup-total {
+  font-size: 14px;
+}
+.pickup-checkout > .pill {
+  border: 1px solid #ddd;
+  padding: 9px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.pickup-checkout .pickup-total > b {
+  font-size: 20px;
+}
+.payment-illustration {
+  position: relative;
+}
+.card-editor-profile .payment-illustration {
+  width: 240px;
+  height: 160px;
+}
+.card-editor-profile:not(.has-number) .card-inputs {
+  padding: 0;
+}
+.card-editor-profile:not(.has-number) .card-inputs > label {
+  font-size: 0;
+  padding: 0;
+}
+.card-editor-profile:not(.has-number) .card-inputs input {
+  height: 56px;
+  padding: 12px;
+}
+.history-email-link {
+  font-size: 12px;
+  margin: 16px 0;
+}
+.pickup-details > div > strong {
+  font-size: 14px;
+}
+.connection-brands > .connection-shop-brand {
+  width: 56px;
+  height: 56px;
+  border-radius: 13px;
+  object-fit: contain;
+}
+.initial-card-fields input:invalid:not(:placeholder-shown) {
+  outline-color: #c43e22;
+}
+.delete-account-page {
+  padding-top: 13px;
+}
+.delete-account-page .delete-identity .profile-avatar {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  background: #5231db;
+  color: white;
+  font-size: 18px;
+}
+.delete-account-page .delete-copy > p {
+  margin: 0;
+}
+.delete-account-page .delete-copy ul {
+  margin: 16px 0 38px;
+  padding-left: 26px;
+  list-style: disc;
+}
+.delete-account-page .delete-copy li {
+  padding: 0;
+  margin: 6px 0;
+}
+.delete-account-page > .form-cancel {
+  height: 36px;
+  margin: 0;
+  font-size: 16px;
+}
+.delete-code .six-code {
+  width: 296px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+.delete-code .six-code > div {
+  gap: 5px;
+}
+.delete-code .six-code span {
+  height: 55px;
+  border-radius: 13px;
+}
+.sheet.delete-account-confirm[open] {
+  width: 345px;
+  max-width: calc(100% - 48px);
+  top: calc(50% - 30px);
+  bottom: auto;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  transform: translateY(-50%);
+  animation: none;
+  border-radius: 20px;
+  padding: 24px;
+  max-height: calc(100dvh - 60px);
+}
+.delete-account-confirm .sheet-body {
+  padding: 0;
+}
+.delete-account-confirm > .delete-confirm-title {
+  font-size: 20px;
+  line-height: 22px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  margin: 0 0 10px;
+}
+.delete-account-confirm > p {
+  font-size: 14px;
+  line-height: 18px;
+  margin: 0 0 16px;
+}
+.delete-account-confirm .form-cancel {
+  width: 100%;
+  height: 41px;
+  border: 1px solid #e2e2e2;
+  background: white;
+  border-radius: 24px;
+  margin: 0 0 8px;
+  font-size: 14px;
+  min-height: 41px;
+}
+.delete-account-confirm .form-submit {
+  height: 40px;
+  background: #df2404;
+  margin: 0;
+  font-size: 14px;
+  min-height: 40px;
+}
+.address-field-row {
+  display: contents;
+}
+.address-editor-initial .editor-actions {
+  position: fixed;
+  bottom: 54px;
+  left: 16px;
+  right: 16px;
+  max-width: 568px;
+  margin: 0 auto;
+  background: white;
+  padding-top: 16px;
+}
+.address-editor-initial .form-submit {
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  background: #5932f3;
+  font-size: 14px;
+}
+.address-editor-initial {
+  padding-bottom: 100px;
+}
+.address-editor-initial .form-field {
+  min-height: 48px;
+}
+.address-editor-initial .form-field input {
+  font-size: 14px;
+  min-height: 24px;
+}
+.order-empty-source .form-cancel {
+  border: 1px solid #e5e5e5;
+  border-radius: 24px;
+  height: 44px;
+  margin: 0;
+  font-size: 16px;
+}
+.dark-cart-sheet .commerce-line > img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+}
+.dark-cart-sheet .seller-cart .commerce-line {
+  gap: 12px;
+}
+.dark-cart-sheet .seller-cart .cart-controls {
+  gap: 7px;
+}
+.dark-cart-sheet .seller-cart .cart-controls > button {
+  font-size: 10px;
+  white-space: nowrap;
+}
+.dark-cart-sheet .seller-cart .commerce-line > div {
+  min-width: 0;
+  flex: 1;
+}
+.pickup-checkout .checkout-identity {
+  padding-top: 8px;
+  font-size: 14px;
+}
+.pickup-checkout .checkout-identity strong {
+  font-size: 21px;
+}
+.pickup-details input[type="radio"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.pickup-details > div:focus-within {
+  outline: 2px solid #5932f3;
+  outline-offset: -2px;
+}
+.pickup-details > div:last-child {
+  min-height: 51px;
+}

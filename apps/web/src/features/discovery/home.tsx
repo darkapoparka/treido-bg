@@ -11,6 +11,7 @@ import {
   Sheet,
   StoreRow,
 } from "./components";
+import { HomeCampaigns } from "./home-campaigns";
 import { Icon } from "./icons";
 import { useDiscovery } from "./state";
 import { useAccount } from "../account/state";
@@ -40,6 +41,7 @@ export function Home({ catalog }: { catalog: Catalog }) {
         </Link>
         <IconButton
           icon="bell"
+          filled
           label="Notifications"
           onClick={() => router.push("/notifications")}
         />
@@ -48,12 +50,19 @@ export function Home({ catalog }: { catalog: Catalog }) {
           Deals
         </Link>
         <Link className="pill" href="/following">
-          <Icon name="badge-check" />
+          <span className="following-shortcut-icon">
+            <Icon name="badge-check" filled />
+            <i />
+          </span>
           Following
         </Link>
         <Link className="pill" href="/saved">
           <Icon name="heart" filled />
           Saved
+        </Link>
+        <Link className="pill" href="/minis">
+          <Icon name="minis" filled />
+          Minis
         </Link>
       </header>
       <Link href="/orders" className="delivery-card">
@@ -90,13 +99,13 @@ export function Home({ catalog }: { catalog: Catalog }) {
             />
           ))}
         </div>
-        <Link href="/search" className="recent-title">
+        <Link href="/search?view=recent" className="recent-title">
           <h1>Recently viewed</h1>
           <Icon name="arrow" />
         </Link>
       </section>
       {catalog.stores
-        .filter((s) => ["vehla", "pura"].includes(s.id))
+        .filter((s) => s.id === "vehla")
         .map((store) => (
           <section className="store-feed" key={store.id}>
             <StoreRow
@@ -188,6 +197,7 @@ export function Home({ catalog }: { catalog: Catalog }) {
           </div>
         )}
       </Sheet>
+      <HomeCampaigns catalog={catalog} />
       <FloatingNav />
       <Sheet open={!!notice} title={notice} onClose={() => setNotice("")}>
         <p className="sheet-copy">

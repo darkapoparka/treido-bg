@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Catalog } from "../catalog/types";
 import { FloatingNav, IconButton, ProductCard, Sheet } from "./components";
 import { Icon } from "./icons";
@@ -229,7 +229,7 @@ function MiniAccess({
         onClose={onClose}
       >
         <div className="mini-access-heading">
-          <h2>Continue</h2>
+          <h2 aria-hidden="true">Continue</h2>
           <div>
             <img
               src={`/api/reference-media/mini-${name === "Gift Sense" ? "gift" : "sol"}-icon`}
@@ -273,7 +273,7 @@ function MiniAccess({
     </>
   );
 }
-export function Sol() {
+export function Sol({ catalog }: { catalog: Catalog }) {
   const [access, setAccess] = useState(true),
     [setup, setSetup] = useState(true),
     [stage, setStage] = useState(0),
@@ -281,6 +281,11 @@ export function Sol() {
     [muted, setMuted] = useState(false),
     [typing, setTyping] = useState(false),
     [boundary, setBoundary] = useState("");
+  useEffect(() => {
+    if (stage !== 1 && stage !== 4) return;
+    const timer = window.setTimeout(() => setStage(stage === 1 ? 3 : 5), 1800);
+    return () => window.clearTimeout(timer);
+  }, [stage]);
   return (
     <MiniShell name="Sol: Browse by Voice">
       {setup ? (
@@ -317,7 +322,7 @@ export function Sol() {
         </section>
       ) : (
         <section
-          className={`sol-surface ${stage === 2 ? "sol-choice-stage" : ""}`}
+          className={`sol-surface ${stage >= 2 ? "sol-choice-stage" : ""} ${stage === 5 ? "sol-results-stage" : ""} ${stage === 1 ? "sol-response-stage" : ""}`}
         >
           <img
             className="sol-mark"
@@ -338,12 +343,27 @@ export function Sol() {
                         ? "A soft golden hue, rimless design and clear lenses—find what feels the easiest to wear every day."
                         : "Tap your pick and we will build from it."}
             </h1>
-            {stage === 1 && (
-              <button className="sol-next" onClick={() => setStage(3)}>
-                View captured choices
-              </button>
+            {stage === 3 && <p className="sol-tap">Tap one</p>}
+            {stage === 5 && (
+              <div className="product-rail sol-product-results">
+                {["u-see-me", "round-sunglasses"].flatMap((id) => {
+                  const p = catalog.products.find((p) => p.id === id);
+                  return p
+                    ? [
+                        <ProductCard
+                          key={id}
+                          product={p}
+                          ratingStyle="summary"
+                          storeName={
+                            catalog.stores.find((s) => s.id === p.storeId)?.name
+                          }
+                        />,
+                      ]
+                    : [];
+                })}
+              </div>
             )}
-            {(stage === 3 || stage === 4 || stage === 5) && (
+            {(stage === 3 || stage === 4) && (
               <div className="sol-picks">
                 {(stage === 3
                   ? ["sol-glasses-model", "sol-glasses-dark"]
@@ -361,13 +381,6 @@ export function Sol() {
                           : "Dark sunglasses"
                       }
                     />
-                    {stage === 5 && (
-                      <span>
-                        U SEE ME GLASSES
-                        <br />
-                        $14.99
-                      </span>
-                    )}
                   </button>
                 ))}
               </div>
@@ -400,6 +413,7 @@ export function Sol() {
               else if (/sunglass/i.test(text)) setStage(1);
               else if (text.trim()) setBoundary("Recorded responses");
               setText("");
+              setTyping(false);
             }}
           >
             {typing ? (
@@ -523,6 +537,20 @@ export function Skin({ catalog }: { catalog: Catalog }) {
                 .map((p) => (
                   <ProductCard key={p.id} product={p} />
                 ))}
+            </div>
+            <div className="product-grid skin-partial-grid">
+              {["skin-laundry-partial", "skin-gopure-partial"].map((key) => (
+                <div key={key}>
+                  <img
+                    src={`/api/reference-media/${key}`}
+                    alt={
+                      key.includes("laundry")
+                        ? "Skin Laundry Hydrating Gentle Cleanser"
+                        : "goPure Gentle Gel Cleanser"
+                    }
+                  />
+                </div>
+              ))}
             </div>
             <button className="pill" onClick={() => setStage(0)}>
               Start again
@@ -660,34 +688,58 @@ export function GetLook({ catalog }: { catalog: Catalog }) {
                   key={s}
                   style={{ top: `${32 + i * 15}%` }}
                   aria-pressed={selection === s}
-                  onClick={() => setSelection(s)}
+                  onClick={() => {
+                    setSelection(s);
+                    document.getElementById(s)?.scrollIntoView({
+                      behavior: window.matchMedia(
+                        "(prefers-reduced-motion: reduce)",
+                      ).matches
+                        ? "instant"
+                        : "smooth",
+                      block: "start",
+                    });
+                  }}
                 >
                   <span />
                   {s}
                 </button>
               ))}
             </div>
-            <h2>{selection}</h2>
-            <div className="product-rail" data-look-selection={selection}>
-              {catalog.products
-                .filter((p) =>
-                  selection.includes("Blazer")
-                    ? ["look-sculpt", "look-aven"].includes(p.id)
-                    : selection.includes("T-shirt")
-                      ? ["look-black-crew", "look-white-crew"].includes(p.id)
-                      : false,
-                )
-                .map((p) => (
-                  <ProductCard key={p.id} product={p} />
-                ))}
+            <div className="look-results">
+              {[
+                ["Women’s White Linen Blazer", ["look-sculpt", "look-aven"]],
+                [
+                  "Women’s Black Crew Neck T-shirt",
+                  ["look-black-crew", "look-white-crew"],
+                ],
+              ].map(([title, ids]) => (
+                <section key={String(title)} id={String(title)}>
+                  <h2>{title}</h2>
+                  <div className="product-rail">
+                    {catalog.products
+                      .filter((p) => ids.includes(p.id))
+                      .map((p) => (
+                        <ProductCard key={p.id} product={p} />
+                      ))}
+                  </div>
+                </section>
+              ))}
+              <section id="Women’s Black and White Gingham Mini Skirt">
+                <h2>Women’s Black and White Gingham Mini Skirt</h2>
+                <div className="product-rail look-partial-rail">
+                  {["look-skirt-one-partial", "look-skirt-two-partial"].map(
+                    (key) => (
+                      <div className="look-partial-card" key={key}>
+                        <img
+                          src={`/api/reference-media/${key}`}
+                          alt="Captured gingham skirt recommendation"
+                        />
+                      </div>
+                    ),
+                  )}
+                </div>
+              </section>
             </div>
-            {!selection.includes("Blazer") &&
-              !selection.includes("T-shirt") && (
-                <p className="form-note">
-                  No product cards for this item were visible in the captured
-                  example.
-                </p>
-              )}
             <button className="pill" onClick={() => setStage(0)}>
               Choose another photo
             </button>
@@ -760,6 +812,17 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
   const [saved, setSaved] = useState(false);
   const [access, setAccess] = useState(false);
   const products = catalog.products.filter((p) => p.category === "Gifts");
+  const conversation = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const target = conversation.current?.querySelector<HTMLElement>(
+      `[data-gift-step="${step === 4 ? 3 : step}"]`,
+    );
+    if (target && conversation.current)
+      conversation.current.scrollTo({
+        top: target.offsetTop - conversation.current.offsetTop,
+        behavior: "instant",
+      });
+  }, [step]);
   return (
     <MiniShell name="Gift Sense">
       <section className="gift-surface">
@@ -783,7 +846,7 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
             }}
           />
         </div>
-        <div className="gift-conversation">
+        <div className="gift-conversation" ref={conversation}>
           {step === 0 ? (
             <>
               <div className="gift-message">
@@ -798,154 +861,214 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
                 Let’s Begin ✧
               </button>
             </>
-          ) : step === 1 ? (
-            <>
-              <div className="gift-message">
-                Let’s start simple, who are you buying a gift for?
-              </div>
-              <p>Choose one or type your own.</p>
-              <div className="gift-options">
-                {["Partner", "Family", "Friend", "Colleague", "Child"].map(
-                  (r) => (
-                    <button
-                      key={r}
-                      onClick={() => {
-                        setRecipient(r);
-                        setStep(2);
-                      }}
-                    >
-                      {r}
-                    </button>
-                  ),
-                )}
-              </div>
-            </>
-          ) : step === 2 ? (
-            <>
-              <div className="gift-answer">{recipient}</div>
-              <div className="gift-message">
-                How would you describe their personality?
-              </div>
-              <p>
-                <em>Select all that sound like them.</em>
-              </p>
-              <div className="gift-options">
-                {traits.map((t) => (
-                  <button
-                    aria-pressed={selected.includes(t)}
-                    key={t}
-                    onClick={() =>
-                      setSelected((v) =>
-                        v.includes(t) ? v.filter((x) => x !== t) : [...v, t],
-                      )
-                    }
-                  >
-                    <span className="radio-outline" />
-                    {t}
-                  </button>
-                ))}
-              </div>
-              <button className="gift-action" onClick={() => setStep(3)}>
-                {selected.length ? "Continue" : "Skip"}
-              </button>
-            </>
-          ) : step === 3 ? (
-            <>
-              <div className="gift-message">
-                What’s your budget for this gift?
-              </div>
-              <p>Choose the range that fits.</p>
-              <div className="gift-options">
-                {[
-                  "Under $25",
-                  "Under $50",
-                  "Under $100",
-                  "Under $200",
-                  "$200+",
-                  "Any Budget",
-                ].map((b) => (
-                  <button
-                    aria-pressed={budget === b}
-                    key={b}
-                    onClick={() => {
-                      setBudget(b);
-                      setStep(4);
-                    }}
-                  >
-                    {b}
-                  </button>
-                ))}
-              </div>
-            </>
-          ) : step === 4 ? (
-            <>
-              <div className="gift-answer">{budget}</div>
-              <div className="gift-message">
-                Anything else that might help us find the perfect gift?
-              </div>
-              <p>Optional, type any extra details.</p>
-              <textarea
-                aria-label="Optional gift notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-              <button className="gift-action" onClick={() => setAccess(true)}>
-                {notes ? "Continue" : "Skip"}
-              </button>
-            </>
-          ) : step === 6 ? (
-            <div className="gift-message">
-              Finding gifts that match your answers…
-              <button className="gift-action" onClick={() => setStep(5)}>
-                View captured gift ideas
-              </button>
-            </div>
           ) : (
             <>
-              <div className="gift-message">
-                Here’s a thoughtful mix inspired by creativity and outdoor fun,
-                picked to balance those interests and offer comfort and
-                inspiration.
-              </div>
-              <div className="gift-results">
-                {products.map((p) => (
-                  <article className="gift-result-row" key={p.id}>
-                    <Link href={`/products/${p.id}`}>
-                      <img src={p.images[0]} alt={p.title} />
-                      <span>
-                        {p.title}
-                        <strong>${(p.price.amount / 100).toFixed(2)}</strong>
-                      </span>
-                    </Link>
-                    <button
-                      aria-label={`Save ${p.title}`}
-                      onClick={() => state.toggleSaved(p.id)}
-                    >
-                      <Icon name="heart" />
+              <section
+                className={step > 1 ? "gift-history" : ""}
+                data-gift-step="1"
+              >
+                <div className="gift-message">
+                  Let’s start simple, who are you buying a gift for?
+                </div>
+                <p>Choose one or type your own.</p>
+                <div className="gift-options">
+                  {["Partner", "Family", "Friend", "Colleague", "Child"].map(
+                    (r) => (
+                      <button
+                        key={r}
+                        disabled={step !== 1}
+                        aria-pressed={recipient === r}
+                        onClick={() => {
+                          setRecipient(r);
+                          setStep(2);
+                        }}
+                      >
+                        {r}
+                      </button>
+                    ),
+                  )}
+                </div>
+              </section>
+              {step >= 2 && (
+                <>
+                  <div className="gift-answer">{recipient}</div>
+                  <section
+                    className={step > 2 ? "gift-history" : ""}
+                    data-gift-step="2"
+                  >
+                    <div className="gift-message">
+                      How would you describe their personality?
+                    </div>
+                    <p>
+                      <em>Select all that sound like them.</em>
+                    </p>
+                    <div className="gift-options">
+                      {traits.map((t) => (
+                        <button
+                          key={t}
+                          disabled={step !== 2}
+                          aria-pressed={selected.includes(t)}
+                          onClick={() =>
+                            setSelected((v) =>
+                              v.includes(t)
+                                ? v.filter((x) => x !== t)
+                                : [...v, t],
+                            )
+                          }
+                        >
+                          <span className="radio-outline" />
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                    {step === 2 && (
+                      <button
+                        className="gift-action"
+                        onClick={() => setStep(3)}
+                      >
+                        {selected.length ? "Continue" : "Skip"}
+                      </button>
+                    )}
+                  </section>
+                </>
+              )}
+              {step >= 3 && (
+                <>
+                  {selected.length > 0 && (
+                    <div className="gift-answer">{selected.join(", ")}</div>
+                  )}
+                  <section
+                    className={step > 3 ? "gift-history" : ""}
+                    data-gift-step="3"
+                  >
+                    <div className="gift-message">
+                      What’s your budget for this gift?
+                    </div>
+                    <p>
+                      <em>Choose the range that fits.</em>
+                    </p>
+                    <div className="gift-options">
+                      {[
+                        "Under $25",
+                        "Under $50",
+                        "Under $100",
+                        "Under $200",
+                        "$200+",
+                        "Any Budget",
+                      ].map((b) => (
+                        <button
+                          disabled={step !== 3}
+                          key={b}
+                          aria-pressed={budget === b}
+                          onClick={() => {
+                            setBudget(b);
+                            setStep(4);
+                          }}
+                        >
+                          {b}
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+                </>
+              )}
+              {step >= 4 && (
+                <>
+                  <div className="gift-answer">{budget}</div>
+                  <section
+                    className={step > 4 ? "gift-history" : ""}
+                    data-gift-step="4"
+                  >
+                    <div className="gift-message">
+                      Anything else that might help us find the perfect gift?
+                    </div>
+                    <p>
+                      <em>Optional, type any extra details.</em>
+                    </p>
+                    {step === 4 && (
+                      <button
+                        className="gift-action"
+                        onClick={() => setAccess(true)}
+                      >
+                        Skip
+                      </button>
+                    )}
+                  </section>
+                </>
+              )}
+              {step === 6 && (
+                <div className="gift-message" data-gift-step="6">
+                  Finding gifts that match your answers…
+                  <button className="gift-action" onClick={() => setStep(5)}>
+                    View captured gift ideas
+                  </button>
+                </div>
+              )}
+              {step === 5 && (
+                <section data-gift-step="5">
+                  {" "}
+                  <div className="gift-message">
+                    Here’s a thoughtful mix inspired by creativity and outdoor
+                    fun, picked to balance those interests and offer comfort and
+                    inspiration.
+                  </div>
+                  <div className="gift-results">
+                    {products.map((p) => (
+                      <article className="gift-result-row" key={p.id}>
+                        <Link href={`/products/${p.id}`}>
+                          <img src={p.images[0]} alt={p.title} />
+                          <span>
+                            {p.title}
+                            <span className="gift-product-rating">
+                              ★★★★★ ({p.ratingCount})
+                            </span>
+                            <strong
+                              className={p.compareAt ? "gift-sale-price" : ""}
+                            >
+                              ${(p.price.amount / 100).toFixed(2)}{" "}
+                              {p.compareAt && (
+                                <del>
+                                  ${(p.compareAt.amount / 100).toFixed(2)}
+                                </del>
+                              )}
+                            </strong>
+                          </span>
+                        </Link>
+                        <button
+                          aria-label={`${state.saved.includes(p.id) ? "Unsave" : "Save"} ${p.title}`}
+                          aria-pressed={state.saved.includes(p.id)}
+                          onClick={() => state.toggleSaved(p.id)}
+                        >
+                          <Icon
+                            name="heart"
+                            filled={state.saved.includes(p.id)}
+                          />
+                        </button>
+                      </article>
+                    ))}
+                  </div>
+                  <div className="gift-result-actions">
+                    <button onClick={() => setAccess(true)}>
+                      Show Similar Gifts
                     </button>
-                  </article>
-                ))}
-              </div>
-              <div className="gift-result-actions">
-                <button onClick={() => setAccess(true)}>
-                  Show Similar Gifts
-                </button>
-                <button
-                  onClick={() => {
-                    if (saved) return;
-                    state.createCollection(
-                      "Gift ideas",
-                      products.map((p) => p.id),
-                    );
-                    setSaved(true);
-                  }}
-                >
-                  {saved ? "Saved as Collection" : "Save as Collection"}
-                </button>
-              </div>
-              <button className="gift-action" onClick={() => setStep(1)}>
-                Show Me Different Ideas
-              </button>
+                    <button
+                      onClick={() => {
+                        if (saved) return;
+                        state.createCollection(
+                          "Gift ideas",
+                          products.map((p) => p.id),
+                        );
+                        setSaved(true);
+                      }}
+                    >
+                      {saved ? "Saved as Collection" : "Save as Collection"}
+                    </button>
+                  </div>
+                  <button className="gift-action" onClick={() => setStep(1)}>
+                    Show Me Different Ideas
+                  </button>
+                </section>
+              )}
             </>
           )}
         </div>
@@ -963,10 +1086,9 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
           <input
             disabled={![1, 4].includes(step)}
             placeholder={
-              [1, 4].includes(step)
-                ? "Type your answer..."
-                : "Please select an option above."
+              step === 4 ? "Add any special notes..." : "Type your answer..."
             }
+            aria-label={step === 4 ? "Optional gift notes" : "Gift answer"}
             value={[1, 4].includes(step) ? notes : ""}
             onChange={(e) => setNotes(e.target.value)}
           />

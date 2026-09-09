@@ -9,6 +9,7 @@ export function AccountPage({
   children,
   action,
   dock = true,
+  back = true,
   className = "",
   onBack,
 }: {
@@ -16,6 +17,7 @@ export function AccountPage({
   children: ReactNode;
   action?: ReactNode;
   dock?: boolean;
+  back?: boolean;
   className?: string;
   onBack?: () => void;
 }) {
@@ -26,7 +28,7 @@ export function AccountPage({
         {action}
       </header>
       {children}
-      {dock && <FloatingNav back onBack={onBack} />}
+      {dock && <FloatingNav back={back} onBack={onBack} />}
     </main>
   );
 }
@@ -105,7 +107,7 @@ export function AddressEditor({
   onSave: (value: Address) => void;
   onCancel: () => void;
   onDelete?: () => void;
-  variant?: "account" | "checkout";
+  variant?: "account" | "checkout" | "initial";
   onChange?: (value: Address) => void;
 }) {
   const [value, setValue] = useState(initialValue);
@@ -113,7 +115,7 @@ export function AddressEditor({
     setValue(next);
     onChange?.(next);
   };
-  const fields = [
+  const baseFields = [
     ["firstName", "First name"],
     ["lastName", "Last name"],
     ["company", "Company (optional)"],
@@ -124,6 +126,32 @@ export function AddressEditor({
     ["postalCode", "ZIP code"],
     ["phone", "Phone (optional)"],
   ] as const;
+  const fields =
+    variant === "initial"
+      ? [
+          ...baseFields.slice(0, 2),
+          baseFields[3],
+          baseFields[4],
+          baseFields[2],
+          baseFields[8],
+          ...baseFields.slice(5, 8),
+        ]
+      : baseFields;
+  const countryField = (
+    <label className="form-field">
+      Country/region
+      <select
+        value={value.country}
+        onChange={(e) => change({ ...value, country: e.target.value })}
+      >
+        {["United States", "Bulgaria", "United Kingdom", "Singapore"].map(
+          (c) => (
+            <option key={c}>{c}</option>
+          ),
+        )}
+      </select>
+    </label>
+  );
   return (
     <form
       className={`account-form address-editor address-editor-${variant}`}
@@ -132,116 +160,115 @@ export function AddressEditor({
         onSave(value);
       }}
     >
-      <label className="form-field">
-        Country/region
-        <select
-          value={value.country}
-          onChange={(e) => change({ ...value, country: e.target.value })}
-        >
-          {["United States", "Bulgaria", "United Kingdom", "Singapore"].map(
-            (c) => (
-              <option key={c}>{c}</option>
-            ),
-          )}
-        </select>
-      </label>
+      {variant === "checkout" && countryField}
       {fields.map(([key, label]) => (
-        <label className="form-field" key={key}>
-          {label}
-          {key === "region" && value.country === "United States" ? (
-            <select
-              aria-label="State"
-              value={value.region}
-              onChange={(e) => change({ ...value, region: e.target.value })}
-            >
-              <option value="">State</option>
-              {[
-                "AL",
-                "AK",
-                "AZ",
-                "AR",
-                "CA",
-                "CO",
-                "CT",
-                "DE",
-                "FL",
-                "GA",
-                "HI",
-                "ID",
-                "IL",
-                "IN",
-                "IA",
-                "KS",
-                "KY",
-                "LA",
-                "ME",
-                "MD",
-                "MA",
-                "MI",
-                "MN",
-                "MS",
-                "MO",
-                "MT",
-                "NE",
-                "NV",
-                "NH",
-                "NJ",
-                "NM",
-                "NY",
-                "NC",
-                "ND",
-                "OH",
-                "OK",
-                "OR",
-                "PA",
-                "RI",
-                "SC",
-                "SD",
-                "TN",
-                "TX",
-                "UT",
-                "VT",
-                "VA",
-                "WA",
-                "WV",
-                "WI",
-                "WY",
-                "DC",
-              ].map((state) => (
-                <option key={state}>{state}</option>
-              ))}
-            </select>
-          ) : (
-            <input
-              aria-label={label}
-              required={
-                !["apartment", "company", "phone", "region"].includes(key)
-              }
-              type={key === "phone" ? "tel" : "text"}
-              value={value[key]}
-              maxLength={160}
-              onChange={(e) => change({ ...value, [key]: e.target.value })}
-            />
-          )}
-        </label>
+        <div className="address-field-row" key={key}>
+          <label className="form-field">
+            {label}
+            {key === "region" && value.country === "United States" ? (
+              <select
+                aria-label="State"
+                value={value.region}
+                onChange={(e) => change({ ...value, region: e.target.value })}
+              >
+                <option value="">State</option>
+                {[
+                  "AL",
+                  "AK",
+                  "AZ",
+                  "AR",
+                  "CA",
+                  "CO",
+                  "CT",
+                  "DE",
+                  "FL",
+                  "GA",
+                  "HI",
+                  "ID",
+                  "IL",
+                  "IN",
+                  "IA",
+                  "KS",
+                  "KY",
+                  "LA",
+                  "ME",
+                  "MD",
+                  "MA",
+                  "MI",
+                  "MN",
+                  "MS",
+                  "MO",
+                  "MT",
+                  "NE",
+                  "NV",
+                  "NH",
+                  "NJ",
+                  "NM",
+                  "NY",
+                  "NC",
+                  "ND",
+                  "OH",
+                  "OK",
+                  "OR",
+                  "PA",
+                  "RI",
+                  "SC",
+                  "SD",
+                  "TN",
+                  "TX",
+                  "UT",
+                  "VT",
+                  "VA",
+                  "WA",
+                  "WV",
+                  "WI",
+                  "WY",
+                  "DC",
+                ].map((state) => (
+                  <option key={state}>{state}</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                aria-label={label}
+                required={
+                  !["apartment", "company", "phone", "region"].includes(key)
+                }
+                type={key === "phone" ? "tel" : "text"}
+                value={value[key]}
+                maxLength={160}
+                onChange={(e) => change({ ...value, [key]: e.target.value })}
+              />
+            )}
+          </label>
+          {key === "lastName" && variant !== "checkout" && countryField}
+        </div>
       ))}
-      <p className="address-phone-help">
-        In case we need to contact you about your order
-      </p>
-      <label className="check-row">
-        <input
-          type="checkbox"
-          checked={value.isDefault}
-          onChange={(e) => change({ ...value, isDefault: e.target.checked })}
-        />
-        Set as default address
-      </label>
+      {variant !== "initial" && (
+        <>
+          <p className="address-phone-help">
+            In case we need to contact you about your order
+          </p>
+          <label className="check-row">
+            <input
+              type="checkbox"
+              checked={value.isDefault}
+              onChange={(e) =>
+                change({ ...value, isDefault: e.target.checked })
+              }
+            />
+            Set as default address
+          </label>
+        </>
+      )}
       <div className="editor-actions">
-        <button className="form-cancel" type="button" onClick={onCancel}>
-          Cancel
-        </button>
+        {variant !== "initial" && (
+          <button className="form-cancel" type="button" onClick={onCancel}>
+            Cancel
+          </button>
+        )}
         <button className="primary form-submit" type="submit">
-          Save
+          {variant === "initial" ? "Continue to payment details" : "Save"}
         </button>
       </div>
       {onDelete && (
@@ -401,6 +428,7 @@ export function PhoneEditor({
 export function PaymentEditor({ checkout = false }: { checkout?: boolean }) {
   const [error, setError] = useState("");
   const [hasNumber, setHasNumber] = useState(false);
+  const [cardTail, setCardTail] = useState("");
   const account = useAccount();
   const [billing, setBilling] = useState(
     account.addresses.find((a) => a.isDefault)?.id ?? "",
@@ -443,9 +471,15 @@ export function PaymentEditor({ checkout = false }: { checkout?: boolean }) {
         }}
       >
         {!checkout && (
-          <div className="payment-illustration">
-            <span>▦</span>
-            <span>•••• •••• •••• 4242</span>
+          <div
+            className={`payment-illustration ${cardTail.length === 4 ? "entered" : ""}`}
+          >
+            <svg viewBox="0 0 30 24" aria-hidden="true">
+              <rect x="1" y="1" width="28" height="22" rx="4" />
+              <path d="M10 1v22m10-22v22M1 8h28M1 16h28" />
+            </svg>
+            <span>{hasNumber ? `•••• •••• •••• ${cardTail}` : ""}</span>
+            {cardTail.length === 4 && <b>VISA</b>}
           </div>
         )}
         {!checkout && (
@@ -472,6 +506,7 @@ export function PaymentEditor({ checkout = false }: { checkout?: boolean }) {
               name="cardNumber"
               onChange={(e) => {
                 setHasNumber(Boolean(e.target.value));
+                setCardTail(e.target.value.replace(/\D/g, "").slice(-4));
                 setError("");
               }}
               aria-label="Card number"
@@ -562,17 +597,13 @@ export function PaymentEditor({ checkout = false }: { checkout?: boolean }) {
           </button>
         </details>
 
-        <p className="form-note">
-          Use reference values only. Card information is never saved in this
-          preview.
-        </p>
         {error && (
           <p className="form-error" role="alert">
             {error}
           </p>
         )}
         <button className="primary form-submit">
-          {checkout ? "Save" : "Add card"}
+          {checkout ? "Save" : "Save card"}
         </button>
       </form>
       <Sheet

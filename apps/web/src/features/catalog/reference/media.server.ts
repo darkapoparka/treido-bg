@@ -12,6 +12,266 @@ const media: Record<
     rect: readonly [number, number, number, number];
   }
 > = {
+  "beauty-pill-skin": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/002.webp",
+    rect: [20, 124, 32, 32],
+  },
+  "beauty-pill-hair": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/002.webp",
+    rect: [142, 124, 32, 32],
+  },
+  "beauty-pill-makeup": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/002.webp",
+    rect: [260, 124, 32, 32],
+  },
+  "beauty-pill-scent": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/002.webp",
+    rect: [378, 124, 14, 32],
+  },
+
+  "connection-shop": {
+    file: "flows/3d1f4110-721a-44e8-b35d-be4c015a9e03/003.webp",
+    rect: [219, 230, 56, 56],
+  },
+  "connection-outlook": {
+    file: "flows/3d1f4110-721a-44e8-b35d-be4c015a9e03/002.webp",
+    rect: [58, 658, 25, 26],
+  },
+  "connection-amazon": {
+    file: "flows/3d1f4110-721a-44e8-b35d-be4c015a9e03/002.webp",
+    rect: [58, 735, 26, 26],
+  },
+  "order-empty-art": {
+    file: "flows/8f406a69-ad1c-4de8-a699-12aa504efb74/002.webp",
+    rect: [129, 155, 135, 234],
+  },
+  "order-deal-0": {
+    file: "flows/8f406a69-ad1c-4de8-a699-12aa504efb74/004.webp",
+    rect: [20, 330, 70, 50],
+  },
+  "order-deal-1": {
+    file: "flows/8f406a69-ad1c-4de8-a699-12aa504efb74/004.webp",
+    rect: [149, 324, 57, 66],
+  },
+  "order-deal-2": {
+    file: "flows/8f406a69-ad1c-4de8-a699-12aa504efb74/004.webp",
+    rect: [304, 329, 56, 42],
+  },
+  "order-deal-3": {
+    file: "flows/8f406a69-ad1c-4de8-a699-12aa504efb74/004.webp",
+    rect: [20, 447, 74, 41],
+  },
+  "order-deal-4": {
+    file: "flows/8f406a69-ad1c-4de8-a699-12aa504efb74/004.webp",
+    rect: [140, 450, 66, 55],
+  },
+  "order-deal-5": {
+    file: "flows/8f406a69-ad1c-4de8-a699-12aa504efb74/004.webp",
+    rect: [267, 452, 65, 48],
+  },
+
+  "checkout-rosemary-oil": {
+    file: "flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/008.webp",
+    rect: [14, 412, 64, 64],
+  },
+  "checkout-white-rock-item": {
+    file: "flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/007.webp",
+    rect: [16, 651, 36, 36],
+  },
+  "connection-google": {
+    file: "flows/3d1f4110-721a-44e8-b35d-be4c015a9e03/003.webp",
+    rect: [130, 242, 32, 32],
+  },
+  "tracking-map-fragment": {
+    file: "flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/009.webp",
+    rect: [0, 59, 140, 210],
+  },
+  "home-princess-top": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
+    rect: [33, 314, 89, 98],
+  },
+  "home-princess-dress": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
+    rect: [176, 310, 94, 102],
+  },
+  "home-tea-blue": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
+    rect: [33, 225, 89, 95],
+  },
+  "home-tea-orange": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
+    rect: [176, 225, 92, 95],
+  },
+  "home-mountain-pink": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/004.webp",
+    rect: [33, 712, 90, 49],
+  },
+  "home-mountain-black": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/004.webp",
+    rect: [177, 719, 93, 41],
+  },
+  "home-accessory-cap": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
+    rect: [45, 543, 110, 49],
+  },
+  "home-accessory-glasses": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
+    rect: [177, 548, 125, 38],
+  },
+  "home-loaded-logo": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
+    rect: [29, 133, 49, 49],
+  },
+  "home-mountain-logo": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/004.webp",
+    rect: [32, 612, 44, 44],
+  },
+  "home-kitsch-photo": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/006.webp",
+    rect: [17, 174, 359, 334],
+  },
+  "home-pura-photo": {
+    file: "flows/5f25f0ee-f19a-49a8-8f9d-ca2f3259c3c6/002.webp",
+    rect: [17, 174, 359, 332],
+  },
+  "suggestion-jeans-warehouse": {
+    file: "flows/4d0f0532-ce38-49b5-a94b-32e8ace4716c/002.webp",
+    rect: [16, 113, 44, 44],
+  },
+  "suggestion-city-jeans": {
+    file: "flows/4d0f0532-ce38-49b5-a94b-32e8ace4716c/002.webp",
+    rect: [13, 166, 50, 50],
+  },
+
+  "assistant-wide-one": {
+    file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/002.webp",
+    rect: [17, 669, 150, 88],
+  },
+  "assistant-wide-two": {
+    file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/002.webp",
+    rect: [179, 669, 148, 88],
+  },
+  "assistant-blue-partial": {
+    file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/002.webp",
+    rect: [341, 385, 51, 149],
+  },
+  "assistant-city-denim": {
+    file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/003.webp",
+    rect: [78, 203, 66, 116],
+  },
+
+  "idea-rice-wash": {
+    file: "flows/972c6dae-9ab4-4aaf-9f21-999808493dc6/002.webp",
+    rect: [23, 157, 112, 106],
+  },
+  "idea-rosemary-bar": {
+    file: "flows/972c6dae-9ab4-4aaf-9f21-999808493dc6/002.webp",
+    rect: [208, 157, 112, 105],
+  },
+  "idea-rosemary-bundle": {
+    file: "flows/972c6dae-9ab4-4aaf-9f21-999808493dc6/002.webp",
+    rect: [24, 388, 121, 139],
+  },
+  "idea-purple-bundle": {
+    file: "flows/972c6dae-9ab4-4aaf-9f21-999808493dc6/002.webp",
+    rect: [209, 388, 119, 139],
+  },
+  "idea-rosemary-liquid": {
+    file: "flows/972c6dae-9ab4-4aaf-9f21-999808493dc6/002.webp",
+    rect: [34, 631, 109, 124],
+  },
+  "idea-jojoba": {
+    file: "flows/972c6dae-9ab4-4aaf-9f21-999808493dc6/002.webp",
+    rect: [209, 646, 113, 102],
+  },
+
+  "beauty-athena-deal": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/006.webp",
+    rect: [17, 269, 171, 110],
+  },
+  "beauty-necessaire-deal": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/006.webp",
+    rect: [197, 269, 171, 109],
+  },
+  "explore-womenswear-partial": {
+    file: "flows/5c39eb04-f5fe-43a0-92da-b79b275051e0/004.webp",
+    rect: [239, 820, 124, 30],
+  },
+
+  "beauty-starter-upper": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/003.webp",
+    rect: [17, 394, 360, 140],
+  },
+  "beauty-starface-product": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp",
+    rect: [45, 571, 119, 112],
+  },
+  "beauty-necessaire-product": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp",
+    rect: [255, 570, 70, 120],
+  },
+  "beauty-perfume": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/004.webp",
+    rect: [124, 165, 61, 33],
+  },
+  "beauty-bath": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/004.webp",
+    rect: [214, 124, 32, 64],
+  },
+  "beauty-hair": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/004.webp",
+    rect: [74, 265, 42, 24],
+  },
+  "beauty-nail": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/004.webp",
+    rect: [320, 218, 30, 64],
+  },
+  "beauty-fenty-partial": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/006.webp",
+    rect: [82, 38, 45, 60],
+  },
+  "beauty-juvia-partial": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/006.webp",
+    rect: [244, 37, 70, 50],
+  },
+
+  "skin-loretta": {
+    file: "flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/007.webp",
+    rect: [77, 433, 65, 159],
+  },
+  "skin-harry": {
+    file: "flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/007.webp",
+    rect: [260, 439, 69, 147],
+  },
+  "skin-laundry-partial": {
+    file: "flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/007.webp",
+    rect: [77, 697, 55, 153],
+  },
+  "skin-gopure-partial": {
+    file: "flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/007.webp",
+    rect: [253, 704, 60, 144],
+  },
+  "look-skirt-one-partial": {
+    file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp",
+    rect: [30, 802, 129, 48],
+  },
+  "look-skirt-two-partial": {
+    file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp",
+    rect: [198, 802, 128, 48],
+  },
+  "beauty-nails-upper": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/006.webp",
+    rect: [17, 497, 350, 136],
+  },
+  "beauty-athena-product": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/004.webp",
+    rect: [65, 510, 76, 123],
+  },
+  "beauty-crown-product": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/004.webp",
+    rect: [263, 499, 51, 124],
+  },
+
   "pdp-kitsch-art": {
     file: "flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/008.webp",
     rect: [16, 74, 361, 135],
@@ -276,6 +536,50 @@ const media: Record<
     file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/007.webp",
     rect: [39, 522, 106, 99],
   },
+  "discover-hat": {
+    file: "flows/b778fdce-2c65-4153-aaee-6703098f27d4/003.webp",
+    rect: [46, 233, 105, 122],
+  },
+  "discover-basket": {
+    file: "flows/b778fdce-2c65-4153-aaee-6703098f27d4/003.webp",
+    rect: [177, 188, 78, 64],
+  },
+  "discover-calculator": {
+    file: "flows/b778fdce-2c65-4153-aaee-6703098f27d4/003.webp",
+    rect: [320, 208, 47, 51],
+  },
+  "discover-watering": {
+    file: "flows/b778fdce-2c65-4153-aaee-6703098f27d4/003.webp",
+    rect: [328, 306, 65, 113],
+  },
+  "discover-ball": {
+    file: "flows/b778fdce-2c65-4153-aaee-6703098f27d4/003.webp",
+    rect: [102, 511, 92, 91],
+  },
+  "discover-chair": {
+    file: "flows/b778fdce-2c65-4153-aaee-6703098f27d4/003.webp",
+    rect: [6, 505, 51, 79],
+  },
+  "discover-candle": {
+    file: "flows/b778fdce-2c65-4153-aaee-6703098f27d4/003.webp",
+    rect: [234, 568, 53, 66],
+  },
+  "discover-lipstick": {
+    file: "flows/b778fdce-2c65-4153-aaee-6703098f27d4/003.webp",
+    rect: [314, 468, 51, 92],
+  },
+  "discover-clock": {
+    file: "flows/b778fdce-2c65-4153-aaee-6703098f27d4/003.webp",
+    rect: [0, 335, 63, 90],
+  },
+  "onboarding-delivered-parcel": {
+    file: "flows/b778fdce-2c65-4153-aaee-6703098f27d4/015.webp",
+    rect: [300, 419, 62, 49],
+  },
+  "auth-email-phone": {
+    file: "flows/b778fdce-2c65-4153-aaee-6703098f27d4/006.webp",
+    rect: [179, 165, 36, 72],
+  },
   "auth-passkey": {
     file: "flows/b5716e20-b094-463c-b74b-a5e983dd1651/006.webp",
     rect: [179, 165, 36, 72],
@@ -332,6 +636,23 @@ const media: Record<
 };
 // Verified clean originals are an explicit local allowlist, never remote requests.
 const originals: Record<string, string> = {
+  "home-drmtlgy-retinol": "home-drmtlgy-retinol.jpg",
+  "home-drmtlgy-needleless": "home-drmtlgy-needleless.jpg",
+  "home-drmtlgy-eye": "home-drmtlgy-eye.jpg",
+  "home-drmtlgy-tinted": "home-drmtlgy-tinted.jpg",
+  "home-curl-cream": "home-curl-cream.jpg",
+  "home-air-dry-cream": "home-air-dry-cream.jpg",
+  "shea-gallery-hand": "shea-gallery-hand.jpg",
+  "shea-gallery-shower": "shea-gallery-shower.jpg",
+  "beauty-starface-product": "beauty-starface.png",
+  "beauty-juvia-partial": "beauty-juvia.jpg",
+  "beauty-fenty-partial": "beauty-fenty.jpg",
+  "beauty-necessaire-product": "beauty-necessaire.jpg",
+  "beauty-crown-product": "beauty-crown.jpg",
+  "beauty-athena-product": "beauty-athena.png",
+  "shea-gallery-hero": "shea-gallery-hero-original.jpg",
+  "shea-gallery-testimonial": "shea-gallery-testimonial-original.jpg",
+  "shea-gallery-benefits": "shea-gallery-benefits-original.jpg",
   "sugar-body-scrub": "sugar-body-scrub.jpg",
   "charcoal-body-wash": "charcoal-body-wash.jpg",
   "assistant-armor-cap": "mob-armor-angle.jpg",

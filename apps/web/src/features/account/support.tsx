@@ -335,7 +335,10 @@ export function LoginPage() {
       </AccountPage>
     );
   return (
-    <AccountPage dock={false}>
+    <AccountPage
+      dock={false}
+      className={`login-page ${step === "email" ? "auth-email" : "auth-code"}`}
+    >
       <Link
         className="auth-close"
         href="/onboarding"
@@ -346,7 +349,7 @@ export function LoginPage() {
       <div className="auth-content">
         <img
           className={`auth-art ${step === "email" ? "auth-loop" : ""}`}
-          src={`/api/reference-media/${step === "email" ? "auth-loop" : "auth-phone"}`}
+          src={`/api/reference-media/${step === "email" ? "auth-loop" : emailCode ? "auth-email-phone" : "auth-phone"}`}
           alt=""
         />
         <h1>
@@ -357,12 +360,20 @@ export function LoginPage() {
               : "Confirm it’s you"}
         </h1>
         <p>
-          {step === "email"
-            ? "Or create an account"
-            : `Enter code sent to ${email}`}
+          {step === "email" ? (
+            "Or create an account"
+          ) : (
+            <>
+              Enter code sent to
+              <br />
+              <strong>
+                {emailCode ? email || "mira@example.test" : "+1 ••• ••• 0100"}
+              </strong>
+            </>
+          )}
         </p>
         <form
-          className="account-form"
+          className="auth-form"
           onSubmit={(e) => {
             e.preventDefault();
             if (step === "email")
@@ -371,58 +382,72 @@ export function LoginPage() {
           }}
         >
           {step === "email" ? (
-            <label className="form-field">
-              Email
+            <>
               <input
+                className="auth-email-input"
                 aria-label="Email"
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email address"
+                placeholder="Enter your email"
                 autoComplete="email"
               />
-            </label>
-          ) : (
-            <>
-              <label className="code-input">
-                Verification code
-                <CodeInput
-                  value={code}
-                  onChange={setCode}
-                  label="Verification code"
-                />
-              </label>
-              <p className="form-note">
-                No code has been sent. This is the reference verification form.
-              </p>
+              <button className="primary auth-continue">Continue</button>
             </>
+          ) : (
+            <CodeInput
+              value={code}
+              onChange={(value) => {
+                setCode(value);
+                if (value.length === 6) setBoundary(true);
+              }}
+              label="Verification code"
+            />
           )}
-          <button className="primary form-submit">Continue</button>
         </form>
-        {step === "code" && (
-          <button
-            className="checkout-link"
-            onClick={() => setEmailCode(!emailCode)}
-          >
-            {emailCode ? "Use phone code instead" : "Email me code instead"}
-          </button>
+        {step === "code" &&
+          (emailCode ? (
+            <button
+              className="auth-change"
+              onClick={() => {
+                setStep("email");
+                setCode("");
+              }}
+            >
+              Change email address
+            </button>
+          ) : (
+            <div className="auth-phone-alternatives">
+              <p>
+                Didn’t receive a code?{" "}
+                <button onClick={() => setBoundary(true)}>Resend</button>, or
+                try another option ↓
+              </p>
+              <button onClick={() => setEmailCode(true)}>
+                Email me code instead
+              </button>
+              <button
+                onClick={() => {
+                  setStep("email");
+                  setCode("");
+                }}
+              >
+                Use a different account
+              </button>
+            </div>
+          ))}
+        {step === "email" && (
+          <p className="auth-terms">
+            By continuing, you agree to the{" "}
+            <Link href="https://shop.app/terms-of-service">terms</Link> and
+            acknowledge the{" "}
+            <Link href="https://www.shopify.com/legal/privacy/consumers">
+              privacy policy
+            </Link>
+            .
+          </p>
         )}
-        {step === "code" && (
-          <button
-            className="form-cancel"
-            onClick={() => {
-              setStep("email");
-              setCode("");
-            }}
-          >
-            Use a different account
-          </button>
-        )}
-        <p className="auth-terms">
-          By continuing, you agree to the terms and acknowledge the privacy
-          policy.
-        </p>
       </div>
       <Sheet
         open={boundary}
@@ -446,8 +471,8 @@ export function LoginPage() {
     </AccountPage>
   );
 }
+
 export function OnboardingPage({
-  catalog,
   initialStep = 0,
 }: {
   catalog: Catalog;
@@ -466,18 +491,44 @@ export function OnboardingPage({
   if (params.get("step") === "discover")
     return (
       <AccountPage dock={false} className="source-intro discover-intro">
+        <small className="intro-powered">
+          Powered by{" "}
+          <b>
+            <svg aria-hidden="true" viewBox="0 0 20 22">
+              <path
+                fill="currentColor"
+                d="M4 5 15 3l3 17-16 1ZM7 5C7-1 13-1 13 4h-2c0-4-3-3-3 1Z"
+              />
+              <text x="6" y="16" fill="white" fontSize="11" fontStyle="italic">
+                S
+              </text>
+            </svg>
+            shopify
+          </b>
+        </small>
         <div className="discover-art">
           {[
-            "hat",
-            "basket",
-            "calculator",
-            "watering",
-            "ball",
-            "chair",
-            "candle",
-            "lipstick",
-          ].map((id) => (
-            <img key={id} src={`/api/reference-media/intro-${id}`} alt="" />
+            ["hat", 46, 174, 105, 122],
+            ["basket", 177, 129, 78, 64],
+            ["calculator", 320, 149, 47, 51],
+            ["watering", 328, 247, 65, 113],
+            ["ball", 102, 452, 92, 91],
+            ["chair", 6, 446, 51, 79],
+            ["candle", 234, 509, 53, 66],
+            ["lipstick", 314, 409, 51, 92],
+            ["clock", 0, 276, 63, 90],
+          ].map(([id, x, y, w, h]) => (
+            <img
+              key={id}
+              src={`/api/reference-media/discover-${id}`}
+              alt=""
+              style={{
+                left: Number(x),
+                top: Number(y),
+                width: Number(w),
+                height: Number(h),
+              }}
+            />
           ))}
         </div>
         <h1>
@@ -486,9 +537,23 @@ export function OnboardingPage({
           favorite brand
         </h1>
         <div className="intro-actions">
-          <Link className="primary form-submit" href="/login">
-            Continue
+          <Link
+            className="primary form-submit"
+            href="/login"
+            aria-label="Continue to sign in"
+          >
+            <img
+              className="discover-loading-mark"
+              src="/api/reference-media/auth-loop"
+              alt=""
+            />
           </Link>
+          <p>
+            By proceeding to use Shop, you agree to our
+            <br />
+            <Link href="/about">terms of service</Link> and{" "}
+            <Link href="/about">privacy policy</Link>.
+          </p>
         </div>
       </AccountPage>
     );
@@ -611,7 +676,7 @@ export function OnboardingPage({
                 ? "Track all of your orders in one place"
                 : "Follow your order every step of the way"}
         </h1>
-        {step > 0 && (
+        {step > 0 && step < 3 && (
           <p>
             {step === 1
               ? "We’ll show you brands and products that match your style and interests"
@@ -646,19 +711,23 @@ export function OnboardingPage({
           </div>
         )}
         {step === 3 && (
-          <div className="account-panel tracking-onboarding-card">
+          <div className="tracking-onboarding-card">
             <img
-              src={
-                catalog.products.find((p) => p.id === "jordan-legend")
-                  ?.images[0]
-              }
+              className="tracking-shoe"
+              src="/api/reference-media/onboarding-shoe"
               alt=""
             />
             <span>
               <small>Online store</small>
               <strong>Delivered</strong>
               <i />
+              <small>Delivered 2 hours ago</small>
             </span>
+            <img
+              className="tracking-parcel"
+              src="/api/reference-media/onboarding-delivered-parcel"
+              alt=""
+            />
           </div>
         )}
         <div className="onboarding-actions">

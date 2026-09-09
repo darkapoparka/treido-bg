@@ -99,6 +99,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
     },
   );
   const addMode = panel === "Add from saved" || panel === "More ideas";
+  const [inviteDismissed, setInviteDismissed] = useState(false);
   const choose = (id: string) => {
     if (!collection) return;
     state.updateCollection(collection.id, {
@@ -120,6 +121,16 @@ export function Saved({ catalog }: { catalog: Catalog }) {
             </small>
           )}
         </h1>
+        {!collection && state.collections.length > 0 && (
+          <IconButton
+            icon="plus"
+            label="Create collection"
+            onClick={() => {
+              setName("");
+              setPanel("Create collection");
+            }}
+          />
+        )}
         {collection && !addMode && (
           <IconButton
             icon="more"
@@ -136,8 +147,33 @@ export function Saved({ catalog }: { catalog: Catalog }) {
       ) : !collection &&
         (products.length > 0 || state.collections.length > 0) ? (
         <>
-          <h2>Collections</h2>
-          <div className="collection-rail">
+          <h2>Collections {state.collections.length > 0 && "›"}</h2>
+          <div
+            className={`collection-rail ${state.collections.length ? "has-collections" : ""}`}
+          >
+            {state.collections.map((c) => (
+              <button
+                className="collection-tile"
+                key={c.id}
+                onClick={() => setSelected(c.id)}
+              >
+                <div>
+                  {catalog.products
+                    .filter((p) => c.productIds.includes(p.id))
+                    .slice(0, 4)
+                    .map((p) => (
+                      <img key={p.id} src={p.images[0]} alt="" />
+                    ))}
+                </div>
+                <span className="collection-tile-copy">
+                  <small>
+                    <Icon name="lock" />
+                    {c.visibility}
+                  </small>
+                  <b>{c.name}</b>
+                </span>
+              </button>
+            ))}
             <button
               className="create-collection-tile"
               onClick={() => {
@@ -155,39 +191,50 @@ export function Saved({ catalog }: { catalog: Catalog }) {
                 ))}
               </div>
             </button>
-            {state.collections.map((c) => (
-              <button
-                className="collection-tile"
-                key={c.id}
-                onClick={() => setSelected(c.id)}
-              >
-                <div>
-                  {catalog.products
-                    .filter((p) => c.productIds.includes(p.id))
-                    .slice(0, 4)
-                    .map((p) => (
-                      <img key={p.id} src={p.images[0]} alt="" />
-                    ))}
-                </div>
-                <b>{c.name}</b>
-              </button>
-            ))}
           </div>
         </>
       ) : collection && !addMode ? (
-        <button
-          className="invite-collaborators"
-          onClick={() => setPanel("Invite collaborators")}
-        >
-          <span className="review-avatar">{account.profile.firstName[0]}</span>
-          <Icon name="plus" />
-          Invite collaborators
-        </button>
+        !inviteDismissed ? (
+          <section className="collection-invite-callout">
+            <IconButton
+              icon="close"
+              label="Dismiss collaboration suggestion"
+              onClick={() => setInviteDismissed(true)}
+            />
+            <strong>Collaborate with people you know</strong>
+            <p>Shop together, plan events, and share gift ideas.</p>
+            <button
+              className="primary"
+              onClick={() => setPanel("Invite collaborators")}
+            >
+              Invite collaborators
+            </button>
+          </section>
+        ) : (
+          <button
+            className="invite-collaborators"
+            onClick={() => setPanel("Invite collaborators")}
+          >
+            <span className="review-avatar">
+              {account.profile.firstName[0]}
+            </span>
+            <Icon name="plus" />
+            Invite collaborators
+          </button>
+        )
       ) : null}
       <div className="product-grid saved-grid">
         {(addMode
-          ? catalog.products.filter(
-              (p) => panel === "More ideas" || state.saved.includes(p.id),
+          ? catalog.products.filter((p) =>
+              panel === "More ideas"
+                ? [
+                    "idea-rice-wash",
+                    "idea-rosemary-bar",
+                    "idea-rosemary-bundle",
+                    "idea-purple-bundle",
+                    "idea-rosemary-liquid",
+                  ].includes(p.id)
+                : state.saved.includes(p.id),
             )
           : products
         ).map((p) => (
@@ -201,6 +248,16 @@ export function Saved({ catalog }: { catalog: Catalog }) {
             onSelect={addMode ? () => choose(p.id) : undefined}
           />
         ))}
+        {panel === "More ideas" && (
+          <div className="saved-partial-product">
+            <img
+              src="/api/reference-media/idea-jojoba"
+              alt="Jojoba Bead Exfoliating Body Wash Bar"
+            />
+            <p>KITSCH</p>
+            <strong>Jojoba Bead Exfoliating Body…</strong>
+          </div>
+        )}
       </div>
       {collection && !addMode && (
         <>
@@ -209,7 +266,21 @@ export function Saved({ catalog }: { catalog: Catalog }) {
             <img src="/api/reference-media/kitsch-logo" alt="KITSCH" />
           </Link>
           <button className="find-ideas" onClick={() => setPanel("More ideas")}>
-            Find more ideas
+            <span>
+              <Icon name="plus" /> Find more ideas
+            </span>
+            <div>
+              {[
+                "idea-rice-wash",
+                "idea-rosemary-bar",
+                "idea-rosemary-bundle",
+                "idea-purple-bundle",
+                "idea-rosemary-liquid",
+                "idea-jojoba",
+              ].map((key) => (
+                <img key={key} src={`/api/reference-media/${key}`} alt="" />
+              ))}
+            </div>
           </button>
         </>
       )}
@@ -257,7 +328,11 @@ export function Saved({ catalog }: { catalog: Catalog }) {
         initialFocus={
           panel === "Create collection" ? ".collection-name-input" : undefined
         }
-        title={panel}
+        title={
+          panel === "Make public"
+            ? "Anyone on Shop will be able to view this collection"
+            : panel
+        }
         onClose={() => setPanel("")}
       >
         {["Create collection", "Edit name"].includes(panel) ? (
@@ -285,6 +360,16 @@ export function Saved({ catalog }: { catalog: Catalog }) {
                 Save
               </button>
             </div>
+            {panel === "Edit name" && (
+              <div className="collection-edit-thumbnails">
+                {products.map((p) => (
+                  <img key={p.id} src={p.images[0]} alt="" />
+                ))}
+              </div>
+            )}
+            {panel === "Edit name" && (
+              <p className="collection-input-label">Collection name</p>
+            )}
             <input
               className="collection-name-input"
               aria-label="Collection name"
@@ -293,23 +378,31 @@ export function Saved({ catalog }: { catalog: Catalog }) {
               onChange={(e) => setName(e.target.value)}
               autoFocus
             />
-            <div className="visibility-options">
-              {(["Private", "Public"] as const).map((v) => (
-                <button
-                  type="button"
-                  key={v}
-                  aria-pressed={visibility === v}
-                  onClick={() => setVisibility(v)}
-                >
-                  {v}
-                </button>
-              ))}
-            </div>
-            <p className="form-note">
-              {visibility === "Private"
-                ? "Visible only to you and collaborators"
-                : "Anyone with a link can view"}
-            </p>
+            {panel === "Create collection" && (
+              <div className="collection-privacy-row">
+                <div className="visibility-options">
+                  {(["Private", "Public"] as const).map((v) => (
+                    <button
+                      key={v}
+                      type="button"
+                      aria-label={v}
+                      aria-pressed={visibility === v}
+                      onClick={() => setVisibility(v)}
+                    >
+                      <Icon name={v === "Private" ? "lock" : "globe"} />
+                    </button>
+                  ))}
+                </div>
+                <div>
+                  <strong>{visibility}</strong>
+                  <p>
+                    {visibility === "Private"
+                      ? "Visible only to you and collaborators"
+                      : "Anyone with a link can view"}
+                  </p>
+                </div>
+              </div>
+            )}
           </form>
         ) : panel === "Collection options" && collection ? (
           <div className="filter-options">
@@ -328,13 +421,14 @@ export function Saved({ catalog }: { catalog: Catalog }) {
             </button>
             <button
               onClick={() => {
+                if (collection.visibility === "Private") {
+                  setPanel("Make public");
+                  return;
+                }
                 state.updateCollection(collection.id, {
-                  visibility:
-                    collection.visibility === "Private" ? "Public" : "Private",
+                  visibility: "Private",
                 });
-                setNotice(
-                  `Collection is now ${collection.visibility === "Private" ? "public" : "private"}`,
-                );
+                setNotice("Collection is now private");
                 setPanel("");
               }}
             >
@@ -350,6 +444,29 @@ export function Saved({ catalog }: { catalog: Catalog }) {
               <Icon name="close" />
             </button>
           </div>
+        ) : panel === "Make public" && collection ? (
+          <>
+            <p className="sheet-copy">
+              Your collection will be discoverable by others and may appear on
+              the feed.
+            </p>
+            <div className="sheet-actions">
+              <button className="pill" onClick={() => setPanel("")}>
+                Cancel
+              </button>
+              <button
+                className="primary"
+                onClick={() => {
+                  state.updateCollection(collection.id, {
+                    visibility: "Public",
+                  });
+                  setPanel("");
+                }}
+              >
+                Make public
+              </button>
+            </div>
+          </>
         ) : panel === "Delete collection" && collection ? (
           <>
             <p>
@@ -448,7 +565,13 @@ export function Following({ catalog }: { catalog: Catalog }) {
           {stores.map((s) => (
             <div className="following-row" key={s.id}>
               <Link href={`/stores/${s.id}`}>
-                <img src={s.logo} alt="" />
+                {s.logo ? (
+                  <img src={s.logo} alt="" />
+                ) : (
+                  <span className="store-logo-fallback" aria-hidden="true">
+                    {s.name[0]}
+                  </span>
+                )}
                 {s.name}
               </Link>
               <button
@@ -500,8 +623,14 @@ export function Following({ catalog }: { catalog: Catalog }) {
             <>
               <div className="following-avatars">
                 {stores.map((s) => (
-                  <Link href={`/stores/${s.id}`} key={s.id}>
-                    <img src={s.logo} alt={s.name} />
+                  <Link href={`/stores/${s.id}`} key={s.id} aria-label={s.name}>
+                    {s.logo ? (
+                      <img src={s.logo} alt={s.name} />
+                    ) : (
+                      <span className="store-logo-fallback" aria-hidden="true">
+                        {s.name[0]}
+                      </span>
+                    )}
                   </Link>
                 ))}
               </div>
@@ -512,7 +641,16 @@ export function Following({ catalog }: { catalog: Catalog }) {
                 .map((s) => (
                   <section className="following-feed" key={s.id}>
                     <div className="store-row">
-                      <img src={s.logo} alt="" />
+                      {s.logo ? (
+                        <img src={s.logo} alt="" />
+                      ) : (
+                        <span
+                          className="store-logo-fallback"
+                          aria-hidden="true"
+                        >
+                          {s.name[0]}
+                        </span>
+                      )}
                       <span>
                         <strong>{s.name}</strong>
                         <p className="following-feed-meta">

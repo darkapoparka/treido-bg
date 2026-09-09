@@ -16,7 +16,7 @@ const reviews = [
   },
   {
     id: "nice-scent",
-    title: "",
+    title: "NC / 05",
     body: "This has a very lovely smell and exfoliates nicely",
     author: "Morgan",
     date: "Jun 16, 2026",
@@ -31,7 +31,7 @@ const reviews = [
   {
     id: "wes",
     title: "Girlfriend loves it and I can breathe.",
-    body: "I think in the beauty industry the makers think all products need to have a fragrance. Being a man with allergies to perfumes. Thank god someone has finally brought a product to market that works.",
+    body: "I think in the beauty industry the makers think all products need to have a fragrance. Being a man with allergies to perfumes. Thank god someone has finally brought a product to market that works and is fragrance free. I can finally go to bed and not have allergy issues. Thank you",
     author: "Wes",
     date: "13 days ago",
   },
@@ -56,6 +56,17 @@ function reviewTime(date: string) {
     ? Date.UTC(2026, 5, 30) - Number(relative[1]) * 86400000
     : Date.parse(date);
 }
+const reasonDescriptions = [
+  "It attacks an individual or a group of people.",
+  "It’s from someone affiliated with the Shop Store or a competitor’s store.",
+  "It contains inappropriate, sexually explicit, or violent content.",
+  "It has allegations about improper store or buyer behavior.",
+  "It contains harmful content based on an individual or group identity.",
+  "It references items that go against Shop Merchant Guidelines.",
+  "It violates intellectual property laws.",
+  "It contains information that could identify the reviewer e.g. email, phone number, or credit card details.",
+  "It contains ads or promotional content.",
+];
 const reasons = [
   "It’s bullying or harassment",
   "It’s a conflict of interest",
@@ -152,7 +163,11 @@ export function Reviews({
             (q || !r.id.startsWith("nice-")),
         )
         .sort((a, b) =>
-          sort === "Most recent" ? reviewTime(b.date) - reviewTime(a.date) : 0,
+          sort === "Most recent"
+            ? reviewTime(b.date) - reviewTime(a.date)
+            : q
+              ? Number(b.id === "tammy") - Number(a.id === "tammy")
+              : 0,
         )
         .map((r) => (
           <article
@@ -186,6 +201,9 @@ export function Reviews({
                 {r.author} · {r.date}
               </span>
               <button
+                aria-label={
+                  helpful.includes(r.id) ? "Helpful (1) ✓" : "Helpful"
+                }
                 className={helpful.includes(r.id) ? "helpful-selected" : ""}
                 onClick={() =>
                   setHelpful((v) =>
@@ -195,7 +213,8 @@ export function Reviews({
                   )
                 }
               >
-                Helpful{helpful.includes(r.id) ? " (1) ✓" : ""}
+                <Icon name="thumb-up" /> Helpful
+                {helpful.includes(r.id) && <b className="helpful-count">1</b>}
               </button>
               <IconButton
                 icon="more"
@@ -203,6 +222,7 @@ export function Reviews({
                 onClick={() => {
                   setReport(r.id);
                   setStage(0);
+                  setReason("");
                   setReason("");
                 }}
               />
@@ -216,6 +236,9 @@ export function Reviews({
         ))}
       <Sheet
         open={!!report}
+        className={
+          stage === 1 ? "review-report-reasons" : "review-report-sheet"
+        }
         title={
           stage === 0
             ? "More options"
@@ -238,9 +261,12 @@ export function Reviews({
               This won’t be shared with the reviewer or the store.
             </p>
             <div className="filter-options">
-              {reasons.map((r) => (
+              {reasons.map((r, i) => (
                 <label key={r}>
-                  {r}
+                  <span>
+                    <strong>{r}</strong>
+                    <small>{reasonDescriptions[i]}</small>
+                  </span>
                   <input
                     type="radio"
                     name="report-reason"
@@ -333,11 +359,17 @@ export function ProductOptions({
   const [reason, setReason] = useState("");
   const [notes, setNotes] = useState("");
   return (
-    <Sheet open={open} title={view} onClose={close}>
+    <Sheet
+      open={open}
+      title={view === "Tell us more" ? "Report product" : view}
+      className="product-options-sheet"
+      onClose={close}
+    >
       {view === "More options" ? (
         <div className="filter-options">
           {storeId === "kitsch" && (
             <button onClick={() => setView("Contact KITSCH")}>
+              <Icon name="chat" />
               Contact KITSCH
             </button>
           )}
@@ -345,6 +377,7 @@ export function ProductOptions({
             className="danger-text"
             onClick={() => setView("Report product")}
           >
+            <Icon name="alert" />
             Report
           </button>
         </div>
@@ -357,16 +390,24 @@ export function ProductOptions({
               target="_blank"
               rel="noreferrer"
             >
-              Website ↗
+              <Icon name="globe" />
+              Website <span className="contact-trailing">↗</span>
             </Link>
             <button
               onClick={() =>
-                navigator.clipboard?.writeText("kitsch@mykitsch.com")
+                navigator.clipboard
+                  ?.writeText("kitsch@mykitsch.com")
+                  .catch(() => {})
               }
             >
-              kitsch@mykitsch.com <Icon name="share" />
+              <Icon name="mail" />
+              kitsch@mykitsch.com{" "}
+              <span className="contact-trailing">
+                <Icon name="copy" />
+              </span>
             </button>
             <a className="account-row" href="tel:4242405551">
+              <Icon name="phone" />
               4242405551
             </a>
             <a
@@ -375,6 +416,7 @@ export function ProductOptions({
               target="_blank"
               rel="noreferrer"
             >
+              <Icon name="instagram" />
               Instagram
             </a>
             <a
@@ -383,10 +425,11 @@ export function ProductOptions({
               target="_blank"
               rel="noreferrer"
             >
+              <Icon name="facebook" />
               Facebook
             </a>
           </div>
-          <p className="form-note">
+          <p className="contact-address">
             137 N Larchmont Blvd, Suite 641, LOS ANGELES, California 90004,
             United States
           </p>
@@ -427,7 +470,11 @@ export function ProductOptions({
         </>
       ) : view === "Tell us more" ? (
         <>
-          <p>{reason}</p>
+          <p className="form-note">Please select a reason</p>
+          <label className="selected-report-reason">
+            {reason}
+            <input type="radio" checked readOnly aria-label={reason} />
+          </label>
           <textarea
             aria-label="Tell us more"
             placeholder="Tell us more"

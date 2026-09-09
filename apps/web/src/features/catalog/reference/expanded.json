@@ -9,7 +9,7 @@
     "id": "whip-mousse",
     "images": ["/api/reference-media/whip-mousse"],
     "category": "Beauty",
-    "storeId": "",
+    "storeId": "lange-hair",
     "title": "Whip Volumizing Mousse",
     "promotion": "Save $20",
     "compareAt": null,
@@ -32,7 +32,7 @@
     "id": "hanacure-cleanser",
     "images": ["/api/reference-media/hanacure-cleanser"],
     "category": "Beauty",
-    "storeId": "",
+    "storeId": "hanacure",
     "title": "Microphol® Cleanser",
     "promotion": "$50 off order",
     "compareAt": null,
@@ -55,7 +55,7 @@
     "id": "bubble-sunrise",
     "images": ["/api/reference-media/bubble-sunrise"],
     "category": "Beauty",
-    "storeId": "",
+    "storeId": "bubble-skincare",
     "title": "Sun Rise SPF 30",
     "promotion": null,
     "compareAt": null,
@@ -78,7 +78,7 @@
     "id": "bare-liquid",
     "images": ["/api/reference-media/bare-liquid"],
     "category": "Beauty",
-    "storeId": "",
+    "storeId": "bare-minerals",
     "title": "GEN NUDE® Liquid Mineral…",
     "promotion": "Save $20",
     "compareAt": null,
@@ -101,7 +101,7 @@
     "id": "carbon-crew",
     "images": ["/api/reference-media/carbon-crew"],
     "category": "Menswear",
-    "storeId": "",
+    "storeId": "true-classic",
     "title": "Carbon Active Crew Neck T…",
     "promotion": "Save $30",
     "compareAt": null,
@@ -124,7 +124,7 @@
     "id": "jordan-legend",
     "images": ["/api/reference-media/jordan-legend"],
     "category": "Menswear",
-    "storeId": "",
+    "storeId": "kicks-crew",
     "title": "Air Jordan 11 'Legend Blue' 2…",
     "promotion": null,
     "compareAt": null,
@@ -147,7 +147,7 @@
     "id": "buffy-breeze",
     "images": ["/api/reference-media/buffy-breeze"],
     "category": "Home",
-    "storeId": "",
+    "storeId": "buffy",
     "title": "Breeze Comforter",
     "promotion": null,
     "compareAt": null,
@@ -399,6 +399,241 @@
         "availableQuantity": 12,
         "id": "look-white-crew-default",
         "label": "One size"
+      }
+    ]
+  },
+  {
+    "id": "skin-loretta",
+    "title": "Gentle Hydrating Cleanser",
+    "storeId": "",
+    "category": "Cleanser",
+    "images": ["/api/reference-media/skin-loretta"],
+    "price": {
+      "currency": "USD",
+      "amount": 4000
+    },
+    "rating": 4.5,
+    "ratingCount": "152",
+    "description": "",
+    "saleUnit": "piece",
+    "variants": [
+      {
+        "id": "skin-loretta-default",
+        "label": "One size",
+        "availableQuantity": 12
+      }
+    ]
+  },
+  {
+    "id": "skin-harry",
+    "title": "Hydrating Facial Cleanser",
+    "storeId": "",
+    "category": "Cleanser",
+    "images": ["/api/reference-media/skin-harry"],
+    "price": {
+      "currency": "USD",
+      "amount": 1000
+    },
+    "rating": 4.5,
+    "ratingCount": "216",
+    "description": "",
+    "saleUnit": "piece",
+    "variants": [
+      {
+        "id": "skin-harry-default",
+        "label": "One size",
+        "availableQuantity": 12
+      }
+    ]
+  },
+  {
+    "id": "idea-rice-wash",
+    "title": "Rice Water Protein Restoring Face & Body Wash Bar",
+    "storeId": "kitsch",
+    "category": "Cleanse",
+    "images": ["/api/reference-media/idea-rice-wash"],
+    "price": {
+      "currency": "USD",
+      "amount": 1400
+    },
+    "ratingCount": "",
+    "description": "",
+    "saleUnit": "piece",
+    "variants": [
+      {
+        "id": "idea-rice-wash-default",
+        "label": "One size",
+        "availableQuantity": 12
+      }
+    ]
+  },
+  {
+    "id": "idea-rosemary-bar",
+    "title": "Rosemary & Biotin Volumizing Solid Shampoo Bar",
+    "storeId": "kitsch",
+    "category": "Cleanse",
+    "images": ["/api/reference-media/idea-rosemary-bar"],
+    "price": {
+      "currency": "USD",
+      "amount": 1600
+    },
+    "ratingCount": "",
+    "description": "",
+    "saleUnit": "piece",
+    "variants": [
+      {
+        "id": "idea-rosemary-bar-default",
+        "label": "One size",
+        "availableQuantity": 12
+      }
+    ]
+  },
+  {
+    "id": "idea-rosemary-bundle",
+    "title": "Rosemary & Biotin Volumizing Shampoo & Conditioner",
+    "storeId": "kitsch",
+    "category": "Cleanse",
+    "images": ["/api/reference-media/idea-rosemary-bundle"],
+    "price": {
+      "currency": "USD",
+      "amount": 2800
+    },
+    "ratingCount": "",
+    "description": "",
+    "saleUnit": "piece",
+    "variants": [
+      {
+        "id": "idea-rosemary-bundle-default",
+        "label": "One size",
+        "availableQuantity": 12
+      }
+    ]
+  },
+  {
+    "id": "idea-purple-bundle",
+    "title": "Purple Toning Shampoo & Conditioner",
+    "storeId": "kitsch",
+    "category": "Cleanse",
+    "images": ["/api/reference-media/idea-purple-bundle"],
+    "price": {
+      "currency": "USD",
+      "amount": 2800
+    },
+    "ratingCount": "",
+    "description": "",
+    "saleUnit": "piece",
+    "variants": [
+      {
+        "id": "idea-purple-bundle-default",
+        "label": "One size",
+        "availableQuantity": 12
+      }
+    ]
+  },
+  {
+    "id": "idea-rosemary-liquid",
+    "title": "Rosemary & Biotin Volumizing Shampoo & Conditioner",
+    "storeId": "kitsch",
+    "category": "Cleanse",
+    "images": ["/api/reference-media/idea-rosemary-liquid"],
+    "price": {
+      "currency": "USD",
+      "amount": 2800
+    },
+    "ratingCount": "",
+    "description": "",
+    "saleUnit": "piece",
+    "variants": [
+      {
+        "id": "idea-rosemary-liquid-default",
+        "label": "One size",
+        "availableQuantity": 12
+      }
+    ]
+  },
+  {
+    "id": "beauty-fenty",
+    "title": "Eaze Drop Lightweight Blurring Skin Tint",
+    "storeId": "fenty-beauty",
+    "category": "Makeup",
+    "images": ["/api/reference-media/beauty-fenty-partial"],
+    "price": {
+      "currency": "USD",
+      "amount": 3900
+    },
+    "rating": 4.5,
+    "ratingCount": "96",
+    "description": "",
+    "saleUnit": "piece",
+    "variants": [
+      {
+        "id": "beauty-fenty-default",
+        "label": "One size",
+        "availableQuantity": 12
+      }
+    ]
+  },
+  {
+    "id": "beauty-juvia",
+    "title": "Blushed Blonzing Stick",
+    "storeId": "juvias-place",
+    "category": "Makeup",
+    "images": ["/api/reference-media/beauty-juvia-partial"],
+    "price": {
+      "currency": "USD",
+      "amount": 2000
+    },
+    "rating": 5,
+    "ratingCount": "1",
+    "description": "",
+    "saleUnit": "piece",
+    "variants": [
+      {
+        "id": "beauty-juvia-default",
+        "label": "One size",
+        "availableQuantity": 12
+      }
+    ]
+  },
+  {
+    "id": "city-duaa-denim",
+    "title": "Men’s Duaa Neptune Denim…",
+    "price": {
+      "currency": "USD",
+      "amount": 9000
+    },
+    "images": ["/api/reference-media/assistant-city-denim"],
+    "storeId": "city-jeans",
+    "category": "Jeans",
+    "ratingCount": "",
+    "description": "",
+    "saleUnit": "piece",
+    "variants": [
+      {
+        "id": "city-duaa-denim-default",
+        "label": "One size",
+        "availableQuantity": 12
+      }
+    ]
+  },
+  {
+    "id": "assistant-blue-skinny",
+    "title": "BLUE SKI…",
+    "price": {
+      "currency": "USD",
+      "amount": 2499
+    },
+    "images": ["/api/reference-media/assistant-blue-partial"],
+    "storeId": "jeans-warehouse",
+    "category": "Jeans",
+    "ratingCount": "",
+    "description": "",
+    "saleUnit": "piece",
+    "variants": [
+      {
+        "id": "assistant-blue-skinny-default",
+        "label": "One size",
+        "availableQuantity": 12
       }
     ]
   }

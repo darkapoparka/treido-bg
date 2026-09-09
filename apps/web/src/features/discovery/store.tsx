@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { formatMoney } from "../catalog/types";
 import type { Catalog, Store, Product } from "../catalog/types";
@@ -382,6 +382,10 @@ export function Storefront({
   catalog: Catalog;
 }) {
   const [cart, setCart] = useState(false);
+  const { viewStore } = useDiscovery();
+  useEffect(() => {
+    viewStore(store.id);
+  }, [store.id, viewStore]);
   const isKitsch = store.id === "kitsch",
     chemical = store.id === "chemical-guys";
   const all = catalog.products.filter((p) => p.storeId === store.id);

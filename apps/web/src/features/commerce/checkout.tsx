@@ -14,154 +14,11 @@ import {
   Boundary,
 } from "../account/forms";
 import { useAccount, blankAddress } from "../account/state";
-export function CartContents({
-  catalog,
-  onContinue,
-  onOffer,
-}: {
-  catalog: Catalog;
-  onContinue?: () => void;
-  onOffer?: (storeId: string) => void;
-}) {
-  const state = useDiscovery();
-  const resolved = state.cart.flatMap((line) => {
-    const product = catalog.products.find((p) => p.id === line.productId);
-    const variant = product?.variants.find((v) => v.id === line.variantId);
-    return product && variant ? [{ ...line, product, variant }] : [];
-  });
-  const stores = Array.from(new Set(resolved.map((l) => l.product.storeId)));
-  return (
-    <>
-      {!resolved.length ? (
-        <div className="notification-empty">
-          <h2>Your cart is empty</h2>
-          <p>
-            Add products while you shop, so they’ll be ready for checkout later.
-          </p>
-          {!onContinue && (
-            <Link className="primary form-submit" href="/search">
-              Go shopping
-            </Link>
-          )}
-        </div>
-      ) : (
-        stores.map((storeId) => {
-          const lines = resolved.filter((l) => l.product.storeId === storeId);
-          const total = lines.reduce(
-            (sum, l) => sum + l.quantity * l.product.price.amount,
-            0,
-          );
-          const store = catalog.stores.find((s) => s.id === storeId);
-          return (
-            <section className="seller-cart" key={storeId}>
-              <header>
-                {store?.logo && <img src={store.logo} alt="" />}
-                <div>
-                  <strong>{store?.name ?? storeId}</strong>
-                  <p>
-                    {store?.rating} ★ ({store?.ratingCount})
-                  </p>
-                </div>
-              </header>
-              {lines.map((l) => (
-                <article
-                  className="commerce-line"
-                  key={`${l.productId}-${l.variantId}`}
-                >
-                  <img src={l.product.images[0]} alt="" />
-                  <div>
-                    <Link href={`/products/${l.productId}`}>
-                      <strong>{l.product.title}</strong>
-                    </Link>
-                    <p>
-                      {l.variant.label} · {formatMoney(l.product.price)}
-                    </p>
-                    <div className="cart-controls">
-                      <div className="cart-stepper">
-                        <button
-                          aria-label={`Decrease ${l.product.title}`}
-                          disabled={l.quantity <= 1}
-                          onClick={() =>
-                            state.setQuantity(
-                              l.productId,
-                              l.variantId,
-                              l.quantity - 1,
-                            )
-                          }
-                        >
-                          −
-                        </button>
-                        <output>{l.quantity}</output>
-                        <button
-                          aria-label={`Increase ${l.product.title}`}
-                          disabled={l.quantity >= l.variant.availableQuantity}
-                          onClick={() =>
-                            state.setQuantity(
-                              l.productId,
-                              l.variantId,
-                              l.quantity + 1,
-                            )
-                          }
-                        >
-                          +
-                        </button>
-                      </div>
-                      <button
-                        onClick={() =>
-                          state.saveForLater(l.productId, l.variantId)
-                        }
-                      >
-                        Save for later
-                      </button>
-                      <button
-                        aria-label={`Remove ${l.product.title}`}
-                        onClick={() => state.remove(l.productId, l.variantId)}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              ))}
-              {onOffer && (
-                <button
-                  className="cart-offer-link"
-                  onClick={() => onOffer(storeId)}
-                >
-                  <span>
-                    Add{" "}
-                    {formatMoney({
-                      amount: Math.max(0, 5000 - total),
-                      currency: "USD",
-                    })}{" "}
-                    to save $20 with your exclusive offer
-                  </span>
-                  <strong>Add items</strong>
-                </button>
-              )}
-              <div className="cart-subtotal">
-                <span>Subtotal</span>
-                <strong>
-                  {formatMoney({
-                    amount: total,
-                    currency: lines[0].product.price.currency,
-                  })}
-                </strong>
-              </div>
-              <Link
-                onClick={onContinue}
-                className="primary form-submit"
-                href={`/checkout?store=${encodeURIComponent(storeId)}`}
-              >
-                Continue to checkout
-              </Link>
-            </section>
-          );
-        })
-      )}
-    </>
-  );
-}
+import { CartContents } from "./cart";
+export { CartContents } from "./cart";
+import { InitialPayment } from "./initial-payment";
+import { CheckoutExtras, checkoutRecommendations } from "./checkout-extras";
+import { capturedLineAmount } from "./pricing";
 export function CartPage({ catalog }: { catalog: Catalog }) {
   return (
     <AccountPage title="Your cart">
@@ -217,6 +74,7 @@ export function Checkout({
   catalog: Catalog;
   storeId?: string;
 }) {
+  const [extraIds, setExtraIds] = useState<string[]>([]);
   const state = useDiscovery();
   const account = useAccount();
   const [step, setStep] = useState<
@@ -257,12 +115,22 @@ export function Checkout({
       ? [{ ...l, product: p }]
       : [];
   });
-  const subtotal = lines.reduce(
-    (n, l) => n + l.quantity * l.product.price.amount,
-    0,
-  );
+  const subtotal =
+    lines.reduce(
+      (n, l) => n + l.quantity * capturedLineAmount(l, l.product.price.amount),
+      0,
+    ) +
+    checkoutRecommendations
+      .filter((p) => extraIds.includes(p.id))
+      .reduce((n, p) => n + p.amount, 0);
   const fee = shipping === 0 ? 682 : 1174;
-  const total = subtotal + fee;
+  const tax = lines.some(
+    (l) =>
+      l.productId === "shampoo-bag" && l.variantId === "shampoo-bag-default",
+  )
+    ? 35
+    : 0;
+  const total = subtotal + fee + tax;
   const address =
     account.addresses.find((a) => a.id === addressId) ??
     account.addresses.find((a) => a.isDefault) ??
@@ -349,14 +217,13 @@ export function Checkout({
           }}
         />
       ) : step === "payment-setup" ? (
-        <>
-          <PaymentEditor />
-          <button className="form-cancel" onClick={() => setStep("review")}>
-            Continue with saved payment method
-          </button>
-        </>
+        <InitialPayment
+          address={address}
+          onContinue={() => setStep("review")}
+        />
       ) : step === "address" ? (
         <AddressEditor
+          variant="initial"
           initialValue={addressDraft}
           onChange={setAddressDraft}
           onSave={(v) => {
@@ -551,13 +418,20 @@ export function Checkout({
               </button>
             </details>
           </div>
+          <CheckoutExtras
+            catalog={catalog}
+            added={extraIds}
+            onAdd={(id) =>
+              setExtraIds((v) => (v.includes(id) ? v : [...v, id]))
+            }
+          />
           <div className="checkout-summary">
             <button
               className="account-row"
               onClick={() => setSummary(!summary)}
             >
               <span>
-                Order summary · {lines.reduce((n, l) => n + l.quantity, 0)}{" "}
+                Order summary Â· {lines.reduce((n, l) => n + l.quantity, 0)}{" "}
                 items
               </span>
               <strong>
@@ -566,7 +440,23 @@ export function Checkout({
             </button>
             {summary && (
               <div className="inline-order-summary">
-                {" "}
+                {checkoutRecommendations
+                  .filter((p) => extraIds.includes(p.id))
+                  .map((p) => (
+                    <div className="order-item" key={p.id}>
+                      <img src={p.image} alt="" />
+                      <span>{p.name}</span>
+                      <strong>
+                        {formatMoney({ amount: p.amount, currency: "USD" })}
+                      </strong>
+                    </div>
+                  ))}
+                <details className="loyalty-details">
+                  <summary>Complete this purchase to earn 4 points</summary>
+                  <p>
+                    Earn points with this store when you complete your purchase.
+                  </p>
+                </details>{" "}
                 {lines.map((l) => (
                   <div
                     className="order-item"
@@ -575,11 +465,18 @@ export function Checkout({
                     <img src={l.product.images[0]} alt="" />
                     <span>
                       {l.product.title}
-                      <small>Quantity {l.quantity}</small>
+                      <small>
+                        {capturedLineAmount(l, l.product.price.amount) !==
+                        l.product.price.amount
+                          ? "27% OFF BACK TO SCHOOL SALE (-$1.35)"
+                          : `Quantity ${l.quantity}`}
+                      </small>
                     </span>
                     <strong>
                       {formatMoney({
-                        amount: l.product.price.amount * l.quantity,
+                        amount:
+                          capturedLineAmount(l, l.product.price.amount) *
+                          l.quantity,
                         currency: l.product.price.currency,
                       })}
                     </strong>
@@ -596,7 +493,7 @@ export function Checkout({
             >
               <input
                 aria-label="Discount code"
-                placeholder="Add discount"
+                placeholder="Discount code or gift card"
                 value={code}
                 onChange={(e) => {
                   setCode(e.target.value);
@@ -610,10 +507,53 @@ export function Checkout({
                 Discount codes cannot be validated in this preview.
               </p>
             )}
+            {summary && (
+              <div className="checkout-totals">
+                <p>
+                  Subtotal{" "}
+                  <span>
+                    {formatMoney({ amount: subtotal, currency: "USD" })}
+                  </span>
+                </p>
+                <p>
+                  Shipping{" "}
+                  <span>{formatMoney({ amount: fee, currency: "USD" })}</span>
+                </p>
+                <p>
+                  Estimated taxes{" "}
+                  <span>{formatMoney({ amount: tax, currency: "USD" })}</span>
+                </p>
+              </div>
+            )}
             <div className="cart-subtotal">
               <strong>Total</strong>
               <strong>{formatMoney({ amount: total, currency: "USD" })}</strong>
             </div>
+            {summary && (
+              <>
+                <strong className="checkout-savings">
+                  TOTAL SAVINGS{" "}
+                  {formatMoney({
+                    amount: lines.reduce(
+                      (n, l) =>
+                        n +
+                        (l.product.price.amount -
+                          capturedLineAmount(l, l.product.price.amount)) *
+                          l.quantity,
+                      0,
+                    ),
+                    currency: "USD",
+                  })}
+                </strong>
+                <p className="checkout-terms">
+                  By clicking “Pay Now” you agree to Kitsch’s{" "}
+                  <Link href="/stores/kitsch?info=terms">Terms of Service</Link>{" "}
+                  and{" "}
+                  <Link href="/stores/kitsch?info=privacy">Privacy Policy</Link>
+                  .
+                </p>
+              </>
+            )}
           </div>
           <label className="text-offers">
             <input
@@ -666,10 +606,14 @@ export function Checkout({
       </Sheet>
       <Sheet
         open={Boolean(deleteAddressId)}
-        title="Delete address?"
+        title="Delete address"
+        className="delete-address-confirm"
         onClose={() => setDeleteAddressId("")}
       >
-        <p>Are you sure you want to delete this address?</p>
+        <p>
+          Are you sure you want to delete the address{" "}
+          {account.addresses.find((a) => a.id === deleteAddressId)?.street}?
+        </p>
         <div className="editor-actions">
           <button
             className="form-cancel"

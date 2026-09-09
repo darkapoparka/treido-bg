@@ -22,6 +22,7 @@ function JeansAssistant({ catalog }: { catalog: Catalog }) {
   const products = [
     "assistant-signature-straight",
     "assistant-urban-straight",
+    "assistant-blue-skinny",
   ].flatMap((id) => {
     const p = catalog.products.find((p) => p.id === id);
     return p ? [p] : [];
@@ -66,9 +67,38 @@ function JeansAssistant({ catalog }: { catalog: Catalog }) {
       </div>
       <h2>Wide leg and relaxed silhouettes</h2>
       <p className="form-note">Modern, roomy fits with plenty of movement</p>
-      <p className="reference-missing-media">
-        Additional captured product imagery is not available in this preview.
-      </p>
+      <div className="assistant-product-rail assistant-wide-rail">
+        {["assistant-wide-one", "assistant-wide-two"].map((key) => (
+          <article key={key}>
+            <div className="product-media">
+              <img
+                src={`/api/reference-media/${key}`}
+                alt="Jeans Warehouse wide leg recommendation"
+              />
+            </div>
+            <span>Jeans Warehouse</span>
+          </article>
+        ))}
+      </div>
+      <div className="assistant-answer-card">
+        <Link href="/products/city-duaa-denim">
+          <img
+            src="/api/reference-media/assistant-city-denim"
+            alt="Men’s Duaa Neptune Denim"
+          />
+        </Link>
+        <div>
+          <Link href="/stores/city-jeans">City Jeans</Link>
+          <p>4.8 ★ (3.7K)</p>
+          <strong>Men’s Duaa Neptune Denim…</strong>
+          <p>$90.00</p>
+          <ul>
+            <li>Heavy knee distressing</li>
+            <li>Authentic vintage blue wash</li>
+            <li>Modern streetwear fit</li>
+          </ul>
+        </div>
+      </div>
       <div className="assistant-answer-card">
         <img
           src="/api/reference-media/assistant-white"

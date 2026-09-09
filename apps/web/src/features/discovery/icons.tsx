@@ -1,5 +1,19 @@
 import type { CSSProperties } from "react";
 const paths = {
+  globe:
+    "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM3 12h18M12 3c5 5 5 13 0 18-5-5-5-13 0-18",
+  chat: "M3 4h18v13H8l-5 4V4Z",
+  alert: "M12 8v5m0 4h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0",
+  mail: "M3 5h18v14H3zM3 5l9 7 9-7",
+  phone: "M5 3h4l2 5-3 2a15 15 0 0 0 6 6l2-3 5 2v4c-9 3-19-7-16-16Z",
+  copy: "M8 8h13v13H8zM16 8V3H3v13h5",
+  instagram:
+    "M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4ZM16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0M17 7h.01",
+  facebook: "M14 22V12h4l1-4h-5V6c0-2 2-2 5-2V1h-5c-4 0-5 3-5 6v1H6v4h3v10",
+  storefront:
+    "M3 9h18l-2-6H5L3 9Zm1 5v7h16v-7M9 21v-7h6v7M3 9v2a3 3 0 0 0 6 0V9m0 2a3 3 0 0 0 6 0V9m0 2a3 3 0 0 0 6 0V9",
+  minis:
+    "M15 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0M9 17a3 3 0 1 1-6 0 3 3 0 0 1 6 0M21 17a3 3 0 1 1-6 0 3 3 0 0 1 6 0",
   lock: "M6 10h12v11H6zM8 10V6a4 4 0 0 1 8 0v4",
   "badge-check":
     "m12 2 3 2 4 1 1 4 2 3-2 3-1 4-4 1-3 2-3-2-4-1-1-4-2-3 2-3 1-4 4-1ZM8 12l3 3 5-6",
@@ -22,6 +36,7 @@ const paths = {
   close: "m6 6 12 12M6 18 18 6",
   arrow: "M4 12h16m-7-7 7 7-7 7",
   share: "M12 15V2m-5 5 5-5 5 5M6 10H3v11h18V10h-3",
+  "plus-circle": "M12 8v8M8 12h8M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0",
   plus: "M12 4v16M4 12h16",
   minus: "M4 12h16",
   filter: "M3 6h18M3 18h18M8 3v6M16 15v6",
@@ -54,7 +69,23 @@ export function Icon({
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <path d={paths[name]} />
+      {filled && name === "orders" ? (
+        <>
+          <path
+            d="M5 7h2V6a5 5 0 0 1 10 0v1h2a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Zm4 0h6V6a3 3 0 0 0-6 0v1Z"
+            fillRule="evenodd"
+            stroke="none"
+          />
+          <path d="M8 9h8" stroke="white" strokeWidth="2" />
+        </>
+      ) : filled && name === "badge-check" ? (
+        <>
+          <path d="m12 2 3 2 4 1 1 4 2 3-2 3-1 4-4 1-3 2-3-2-4-1-1-4-2-3 2-3 1-4 4-1Z" />
+          <path d="m8 12 3 3 5-6" fill="none" stroke="white" strokeWidth="2" />
+        </>
+      ) : (
+        <path d={paths[name]} />
+      )}
     </svg>
   );
 }

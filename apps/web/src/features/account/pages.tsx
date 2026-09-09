@@ -64,9 +64,15 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
             {catalog.stores
               .filter((store) => discovery.followed.includes(store.id))
               .slice(0, 3)
-              .map((store) => (
-                <img key={store.id} src={store.logo} alt="" />
-              ))}
+              .map((store) =>
+                store.logo ? (
+                  <img key={store.id} src={store.logo} alt="" />
+                ) : (
+                  <span key={store.id} className="store-logo-fallback">
+                    {store.name[0]}
+                  </span>
+                ),
+              )}
           </div>
           <strong>Following</strong>
         </Link>
@@ -89,7 +95,11 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
               href={`/orders/${order.id}`}
             >
               <span className="profile-order-logo">
-                {seller ? <img src={seller.logo} alt="" /> : order.name[0]}
+                {seller?.logo ? (
+                  <img src={seller.logo} alt="" />
+                ) : (
+                  (seller?.name[0] ?? order.name[0])
+                )}
               </span>
               <span>
                 <strong>
@@ -152,28 +162,30 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
         <Row label="Sign in & security" href="/account/security" />
         <Row label="Notifications" href="/account/notifications" />
         <Row label="Connections" href="/account/connections" />
+        <Row label="Data & privacy" href="/account/privacy" />
         <Row label="Support" href="/support" />
       </div>
       <button className="form-cancel" onClick={() => setLogout(true)}>
-        Log out
+        Sign out
       </button>
-      <Link className="form-cancel danger-text" href="/account/delete">
-        Delete account
-      </Link>
       <Sheet
         open={logout}
-        title="Log out of Shop?"
+        title="Sign out?"
+        className="signout-confirm"
         onClose={() => setLogout(false)}
       >
         <p className="form-note">
-          Leave this local reference profile. There is no authenticated session.
+          You’ll have to enter your email to access your delivery information
+          again.
         </p>
-        <Link href="/login" className="primary form-submit">
-          Log out of preview
-        </Link>
-        <button className="form-cancel" onClick={() => setLogout(false)}>
-          Cancel
-        </button>
+        <div className="editor-actions">
+          <button className="form-cancel" onClick={() => setLogout(false)}>
+            Cancel
+          </button>
+          <Link href="/onboarding" className="danger-button form-submit">
+            Sign out
+          </Link>
+        </div>
       </Sheet>
     </AccountPage>
   );
@@ -319,7 +331,11 @@ export function AccountDetails() {
       <div className="account-panel people-preview">
         <h2>Others you shop for</h2>
         {people.map((p) => (
-          <Link className="person-chip" href="/account/people" key={p.id}>
+          <Link
+            className="person-chip"
+            href={`/account/people?view=profile&id=${p.id}`}
+            key={p.id}
+          >
             <span className="profile-avatar">{p.name[0]}</span>
             {p.name}
           </Link>
@@ -388,7 +404,13 @@ export function PublicProfile({ catalog }: { catalog: Catalog }) {
   return (
     <AccountPage>
       <div className="public-profile">
-        <span className="profile-avatar large">{profile.firstName[0]}</span>
+        <span className="profile-avatar large">
+          {profile.avatar ? (
+            <img src={profile.avatar} alt="Your selected profile" />
+          ) : (
+            profile.firstName[0]
+          )}
+        </span>
         {!!publicCollections.length && (
           <h1>
             {profile.firstName} {profile.lastName}
@@ -399,7 +421,16 @@ export function PublicProfile({ catalog }: { catalog: Catalog }) {
         </Link>
         {!publicCollections.length && (
           <div className="public-hidden">
-            <span aria-hidden="true">◉</span>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path d="m3 3 18 18M9 5c6-1 10 4 12 7l-3 4M6 6l-5 6c4 6 8 9 15 6M9 9l6 6" />
+            </svg>
             <p>
               Your profile is hidden until you create your first public
               collection.
@@ -770,25 +801,31 @@ export function AddressesPage() {
       )}
       <Sheet
         open={deleting}
-        title="Delete address?"
+        title="Delete address"
+        className="delete-address-confirm"
         onClose={() => setDeleting(false)}
       >
-        <p className="form-note">
-          Are you sure you want to delete this address?
+        <p>
+          Are you sure you want to delete the address {editing?.firstName}{" "}
+          {editing?.lastName}, {editing?.street}, {editing?.city},{" "}
+          {editing?.region} {editing?.postalCode}, {editing?.country}?
         </p>
-        <button
-          className="danger-button form-submit"
-          onClick={() => {
-            if (editing) deleteAddress(editing.id);
-            setEditing(null);
-            setDeleting(false);
-          }}
-        >
-          Delete address
-        </button>
-        <button className="form-cancel" onClick={() => setDeleting(false)}>
-          Cancel
-        </button>
+        <div className="editor-actions">
+          <button className="form-cancel" onClick={() => setDeleting(false)}>
+            Cancel
+          </button>
+          <button
+            className="danger-button form-submit"
+            onClick={() => {
+              if (editing) deleteAddress(editing.id);
+              consumeSheetHistory();
+              setDeleting(false);
+              route.overview();
+            }}
+          >
+            Delete
+          </button>
+        </div>
       </Sheet>
     </AccountPage>
   );
@@ -826,9 +863,6 @@ export function PaymentsPage() {
       {view === "add" ? (
         <>
           <PaymentEditor />
-          <button className="form-cancel" onClick={() => setView("list")}>
-            Cancel
-          </button>
         </>
       ) : (
         <>
@@ -881,6 +915,7 @@ export function PaymentsPage() {
                 </span>
                 <input
                   type="checkbox"
+                  role="switch"
                   checked={receipts[card?.id ?? ""] ?? true}
                   onChange={(e) =>
                     setReceipts({
@@ -1038,93 +1073,7 @@ export function NotificationSettings() {
     </AccountPage>
   );
 }
-export function ConnectionsPage() {
-  const [open, setOpen] = useState(false);
-  const [provider, setProvider] = useState("");
-  return (
-    <AccountPage title="Connections">
-      <div className="account-panel">
-        <h2>Accounts</h2>
-        <button className="account-row" onClick={() => setOpen(true)}>
-          + Connect an account <span>G</span>
-        </button>
-      </div>
-      <div className="account-panel">
-        <h2>Minis</h2>
-        <Row label="Sol: Browse by Voice" href="/minis/sol" />
-        <Row label="Gift Sense" href="/minis/gift-sense" />
-      </div>
-      <Sheet
-        open={open}
-        title="Connect an account"
-        onClose={() => setOpen(false)}
-      >
-        <div className="choice-list">
-          {["Google", "Outlook", "Amazon"].map((p) => (
-            <button
-              key={p}
-              onClick={() => {
-                setOpen(false);
-                setProvider(p);
-              }}
-            >
-              {p} <span>›</span>
-            </button>
-          ))}
-        </div>
-        <p className="form-note">
-          Connect your shopping email to find deliveries.
-        </p>
-      </Sheet>
-      <Boundary
-        open={!!provider}
-        onClose={() => setProvider("")}
-        kind={`${provider} connection`}
-      />
-    </AccountPage>
-  );
-}
-export function DeleteAccount() {
-  const { profile } = useAccount();
-  const [open, setOpen] = useState(false);
-  return (
-    <AccountPage>
-      <h2 className="centered">Delete your Shop account</h2>
-      <div className="delete-identity">
-        <span className="profile-avatar">{profile.firstName[0]}</span>
-        {profile.email}
-      </div>
-      <div className="delete-copy">
-        <p>
-          Once deleted, Shop won’t remember the info you might have shared
-          including your:
-        </p>
-        <ul>
-          <li>Email address</li>
-          <li>Phone number</li>
-          <li>Order and delivery history</li>
-          <li>Shop Pay information including billing and shipping addresses</li>
-        </ul>
-        <p>This action can’t be undone.</p>
-      </div>
-      <button
-        className="danger-button form-submit"
-        onClick={() => setOpen(true)}
-      >
-        Delete account
-      </button>
-      <Link className="form-cancel" href="/profile">
-        Cancel
-      </Link>
-      <Boundary
-        open={open}
-        onClose={() => setOpen(false)}
-        kind="Account deletion"
-      />
-    </AccountPage>
-  );
-}
-
+export { ConnectionsPage, DeleteAccount } from "./privacy";
 function PaymentCard({ last4 = "4242" }: { last4?: string }) {
   return (
     <div className="source-payment-card">

@@ -79,7 +79,7 @@ test("replacement order confirmation remains open and updates only the selected 
     .getByRole("button", { name: "Order options", exact: true })
     .click();
   await page
-    .getByRole("button", { name: "Mark as delivered", exact: true })
+    .getByRole("button", { name: "Mark order as delivered", exact: true })
     .click();
   const confirmation = page.getByRole("dialog", {
     name: "Mark as delivered?",

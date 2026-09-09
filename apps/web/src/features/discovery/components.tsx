@@ -11,12 +11,14 @@ export function IconButton({
   label,
   onClick,
   pressed,
+  filled,
   className = "",
 }: {
   icon: IconName;
   label: string;
   onClick?: () => void;
   pressed?: boolean;
+  filled?: boolean;
   className?: string;
 }) {
   return (
@@ -27,7 +29,7 @@ export function IconButton({
       aria-pressed={pressed}
       onClick={onClick}
     >
-      <Icon name={icon} filled={pressed} />
+      <Icon name={icon} filled={filled ?? pressed} />
     </button>
   );
 }
@@ -103,12 +105,14 @@ export function ProductCard({
   showPromotion = false,
   mediaOnly = false,
   storeName,
+  ratingStyle = "stars",
 }: {
   product: Product;
   compact?: boolean;
   showPromotion?: boolean;
   mediaOnly?: boolean;
   storeName?: string;
+  ratingStyle?: "stars" | "summary";
 }) {
   const discovery = useDiscovery();
   const reported = discovery.reportedProducts.includes(product.id);
@@ -140,7 +144,15 @@ export function ProductCard({
           <strong>{product.title}</strong>
           {product.ratingCount && (
             <span className="rating">
-              <span>★★★★★</span> ({product.ratingCount})
+              {ratingStyle === "summary" ? (
+                <>
+                  ★ {product.rating} · {product.ratingCount} reviews
+                </>
+              ) : (
+                <>
+                  <span>★★★★★</span> ({product.ratingCount})
+                </>
+              )}
             </span>
           )}
           <span>
@@ -164,12 +176,20 @@ export function StoreRow({
   return (
     <div className="store-row">
       <Link className="store-row-identity" href={`/stores/${store.id}`}>
-        <img src={store.logo} alt="" />
+        {store.logo ? (
+          <img src={store.logo} alt="" />
+        ) : (
+          <span className="store-logo-fallback" aria-hidden="true">
+            {store.name[0]}
+          </span>
+        )}
         <span>
           <strong>{store.name}</strong>
-          <span>
-            {store.rating} ★ ({store.ratingCount})
-          </span>
+          {store.rating !== undefined && (
+            <span>
+              {store.rating} ★ {store.ratingCount && `(${store.ratingCount})`}
+            </span>
+          )}
         </span>
       </Link>
       {onMore ? (
@@ -239,6 +259,9 @@ export function Sheet({
   const router = useRouter();
   const navigating = useRef(false);
   const titleId = useId();
+  const drag = useRef<{ y: number; time: number; distance: number } | null>(
+    null,
+  );
   const closeRef = useRef(onClose);
   useEffect(() => {
     closeRef.current = onClose;
@@ -248,6 +271,8 @@ export function Sheet({
     if (!el) return;
     if (!open) {
       if (el.open) el.close();
+      el.style.transform = "";
+      el.style.animation = "";
       return;
     }
     if (pendingSheetBack) clearTimeout(pendingSheetBack);
@@ -358,7 +383,15 @@ export function Sheet({
         closeRef.current();
       }}
       onClick={(e) => {
-        if (e.target === e.currentTarget) closeRef.current();
+        if (e.target !== e.currentTarget) return;
+        const bounds = e.currentTarget.getBoundingClientRect();
+        if (
+          e.clientX < bounds.left ||
+          e.clientX > bounds.right ||
+          e.clientY < bounds.top ||
+          e.clientY > bounds.bottom
+        )
+          closeRef.current();
       }}
     >
       {headerless ? (
@@ -366,7 +399,49 @@ export function Sheet({
           {title}
         </h2>
       ) : (
-        <div className="sheet-header">
+        <div
+          className="sheet-header"
+          onPointerDown={(e) => {
+            if (
+              e.button !== 0 ||
+              (e.target as HTMLElement).closest("button,a,input")
+            )
+              return;
+            drag.current = {
+              y: e.clientY,
+              time: performance.now(),
+              distance: 0,
+            };
+            e.currentTarget.setPointerCapture(e.pointerId);
+            if (ref.current) ref.current.style.animation = "none";
+          }}
+          onPointerMove={(e) => {
+            if (!drag.current || !ref.current) return;
+            drag.current.distance = Math.max(0, e.clientY - drag.current.y);
+            ref.current.style.transform = `translateY(${drag.current.distance}px)`;
+          }}
+          onPointerUp={(e) => {
+            const gesture = drag.current;
+            drag.current = null;
+            if (!gesture) return;
+            e.currentTarget.releasePointerCapture(e.pointerId);
+            if (ref.current) {
+              ref.current.style.transform = "";
+              ref.current.style.animation = "none";
+            }
+            const velocity =
+              gesture.distance / Math.max(1, performance.now() - gesture.time);
+            if (
+              gesture.distance > 80 ||
+              (gesture.distance > 35 && velocity > 0.6)
+            )
+              closeRef.current();
+          }}
+          onPointerCancel={() => {
+            drag.current = null;
+            if (ref.current) ref.current.style.transform = "";
+          }}
+        >
           <h2 id={titleId}>{title}</h2>
           <IconButton icon="close" label={`Close ${title}`} onClick={onClose} />
         </div>

@@ -55,9 +55,25 @@ test("cart keeps variant identity and checkout stops before a live payment", asy
   await page.getByRole("button", { name: "Open cart", exact: true }).click();
   const cart = page.getByRole("dialog");
   await expect(cart).toBeVisible();
-  await expect(cart.getByText(/S ·/)).toBeVisible();
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    await expect(
+      cart.locator(".commerce-line").getByText("S", { exact: true }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+    ).toBe(true);
+  }
+  await page.setViewportSize({ width: 393, height: 793 });
+  await expect(
+    cart.locator(".commerce-line").getByText("S", { exact: true }),
+  ).toBeVisible();
   await cart.getByRole("button", { name: /^Increase Contrast/ }).click();
-  await expect(cart.getByText("$69.98", { exact: true })).toBeVisible();
+  await expect(
+    cart.locator(".cart-subtotal").getByText("$69.98", { exact: true }),
+  ).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(cart).not.toBeVisible();
   await expect(
@@ -118,7 +134,7 @@ test("collection creation, membership and deletion preserve saved products", asy
     page.getByRole("heading", { name: "Saved", exact: true }),
   ).toBeVisible();
   await page
-    .getByRole("button", { name: "QA collection", exact: true })
+    .getByRole("button", { name: "Private QA collection", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Collection options", exact: true })
@@ -128,7 +144,7 @@ test("collection creation, membership and deletion preserve saved products", asy
     .click();
   await page.getByRole("button", { name: "Delete", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "QA collection", exact: true }),
+    page.getByRole("button", { name: "Private QA collection", exact: true }),
   ).toHaveCount(0);
   await expect(
     page

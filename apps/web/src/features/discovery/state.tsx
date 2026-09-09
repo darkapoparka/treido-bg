@@ -12,8 +12,16 @@ export type Collection = {
   visibility: "Private" | "Public";
   productIds: string[];
 };
-type CartLine = { productId: string; variantId: string; quantity: number };
+export type CartLine = {
+  productId: string;
+  variantId: string;
+  quantity: number;
+};
+type ViewedItem = { kind: "product" | "store"; id: string };
 type State = {
+  viewedItems: ViewedItem[];
+  viewStore: (id: string) => void;
+  removeViewed: (kind: ViewedItem["kind"], id: string) => void;
   reportedProducts: string[];
   reportProduct: (id: string) => void;
   saved: string[];
@@ -23,6 +31,9 @@ type State = {
   visitMini: (id: string) => void;
   followed: string[];
   cart: CartLine[];
+  later: CartLine[];
+  moveToCart: (id: string, variantId: string, maximum?: number) => void;
+  removeLater: (id: string, variantId: string) => void;
   collections: Collection[];
   toggleSaved: (id: string) => void;
   toggleFollow: (id: string) => void;
@@ -42,16 +53,37 @@ export function DiscoveryProvider({ children }: { children: ReactNode }) {
     "round-sunglasses",
     "u-see-me",
   ]);
-  const viewProduct = useCallback(
+  const [viewedItems, setViewedItems] = useState<ViewedItem[]>(
+    ["cleo", "round-sunglasses", "u-see-me"].map((id) => ({
+      kind: "product" as const,
+      id,
+    })),
+  );
+  const viewStore = useCallback(
     (id: string) =>
-      setViewedProducts((v) => [id, ...v.filter((x) => x !== id)].slice(0, 12)),
+      setViewedItems((v) =>
+        [
+          { kind: "store" as const, id },
+          ...v.filter((x) => x.kind !== "store" || x.id !== id),
+        ].slice(0, 24),
+      ),
     [],
   );
+  const viewProduct = useCallback((id: string) => {
+    setViewedProducts((v) => [id, ...v.filter((x) => x !== id)].slice(0, 12));
+    setViewedItems((v) =>
+      [
+        { kind: "product" as const, id },
+        ...v.filter((x) => x.kind !== "product" || x.id !== id),
+      ].slice(0, 24),
+    );
+  }, []);
   const [visitedMinis, setVisitedMinis] = useState<string[]>([]);
   const [reportedProducts, setReportedProducts] = useState<string[]>([]);
   const [saved, setSaved] = useState<string[]>(["shea-butter", "rice-bundle"]);
   const [followed, setFollowed] = useState<string[]>([]);
   const [cart, setCart] = useState<CartLine[]>([]);
+  const [later, setLater] = useState<CartLine[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
   const toggle = (values: string[], id: string) =>
     values.includes(id) ? values.filter((v) => v !== id) : [...values, id];
@@ -63,12 +95,52 @@ export function DiscoveryProvider({ children }: { children: ReactNode }) {
           setReportedProducts((v) => (v.includes(id) ? v : [...v, id])),
         saved,
         viewedProducts,
+        viewedItems,
+        viewStore,
+        removeViewed: (kind, id) => {
+          setViewedItems((v) =>
+            v.filter((x) => x.kind !== kind || x.id !== id),
+          );
+          if (kind === "product")
+            setViewedProducts((v) => v.filter((x) => x !== id));
+        },
         viewProduct,
         visitedMinis,
         visitMini: (id) =>
           setVisitedMinis((v) => [id, ...v.filter((x) => x !== id)]),
         followed,
         cart,
+        later,
+        removeLater: (id, variantId) =>
+          setLater((v) =>
+            v.filter((x) => x.productId !== id || x.variantId !== variantId),
+          ),
+        moveToCart: (id, variantId, maximum = 99) => {
+          const line = later.find(
+            (x) => x.productId === id && x.variantId === variantId,
+          );
+          if (!line) return;
+          setCart((v) => {
+            const existing = v.find(
+              (x) => x.productId === id && x.variantId === variantId,
+            );
+            return [
+              ...v.filter(
+                (x) => x.productId !== id || x.variantId !== variantId,
+              ),
+              {
+                ...line,
+                quantity: Math.min(
+                  maximum,
+                  line.quantity + (existing?.quantity ?? 0),
+                ),
+              },
+            ];
+          });
+          setLater((v) =>
+            v.filter((x) => x.productId !== id || x.variantId !== variantId),
+          );
+        },
         collections,
         toggleSaved: (id) => setSaved((v) => toggle(v, id)),
         toggleFollow: (id) => setFollowed((v) => toggle(v, id)),
@@ -94,7 +166,16 @@ export function DiscoveryProvider({ children }: { children: ReactNode }) {
             ),
           ),
         saveForLater: (id, variantId) => {
-          setSaved((v) => (v.includes(id) ? v : [...v, id]));
+          const line = cart.find(
+            (x) => x.productId === id && x.variantId === variantId,
+          );
+          if (line)
+            setLater((v) => [
+              ...v.filter(
+                (x) => x.productId !== id || x.variantId !== variantId,
+              ),
+              line,
+            ]);
           setCart((v) =>
             v.filter((x) => x.productId !== id || x.variantId !== variantId),
           );
