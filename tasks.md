@@ -146,6 +146,8 @@ Remaining fidelity work is precisely recorded in design.md: full campaign/Follow
 
 Local commit pointer: **Complete Shop website reference states and fidelity corrections** on `main`. Upstream was fetched and inspected; no push/deploy/provider writes. Next within this assignment is the remaining source comparison/asset and owner acceptance work above; Task 4 continues to own real data/identity. This record does not claim an entirely verified 1:1 app.
 
+**Owner-directed ChatGPT handoff (2026-09-09):** publish this checkpoint to GitHub and continue source-matched website implementation through ChatGPT web with GitHub write/computer use. The owner explicitly assigns runtime, build and test execution to the local Codex/user workflow; the remote implementer must not be blocked by unavailable execution tools or claim checks it cannot run. This is a scoped exception to the normal implementer-run batch checks above. Remote work continues on `main` in the existing Tasks 3/5/6 frontend scope, with coherent commits and source-frame/change notes. Desktop work stays read-only/testing while the remote writer is active; fetch and inspect remote changes before fast-forward synchronization, preserving local changes. No concurrent writers, native implementation, deployment or live-service activation is authorized by this handoff.
+
 ## Task 4 - Build data, identity and catalog
 
 **Prerequisites:** Task 1; Task 2's approved catalog contract; authorized fresh development database/auth configuration. Task 3 supplies the UI consumers; backend work need not wait for missing unrelated reference assets.
