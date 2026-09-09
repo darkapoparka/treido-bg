@@ -219,6 +219,15 @@ export const referenceCatalog: Catalog = {
     },
   ],
   products: [
+    // Title/price from frozen collection flow 11 / 002. The full liquid-pair
+    // original is independently recorded in product-media-provenance.json.
+    product({
+      id: "argan-liquid-combo",
+      title: "Repairing Argan Oil Shampoo & Conditioner Combo",
+      images: [image("argan-liquid-combo")],
+      price: { amount: 2800, currency: "USD" },
+    }),
+
     product({
       id: "detox-shampoo",
       title: "Detox Shampoo Bar",

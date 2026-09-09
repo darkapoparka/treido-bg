@@ -276,7 +276,10 @@ const media: Record<
     file: "flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/008.webp",
     rect: [16, 74, 361, 135],
   },
-  "saved-socks": { file: "screens/028.webp", rect: [149, 250, 64, 126] },
+  "saved-socks": {
+    file: "flows/75b26fee-826f-4403-9288-be499890cd72/002.webp",
+    rect: [162, 259, 70, 125],
+  },
   "shea-gallery-hero": { file: "screens/066.webp", rect: [0, 230, 393, 393] },
   "shea-gallery-testimonial": {
     file: "screens/067.webp",
@@ -636,6 +639,18 @@ const media: Record<
 };
 // Verified clean originals are an explicit local allowlist, never remote requests.
 const originals: Record<string, string> = {
+  "idea-rice-wash": "idea-rice-wash-original.jpg",
+  "rice-shampoo": "rice-shampoo-original.jpg",
+  "detox-shampoo": "detox-shampoo-original.jpg",
+  "rosemary-liquid": "rosemary-liquid-original.jpg",
+  "idea-rosemary-liquid": "idea-rosemary-liquid-original.jpg",
+  "idea-jojoba": "idea-jojoba-original.jpg",
+  "idea-rosemary-bar": "idea-rosemary-bar-original.jpg",
+  "rosemary-bar": "idea-rosemary-bar-original.jpg",
+  "idea-purple-bundle": "idea-purple-bundle-original.jpg",
+  "idea-rosemary-bundle": "idea-rosemary-bundle-original.jpg",
+  "rice-liquid": "rice-liquid-original.jpg",
+  "argan-liquid-combo": "argan-liquid-combo-original.jpg",
   "home-drmtlgy-retinol": "home-drmtlgy-retinol.jpg",
   "home-drmtlgy-needleless": "home-drmtlgy-needleless.jpg",
   "home-drmtlgy-eye": "home-drmtlgy-eye.jpg",

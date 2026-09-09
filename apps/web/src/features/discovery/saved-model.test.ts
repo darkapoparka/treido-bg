@@ -158,4 +158,45 @@ describe("local Saved and collection membership", () => {
     });
     expect(renamed.saved).toEqual(["saved-product"]);
   });
+  it("keeps most-recent selection order distinct from global Saved order", () => {
+    const created = savedCollectionsReducer(
+      { saved: ["first", "second"], collections: [] },
+      {
+        type: "create-collection",
+        collection: collection("picks"),
+      },
+    );
+    const one = savedCollectionsReducer(created, {
+      type: "update-collection",
+      id: "picks",
+      value: { productIds: ["first"] },
+    });
+    const two = savedCollectionsReducer(one, {
+      type: "update-collection",
+      id: "picks",
+      value: { productIds: ["second", "first"] },
+    });
+    expect(two.collections[0].productIds).toEqual(["second", "first"]);
+    expect(two.saved).toEqual(["first", "second"]);
+    const deleted = savedCollectionsReducer(two, {
+      type: "delete-collection",
+      id: "picks",
+    });
+    expect(deleted.saved).toEqual(["first", "second"]);
+    expect(deleted.collections).toEqual([]);
+  });
+
+  it("removes only the requested empty collection without changing existing selections", () => {
+    const before = initial();
+    const added = savedCollectionsReducer(before, {
+      type: "create-collection",
+      collection: collection("empty"),
+    });
+    const deleted = savedCollectionsReducer(added, {
+      type: "delete-collection",
+      id: "empty",
+    });
+    expect(deleted).toEqual(before);
+    expect(deleted.collections[0]).toBe(before.collections[0]);
+  });
 });
