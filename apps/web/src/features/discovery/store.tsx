@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { formatMoney } from "../catalog/types";
 import type { Catalog, Store, Product } from "../catalog/types";
@@ -82,6 +82,90 @@ function StoreActions({
     </>
   );
 }
+function StoreNavigation({ store }: { store: Store }) {
+  const anchor = useRef<HTMLDivElement>(null);
+  const [pinned, setPinned] = useState(false);
+  const [offers, setOffers] = useState(false);
+  useEffect(() => {
+    const element = anchor.current;
+    if (!element) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry) setPinned(entry.boundingClientRect.top < 0);
+      },
+      { threshold: 1 },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <div className="store-category-anchor" ref={anchor}>
+      <div className={`store-category-navigation ${pinned ? "is-pinned" : ""}`}>
+        {pinned && (
+          <button
+            className="store-compact-promotion"
+            onClick={() => setOffers(true)}
+          >
+            20% off your order <span>spring20orde…</span>
+            <span aria-hidden="true">⌄</span>
+          </button>
+        )}
+        <div className="category-rail">
+          {pinned && (
+            <div className="store-compact-actions">
+              <Link
+                href={`/stores/${store.id}/info`}
+                className="store-compact-menu"
+                aria-label="Store information"
+              >
+                <img src={store.logo} alt="" />
+                <Icon name="menu" />
+              </Link>
+              <Link
+                href={`/stores/${store.id}/search`}
+                className="icon-button"
+                aria-label="Search store"
+              >
+                <Icon name="search" />
+              </Link>
+            </div>
+          )}
+          {store.categories.map((category) => (
+            <Link
+              className="pill"
+              key={category}
+              href={
+                category === "Shop all"
+                  ? `/stores/${store.id}#all-products`
+                  : `/stores/${store.id}/collections/${category === "What's New" ? "whats-new" : category.toLowerCase().replaceAll(" ", "-")}`
+              }
+            >
+              <img
+                src={`/api/reference-media/${category === "Shop all" ? "home-air-dry-cream" : category === "Cleanse" ? "category-cleanse" : "category-heatless"}`}
+                alt=""
+              />
+              {category}
+            </Link>
+          ))}
+        </div>
+      </div>
+      <Sheet
+        open={offers}
+        title="Offer details"
+        onClose={() => setOffers(false)}
+      >
+        <p className="sheet-copy">
+          20% off your order — the label shown in the captured storefront.
+        </p>
+        <p className="form-note">
+          The captured coupon label is truncated. This preview cannot validate a
+          coupon or apply a live discount.
+        </p>
+      </Sheet>
+    </div>
+  );
+}
+
 function StorePromotion() {
   const [expanded, setExpanded] = useState(false);
   return (
@@ -356,7 +440,7 @@ function StoreGrid({
         <div className="store-grid-heading">
           <h2>All products</h2>
           <IconButton
-            icon="filter"
+            icon="filter-circles"
             label="Filter store products"
             onClick={() => setFilter(true)}
           />
@@ -382,7 +466,10 @@ export function Storefront({
   catalog: Catalog;
 }) {
   const [cart, setCart] = useState(false);
-  const { viewStore } = useDiscovery();
+  const { viewStore, reportedProducts } = useDiscovery();
+  const params = useSearchParams();
+  const reported = params.get("reported");
+  const [dismissedReport, setDismissedReport] = useState<string | null>(null);
   useEffect(() => {
     viewStore(store.id);
   }, [store.id, viewStore]);
@@ -412,27 +499,25 @@ export function Storefront({
             </Link>
           )}
         </div>
-        <div className="category-rail">
-          {store.categories.map((c) => (
-            <Link
-              className="pill"
-              key={c}
-              href={
-                c === "Shop all"
-                  ? `/stores/${store.id}#all-products`
-                  : `/stores/${store.id}/collections/${c === "What's New" ? "whats-new" : c.toLowerCase().replaceAll(" ", "-")}`
-              }
-            >
-              {isKitsch && (
-                <img
-                  src={`/api/reference-media/${c === "Shop all" ? "rice-shampoo" : c === "Cleanse" ? "category-cleanse" : "category-heatless"}`}
-                  alt=""
-                />
-              )}
-              {c}
-            </Link>
-          ))}
-        </div>
+        {isKitsch ? (
+          <StoreNavigation store={store} />
+        ) : (
+          <div className="category-rail">
+            {store.categories.map((c) => (
+              <Link
+                className="pill"
+                key={c}
+                href={
+                  c === "Shop all"
+                    ? `/stores/${store.id}#all-products`
+                    : `/stores/${store.id}/collections/${c === "What's New" ? "whats-new" : c.toLowerCase().replaceAll(" ", "-")}`
+                }
+              >
+                {c}
+              </Link>
+            ))}
+          </div>
+        )}
         <section className="store-recommendations">
           <h1>For you</h1>
           <div className="product-rail">
@@ -496,6 +581,18 @@ export function Storefront({
           />
         </section>
       </section>
+      {reported &&
+        reported !== dismissedReport &&
+        reportedProducts.includes(reported) &&
+        all.some((product) => product.id === reported) && (
+          <button
+            className="local-toast"
+            role="status"
+            onClick={() => setDismissedReport(reported)}
+          >
+            Item marked · no report sent
+          </button>
+        )}
       <FloatingNav back cart={() => setCart(true)} />
       <Cart catalog={catalog} open={cart} onClose={() => setCart(false)} />
     </main>

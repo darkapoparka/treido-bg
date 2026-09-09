@@ -12,6 +12,7 @@ export function IconButton({
   onClick,
   pressed,
   filled,
+  disabled,
   className = "",
 }: {
   icon: IconName;
@@ -19,6 +20,7 @@ export function IconButton({
   onClick?: () => void;
   pressed?: boolean;
   filled?: boolean;
+  disabled?: boolean;
   className?: string;
 }) {
   return (
@@ -27,6 +29,7 @@ export function IconButton({
       className={`icon-button ${className}`}
       aria-label={label}
       aria-pressed={pressed}
+      disabled={disabled}
       onClick={onClick}
     >
       <Icon name={icon} filled={filled ?? pressed} />
@@ -44,6 +47,11 @@ export function FloatingNav({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { cart: lines } = useDiscovery();
+  const cartQuantity = lines.reduce(
+    (quantity, line) => quantity + line.quantity,
+    0,
+  );
   const active = pathname.startsWith("/orders")
     ? "/orders"
     : pathname.startsWith("/search")
@@ -52,11 +60,14 @@ export function FloatingNav({
         ? "/explore"
         : "/";
   return (
-    <div className="floating-dock">
+    <div
+      className={`floating-dock ${back || (cart && cartQuantity > 0) ? "has-side-controls" : ""}`}
+    >
       {back && (
         <IconButton
           icon="back"
           label="Go back"
+          className="dock-back"
           onClick={() => {
             if (onBack) onBack();
             else if (window.history.length > 1) router.back();
@@ -83,7 +94,21 @@ export function FloatingNav({
           </Link>
         ))}
       </nav>
-      {cart && <IconButton icon="cart" label="Open cart" onClick={cart} />}
+      {cart && cartQuantity > 0 && (
+        <button
+          type="button"
+          className={`icon-button dock-cart ${cartQuantity > 0 ? "cart-filled" : ""}`}
+          aria-label="Open cart"
+          onClick={cart}
+        >
+          <Icon name="cart" />
+          {cartQuantity > 0 && (
+            <span className="dock-cart-count" aria-hidden="true">
+              {cartQuantity > 99 ? "99+" : cartQuantity}
+            </span>
+          )}
+        </button>
+      )}
     </div>
   );
 }
@@ -136,7 +161,7 @@ export function ProductCard({
             {product.promotion ?? formatMoney(product.price)}
           </span>
         )}
-        <SaveButton product={product} />
+        {!reported && <SaveButton product={product} />}
       </div>
       {!compact && !mediaOnly && (
         <Link href={`/products/${product.id}`} className="product-copy">
@@ -278,6 +303,7 @@ export function Sheet({
     if (pendingSheetBack) clearTimeout(pendingSheetBack);
     pendingSheetBack = undefined;
     navigating.current = false;
+    const returnPath = window.location.pathname;
     const trigger =
       document.activeElement instanceof HTMLElement
         ? document.activeElement
@@ -343,7 +369,23 @@ export function Sheet({
       if (sheetBodyLocks === 0)
         document.body.style.overflow = sheetBodyOverflow;
       if (el.open) el.close();
-      trigger?.focus();
+      if (trigger?.isConnected) trigger.focus();
+      else if (!navigating.current && window.location.pathname === returnPath) {
+        // Removing the last cart line also removes its floating trigger.
+        // Keep focus in a remaining parent Sheet, or return to the active
+        // navigation control instead of leaving it on document.body.
+        const parent = [...liveSheets.values()]
+          .reverse()
+          .find((sheet) => sheet.open);
+        const fallback =
+          parent?.querySelector<HTMLElement>(
+            "button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])",
+          ) ??
+          document.querySelector<HTMLElement>(
+            'nav[aria-label="Main navigation"] a[aria-current="page"]',
+          );
+        fallback?.focus({ preventScroll: true });
+      }
     };
   }, [open, initialFocus, manageHistory]);
   return (

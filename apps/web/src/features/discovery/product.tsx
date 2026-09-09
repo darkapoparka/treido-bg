@@ -2,8 +2,9 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ProductOptions } from "./reviews";
+import { moveProductPhoto, productPhotoSwipe } from "./product-gallery";
 import {
   formatMoney,
   type Catalog,
@@ -49,6 +50,10 @@ export function ProductDetail({
     [toast, setToast] = useState(false),
     [subscription, setSubscription] = useState(false);
   const [postalCode, setPostalCode] = useState("94025");
+  const galleryRail = useRef<HTMLDivElement>(null);
+  const photoGesture = useRef<{ pointer: number; x: number; y: number } | null>(
+    null,
+  );
   const viewProduct = state.viewProduct;
   useEffect(() => {
     viewProduct(product.id);
@@ -69,7 +74,7 @@ export function ProductDetail({
     : product.images;
   const price =
     subscription && shea ? { ...product.price, amount: 1050 } : product.price;
-  function add() {
+  function add(showOffer = true) {
     if (!selected?.availableQuantity) return;
     const prior =
       state.cart.find(
@@ -81,11 +86,47 @@ export function ProductDetail({
       quantity: Math.min(selected.availableQuantity, prior + quantity),
     });
     setAdded(true);
+    // The captured bag flow enters this offer after adding. Local cart updates
+    // are synchronous; do not simulate a network request or its delay.
+    if (showOffer && bag) setOffer(true);
   }
   function buy() {
-    add();
-    consumeSheetHistory();
-    router.replace(`/checkout?store=${product.storeId}`);
+    if (!selected?.availableQuantity) return;
+    add(false);
+    // Only an owned overlay entry should be replaced. Ordinary Buy now must
+    // keep the product in browser history for checkout cancellation.
+    (consumeSheetHistory() ? router.replace : router.push)(
+      `/checkout?store=${product.storeId}`,
+    );
+  }
+  function closeGallery() {
+    const rail = galleryRail.current;
+    const photo = gallery === null ? null : rail?.children[gallery];
+    photoGesture.current = null;
+    setGallery(null);
+    // Align after Sheet has returned focus. Selecting a photo must not move
+    // the document vertically; focus returns to that gallery control.
+    requestAnimationFrame(() => {
+      if (
+        !rail?.isConnected ||
+        !(photo instanceof HTMLElement) ||
+        !photo.isConnected
+      )
+        return;
+      photo.focus({ preventScroll: true });
+      rail.scrollTo({
+        left:
+          rail.scrollLeft +
+          photo.getBoundingClientRect().left -
+          rail.getBoundingClientRect().left,
+        behavior: "auto",
+      });
+    });
+  }
+  function stepGallery(direction: number) {
+    setGallery((index) =>
+      index === null ? null : moveProductPhoto(index, direction, photos.length),
+    );
   }
   function saveTo(id?: string) {
     if (!state.saved.includes(product.id)) state.toggleSaved(product.id);
@@ -136,7 +177,7 @@ export function ProductDetail({
     <main className={`shop-page product-page ${cart ? "cart-visible" : ""}`}>
       <div className="product-underlay">
         {store && <StoreRow store={store} onMore={() => setOptions(true)} />}
-        <div className="product-gallery">
+        <div className="product-gallery" ref={galleryRail}>
           {photos.map((src, i) => (
             <button
               key={src}
@@ -154,7 +195,12 @@ export function ProductDetail({
               icon="heart"
               label="Save product"
               pressed={state.saved.includes(product.id)}
-              onClick={() => setPicker(true)}
+              onClick={() => {
+                if (!state.saved.includes(product.id))
+                  state.toggleSaved(product.id);
+                setToast(false);
+                setPicker(true);
+              }}
             />
             <IconButton
               icon="share"
@@ -209,6 +255,7 @@ export function ProductDetail({
                   onClick={() => {
                     setVariant(v.id);
                     setQuantity(1);
+                    setAdded(false);
                   }}
                 >
                   {v.label}
@@ -222,17 +269,23 @@ export function ProductDetail({
               <IconButton
                 icon="minus"
                 label="Decrease quantity"
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                disabled={quantity <= 1}
+                onClick={() => {
+                  setQuantity((q) => Math.max(1, q - 1));
+                  setAdded(false);
+                }}
               />
               <output>{quantity}</output>
               <IconButton
                 icon="plus"
                 label="Increase quantity"
-                onClick={() =>
+                disabled={quantity >= (selected?.availableQuantity ?? 0)}
+                onClick={() => {
                   setQuantity((q) =>
                     Math.min(selected?.availableQuantity ?? 1, q + 1),
-                  )
-                }
+                  );
+                  setAdded(false);
+                }}
               />
             </div>
           </div>
@@ -254,11 +307,16 @@ export function ProductDetail({
                 </label>
                 {!subscription && (
                   <div className="purchase-actions">
-                    <button onClick={buy}>Buy now</button>
+                    <button
+                      onClick={buy}
+                      disabled={!selected?.availableQuantity}
+                    >
+                      Buy now
+                    </button>
                     <button
                       className="primary"
                       disabled={!selected?.availableQuantity}
-                      onClick={add}
+                      onClick={() => add()}
                     >
                       {added ? "Added to cart" : "Add to cart"}
                     </button>
@@ -301,16 +359,28 @@ export function ProductDetail({
               <button
                 className="primary"
                 disabled={!selected?.availableQuantity}
-                onClick={add}
+                onClick={() => add()}
               >
-                {added ? "Added to cart" : "Add to cart"}
+                {added && !bag ? "Added to cart" : "Add to cart"}
               </button>
-              <button onClick={buy} disabled={!selected?.availableQuantity}>
+              <button
+                onClick={buy}
+                disabled={
+                  !selected?.availableQuantity ||
+                  (bag &&
+                    added &&
+                    state.cart.some(
+                      (line) =>
+                        line.productId === product.id &&
+                        line.variantId === variant,
+                    ))
+                }
+              >
                 Buy now
               </button>
             </div>
           )}
-          {added && (
+          {added && !bag && product.storeId === "kitsch" && (
             <button className="pdp-offer-link" onClick={() => setOffer(true)}>
               Add items to save $20 with your exclusive offer ›
             </button>
@@ -456,33 +526,58 @@ export function ProductDetail({
         title="Product photos"
         headerless
         className="product-lightbox"
-        onClose={() => setGallery(null)}
+        initialFocus=".lightbox-swipe"
+        onClose={closeGallery}
       >
         {gallery !== null && (
           <>
             <IconButton
               icon="close"
               label="Close product photos"
-              onClick={() => setGallery(null)}
+              onClick={closeGallery}
             />
             <div
               className="lightbox-swipe"
-              onTouchStart={(e) => {
-                e.currentTarget.dataset.start = String(e.touches[0].clientX);
+              tabIndex={0}
+              role="group"
+              aria-roledescription="carousel"
+              aria-label="Product photos. Use Left and Right arrow keys to change photo."
+              onPointerDown={(event) => {
+                if (!event.isPrimary || event.button !== 0) return;
+                photoGesture.current = {
+                  pointer: event.pointerId,
+                  x: event.clientX,
+                  y: event.clientY,
+                };
+                event.currentTarget.setPointerCapture(event.pointerId);
               }}
-              onTouchEnd={(e) => {
-                const delta =
-                  e.changedTouches[0].clientX -
-                  Number(e.currentTarget.dataset.start);
-                if (Math.abs(delta) > 30)
-                  setGallery(
-                    (gallery + (delta < 0 ? 1 : photos.length - 1)) %
-                      photos.length,
-                  );
+              onPointerUp={(event) => {
+                const gesture = photoGesture.current;
+                photoGesture.current = null;
+                if (!gesture || gesture.pointer !== event.pointerId) return;
+                const direction = productPhotoSwipe(gesture, {
+                  x: event.clientX,
+                  y: event.clientY,
+                });
+                if (direction) stepGallery(direction);
+              }}
+              onPointerCancel={() => {
+                photoGesture.current = null;
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+                  event.preventDefault();
+                  stepGallery(event.key === "ArrowRight" ? 1 : -1);
+                } else if (event.key === "Home" || event.key === "End") {
+                  event.preventDefault();
+                  setGallery(event.key === "Home" ? 0 : photos.length - 1);
+                }
               }}
             >
               <img
                 src={photos[gallery]}
+                draggable={false}
+                onDragStart={(event) => event.preventDefault()}
                 alt={`${product.title}, image ${gallery + 1}`}
               />
             </div>
@@ -503,8 +598,9 @@ export function ProductDetail({
         open={picker}
         title={creating ? "Create collection" : "Save to collection"}
         headerless={!creating}
-        className="product-save-picker"
+        className={`product-save-picker ${creating ? "picker-creating" : ""}`}
         onClose={() => {
+          if (!creating && state.saved.includes(product.id)) setToast(true);
           setPicker(false);
           setCreating(false);
         }}
@@ -513,19 +609,30 @@ export function ProductDetail({
           <form
             onSubmit={(e) => {
               e.preventDefault();
+              if (!name.trim()) return;
               const id = state.createCollection(name.trim(), [product.id]);
               saveTo(id);
             }}
           >
             <input
               aria-label="Collection name"
+              autoFocus
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
             />
-            <button className="primary" disabled={!name.trim()}>
-              Create collection
-            </button>
+            <div className="sheet-actions">
+              <button
+                type="button"
+                className="pill"
+                onClick={() => setCreating(false)}
+              >
+                Back
+              </button>
+              <button className="primary" disabled={!name.trim()}>
+                Create collection
+              </button>
+            </div>
           </form>
         ) : (
           <>
@@ -534,7 +641,9 @@ export function ProductDetail({
               <span>
                 Saved <Icon name="lock" />
               </span>
-              <Icon name="heart" filled />
+              <span className="picker-saved-icon">
+                <Icon name="heart" filled />
+              </span>
             </button>
             {state.collections.map((c) => (
               <button
@@ -542,8 +651,20 @@ export function ProductDetail({
                 key={c.id}
                 onClick={() => saveTo(c.id)}
               >
-                <span>{c.name}</span>
-                <Icon name="plus" />
+                <div className="picker-collection-preview" aria-hidden="true">
+                  {c.productIds.slice(0, 4).flatMap((id) => {
+                    const item = catalog.products.find((p) => p.id === id);
+                    return item
+                      ? [<img key={id} src={item.images[0]} alt="" />]
+                      : [];
+                  })}
+                </div>
+                <span>
+                  {c.name} {c.visibility === "Private" && <Icon name="lock" />}
+                </span>
+                <Icon
+                  name={c.productIds.includes(product.id) ? "check" : "plus"}
+                />
               </button>
             ))}
             <button
@@ -563,7 +684,7 @@ export function ProductDetail({
           <img src={photos[0]} alt="" />
           <span>
             <strong>Item saved</strong>
-            {product.title}
+            <small>{product.title}</small>
           </span>
           <button
             onClick={() => {

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { StoreReviews } from "./store-reviews";
 import { useDiscovery } from "./state";
@@ -302,69 +302,104 @@ export function ProductOptions({
 }) {
   const router = useRouter(),
     state = useDiscovery();
-  const close = () => {
-    setView("More options");
-    setReason("");
-    setNotes("");
-    onClose();
-  };
-  const [view, setView] = useState("More options");
+  const [view, setView] = useState<
+    "menu" | "contact" | "reason" | "notes" | "marked"
+  >("menu");
   const [reason, setReason] = useState("");
   const [notes, setNotes] = useState("");
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "unavailable">(
+    "idle",
+  );
+  const firstReason = useRef<HTMLInputElement>(null);
+  const selectedReason = useRef<HTMLInputElement>(null);
+  const copyOperation = useRef(0);
+  useEffect(() => {
+    if (!open) return;
+    if (view === "reason") firstReason.current?.focus({ preventScroll: true });
+    if (view === "notes")
+      selectedReason.current?.focus({ preventScroll: true });
+  }, [open, view]);
+  const close = () => {
+    copyOperation.current += 1;
+    setView("menu");
+    setReason("");
+    setNotes("");
+    setCopyState("idle");
+    onClose();
+  };
+  const title =
+    view === "menu"
+      ? "More options"
+      : view === "contact"
+        ? "Contact KITSCH"
+        : "Report product";
+  function markProduct() {
+    if (!reason) return;
+    if (!productId || !storeId) {
+      setView("marked");
+      return;
+    }
+    state.reportProduct(productId);
+    consumeSheetHistory();
+    close();
+    router.replace(
+      `/stores/${encodeURIComponent(storeId)}?reported=${encodeURIComponent(productId)}#all-products`,
+    );
+  }
   return (
     <Sheet
       open={open}
-      title={view === "Tell us more" ? "Report product" : view}
-      className="product-options-sheet"
+      title={title}
+      className={`product-options-sheet product-options-${view}`}
       onClose={close}
     >
-      {view === "More options" ? (
-        <div className="filter-options">
+      {view === "menu" ? (
+        <div className="product-option-list">
           {storeId === "kitsch" && (
-            <button onClick={() => setView("Contact KITSCH")}>
-              <Icon name="chat" />
+            <button onClick={() => setView("contact")}>
+              <Icon name="chat-round" />
               Contact KITSCH
             </button>
           )}
-          <button
-            className="danger-text"
-            onClick={() => setView("Report product")}
-          >
+          <button className="danger-text" onClick={() => setView("reason")}>
             <Icon name="alert" />
             Report
           </button>
         </div>
-      ) : view === "Contact KITSCH" ? (
+      ) : view === "contact" ? (
         <>
-          <div className="filter-options">
-            <Link
-              className="account-row"
-              href="https://www.mykitsch.com"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Icon name="globe" />
-              Website <span className="contact-trailing">↗</span>
-            </Link>
+          <div className="product-option-list">
+            <a href="https://www.mykitsch.com" target="_blank" rel="noreferrer">
+              <Icon name="website" />
+              Website
+            </a>
             <button
-              onClick={() =>
-                navigator.clipboard
-                  ?.writeText("kitsch@mykitsch.com")
-                  .catch(() => {})
-              }
+              onClick={async () => {
+                const operation = ++copyOperation.current;
+                try {
+                  if (!navigator.clipboard)
+                    throw new Error("Clipboard unavailable");
+                  await navigator.clipboard.writeText("kitsch@mykitsch.com");
+                  if (copyOperation.current === operation)
+                    setCopyState("copied");
+                } catch {
+                  if (copyOperation.current === operation)
+                    setCopyState("unavailable");
+                }
+              }}
+              aria-label="Copy kitsch@mykitsch.com"
             >
               <Icon name="mail" />
-              kitsch@mykitsch.com{" "}
+              kitsch@mykitsch.com
               <span className="contact-trailing">
-                <Icon name="copy" />
+                <Icon name={copyState === "copied" ? "check" : "copy"} />
               </span>
             </button>
-            <a className="account-row" href="tel:4242405551">
+            <a href="tel:+14242405551">
               <Icon name="phone" />
               4242405551
             </a>
             <a
-              className="account-row"
               href="https://www.instagram.com/mykitsch/"
               target="_blank"
               rel="noreferrer"
@@ -373,92 +408,124 @@ export function ProductOptions({
               Instagram
             </a>
             <a
-              className="account-row"
               href="https://www.facebook.com/mykitsch/"
               target="_blank"
               rel="noreferrer"
             >
-              <Icon name="facebook" />
+              <Icon name="facebook-circle" />
               Facebook
             </a>
           </div>
+          {copyState === "copied" && (
+            <span className="sr-only" role="status">
+              Email address copied
+            </span>
+          )}
+          {copyState === "unavailable" && (
+            <label className="contact-copy-fallback">
+              Clipboard unavailable. Select and copy the email address.
+              <input
+                readOnly
+                value="kitsch@mykitsch.com"
+                onFocus={(event) => event.currentTarget.select()}
+              />
+            </label>
+          )}
           <p className="contact-address">
             137 N Larchmont Blvd, Suite 641, LOS ANGELES, California 90004,
             United States
           </p>
         </>
-      ) : view === "Report product" ? (
-        <>
-          <p className="form-note">Please select a reason</p>
-          <div className="filter-options">
+      ) : view === "reason" ? (
+        <form
+          className="product-report-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (reason) setView("notes");
+          }}
+        >
+          <p className="product-report-subtitle">Please select a reason</p>
+          <fieldset className="product-report-reasons">
+            <legend className="sr-only">Please select a reason</legend>
             {[
               "Misleading",
               "Inappropriate content",
               "IP Infringement",
               "Other",
-            ].map((r) => (
-              <label key={r}>
-                {r}
+            ].map((value) => (
+              <label key={value}>
+                {value}
                 <input
                   type="radio"
                   name="product-reason"
-                  checked={reason === r}
-                  onChange={() => setReason(r)}
+                  ref={
+                    reason === value || (!reason && value === "Misleading")
+                      ? firstReason
+                      : undefined
+                  }
+                  value={value}
+                  checked={reason === value}
+                  onChange={() => setReason(value)}
                 />
               </label>
             ))}
-          </div>
+          </fieldset>
           <div className="sheet-actions">
-            <button className="pill" onClick={close}>
+            <button type="button" className="pill" onClick={close}>
               Cancel
             </button>
-            <button
-              className="primary"
-              disabled={!reason}
-              onClick={() => setView("Tell us more")}
-            >
+            <button type="submit" className="primary" disabled={!reason}>
               Next
             </button>
           </div>
-        </>
-      ) : view === "Tell us more" ? (
-        <>
-          <p className="form-note">Please select a reason</p>
+        </form>
+      ) : view === "notes" ? (
+        <form
+          className="product-report-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            markProduct();
+          }}
+        >
+          <p className="product-report-subtitle">Please select a reason</p>
           <label className="selected-report-reason">
             {reason}
-            <input type="radio" checked readOnly aria-label={reason} />
+            <input
+              ref={selectedReason}
+              type="radio"
+              checked
+              readOnly
+              aria-label={reason}
+            />
           </label>
           <textarea
             aria-label="Tell us more"
             placeholder="Tell us more"
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
+            onChange={(event) => setNotes(event.target.value)}
           />
-          <p className="form-note">Optional</p>
+          <p className="product-report-optional">Optional</p>
           <div className="sheet-actions">
-            <button className="pill" onClick={() => setView("Report product")}>
+            <button
+              type="button"
+              className="pill"
+              onClick={() => setView("reason")}
+            >
               Back
             </button>
             <button
+              type="submit"
               className="primary"
-              onClick={() => {
-                if (productId) {
-                  state.reportProduct(productId);
-                  consumeSheetHistory();
-                  close();
-                  router.replace(
-                    `/stores/${storeId}?reported=${encodeURIComponent(productId)}`,
-                  );
-                } else setView("Report saved");
-              }}
+              title="Local preview only; no report will be sent"
             >
               Report
             </button>
           </div>
-        </>
+        </form>
       ) : (
-        <p className="sheet-copy">
-          This report was recorded locally. No report was sent.
+        <p className="sheet-copy" role="status">
+          This selection is marked in the local preview only. No report was
+          sent.
         </p>
       )}
     </Sheet>

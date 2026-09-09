@@ -18,7 +18,7 @@ import { CartContents } from "./cart";
 export { CartContents } from "./cart";
 import { InitialPayment } from "./initial-payment";
 import { CheckoutExtras, checkoutRecommendations } from "./checkout-extras";
-import { capturedLineAmount } from "./pricing";
+import { capturedLineAmount, capturedOfferCompareAt } from "./pricing";
 export function CartPage({ catalog }: { catalog: Catalog }) {
   return (
     <AccountPage title="Your cart">
@@ -670,10 +670,22 @@ export function CartOffer({
   const subtotal = lines.reduce(
     (n, l) =>
       n +
-      (catalog.products.find((p) => p.id === l.productId)?.price.amount ?? 0) *
+      capturedLineAmount(
+        l,
+        catalog.products.find((p) => p.id === l.productId)?.price.amount ?? 0,
+      ) *
         l.quantity,
     0,
   );
+  const comparison =
+    lines.length > 0 &&
+    lines.every((line) => capturedOfferCompareAt(line) !== undefined)
+      ? lines.reduce(
+          (amount, line) =>
+            amount + (capturedOfferCompareAt(line) ?? 0) * line.quantity,
+          0,
+        )
+      : undefined;
   return (
     <Sheet
       open={open}
@@ -711,8 +723,27 @@ export function CartOffer({
         <p>
           In your cart{" "}
           <strong>{lines.reduce((n, l) => n + l.quantity, 0)}</strong>
-          <span>{formatMoney({ amount: subtotal, currency: "USD" })}</span>
+          <span>
+            {comparison !== undefined && comparison > subtotal && (
+              <del>{formatMoney({ amount: comparison, currency: "USD" })}</del>
+            )}{" "}
+            {formatMoney({ amount: subtotal, currency: "USD" })}
+          </span>
         </p>
+        <div className="offer-cart-thumbnails" aria-hidden="true">
+          {lines.slice(0, 3).map((line) => {
+            const product = catalog.products.find(
+              (p) => p.id === line.productId,
+            );
+            return product ? (
+              <img
+                key={`${line.productId}-${line.variantId}`}
+                src={product.images[0]}
+                alt=""
+              />
+            ) : null;
+          })}
+        </div>
         <Link
           className="primary form-submit"
           onClick={onClose}
