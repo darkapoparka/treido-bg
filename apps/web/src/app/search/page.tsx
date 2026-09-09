@@ -16,7 +16,6 @@ export default async function Page({
   const query = params.get("q") ?? "";
   return (
     <Search
-      key={query}
       catalog={await readCatalog()}
       query={query}
       filters={readSearchFilters(params)}

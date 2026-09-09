@@ -2,7 +2,13 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+  type ChangeEvent,
+} from "react";
 import { formatMoney, type Catalog } from "../catalog/types";
 import {
   FloatingNav,
@@ -23,6 +29,10 @@ import {
   searchProducts,
   searchStores,
 } from "./search-model";
+import { SearchLoading } from "./search-loading";
+import "./search-loading.css";
+
+const capturedCapPhoto = "/api/reference-media/assistant-cap";
 
 export function Search({
   catalog,
@@ -35,20 +45,24 @@ export function Search({
 }) {
   const router = useRouter();
   const params = useSearchParams();
-  const query = params.get("q") ?? initialQuery;
+  // An absent q after browser navigation means an empty query, not the stale
+  // server prop from a previous result page. The prop only seeds the draft.
+  const query = params.get("q") ?? "";
   const filters: SearchFilters = {
     ...initialFilters,
     ...readSearchFilters(params),
   };
   const inputRef = useRef<HTMLInputElement>(null);
   const state = useDiscovery();
-  const [draft, setDraft] = useState(query);
+  const [draft, setDraft] = useState(query || initialQuery);
   const [draftQuery, setDraftQuery] = useState(query);
   const [filter, setFilter] = useState(false);
   const [focused, setFocused] = useState(false);
   const [photos, setPhotos] = useState(false);
   const [photo, setPhoto] = useState("");
   const [photoError, setPhotoError] = useState("");
+  const [photoUnavailable, setPhotoUnavailable] = useState(false);
+  const [pending, startTransition] = useTransition();
   if (draftQuery !== query) {
     setDraftQuery(query);
     setDraft(query);
@@ -67,6 +81,7 @@ export function Search({
   });
   const history = params.get("view") === "recent";
   const filtered = hasSearchFilters(filters);
+  const showResults = !!query.trim() || filtered;
   const results = searchProducts(catalog, query, filters, state.followed);
   const stores = searchStores(catalog, query, filters, results).slice(0, 2);
 
@@ -77,6 +92,19 @@ export function Search({
     setFocused(false);
     inputRef.current?.blur();
   }
+  function cancelEditing() {
+    setDraft(query);
+    closeSuggestions();
+  }
+  function submitQuery(value: string) {
+    const next = value.trim();
+    setDraft(next);
+    setPhoto("");
+    closeSuggestions();
+    startTransition(() => {
+      router.push(`/search${next ? `?q=${encodeURIComponent(next)}` : ""}`);
+    });
+  }
   function selectPhoto(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -86,24 +114,30 @@ export function Search({
       return;
     }
     setPhotoError("");
+    // A user-selected photograph has not been analyzed. Do not label every
+    // upload as the frozen baseball cap or reuse that cap's fixture answer.
+    if (photo === capturedCapPhoto) setDraft("");
     setPhoto(URL.createObjectURL(file));
-    setDraft("Find me a baseball cap like this");
     setPhotos(false);
   }
+  // Keep this input at one tree position through entry, suggestions, pending
+  // navigation and results. The page must not key Search by the query either.
   const searchForm = (
     <form
-      className={`search-form ${query && !suggestions ? "top-search" : "search-composer"}`}
+      className={`search-form ${(showResults || pending) && !suggestions ? "top-search" : "search-composer"}`}
       onSubmit={(e) => {
         e.preventDefault();
         closeSuggestions();
-        router.push(
-          photo
-            ? "/assistant?example=photo"
-            : `/search?q=${encodeURIComponent(draft.trim())}`,
-        );
+        if (photo && photo !== capturedCapPhoto) {
+          setPhotoUnavailable(true);
+          return;
+        }
+        if (photo === capturedCapPhoto) {
+          startTransition(() => router.push("/assistant?example=photo"));
+        } else submitQuery(draft);
       }}
     >
-      {query ? (
+      {showResults || pending ? (
         <Icon name="search" />
       ) : (
         <IconButton
@@ -134,20 +168,15 @@ export function Search({
         onKeyDown={(e) => {
           if (e.key === "Escape") {
             e.preventDefault();
-            closeSuggestions();
+            cancelEditing();
           }
         }}
       />
-      {draft && !suggestions && (
+      {(draft || photo) && !suggestions && (
         <IconButton
           icon="close"
           label="Clear search"
-          onClick={() => {
-            setDraft("");
-            setPhoto("");
-            closeSuggestions();
-            router.push("/search");
-          }}
+          onClick={() => submitQuery("")}
         />
       )}
       <button className="icon-button" aria-label="Submit search" type="submit">
@@ -167,7 +196,7 @@ export function Search({
             <IconButton
               icon="close"
               label="Close suggestions"
-              onClick={closeSuggestions}
+              onClick={cancelEditing}
             />
           </header>
           {/jean/i.test(draft) && (
@@ -207,9 +236,17 @@ export function Search({
               className="suggestion-query"
               key={q}
               href={`/search?q=${encodeURIComponent(q)}`}
-              onClick={() => {
-                setPhoto("");
-                closeSuggestions();
+              onClick={(event) => {
+                if (
+                  event.button === 0 &&
+                  !event.metaKey &&
+                  !event.ctrlKey &&
+                  !event.shiftKey &&
+                  !event.altKey
+                ) {
+                  event.preventDefault();
+                  submitQuery(q);
+                }
               }}
             >
               <span>
@@ -219,6 +256,8 @@ export function Search({
             </Link>
           ))}
         </section>
+      ) : pending ? (
+        <SearchLoading />
       ) : history ? (
         <>
           <h1>Recently viewed</h1>
@@ -255,7 +294,7 @@ export function Search({
             })}
           </div>
         </>
-      ) : query.trim() || filtered ? (
+      ) : showResults ? (
         <>
           {query.toLowerCase().includes("jeans") && (
             <Link className="assistant-result-link" href="/assistant">
@@ -422,7 +461,7 @@ export function Search({
           className="account-row"
           onClick={() => {
             setPhotoError("");
-            setPhoto("/api/reference-media/assistant-cap");
+            setPhoto(capturedCapPhoto);
             setDraft("Find me a baseball cap like this");
             setPhotos(false);
           }}
@@ -435,7 +474,34 @@ export function Search({
           sending a photo.
         </p>
       </Sheet>
-      {!suggestions && <FloatingNav back={!!query || history || filtered} />}
+      <Sheet
+        open={photoUnavailable}
+        title="Photo search unavailable"
+        onClose={() => setPhotoUnavailable(false)}
+      >
+        <p className="sheet-copy">
+          Photo search is not connected. Your photo stays on this device and
+          has not been analyzed. The captured cap example is a separate
+          reference answer, not a result for your photo.
+        </p>
+        <div className="sheet-actions">
+          <button
+            className="pill"
+            onClick={() => {
+              setPhoto("");
+              setPhotoUnavailable(false);
+            }}
+          >
+            Remove photo
+          </button>
+          <Link className="primary" href="/assistant?example=photo">
+            View captured example
+          </Link>
+        </div>
+      </Sheet>
+      {!suggestions && (
+        <FloatingNav back={showResults || history || pending} />
+      )}
       <Filters
         open={filter}
         onClose={() => setFilter(false)}
