@@ -10,5 +10,5 @@ export default async function Page({
   const { id } = await params;
   const store = catalog.stores.find((s) => s.id === id);
   if (!store) notFound();
-  return <StoreSearch store={store} catalog={catalog} />;
+  return <StoreSearch key={store.id} store={store} catalog={catalog} />;
 }

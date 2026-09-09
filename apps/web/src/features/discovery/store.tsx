@@ -1,8 +1,8 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { formatMoney } from "../catalog/types";
 import type { Catalog, Store, Product } from "../catalog/types";
 import {
@@ -15,6 +15,15 @@ import {
 import { Icon } from "./icons";
 import { Cart } from "./product";
 import { useDiscovery } from "./state";
+import {
+  readStoreFilters,
+  selectStoreProducts,
+  matchStoreProducts,
+  normalizeStoreQuery,
+  hasStoreFilters,
+  STORE_SORTS,
+  STORE_PRICE_CEILING,
+} from "./store-model";
 const collectionMedia = [
   { slug: "whats-new", name: "What's New", media: "collection-new" },
   { slug: "best-sellers", name: "Best Sellers", media: "collection-best" },
@@ -209,33 +218,34 @@ function StoreFilter({
 }: {
   open: boolean;
   onClose: () => void;
-  initialSection?: string;
+  initialSection?: "" | "Sort by" | "Price";
 }) {
   const params = useSearchParams();
   const [section, setSection] = useState(initialSection);
-  const min = Number(params.get("min") || 0),
-    max = Number(params.get("max") || 2000),
-    sale = params.get("sale") === "1",
-    stock = params.get("stock") !== "0",
-    sort = params.get("sort") || "Best selling";
+  const { min, max, sale, stock, sort } = readStoreFilters(params);
+  const closeSection = () => (initialSection ? onClose() : setSection(""));
   function update(values: Record<string, string>) {
     const next = new URLSearchParams(params.toString());
-    Object.entries(values).forEach(([k, v]) =>
-      v ? next.set(k, v) : next.delete(k),
+    Object.entries(values).forEach(([key, value]) =>
+      value ? next.set(key, value) : next.delete(key),
     );
     commitSheetQuery(next);
   }
   return (
     <>
       <Sheet
-        open={open}
+        open={open && !initialSection}
         title="Filter"
         className={`store-filter-sheet ${section ? "filter-covered" : ""}`}
         onClose={onClose}
       >
-        <div className="filter-options">
+        <div className="store-filter-options">
           <button onClick={() => setSection("Sort by")}>
-            Sort by<span>{sort} ›</span>
+            Sort by
+            <span>
+              {sort}
+              <Icon name="back" />
+            </span>
           </button>
           <button
             aria-pressed={sale}
@@ -246,23 +256,26 @@ function StoreFilter({
               aria-hidden="true"
               className={`store-checkbox ${sale ? "checked" : ""}`}
             >
-              {sale ? "✓" : ""}
+              {sale && <Icon name="check" />}
             </span>
           </button>
           <button
             aria-pressed={stock}
-            onClick={() => update({ stock: stock ? "0" : "1" })}
+            onClick={() => update({ stock: stock ? "0" : "" })}
           >
             In-stock
             <span
               aria-hidden="true"
               className={`store-checkbox ${stock ? "checked" : ""}`}
             >
-              {stock ? "✓" : ""}
+              {stock && <Icon name="check" />}
             </span>
           </button>
           <button onClick={() => setSection("Price")}>
-            Price<span>›</span>
+            Price
+            <span>
+              <Icon name="back" />
+            </span>
           </button>
         </div>
         <div className="sheet-actions">
@@ -285,59 +298,62 @@ function StoreFilter({
         className={
           section === "Price" ? "store-price-sheet" : "store-filter-sheet"
         }
-        onClose={() => {
-          setSection("");
-        }}
+        onClose={closeSection}
       >
-        <div className="filter-options">
-          {section === "Price" ? (
-            <div className="dual-price">
-              <strong>
-                ${min} - ${max.toLocaleString()}
-                {max === 2000 ? "+" : ""}
-              </strong>
-              <div>
-                <input
-                  aria-label="Minimum price"
-                  type="range"
-                  min="0"
-                  max="2000"
-                  step="10"
-                  value={min}
-                  onChange={(e) =>
-                    update({
-                      min: String(Math.min(Number(e.target.value), max)),
-                    })
-                  }
-                />
-                <input
-                  aria-label="Maximum price"
-                  type="range"
-                  min="0"
-                  max="2000"
-                  step="10"
-                  value={max}
-                  onChange={(e) =>
-                    update({
-                      max: String(Math.max(Number(e.target.value), min)),
-                    })
-                  }
-                />
-              </div>
+        {section === "Price" ? (
+          <div className="dual-price">
+            <strong aria-live="polite">
+              ${min.toLocaleString("en-US")} - ${max.toLocaleString("en-US")}
+              {max === STORE_PRICE_CEILING ? "+" : ""}
+            </strong>
+            <div
+              style={
+                {
+                  "--range-start": `${(min / STORE_PRICE_CEILING) * 100}%`,
+                  "--range-end": `${(max / STORE_PRICE_CEILING) * 100}%`,
+                } as CSSProperties
+              }
+            >
+              <span className="store-price-track" aria-hidden="true" />
+              <input
+                aria-label="Minimum price"
+                aria-valuetext={`$${min}`}
+                type="range"
+                min="0"
+                max={STORE_PRICE_CEILING}
+                step="10"
+                value={min}
+                onChange={(event) =>
+                  update({
+                    min: String(Math.min(Number(event.target.value), max)),
+                  })
+                }
+              />
+              <input
+                aria-label="Maximum price"
+                aria-valuetext={`$${max}${max === STORE_PRICE_CEILING ? " or more" : ""}`}
+                type="range"
+                min="0"
+                max={STORE_PRICE_CEILING}
+                step="10"
+                value={max}
+                onChange={(event) =>
+                  update({
+                    max: String(Math.max(Number(event.target.value), min)),
+                  })
+                }
+              />
             </div>
-          ) : section === "Sort by" ? (
-            [
-              "Best selling",
-              "Featured",
-              "Newest",
-              "Price: low to high",
-              "Price: high to low",
-            ].map((value) => (
+          </div>
+        ) : (
+          <div className="store-filter-options store-sort-options">
+            {STORE_SORTS.map((value) => (
               <button
                 key={value}
+                aria-pressed={sort === value}
                 onClick={() => {
-                  update({ sort: value });
-                  setSection("");
+                  update({ sort: value === "Best selling" ? "" : value });
+                  closeSection();
                 }}
               >
                 {value}
@@ -345,59 +361,19 @@ function StoreFilter({
                   className={`radio-outline ${sort === value ? "selected" : ""}`}
                 />
               </button>
-            ))
-          ) : (
-            <>
-              <button onClick={() => setSection("Sort by")}>
-                Sort by <span>{sort} ›</span>
-              </button>
-              <button
-                aria-pressed={sale}
-                onClick={() => update({ sale: sale ? "" : "1" })}
-              >
-                On sale{" "}
-                <span
-                  aria-hidden="true"
-                  className={`store-checkbox ${sale ? "checked" : ""}`}
-                >
-                  {sale ? "✓" : ""}
-                </span>
-              </button>
-              <button
-                aria-pressed={stock}
-                onClick={() => update({ stock: stock ? "0" : "1" })}
-              >
-                In-stock{" "}
-                <span
-                  aria-hidden="true"
-                  className={`store-checkbox ${stock ? "checked" : ""}`}
-                >
-                  {stock ? "✓" : ""}
-                </span>
-              </button>
-              <button onClick={() => setSection("Price")}>
-                Price <span>›</span>
-              </button>
-            </>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
         <div className="sheet-actions">
           <button
             className="pill"
             onClick={() =>
-              update(
-                section === "Price"
-                  ? { min: "", max: "" }
-                  : { min: "", max: "", sale: "", stock: "", sort: "" },
-              )
+              update(section === "Price" ? { min: "", max: "" } : { sort: "" })
             }
           >
-            {section ? "Reset" : "Clear all"}
+            Reset
           </button>
-          <button
-            className="primary"
-            onClick={() => (section ? setSection("") : onClose())}
-          >
+          <button className="primary" onClick={closeSection}>
             Done
           </button>
         </div>
@@ -405,6 +381,7 @@ function StoreFilter({
     </>
   );
 }
+
 function StoreGrid({
   products,
   heading = true,
@@ -416,24 +393,8 @@ function StoreGrid({
 }) {
   const params = useSearchParams();
   const [filter, setFilter] = useState(false);
-  const filtered = products
-    .filter(
-      (p) =>
-        (params.get("sale") !== "1" || p.compareAt) &&
-        (params.get("stock") === "0" ||
-          p.variants.some((v) => v.availableQuantity > 0)) &&
-        p.price.amount >= Number(params.get("min") || 0) * 100 &&
-        p.price.amount <= Number(params.get("max") || 2000) * 100,
-    )
-    .sort((a, b) =>
-      params.get("sort") === "Price: low to high"
-        ? a.price.amount - b.price.amount
-        : params.get("sort") === "Price: high to low"
-          ? b.price.amount - a.price.amount
-          : params.get("sort") === "Newest"
-            ? (a.sourceNewestRank ?? 999) - (b.sourceNewestRank ?? 999)
-            : 0,
-    );
+  const filters = readStoreFilters(params);
+  const filtered = selectStoreProducts(products, filters);
   return (
     <>
       {heading && (
@@ -452,9 +413,24 @@ function StoreGrid({
         ))}
       </div>
       {!filtered.length && (
-        <p className="empty-state">No matching products in this reference.</p>
+        <div className="empty-state" role="status">
+          <p>No matching products in this reference.</p>
+          {hasStoreFilters(filters) && (
+            <button
+              className="pill store-search-recovery"
+              onClick={() => {
+                const next = new URLSearchParams(params.toString());
+                for (const key of ["min", "max", "sale", "stock", "sort"])
+                  next.delete(key);
+                commitSheetQuery(next);
+              }}
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
       )}
-      <StoreFilter open={filter} onClose={() => setFilter(false)} />
+      {filter && <StoreFilter open onClose={() => setFilter(false)} />}
     </>
   );
 }
@@ -600,7 +576,7 @@ export function Storefront({
 }
 function StoreCriteria() {
   const params = useSearchParams();
-  const [filter, setFilter] = useState<string | null>(null);
+  const [filter, setFilter] = useState<"" | "Sort by" | "Price" | null>(null);
   function toggle(key: "sale" | "stock") {
     const next = new URLSearchParams(params.toString());
     next.set(
@@ -619,7 +595,7 @@ function StoreCriteria() {
     <>
       <div className="category-rail store-criteria">
         <IconButton
-          icon="filter"
+          icon="filter-circles"
           label="Filter collection"
           onClick={() => setFilter("")}
         />
@@ -951,125 +927,216 @@ export function StoreSearch({
   store: Store;
   catalog: Catalog;
 }) {
-  const params = useSearchParams();
+  const params = useSearchParams(),
+    router = useRouter(),
+    state = useDiscovery();
+  const filters = readStoreFilters(params);
   const q = params.get("q") || "";
   const [draft, setDraft] = useState<string | null>(null);
-  const value = draft ?? q;
-  const editing = draft !== null || !q;
-  function submit(query: string) {
-    const next = new URLSearchParams();
-    if (query.trim()) next.set("q", query.trim());
-    commitSheetQuery(next);
+  const input = useRef<HTMLInputElement>(null);
+  const value = draft ?? q,
+    editing = draft !== null || !q;
+  const query = normalizeStoreQuery(value),
+    kitsch = store.id === "kitsch";
+  const path = `/stores/${encodeURIComponent(store.id)}/search`;
+  useEffect(() => {
+    const restore = () => setDraft(null);
+    window.addEventListener("popstate", restore);
+    return () => window.removeEventListener("popstate", restore);
+  }, []);
+  function submit(text: string) {
+    const next = new URLSearchParams(params.toString());
+    text.trim() ? next.set("q", text.trim()) : next.delete("q");
+    const url = `${path}${next.size ? `?${next}` : ""}`;
+    if (url !== `${window.location.pathname}${window.location.search}`)
+      window.history.pushState(null, "", url);
     setDraft(null);
+    input.current?.blur();
   }
-  const products = (
-    store.id === "kitsch" && q.toLowerCase() === "shampoo"
-      ? ordered(catalog, [
-          "rice-shampoo",
-          "rosemary-liquid",
-          "rice-liquid",
-          "detox-shampoo",
-        ])
-      : catalog.products
-  ).filter(
-    (p) =>
-      p.storeId === store.id && p.title.toLowerCase().includes(q.toLowerCase()),
-  );
-  const suggestions = [
-    "shampoo",
-    "dry shampoo",
-    "shampoo and conditioner bar bags",
-    "shampoo bar",
-    "rice water shampoo and conditioner",
-    "shampoo and conditioner",
-    "purple toning biotin shampoo bundle",
-    "rosemary and biotin shampoo set",
-  ];
+  function cancel() {
+    if (q) {
+      setDraft(null);
+      input.current?.blur();
+    } else router.push(`/stores/${store.id}`);
+  }
+  function clear() {
+    setDraft("");
+    input.current?.focus();
+  }
+  const capturedResults = kitsch && normalizeStoreQuery(q) === "shampoo";
+  const products = capturedResults
+    ? ordered(catalog, [
+        "rice-shampoo",
+        "rosemary-liquid",
+        "rice-liquid",
+        "detox-shampoo",
+      ])
+    : matchStoreProducts(catalog.products, store.id, q);
+  const count = selectStoreProducts(products, filters).length;
+  const suggestions = (
+    kitsch && query === "shampoo"
+      ? ordered(catalog, ["rice-shampoo", "detox-shampoo", "rosemary-bar"])
+      : matchStoreProducts(catalog.products, store.id, value)
+  ).slice(0, 3);
+  const phrases = kitsch
+    ? [
+        "dry shampoo",
+        "shampoo and conditioner bar bags",
+        "shampoo bar",
+        "rice water shampoo and conditioner",
+        "shampoo and conditioner",
+        "purple toning biotin shampoo bundle",
+        "rosemary and biotin shampoo set",
+        "shampoo conditioner for curly hair",
+      ]
+    : [];
+  const recent = ordered(catalog, [
+    ...new Set([...state.viewedProducts, ...(kitsch ? ["shea-butter"] : [])]),
+  ])
+    .filter((product) => product.storeId === store.id)
+    .slice(0, 8);
+  const best = kitsch
+    ? ordered(catalog, ["rice-shampoo", "rice-conditioner", "rice-bundle"])
+    : catalog.products
+        .filter((product) => product.storeId === store.id)
+        .slice(0, 8);
+  const categories = kitsch
+    ? storeCategories
+    : store.categories.map((name) => ({
+        name,
+        slug: name.toLowerCase().replaceAll(" ", "-"),
+      }));
+  function phrase(label: string) {
+    const index = normalizeStoreQuery(label).indexOf(query);
+    return index < 0 ? (
+      label
+    ) : (
+      <>
+        {label.slice(0, index)}
+        <mark>{label.slice(index, index + query.length)}</mark>
+        {label.slice(index + query.length)}
+      </>
+    );
+  }
   return (
-    <main className="shop-page store-search-page">
+    <main
+      className={`shop-page store-search-page ${editing ? "store-search-editing" : "store-search-results"}`}
+    >
       <div className="store-search-toolbar">
         <form
           className="search-form"
-          onSubmit={(e) => {
-            e.preventDefault();
+          role="search"
+          onSubmit={(event) => {
+            event.preventDefault();
             submit(value);
           }}
         >
           <Icon name="search" />
           <input
+            ref={input}
             name="q"
             aria-label={`Search ${store.name}`}
-            placeholder={`Search ${store.name}`}
+            placeholder={`Search ${store.name}...`}
             value={value}
-            onFocus={() => setDraft(q)}
-            onChange={(e) => setDraft(e.target.value)}
+            enterKeyHint="search"
+            onFocus={() => setDraft((current) => current ?? q)}
+            onChange={(event) => setDraft(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                event.preventDefault();
+                cancel();
+              }
+            }}
           />
+          {value && (
+            <button
+              type="button"
+              className="sr-only"
+              aria-label="Clear search"
+              onClick={clear}
+            >
+              Clear search
+            </button>
+          )}
+        </form>
+        {editing && (
           <button
             type="button"
-            aria-label="Clear search"
-            onClick={() => setDraft("")}
+            className="store-search-cancel"
+            onClick={cancel}
           >
-            <Icon name="close" />
+            Cancel
           </button>
-        </form>
-        {editing && <Link href={`/stores/${store.id}`}>Cancel</Link>}
+        )}
       </div>
       {editing ? (
-        value ? (
+        query ? (
           <div className="store-search-suggestions">
-            <button onClick={() => submit(value)}>
+            <button type="button" onClick={() => submit(value)}>
               <Icon name="search" />
               <span>{value}</span>
             </button>
-            {ordered(catalog, [
-              "rice-shampoo",
-              "detox-shampoo",
-              "rosemary-bar",
-            ]).map((p) => (
-              <Link href={`/products/${p.id}`} key={p.id}>
-                <img src={p.images[0]} alt="" />
+            {suggestions.map((product) => (
+              <Link href={`/products/${product.id}`} key={product.id}>
+                <img src={product.images[0]} alt="" />
                 <span>
-                  {p.title}
-                  <small>{formatMoney(p.price)}</small>
+                  {product.title}
+                  <small>{formatMoney(product.price)}</small>
                 </span>
               </Link>
             ))}
-            {suggestions
-              .filter((s) => s !== value)
-              .map((s) => (
-                <button key={s} onClick={() => submit(s)}>
+            {phrases
+              .filter(
+                (label) =>
+                  label !== query &&
+                  query
+                    .split(" ")
+                    .every((word) => normalizeStoreQuery(label).includes(word)),
+              )
+              .map((label) => (
+                <button type="button" key={label} onClick={() => submit(label)}>
                   <Icon name="search" />
-                  <span>{s}</span>
+                  <span className="store-suggestion-phrase">
+                    {phrase(label)}
+                  </span>
                 </button>
               ))}
           </div>
         ) : (
           <>
-            <h2>Shop by</h2>
-            <div className="store-search-categories">
-              {storeCategories.map((c) => (
-                <Link
-                  key={c.slug}
-                  href={`/stores/${store.id}/collections/${c.slug}`}
-                >
-                  <span>{c.name}</span>
-                </Link>
-              ))}
-            </div>
-            <h2>Recently viewed</h2>
+            {categories.length > 0 && (
+              <>
+                <h2>Shop by</h2>
+                <div className="store-search-categories">
+                  {categories.map((category) => (
+                    <Link
+                      key={category.slug}
+                      href={
+                        category.name === "Shop all"
+                          ? `/stores/${store.id}#all-products`
+                          : `/stores/${store.id}/collections/${category.slug}`
+                      }
+                    >
+                      {category.name}
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
+            {recent.length > 0 && (
+              <>
+                <h2>Recently viewed</h2>
+                <div className="store-search-products">
+                  {recent.map((product) => (
+                    <ProductCard key={product.id} product={product} mediaOnly />
+                  ))}
+                </div>
+              </>
+            )}
+            <h2>{kitsch ? "Best sellers" : "Products"}</h2>
             <div className="store-search-products">
-              {ordered(catalog, ["shea-butter"]).map((p) => (
-                <ProductCard key={p.id} product={p} mediaOnly />
-              ))}
-            </div>
-            <h2>Best sellers</h2>
-            <div className="store-search-products">
-              {ordered(catalog, [
-                "rice-shampoo",
-                "rice-conditioner",
-                "rice-bundle",
-              ]).map((p) => (
-                <ProductCard key={p.id} product={p} mediaOnly />
+              {best.map((product) => (
+                <ProductCard key={product.id} product={product} mediaOnly />
               ))}
             </div>
           </>
@@ -1077,25 +1144,37 @@ export function StoreSearch({
       ) : (
         <>
           <StoreCriteria />
-          <p className="store-search-count">
-            {store.id === "kitsch" && q.toLowerCase() === "shampoo"
-              ? "270"
-              : products.length}{" "}
+          <p
+            className="store-search-count"
+            title={
+              capturedResults && !hasStoreFilters(filters)
+                ? "Captured count; only the four identified reference products are available in this preview."
+                : "Matching products in the local reference sample"
+            }
+          >
+            {capturedResults && !hasStoreFilters(filters) ? "270" : count}{" "}
             results from {store.name}
           </p>
           <StoreGrid products={products} heading={false} />
+          {!products.length && (
+            <button className="pill store-search-recovery" onClick={clear}>
+              Clear search
+            </button>
+          )}
         </>
       )}
       <FloatingNav
         back
         onBack={() => {
-          if (draft !== null) setDraft(null);
-          else window.history.back();
+          if (draft !== null && q) cancel();
+          else if (window.history.length > 1) router.back();
+          else router.push(`/stores/${store.id}`);
         }}
       />
     </main>
   );
 }
+
 export function StoreVideo() {
   const [notice, setNotice] = useState(false);
   return (
