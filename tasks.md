@@ -158,6 +158,16 @@ Checks for this remote checkpoint: no build, lint, formatting, typecheck, tests,
 
 Remaining/resume: pending-state geometry and timing, same-input browser behavior, filter-only entry/clear/Back, photo-sheet history/focus and provider-boundary journeys remain for owner/desktop runtime review. Full 97-flow source acceptance and the previously documented asset differences are still outstanding. Continue the existing Task 3/5/6 frontend scope; keep Tasks 3/6 in Review and Task 5 incomplete. No mobile, service, deployment, brand or architecture changes were made by this checkpoint.
 
+**2026-09-09 Saved membership continuation — Review; browser verification attempted, not achieved.** Continued from `c9f3857` after the owner explicitly requested browser verification. Code inspection found that More ideas and product collection entry could add a product only to a collection, leaving it absent from Saved. Deleting that collection then lost the item despite the deletion UI promising that products remain in Saved. Global unsaving also left stale collection membership.
+
+Built: the existing DiscoveryProvider now uses one local Saved/collection transition owner in `features/discovery/saved-model.ts`. Collection creation and membership updates also save their products; removing a membership keeps the product in Saved; deleting a collection preserves its products; global unsaving removes stale memberships without restoring them on a subsequent save. Missing and duplicate collection identities cannot create ghost saved products. Existing component APIs, initial fixtures, routes, cart/save-for-later quantities, Sheet history/focus and all styling are unchanged. Added 11 synthetic regression cases in `saved-model.test.ts`; they have not been executed.
+
+Source scope: behavioral correction within the existing Saved/collection families (catalogue flows 7–13) and product collection entry, not newly approved visual parity. The existing More ideas mapping is `972c6dae-9ab4-4aaf-9f21-999808493dc6` and collection-detail mapping is `a3ff00dc-6536-4966-89ae-2af61582d347`; no new frame-by-frame visual or recording inspection is claimed in this continuation. The directly demonstrated defect is the discrepancy between `saved.tsx`'s deletion promise and the previous separate state updates in `state.tsx`. No new original media is required.
+
+Actual browser/access result: plugin discovery exposed no invokable Computer/Computer Management actions. Sandbox Chromium launched, but navigation to the committed frozen filter frame at `raw.githubusercontent.com` returned `net::ERR_BLOCKED_BY_ADMINISTRATOR`; the browser was closed. A normal GitHub clone also failed with `Could not resolve host: github.com`. These are session access failures, not proof about the owner's local Computer connection, subscription or project. GitHub connector reads/writes remain available. No app dev server, build, lint, typecheck, test run, rendered app capture or 393x793 parity comparison was completed. Current source images were not successfully rendered in this attempt; base64 retrieval is not visual inspection.
+
+Commit pointer: the main-branch commit titled `fix(web): keep Saved and collection membership consistent`. Resume the same Tasks 3/5/6 source implementation and rendered review; all previously listed imagery/font/motion gaps and full 97-flow acceptance remain open. This state correction does not establish 1:1 fidelity, persistence or real account services. Tasks 3/6 remain Review and Task 5 remains incomplete.
+
 ## Task 4 - Build data, identity and catalog
 
 **Prerequisites:** Task 1; Task 2's approved catalog contract; authorized fresh development database/auth configuration. Task 3 supplies the UI consumers; backend work need not wait for missing unrelated reference assets.
@@ -234,7 +244,7 @@ Remaining/resume: pending-state geometry and timing, same-input browser behavior
 
 **Prerequisites:** Tasks 8-9; approved billing prices/limits and supported model/provider configuration.
 
-**Read:** product.md MER-009/MER-010 and commercial rules; architecture.md finance/AI/auth and provider boundaries. Use relevant billing, AI SDK, structured-tool and UI skills.
+**Read:** product.md MER-009/MER-010 and commercial rules; architecture.md finance/AI/auth and provider boundaries. Use payment/AI SDK, structured-tool and UI skills.
 
 **Build the whole batch:** Free/Premium subscriptions, configured entitlements/portal/invoices, lifecycle/downgrade/retry behavior; listing/photo/translation assistance, operational summaries, metric-backed analytics/inventory answers and reply drafts. Use the established permissions, queries and commands. Require human approval for consequential writes; bound cost/time and provide useful unavailable/error states. Do not make normal commerce depend on AI or Premium.
 

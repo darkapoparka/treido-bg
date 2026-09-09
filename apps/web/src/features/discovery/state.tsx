@@ -3,15 +3,12 @@ import {
   createContext,
   useContext,
   useState,
+  useReducer,
   useCallback,
   type ReactNode,
 } from "react";
-export type Collection = {
-  id: string;
-  name: string;
-  visibility: "Private" | "Public";
-  productIds: string[];
-};
+import { savedCollectionsReducer, type Collection } from "./saved-model";
+export type { Collection } from "./saved-model";
 export type CartLine = {
   productId: string;
   variantId: string;
@@ -80,11 +77,13 @@ export function DiscoveryProvider({ children }: { children: ReactNode }) {
   }, []);
   const [visitedMinis, setVisitedMinis] = useState<string[]>([]);
   const [reportedProducts, setReportedProducts] = useState<string[]>([]);
-  const [saved, setSaved] = useState<string[]>(["shea-butter", "rice-bundle"]);
+  const [{ saved, collections }, dispatchSaved] = useReducer(
+    savedCollectionsReducer,
+    { saved: ["shea-butter", "rice-bundle"], collections: [] },
+  );
   const [followed, setFollowed] = useState<string[]>([]);
   const [cart, setCart] = useState<CartLine[]>([]);
   const [later, setLater] = useState<CartLine[]>([]);
-  const [collections, setCollections] = useState<Collection[]>([]);
   const toggle = (values: string[], id: string) =>
     values.includes(id) ? values.filter((v) => v !== id) : [...values, id];
   return (
@@ -142,7 +141,8 @@ export function DiscoveryProvider({ children }: { children: ReactNode }) {
           );
         },
         collections,
-        toggleSaved: (id) => setSaved((v) => toggle(v, id)),
+        toggleSaved: (productId) =>
+          dispatchSaved({ type: "toggle-saved", productId }),
         toggleFollow: (id) => setFollowed((v) => toggle(v, id)),
         add: (line) =>
           setCart((v) => [
@@ -182,18 +182,16 @@ export function DiscoveryProvider({ children }: { children: ReactNode }) {
         },
         createCollection: (name, productIds = []) => {
           const id = crypto.randomUUID();
-          setCollections((v) => [
-            ...v,
-            { id, name, visibility: "Private", productIds },
-          ]);
+          dispatchSaved({
+            type: "create-collection",
+            collection: { id, name, visibility: "Private", productIds },
+          });
           return id;
         },
         updateCollection: (id, value) =>
-          setCollections((v) =>
-            v.map((c) => (c.id === id ? { ...c, ...value, id } : c)),
-          ),
+          dispatchSaved({ type: "update-collection", id, value }),
         deleteCollection: (id) =>
-          setCollections((v) => v.filter((c) => c.id !== id)),
+          dispatchSaved({ type: "delete-collection", id }),
       }}
     >
       {children}
