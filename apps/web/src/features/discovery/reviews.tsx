@@ -1,14 +1,33 @@
 "use client";
 import Link from "next/link";
-import { StoreReviews } from "./store-reviews";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { StoreReviews } from "./store-reviews";
 import { useDiscovery } from "./state";
 import { IconButton, Sheet, consumeSheetHistory } from "./components";
 import { Icon } from "./icons";
-const reviews = [
+import {
+  ReviewBody,
+  ReviewHelpful,
+  ReviewReport,
+  ReviewStars,
+} from "./review-feedback";
+import {
+  selectReviews,
+  type ReviewSearchRecord,
+  type ReviewSort,
+} from "./review-model";
+
+// Frozen product-review flows 33–36; the extra search records are visible in
+// b2a75fc0 frame 002. Only the absolute dates have known cross-record ordering.
+// No capture timestamp is inferred from the relative date labels.
+const reviews: (ReviewSearchRecord & { author: string; date: string })[] = [
   {
     id: "nice-excellent",
+    stars: 5,
+    searchOnly: true,
+    searchOrder: 1,
+    previewNewestOrder: 2,
     title: "Excellent product!",
     body: "I love this bar! It’s very moisturizing and smells heavenly. It’s great to use prior to applying a tanning product. It also makes a nice lather.",
     author: "Avery",
@@ -16,20 +35,30 @@ const reviews = [
   },
   {
     id: "nice-scent",
-    title: "NC / 05",
+    stars: 4,
+    searchOnly: true,
+    searchOrder: 2,
+    previewNewestOrder: 0,
+    title: "",
+    variant: "NC / OS",
     body: "This has a very lovely smell and exfoliates nicely",
     author: "Morgan",
     date: "Jun 16, 2026",
   },
   {
     id: "nice-short",
-    title: "Nice",
-    body: "",
+    stars: 5,
+    searchOnly: true,
+    searchOrder: 3,
+    previewNewestOrder: 1,
+    title: "",
+    body: "Nice",
     author: "Jamie",
     date: "Jun 7, 2026",
   },
   {
     id: "wes",
+    stars: 5,
     title: "Girlfriend loves it and I can breathe.",
     body: "I think in the beauty industry the makers think all products need to have a fragrance. Being a man with allergies to perfumes. Thank god someone has finally brought a product to market that works and is fragrance free. I can finally go to bed and not have allergy issues. Thank you",
     author: "Wes",
@@ -37,6 +66,7 @@ const reviews = [
   },
   {
     id: "juanita",
+    stars: 5,
     title: "How much I love your product",
     body: "I love the body soap you sent me and I use the liquid shampoo. I love it but it’s just great for my hair and everything I’ve had from you for all my hair products and all my ties and all I have loved everything.",
     author: "Juanita",
@@ -44,39 +74,20 @@ const reviews = [
   },
   {
     id: "tammy",
+    stars: 5,
+    searchOrder: 0,
     title: "",
     body: "This is truly one of the nicest soaps I have ever used. I have tried a few and I keep coming back to this one. Doesn’t dry out skin and rinses cleanly.",
     author: "Tammy",
     date: "16 days ago",
   },
 ];
-function reviewTime(date: string) {
-  const relative = /^(\d+) days ago$/.exec(date);
-  return relative
-    ? Date.UTC(2026, 5, 30) - Number(relative[1]) * 86400000
-    : Date.parse(date);
-}
-const reasonDescriptions = [
-  "It attacks an individual or a group of people.",
-  "It’s from someone affiliated with the Shop Store or a competitor’s store.",
-  "It contains inappropriate, sexually explicit, or violent content.",
-  "It has allegations about improper store or buyer behavior.",
-  "It contains harmful content based on an individual or group identity.",
-  "It references items that go against Shop Merchant Guidelines.",
-  "It violates intellectual property laws.",
-  "It contains information that could identify the reviewer e.g. email, phone number, or credit card details.",
-  "It contains ads or promotional content.",
-];
-const reasons = [
-  "It’s bullying or harassment",
-  "It’s a conflict of interest",
-  "It’s offensive",
-  "It’s fraud or scam",
-  "It’s hate speech",
-  "It’s about illegal activities or regulated goods",
-  "It’s an intellectual property infringement",
-  "It’s personal information",
-  "It’s spam",
+
+const reviewSorts: ReviewSort[] = [
+  "Most relevant",
+  "Most recent",
+  "Highest rating",
+  "Lowest rating",
 ];
 export function Reviews({
   store = false,
@@ -87,15 +98,15 @@ export function Reviews({
   available?: boolean;
   productId?: string;
 }) {
-  const [sort, setSort] = useState("Most relevant");
+  const [sort, setSort] = useState<ReviewSort>("Most relevant");
   const [q, setQ] = useState("");
   const [expanded, setExpanded] = useState<string[]>([]);
+  const searchRef = useRef<HTMLInputElement>(null);
   const [helpful, setHelpful] = useState<string[]>([]);
-  const [reported, setReported] = useState<string[]>([]);
+  const [reported, setReported] = useState<Record<string, string>>({});
   const [report, setReport] = useState("");
-  const [reason, setReason] = useState("");
-  const [stage, setStage] = useState(0);
   const [filter, setFilter] = useState(false);
+  const visible = selectReviews(reviews, { query: q, sort, helpful });
   if (store && available) return <StoreReviews />;
   if (!available)
     return (
@@ -111,11 +122,11 @@ export function Reviews({
       </main>
     );
   return (
-    <main className={`shop-page reviews-page ${store ? "store-reviews" : ""}`}>
+    <main className="shop-page reviews-page">
       <header className="section-heading">
         <h1>Reviews</h1>
         <Link
-          href={store ? "/stores/kitsch" : `/products/${productId}`}
+          href={`/products/${productId}`}
           className="icon-button"
           aria-label="Close reviews"
         >
@@ -124,214 +135,156 @@ export function Reviews({
       </header>
       <div className="review-summary">
         <div>
-          <strong>{store ? "4.5" : "4.6"}</strong>
-          <div className="rating">
-            <span>★★★★★</span>
-          </div>
-          <p>{store ? "194.9K" : "3.3K"} ratings ⓘ</p>
+          <strong>4.6</strong>
+          <ReviewStars rating={4.5} label="4.6 out of 5 stars" />
+          <p>3.3K ratings ⓘ</p>
         </div>
-        {!store && (
-          <div className="rating-bars">
-            {[5, 4, 3, 2, 1].map((n, i) => (
-              <div key={n}>
-                <span>{n}</span>
-                <i>
-                  <b style={{ width: `${[80, 9, 5, 2, 1][i]}%` }} />
-                </i>
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="rating-bars" aria-label="Captured rating distribution">
+          {[5, 4, 3, 2, 1].map((n, i) => (
+            <div key={n}>
+              <span>{n}</span>
+              <i>
+                <b style={{ width: `${[80, 9, 5, 2, 1][i]}%` }} />
+              </i>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="review-search">
+      <form
+        className="review-search"
+        role="search"
+        onSubmit={(event) => {
+          event.preventDefault();
+          searchRef.current?.blur();
+        }}
+      >
         <IconButton
-          icon="filter"
+          icon="filter-circles"
           label="Filter reviews"
           onClick={() => setFilter(true)}
         />
-        <input
-          aria-label="Search reviews"
-          placeholder="Search"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-        />
-      </div>
-      {reviews
-        .filter(
-          (r) =>
-            `${r.title} ${r.body}`.toLowerCase().includes(q.toLowerCase()) &&
-            (q || !r.id.startsWith("nice-")),
-        )
-        .sort((a, b) =>
-          sort === "Most recent"
-            ? reviewTime(b.date) - reviewTime(a.date)
-            : q
-              ? Number(b.id === "tammy") - Number(a.id === "tammy")
-              : 0,
-        )
-        .map((r) => (
-          <article
-            className={`review-card ${reported.includes(r.id) ? "review-reported" : ""}`}
-            key={r.id}
-          >
-            <div className="rating">
-              <span>★★★★★</span>
-            </div>
-            <h2>{r.title}</h2>
-            <p className={expanded.includes(r.id) ? "" : "review-truncated"}>
-              {r.body}
-            </p>
-            {r.body.length > 80 && (
-              <button
-                className="read-more"
-                onClick={() =>
-                  setExpanded((v) =>
-                    v.includes(r.id)
-                      ? v.filter((id) => id !== r.id)
-                      : [...v, r.id],
-                  )
-                }
-              >
-                {expanded.includes(r.id) ? "Read less" : "Read more"}
-              </button>
-            )}
-            <footer>
-              <span className="review-avatar">{r.author[0]}</span>
-              <span>
-                {r.author} · {r.date}
-              </span>
-              <button
-                aria-label={
-                  helpful.includes(r.id) ? "Helpful (1) ✓" : "Helpful"
-                }
-                className={helpful.includes(r.id) ? "helpful-selected" : ""}
-                onClick={() =>
-                  setHelpful((v) =>
-                    v.includes(r.id)
-                      ? v.filter((x) => x !== r.id)
-                      : [...v, r.id],
-                  )
-                }
-              >
-                <Icon name="thumb-up" /> Helpful
-                {helpful.includes(r.id) && <b className="helpful-count">1</b>}
-              </button>
-              <IconButton
-                icon="more"
-                label={`More options for ${r.author}'s review`}
-                onClick={() => {
-                  setReport(r.id);
-                  setStage(0);
-                  setReason("");
-                  setReason("");
-                }}
-              />
-            </footer>
-            {reported.includes(r.id) && (
-              <small className="danger-text">
-                You reported this review · local preview
-              </small>
-            )}
-          </article>
-        ))}
-      <Sheet
-        open={!!report}
-        className={
-          stage === 1 ? "review-report-reasons" : "review-report-sheet"
-        }
-        title={
-          stage === 0
-            ? "More options"
-            : stage === 1
-              ? "Why are you reporting this review?"
-              : "Thanks for reporting"
-        }
-        onClose={() => setReport("")}
-      >
-        {stage === 0 ? (
+        <div className="review-search-field">
+          <Icon name="search" />
+          <input
+            ref={searchRef}
+            type="search"
+            aria-label="Search reviews"
+            placeholder="Search"
+            enterKeyHint="search"
+            value={q}
+            onChange={(event) => setQ(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Escape" && q) {
+                event.preventDefault();
+                setQ("");
+              }
+            }}
+          />
+        </div>
+      </form>
+      {!visible.length && (
+        <div className="review-empty" role="status">
+          <h2>No matching reviews</h2>
+          <p>No captured reviews match this search.</p>
           <button
-            className="account-row danger-text"
-            onClick={() => setStage(1)}
+            className="pill"
+            onClick={() => {
+              setQ("");
+              setSort("Most relevant");
+              searchRef.current?.focus();
+            }}
           >
-            Report this review
+            Clear search
           </button>
-        ) : stage === 1 ? (
-          <>
-            <p className="form-note">
-              This won’t be shared with the reviewer or the store.
-            </p>
-            <div className="filter-options">
-              {reasons.map((r, i) => (
-                <label key={r}>
-                  <span>
-                    <strong>{r}</strong>
-                    <small>{reasonDescriptions[i]}</small>
-                  </span>
-                  <input
-                    type="radio"
-                    name="report-reason"
-                    checked={reason === r}
-                    onChange={() => setReason(r)}
-                  />
-                </label>
-              ))}
-            </div>
-            <div className="sheet-actions">
-              <button className="pill" onClick={() => setReport("")}>
-                Cancel
-              </button>
-              <button
-                className="primary"
-                disabled={!reason}
-                onClick={() => {
-                  setReported((v) => [...v, report]);
-                  setStage(2);
-                }}
-              >
-                Report
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <p className="sheet-copy">
-              Your selection is saved in this reference session. No report was
-              sent to a store or moderation service.
-            </p>
-            <button
-              className="primary form-submit"
-              onClick={() => setReport("")}
-            >
-              Close
-            </button>
-          </>
-        )}
-      </Sheet>
+        </div>
+      )}
+      {visible.map((review) => (
+        <article
+          className={`review-card ${reported[review.id] ? "review-reported" : ""}`}
+          key={review.id}
+        >
+          <ReviewStars rating={review.stars} />
+          {review.variant && (
+            <small className="review-variant">{review.variant}</small>
+          )}
+          {review.title && <h2>{review.title}</h2>}
+          <ReviewBody
+            body={review.body}
+            expanded={expanded.includes(review.id)}
+            onToggle={() =>
+              setExpanded((value) =>
+                value.includes(review.id)
+                  ? value.filter((id) => id !== review.id)
+                  : [...value, review.id],
+              )
+            }
+          />
+          <footer>
+            <span className="review-avatar" aria-hidden="true">
+              {review.author[0]}
+            </span>
+            <span className="review-author">
+              {review.author} · {review.date}
+            </span>
+            <ReviewHelpful
+              selected={helpful.includes(review.id)}
+              disabled={!!reported[review.id]}
+              onToggle={() =>
+                setHelpful((value) =>
+                  value.includes(review.id)
+                    ? value.filter((id) => id !== review.id)
+                    : [...value, review.id],
+                )
+              }
+            />
+            <IconButton
+              icon="more"
+              label={`More options for ${review.author}'s review`}
+              onClick={() => setReport(review.id)}
+            />
+          </footer>
+          {reported[review.id] && (
+            <small className="review-reported-label">
+              You reported this review · local preview
+            </small>
+          )}
+        </article>
+      ))}
+      {report && (
+        <ReviewReport
+          key={report}
+          onClose={() => setReport("")}
+          onReport={(reason) => {
+            setReported((value) => ({ ...value, [report]: reason }));
+          }}
+        />
+      )}
       <Sheet
         open={filter}
         title="Filter reviews"
         onClose={() => setFilter(false)}
       >
         <div className="filter-options">
-          {[
-            "Most relevant",
-            "Most recent",
-            "Highest rating",
-            "Lowest rating",
-          ].map((x) => (
+          {reviewSorts.map((value) => (
             <button
-              key={x}
-              aria-pressed={sort === x}
+              key={value}
+              aria-pressed={sort === value}
               onClick={() => {
-                setSort(x);
+                setSort(value);
                 setFilter(false);
               }}
             >
-              {x}
-              <span className="radio-outline" />
+              {value}
+              <span
+                className={`radio-outline ${sort === value ? "selected" : ""}`}
+              />
             </button>
           ))}
         </div>
+        <p className="form-note">
+          This preview contains a limited captured sample. Relative dates cannot
+          be ordered against calendar dates.
+        </p>
       </Sheet>
     </main>
   );

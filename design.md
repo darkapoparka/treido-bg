@@ -160,6 +160,32 @@ Code checkpoint: `947f4c855721bd003fa0208e12aeae43f200bf91`. This extends the in
 
 No new photography, logos or decorative originals are required for this batch. All previously listed asset gaps remain open. New pending-state geometry, field/dock positioning, font metrics, animation timing, keyboard behavior, nested history and the actual rendered navigation/photo journeys remain unverified at this checkpoint. No build, lint, tests, dev server, browser implementation capture or runtime check was executed remotely; the owner-directed Task 3 exception assigns those to desktop. This is implementation progress, not source acceptance.
 
+### Reviews, reports and store-review continuation (2026-09-09)
+
+Continued the existing website from `425ff6b`, preserving the incoming Search and Saved corrections. This is a Task 3/5/6 frontend correction batch, not another route family or an approved 1:1 milestone. Source images were opened through the connected Desktop, normalized to 393x892 and cropped to browser content `(0,59)-(393,852)` before comparison with the 393x793 rendered page.
+
+| Frozen flow | Frames visually inspected | Corrections / scope |
+| --- | --- | --- |
+| 33 `4e59dce2-d2a0-4f4e-ae16-54267243df75` | 002 | Product-review heading, summary, histogram, search and card geometry. |
+| 34 `b2a75fc0-0d02-462f-8bb7-65ae38d08840` | 001-002 | Captured `nice` ordering, four-star scent review, muted `NC / OS` variant, plain `Nice` body, no unnecessary expansion controls. |
+| 35 `36c23a43-49d3-4932-9595-f122062480b4` | 001-002 | Measured text expansion; selected Helpful treatment and local count. |
+| 36 `fae1016a-facb-4633-b62b-7ddd809e0fac` | 001-006 | More options, all nine reasons, disabled/selected Report, confirmation and dimmed reported-review state. |
+| 39 `2d948785-52f0-49dd-985e-4a016ced6ae2` | 001-002 | Store-review summary, black/half stars, 63px thumbnails, avatars, filter rail, card surfaces and captured excerpts. |
+
+Flow 38 `82159116-18bf-4988-9acd-0f1bb1f76a0f` frames 001-006 were also visually inspected to preserve the adjacent product-report journey. Its ProductOptions implementation was not changed or newly accepted. No recording or motion parity is claimed by these still-image comparisons.
+
+Implementation owners: existing `discovery/reviews.tsx`, `store-reviews.tsx`, `icons.tsx` and their existing rules in `app/globals.css`; shared review-only rendering/feedback in `review-feedback.tsx`; pure selection in `review-model.ts`. The shared Sheet, Search, Saved, cart, checkout and account-payment owners were not modified. Stars have a review-specific class to avoid the existing commerce `.review-stars` styling. Report stages retain one Sheet and its history/scroll-lock owner; stage focus moves to an actual control without reopening that Sheet.
+
+Behavior and boundaries: keyword entry retains one mounted field; expansion survives query filtering; real record ratings drive display/filter/sort; Most helpful uses only page-local selections. Search-only captured records remain outside the default source slice but participate in explicit matching/sorting. The guessed capture-date anchor was removed: known absolute dates have a declared fixture ordering, while undated/relative records retain source-order fallback, not a fabricated timestamp. Empty-result recovery and filter details are browser adaptations, not additional source-certified frames. Existing synthetic reviewer identities remain unchanged, and incomplete store excerpts do not invent hidden continuation text.
+
+Reporting preserves the captured form sequence but does not submit to a provider. The confirmation explicitly says that the selection is marked on this page only and no report was sent; marked cards retain a local-preview label. Report/helpful state is not persisted account data. Moderation, messaging and other live services remain unavailable. The review font owner retains Apple system fonts first and the existing Shop Arial/Helvetica fallback; this is not proof of source font metrics, a newly acquired font or approval of every text wrap. Store surface colors were sampled from the frozen frame; no screenshot is used as interactive UI.
+
+Observed developer-browser inspection: the owner's final instruction in this continuation permits the opt-in dev preview on port 3101. Installed Chrome rendered the product/store review pages at 393x793. Search/card top anchors are y176/y236; sequential `nice` entry retained the same focused input; the four-star row and conditional expansion rendered. Expanded Helpful/report selection reached the explicit local confirmation. Browser Back closed the report Sheet and restored its original More-options trigger. A 320px picker inspection demonstrated scrolling to the last reason with Report still available, before the final cosmetic refinements. Store Most helpful moved the selected second review first; selecting four stars produced a real empty sample, and Clear filters restored three cards. These are limited developer-browser observations, not a production gate, automated test suite, physical-device result or full source approval.
+
+Evidence remains ignored locally in `.local/shop-build/review-continuation/` (normalized source contact sheets, before/refined browser captures). Source formatting was applied as editing, but no build, lint, typecheck, formatter check or test suite was run. Fourteen synthetic cases were added in `review-model.test.ts` and remain unexecuted. Earlier desktop acceptance evidence elsewhere in this document does not certify this batch.
+
+Remaining: final source-font/text wrapping, complete transition/gesture matching and cross-width/physical-device acceptance are unverified. Store filter/report reuse and empty states need owner review where no corresponding inspected store-state frame proves them. No new media was acquired or required for this batch; all previously recorded campaign/Following/Pura/quilt, Dad Hat, What's New, Chemical Guys motion, tracking basemap, order-deal photography and Shea gallery-position gaps remain open. Full 97-flow acceptance is still outstanding; Tasks 3/6 remain Review and Task 5 remains incomplete.
+
 ## 4. Components and interaction rules
 
 Derive scales for spacing/type/radius/colors/icons/shadows/motion from inspected source. Shared tokens are platform-neutral; web and native have their own components. One canonical implementation per visual role per platform. Use needed primitives rather than a universal card with dozens of historical flags.

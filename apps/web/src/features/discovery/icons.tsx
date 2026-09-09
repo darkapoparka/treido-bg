@@ -39,6 +39,8 @@ const paths = {
   "plus-circle": "M12 8v8M8 12h8M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0",
   plus: "M12 4v16M4 12h16",
   minus: "M4 12h16",
+  "filter-circles":
+    "M4 7h7m6 0h3M4 17h3m6 0h7M17 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM13 17a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z",
   filter: "M3 6h18M3 18h18M8 3v6M16 15v6",
   menu: "M3 5h18M3 12h18M3 19h18",
   bell: "M5 17h14l-2-4V9A5 5 0 0 0 7 9v4ZM10 21h4",
