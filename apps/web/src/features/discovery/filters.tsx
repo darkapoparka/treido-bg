@@ -2,58 +2,19 @@
 import { useState } from "react";
 import { Sheet } from "./components";
 import { Icon } from "./icons";
-export type SearchFilters = {
-  deals: boolean;
-  following: boolean;
-  sort: string;
-  category: string;
-  color: string;
-  size: string;
-  gender: string;
-  price: string;
-  ratings: string;
-  country: string;
-  origin: string;
-};
-export const emptyFilters: SearchFilters = {
-  deals: false,
-  following: false,
-  sort: "Relevance",
-  category: "",
-  color: "",
-  size: "",
-  gender: "",
-  price: "",
-  ratings: "",
-  country: "",
-  origin: "",
-};
-const options = {
-  sort: [
-    "Relevance",
-    "Newest",
-    "Lowest → Highest Price",
-    "Highest → Lowest Price",
-  ],
-  category: [
-    "All Categories",
-    "Women",
-    "Men",
-    "Beauty",
-    "Food & drinks",
-    "Baby & toddler",
-    "Home",
-    "Fitness & nutrition",
-    "Accessories",
-  ],
-  color: ["Black", "Blue", "Pink"],
-  size: ["XS", "S", "M", "L", "One size"],
-  gender: ["Women", "Men", "Unisex"],
-  price: ["Under $25", "Under $50", "Under $100", "$100 and up"],
-  ratings: ["4 stars and up", "4.5 stars and up"],
-  country: ["United States"],
-};
-const names = {
+import {
+  categoryValue,
+  emptyFilters,
+  filterOptions,
+  womenCategories,
+  type FilterSection,
+  type SearchFilters,
+} from "./search-model";
+
+export { emptyFilters } from "./search-model";
+export type { SearchFilters } from "./search-model";
+
+const names: Record<FilterSection, string> = {
   sort: "Sort by",
   category: "Category",
   color: "Color",
@@ -63,47 +24,68 @@ const names = {
   ratings: "Ratings",
   country: "Ships to",
 };
-type Section = keyof typeof options;
-export function Filters({
-  open,
-  onClose,
-  value,
-  onChange,
-}: {
+
+type FilterProps = {
   open: boolean;
   onClose: () => void;
   value: SearchFilters;
   onChange: (value: SearchFilters) => void;
-}) {
-  const [section, setSection] = useState<Section | null>(null);
-  const [categoryPath, setCategoryPath] = useState("");
-  const choose = (key: Section, option: string) =>
-    onChange({ ...value, [key]: value[key] === option ? "" : option });
-  const rows = (key: Section, list: string[]) =>
-    list.map((option) => (
-      <button
-        key={option}
-        aria-pressed={value[key] === option}
-        onClick={() =>
-          key === "category" && option === "Women"
-            ? setCategoryPath("Women")
-            : choose(key, option)
-        }
-      >
-        {option}
-        {key === "category" && option === "Women" ? (
-          <Icon name="arrow" />
-        ) : (
-          <span
-            className={`radio-outline ${value[key] === option ? "selected" : ""}`}
-          />
-        )}
-      </button>
-    ));
+};
+
+export function Filters({ open, ...props }: FilterProps) {
+  // Closing the root ends this navigation session. Reopening starts at Filter,
+  // not at an invisible/stale child left over from a previous visit.
+  return open ? <OpenFilters {...props} /> : null;
+}
+
+function OpenFilters({
+  onClose,
+  value,
+  onChange,
+}: Omit<FilterProps, "open">) {
+  const [section, setSection] = useState<FilterSection | null>(null);
+  const [categoryPath, setCategoryPath] = useState(false);
+  const closeSection = () => {
+    setCategoryPath(false);
+    setSection(null);
+  };
+  const choose = (key: FilterSection, option: string) =>
+    onChange({
+      ...value,
+      [key]: key === "category" ? categoryValue(option) : option,
+    });
+  const rows = (key: FilterSection, list: readonly string[]) =>
+    list.map((option) => {
+      const opensChildren = key === "category" && option === "Women";
+      const selected =
+        value[key] === (key === "category" ? categoryValue(option) : option);
+      return (
+        <button
+          type="button"
+          key={option}
+          aria-pressed={opensChildren ? undefined : selected}
+          aria-haspopup={opensChildren ? "dialog" : undefined}
+          aria-expanded={opensChildren ? categoryPath : undefined}
+          onClick={() =>
+            opensChildren ? setCategoryPath(true) : choose(key, option)
+          }
+        >
+          {option}
+          {opensChildren ? (
+            <Icon name="arrow" />
+          ) : (
+            <span
+              aria-hidden="true"
+              className={`radio-outline ${selected ? "selected" : ""}`}
+            />
+          )}
+        </button>
+      );
+    });
   return (
     <>
       <Sheet
-        open={open}
+        open
         title="Filter"
         className={`filter-tall ${section ? "filter-covered" : ""}`}
         onClose={onClose}
@@ -117,8 +99,16 @@ export function Filters({
               onChange={(e) => onChange({ ...value, deals: e.target.checked })}
             />
           </label>
-          {(Object.keys(options) as Section[]).map((key) => (
-            <button key={key} onClick={() => setSection(key)}>
+          {(Object.keys(filterOptions) as FilterSection[]).map((key) => (
+            <button
+              type="button"
+              key={key}
+              aria-haspopup="dialog"
+              onClick={() => {
+                setCategoryPath(false);
+                setSection(key);
+              }}
+            >
               {names[key]}
               <span className="filter-value">
                 {value[key]}
@@ -128,72 +118,67 @@ export function Filters({
           ))}
         </div>
         <div className="sheet-actions">
-          <button className="pill" onClick={() => onChange(emptyFilters)}>
+          <button
+            type="button"
+            className="pill"
+            onClick={() => onChange({ ...emptyFilters })}
+          >
             Clear all
           </button>
-          <button className="primary" onClick={onClose}>
+          <button type="button" className="primary" onClick={onClose}>
             Done
           </button>
         </div>
       </Sheet>
       <Sheet
-        open={open && !!section}
+        open={section !== null}
         title={section ? names[section] : "Filter"}
-        className={`${section === "sort" ? "filter-short" : "filter-tall"} ${categoryPath ? "filter-covered" : ""}`}
-        onClose={() => setSection(null)}
+        className={`${section === "sort" ? "filter-short" : "filter-tall"} ${section === "category" && categoryPath ? "filter-covered" : ""}`}
+        onClose={closeSection}
       >
         <div className="filter-options">
-          {section && rows(section, options[section])}
+          {section && rows(section, filterOptions[section])}
         </div>
         <div className="sheet-actions">
           <button
+            type="button"
             className="pill"
-            disabled={
-              !!section &&
-              value[section] === (section === "sort" ? "Relevance" : "")
-            }
+            disabled={!section || value[section] === emptyFilters[section]}
             onClick={() =>
               section &&
-              onChange({
-                ...value,
-                [section]: section === "sort" ? "Relevance" : "",
-              })
+              onChange({ ...value, [section]: emptyFilters[section] })
             }
           >
             Reset
           </button>
-          <button className="primary" onClick={() => setSection(null)}>
+          <button type="button" className="primary" onClick={closeSection}>
             Done
           </button>
         </div>
       </Sheet>
       <Sheet
-        open={open && section === "category" && !!categoryPath}
+        open={section === "category" && categoryPath}
         title="Women"
         className="filter-tall"
-        onClose={() => setCategoryPath("")}
+        onClose={() => setCategoryPath(false)}
       >
         <div className="filter-options">
-          {rows("category", [
-            "All Women",
-            "Shirts & tops",
-            "Shoes",
-            "Dresses",
-            "Pants",
-            "Intimates",
-            "Activewear",
-            "Socks & hosiery",
-            "Swimwear",
-          ])}
+          {rows("category", womenCategories)}
         </div>
         <div className="sheet-actions">
           <button
+            type="button"
             className="pill"
+            disabled={!value.category}
             onClick={() => onChange({ ...value, category: "" })}
           >
             Reset
           </button>
-          <button className="primary" onClick={() => setCategoryPath("")}>
+          <button
+            type="button"
+            className="primary"
+            onClick={() => setCategoryPath(false)}
+          >
             Done
           </button>
         </div>
