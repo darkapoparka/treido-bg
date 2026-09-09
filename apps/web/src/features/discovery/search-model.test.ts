@@ -201,3 +201,16 @@ test("serializes and restores the same selected filters", () => {
 test("clearing filters preserves the search query without false parameters", () => {
   assert.equal(searchParameters("jeans", filters()).toString(), "q=jeans");
 });
+
+test("the word men does not match women in search", () => {
+  assert.deepEqual(productIds("jeans men"), ["men"]);
+});
+
+test("unfinished search words still match word prefixes", () => {
+  assert.deepEqual(productIds("jean"), [
+    "women",
+    "men",
+    "sold-out",
+    "eu",
+  ]);
+});

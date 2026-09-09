@@ -154,10 +154,11 @@ function matchesPrice(product: Product, selection: string): boolean {
 }
 
 function matchesQuery(query: string, value: string): boolean {
-  const haystack = text(value);
-  return text(query)
-    .split(" ")
-    .every((word) => haystack.includes(word));
+  const words = text(value).match(/[\p{L}\p{N}]+/gu) ?? [];
+  const terms = text(query).match(/[\p{L}\p{N}]+/gu) ?? [];
+  if (!terms.length) return !query.trim();
+  // A partial word can match its prefix, but "men" must not match "women".
+  return terms.every((term) => words.some((word) => word.startsWith(term)));
 }
 
 export function searchProducts(
