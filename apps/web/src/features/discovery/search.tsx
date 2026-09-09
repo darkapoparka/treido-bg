@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { formatMoney, type Catalog } from "../catalog/types";
 import {
   FloatingNav,
@@ -15,6 +15,15 @@ import {
 import { Icon } from "./icons";
 import { useDiscovery } from "./state";
 import { Filters, type SearchFilters } from "./filters";
+import {
+  emptyFilters,
+  hasSearchFilters,
+  readSearchFilters,
+  searchParameters,
+  searchProducts,
+  searchStores,
+} from "./search-model";
+
 export function Search({
   catalog,
   query: initialQuery = "",
@@ -29,88 +38,64 @@ export function Search({
   const query = params.get("q") ?? initialQuery;
   const filters: SearchFilters = {
     ...initialFilters,
-    deals: params.get("deals") === "1" || params.get("deals") === "true",
-    following: params.get("following") === "true",
-    sort: params.get("sort") ?? "Relevance",
-    country: params.get("country") ?? "",
-    origin: params.get("origin") ?? "",
-    category: params.get("category") ?? "",
-    color: params.get("color") ?? "",
-    size: params.get("size") ?? "",
-    gender: params.get("gender") ?? "",
-    price: params.get("price") ?? "",
-    ratings: params.get("ratings") ?? "",
+    ...readSearchFilters(params),
   };
-
+  const inputRef = useRef<HTMLInputElement>(null);
   const state = useDiscovery();
   const [draft, setDraft] = useState(query);
   const [draftQuery, setDraftQuery] = useState(query);
-  if (draftQuery !== query) {
-    setDraftQuery(query);
-    setDraft(query);
-  }
   const [filter, setFilter] = useState(false);
   const [focused, setFocused] = useState(false);
   const [photos, setPhotos] = useState(false);
   const [photo, setPhoto] = useState("");
+  const [photoError, setPhotoError] = useState("");
+  if (draftQuery !== query) {
+    setDraftQuery(query);
+    setDraft(query);
+    setFocused(false);
+  }
+  useEffect(() => {
+    return () => {
+      if (photo.startsWith("blob:")) URL.revokeObjectURL(photo);
+    };
+  }, [photo]);
+
   const suggestions = focused && !!draft.trim();
   const recent = state.viewedProducts.flatMap((id) => {
     const p = catalog.products.find((p) => p.id === id);
     return p ? [p] : [];
   });
   const history = params.get("view") === "recent";
+  const filtered = hasSearchFilters(filters);
+  const results = searchProducts(catalog, query, filters, state.followed);
+  const stores = searchStores(catalog, query, filters, results).slice(0, 2);
 
   function update(next: SearchFilters) {
-    const params = new URLSearchParams();
-    if (query) params.set("q", query);
-    for (const [key, value] of Object.entries(next)) {
-      if (value && value !== "Relevance") params.set(key, String(value));
-    }
-    commitSheetQuery(params);
+    commitSheetQuery(searchParameters(query, next));
   }
-  const results = catalog.products
-    .filter((p) => {
-      const store = catalog.stores.find((s) => s.id === p.storeId);
-      return (
-        (!query ||
-          `${p.title} ${p.category} ${store?.name}`
-            .toLowerCase()
-            .includes(query.toLowerCase())) &&
-        (!filters.deals || p.promotion) &&
-        (!filters.following || state.followed.includes(p.storeId)) &&
-        (!filters.category || p.category === filters.category) &&
-        (!filters.color || p.color === filters.color) &&
-        (!filters.size ||
-          p.variants.some(
-            (v) => v.label === filters.size && v.availableQuantity > 0,
-          )) &&
-        (!filters.gender || p.gender === filters.gender) &&
-        (!filters.country ||
-          p.shippingDestinations?.includes(filters.country)) &&
-        (!filters.origin || p.country === filters.origin) &&
-        (!filters.ratings ||
-          (p.rating ?? 0) >= (filters.ratings.startsWith("4.5") ? 4.5 : 4)) &&
-        (!filters.price ||
-          (filters.price === "$100 and up"
-            ? p.price.amount >= 10000
-            : p.price.amount < Number(filters.price.replace(/\D/g, "")) * 100))
-      );
-    })
-    .sort((a, b) =>
-      filters.sort === "Lowest → Highest Price"
-        ? a.price.amount - b.price.amount
-        : filters.sort === "Highest → Lowest Price"
-          ? b.price.amount - a.price.amount
-          : filters.sort === "Newest"
-            ? (b.referenceNewnessRank ?? 0) - (a.referenceNewnessRank ?? 0)
-            : 0,
-    );
+  function closeSuggestions() {
+    setFocused(false);
+    inputRef.current?.blur();
+  }
+  function selectPhoto(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setPhotoError("Choose an image file.");
+      return;
+    }
+    setPhotoError("");
+    setPhoto(URL.createObjectURL(file));
+    setDraft("Find me a baseball cap like this");
+    setPhotos(false);
+  }
   const searchForm = (
     <form
       className={`search-form ${query && !suggestions ? "top-search" : "search-composer"}`}
       onSubmit={(e) => {
         e.preventDefault();
-        setFocused(false);
+        closeSuggestions();
         router.push(
           photo
             ? "/assistant?example=photo"
@@ -124,7 +109,10 @@ export function Search({
         <IconButton
           icon="plus"
           label="Add photos"
-          onClick={() => setPhotos(true)}
+          onClick={() => {
+            setPhotoError("");
+            setPhotos(true);
+          }}
         />
       )}
       {photo && (
@@ -135,11 +123,20 @@ export function Search({
         />
       )}
       <input
+        ref={inputRef}
         aria-label="Search products"
         placeholder="Search or ask anything"
+        autoComplete="off"
+        enterKeyHint="search"
         value={draft}
         onFocus={() => setFocused(true)}
         onChange={(e) => setDraft(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            e.preventDefault();
+            closeSuggestions();
+          }
+        }}
       />
       {draft && !suggestions && (
         <IconButton
@@ -147,6 +144,8 @@ export function Search({
           label="Clear search"
           onClick={() => {
             setDraft("");
+            setPhoto("");
+            closeSuggestions();
             router.push("/search");
           }}
         />
@@ -168,7 +167,7 @@ export function Search({
             <IconButton
               icon="close"
               label="Close suggestions"
-              onClick={() => setFocused(false)}
+              onClick={closeSuggestions}
             />
           </header>
           {/jean/i.test(draft) && (
@@ -208,7 +207,10 @@ export function Search({
               className="suggestion-query"
               key={q}
               href={`/search?q=${encodeURIComponent(q)}`}
-              onClick={() => setFocused(false)}
+              onClick={() => {
+                setPhoto("");
+                closeSuggestions();
+              }}
             >
               <span>
                 <Icon name="search" />
@@ -253,7 +255,7 @@ export function Search({
             })}
           </div>
         </>
-      ) : query || filters.deals ? (
+      ) : query.trim() || filtered ? (
         <>
           {query.toLowerCase().includes("jeans") && (
             <Link className="assistant-result-link" href="/assistant">
@@ -295,18 +297,44 @@ export function Search({
               Following
             </button>
           </div>
-          <div className="search-stores">
-            <Link href="/stores/fitjeans" className="search-store">
-              <img src="/api/reference-media/fitjeans" alt="Jeans" />
-              <strong>FITJEANS</strong>
-              <span>4.6 ★ (3.4K)</span>
-            </Link>
-            <Link href="/stores/miss-me" className="search-store plain">
-              <span className="store-monogram">MM</span>
-              <strong>Miss Me</strong>
-              <span>4.7 ★ (11.9K)</span>
-            </Link>
-          </div>
+          {stores.length > 0 && (
+            <div className="search-stores">
+              {stores.map((store) => {
+                const image =
+                  store.id === "fitjeans"
+                    ? "/api/reference-media/fitjeans"
+                    : store.logo;
+                return (
+                  <Link
+                    key={store.id}
+                    href={`/stores/${store.id}`}
+                    className={`search-store ${image ? "" : "plain"}`}
+                  >
+                    {image ? (
+                      <img src={image} alt="" />
+                    ) : (
+                      <span className="store-monogram">
+                        {store.id === "miss-me"
+                          ? "MM"
+                          : store.name
+                              .split(/\s+/)
+                              .slice(0, 2)
+                              .map((word) => word[0])
+                              .join("")}
+                      </span>
+                    )}
+                    <strong>{store.name}</strong>
+                    {store.rating !== undefined && (
+                      <span>
+                        {store.rating} ★
+                        {store.ratingCount ? ` (${store.ratingCount})` : ""}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
           <div className="search-results">
             {results.map((p) => (
               <article className="result-row" key={p.id}>
@@ -320,9 +348,11 @@ export function Search({
                   <Link href={`/products/${p.id}`}>
                     <strong>{p.title}</strong>
                   </Link>
-                  <p className="rating">
-                    <span>★★★★★</span> ({p.ratingCount})
-                  </p>
+                  {p.ratingCount && (
+                    <p className="rating">
+                      <span>★★★★★</span> ({p.ratingCount})
+                    </p>
+                  )}
                   <p>
                     {formatMoney(p.price)}{" "}
                     {p.compareAt && <del>{formatMoney(p.compareAt)}</del>}
@@ -334,14 +364,12 @@ export function Search({
               </article>
             ))}
             {!results.length && (
-              <div className="empty-state">
+              <div className="empty-state" role="status">
                 <h2>No results found</h2>
                 <p>Try another search or clear your filters.</p>
                 <button
                   className="pill"
-                  onClick={() =>
-                    router.push(`/search?q=${encodeURIComponent(query)}`)
-                  }
+                  onClick={() => update({ ...emptyFilters })}
                 >
                   Clear filters
                 </button>
@@ -379,18 +407,7 @@ export function Search({
       <Sheet open={photos} title="Add photos" onClose={() => setPhotos(false)}>
         <label className="account-row">
           Choose from library
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                setPhoto(URL.createObjectURL(file));
-                setDraft("Find me a baseball cap like this");
-                setPhotos(false);
-              }
-            }}
-          />
+          <input type="file" accept="image/*" onChange={selectPhoto} />
         </label>
         <label className="account-row">
           Take a photo
@@ -398,19 +415,13 @@ export function Search({
             type="file"
             accept="image/*"
             capture="environment"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                setPhoto(URL.createObjectURL(file));
-                setDraft("Find me a baseball cap like this");
-                setPhotos(false);
-              }
-            }}
+            onChange={selectPhoto}
           />
         </label>
         <button
           className="account-row"
           onClick={() => {
+            setPhotoError("");
             setPhoto("/api/reference-media/assistant-cap");
             setDraft("Find me a baseball cap like this");
             setPhotos(false);
@@ -418,12 +429,13 @@ export function Search({
         >
           Use captured cap example
         </button>
+        {photoError && <p role="alert">{photoError}</p>}
         <p className="form-note">
           Photos stay on this device. The captured answer can be viewed without
           sending a photo.
         </p>
       </Sheet>
-      {!suggestions && <FloatingNav back={!!query || history} />}
+      {!suggestions && <FloatingNav back={!!query || history || filtered} />}
       <Filters
         open={filter}
         onClose={() => setFilter(false)}
