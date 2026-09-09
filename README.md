@@ -2,15 +2,19 @@
 
 A new food-first marketplace, full merchant operating dashboard, personal/business accounts, administration and native buyer app. Start in Bulgaria with Bulgarian and English; model additional markets explicitly.
 
-**Current state: Task 1 foundation implemented and locally verified on `main`. Task 2 has reference findings and product/operations proposals for review. Mobbin screens and flow images are accessible through the browser; continue mapping there despite the connector's plan restriction. Next.js and Expo have neutral bootstrap screens, shared contracts, pinned dependencies and CI configuration. Product frontend implementation has not started.**
+**Current state: the Shop-matched mobile website is being implemented in `apps/web` on `main`, under the owner's expanded Tasks 3/5/6 frontend assignment. The full frozen source contains 323 screens and 97 flows. Discovery, account and commerce UI use an explicitly enabled local reference fixture. Source parity and real commerce are not yet complete. Expo remains outside this website assignment.**
 
-Work directly on `main` for subsequent tasks, per the owner's instruction. [tasks.md](tasks.md) records the current checkpoint; [design.md](design.md) records the partial source inventory; [product.md](product.md) section 5 contains the catalog and commerce proposals. No product provider integration or production readiness is claimed.
+Work directly on `main` for subsequent tasks, per the owner's instruction. [tasks.md](tasks.md) records the current checkpoint; [design.md](design.md) records the frozen source inventory and 97-flow implementation map; [product.md](product.md) section 5 contains the catalog and commerce proposals. No product provider integration or production readiness is claimed.
 
 ## How to start
 
 Use Node 24.20.0 and pnpm 12.3.4, run `pnpm install --frozen-lockfile`, then `pnpm dev:web` (port 3100) or `pnpm dev:mobile` (port 8081). [techstack.md](techstack.md) records setup, checks and native limitations.
 
-The next assignment is **Execute Task 2** for source/flow mapping; frontend implementation remains stopped until that reference slice is approved. Later say **Execute Task 3** or **Continue Task 3**. [tasks.md](tasks.md) tells the agent what to read, what to build, which tools to use, what checks close the batch and where to stop.
+Continue the current website assignment with **Continue Task 3**. The owner has authorized building the mapped frontend slices ahead of backend implementation. [tasks.md](tasks.md) records actual progress and remaining work; source approval is separate.
+
+For the isolated website preview, acquire the 27 verified public product originals with `node prepare-shop-reference.mjs` (the store video frame requires FFmpeg on PATH or `FFMPEG_PATH`). `node prepare-shop-reference.mjs --verify` checks existing files against the provenance manifest. The existing owner-requested gallery in `references/shop` supplies the remaining decorative/photo crops; this assignment preserves that earlier reference copy. Newly acquired originals stay ignored and acquisition fails if a source changes. In PowerShell, set `$env:SHOP_REFERENCE_PREVIEW='1'`, then run `pnpm --filter @treido/web exec next dev --hostname 127.0.0.1 --port 3101`. The normal unconfigured website and reference-media endpoints return 404 until the real catalog is connected; there is no automatic fixture fallback. `VERCEL_ENV=production` rejects fixture access even if the preview flag is set.
+
+After a production build, `pnpm test:smoke:web` checks that boundary on port 3102. `pnpm exec playwright test --config playwright.reference.config.ts` runs the opt-in frontend journeys on port 3103 with local media. Set `PLAYWRIGHT_CHANNEL=chrome` to use an installed Chrome. Do not run a production build beside a dev server using the same `.next` directory.
 
 Tasks are meaningful work packages, not individual file edits. The agent implements a batch before running its closing checks; the full product regression is a later numbered task. No extra long prompt or separate task-code lookup is needed.
 

@@ -16,16 +16,16 @@ Execute the requested task, not the entire roadmap. Report a missing prerequisit
 
 ## Current state and index
 
-Task 1 is implemented and locally verified. Task 2 has a partial source inventory and concrete product/operations proposals for review; browser screens/flow images are accessible and source mapping can continue. Work is directly on `main` per the owner's 2026-09-08 instruction. Both apps contain only neutral bootstrap screens; no product frontend or provider integration has started. This numbered list is the only active task queue.
+Task 1 is implemented and locally verified. The complete frozen Shop archive is available and its 97 flows are mapped in design.md. Under the owner's expanded website assignment, `apps/web` now contains 47 buyer page routes and connected local reference states spanning discovery, purchase, orders, account, support and Minis. Work is directly on `main`; Astra low-reasoning agents implemented serialized batches under the orchestrator's source/browser review. Source parity remains in review. Real providers/backend and Expo product implementation have not started. This numbered list remains the only active task queue.
 
 | Task | Work package | Deliverable | Status |
 | --- | --- | --- | --- |
 | 1 | Initialize the stack | Runnable Next.js/Expo workspace and basic checks | Done |
-| 2 | Specify Shop and product details | Source-mapped screens/flows, catalog and operational decisions | In progress (browser mapping) |
-| 3 | Build Shop discovery frontend | Working shell, home, search, storefront and product UI | Not started |
+| 2 | Specify Shop and product details | Source-mapped screens/flows, catalog and operational decisions | Review (source mapped; decisions unapproved) |
+| 3 | Build Shop discovery frontend | Working shell, home, search, storefront and product UI | Review (website implemented; source differences remain) |
 | 4 | Build data, identity and catalog | Real isolated backend, native API, authentication and basic merchant publishing | Not started |
-| 5 | Build the complete purchase journey | Real cart, checkout, orders, fulfillment and approved recovery on web/native | Not started |
-| 6 | Complete and review the Shop frontend | Remaining buyer/account states and full declared reference review | Not started |
+| 5 | Build the complete purchase journey | Real cart, checkout, orders, fulfillment and approved recovery on web/native | In progress (website reference UI only) |
+| 6 | Complete and review the Shop frontend | Remaining buyer/account states and full declared reference review | Review (website reference UI; source acceptance outstanding) |
 | 7 | Adapt the approved frontend to Treido | Treido branding and food content on the same components | Not started |
 | 8 | Build the full merchant workspace | Bulk tools, inventory operations, finance, teams and storefront settings | Not started |
 | 9 | Build communication, trust and administration | Real chat, notifications, reviews, support and admin workflows | Not started |
@@ -98,6 +98,8 @@ Owner-requested GitHub copy (2026-09-09): prepared `references/shop/` with all 7
 
 ## Task 3 - Build Shop discovery frontend
 
+**Owner-directed scope update (2026-09-09):** implement the complete Shop-matched mobile **website in apps/web**, using Astra low-reasoning code agents under one orchestrator and serialized code edits on main. Expo is outside this assignment. The owner authorizes proceeding with reference frontend slices of Tasks 3/5/6 now, while real identity, payment, delivery and communication remain with their existing tasks. The full 97-flow family map and measured comparison frame are in design.md. Source and brand approval are still separate outcomes; the implementation request is not automatic fidelity approval.
+
 **Prerequisites:** Task 1; Task 2's approved discovery reference. No completed backend required.
 
 **Read:** design.md sections 1-4; product.md BUY-001 through BUY-005; architecture.md sections 1, 2 and 6. Use web/native UI skills, measured reference assets and browser/device inspection tools.
@@ -107,6 +109,27 @@ Owner-requested GitHub copy (2026-09-09): prepared `references/shop/` with all 7
 **Check at batch end:** A connected home -> search/store -> product -> back journey; compare the changed screen set against source; check keyboard/safe areas and the relevant viewports; scoped lint/typecheck and UI/interaction tests. Use native tooling available and explicitly record unavailable native proof. No payment or full-platform suite. Iterate within the batch without rerunning all checks after each card edit.
 
 **Done when:** The declared discovery slice works and its comparison/limitations are recorded. No Treido rebrand, duplicate demo frontend or unmeasured replacement layout. Next: Task 4.
+
+**2026-09-09 website implementation — Review.** Continued the initial reference plumbing on shared `main` from `eb1346e`, preserving the existing dirty preparation. Implemented canonical Next.js routes and React components against the frozen source, with measured 393x793 browser content framing. No Expo source edits, branch/worktree, push, deployment or provider writes.
+
+Built: home and recent products, search/suggestions/filter/sort and photo-assistant entry; stores, collections, store search/information/reviews/video states; product options, quantity, gallery, description, reviews/helpful/report, collection-save picker and related products; Following/manage/refollow and not-interested/Undo; Saved collections/membership/privacy/deletion; cart, offers, checkout forms/selectors/summary and explicit payment boundary; orders, receipt, history/archive/tracking/review; profile, account fields, addresses, per-card preferences/deletion, people, security/connections/notifications; onboarding/login/passkey states; Explore, Minis, captured assistant journeys, support/About and widget guidance. Reference state is synthetic and local to the browser session. These are frontend interactions, not working authentication, payments, delivery, moderation, AI or customer communication.
+
+Shared browser behavior includes native dialog focus/scroll ownership, nested-sheet Back/dismissal, terminal navigation, URL-owned account stages, retained form drafts and filter criteria across Back/reload. Root browser/test review found and repaired lost criteria, collection-route cancellation, stale card identity after deletion, profile Save hit-target overlap, double Back in people stages and a shared seller-row layout regression. Source text/navigation/controls are real DOM; image crops are limited to photography, brand marks and decorative imagery. Twenty-seven verified original media assets have public URL/hash/dimension provenance and a reproducible acquisition/verification command. Newly acquired originals and generated evidence stay ignored; the pre-existing owner-requested gallery under `references/shop` is preserved.
+
+Batch checks (Windows, Node 24.18.0, pnpm 12.3.4, Next 16.3.4, installed Chrome):
+
+- `pnpm install --frozen-lockfile`: passed. The sole manifest addition is already-pinned Sharp 0.35.4; pnpm's lockfile repair removed stale ESLint snapshots and normalized existing native peer locators without changing native source or pinned versions.
+- `pnpm build:web`: production Turbopack build and TypeScript passed; all reference page routes are dynamic and gated at request time.
+- `pnpm --filter @treido/web lint`, root `eslint tests *.mjs`, scoped Prettier and `git diff --check`: passed. `pnpm test:unit`: 14/14 passed. Strict UTF-8/empty-file inspection found no source corruption.
+- `PLAYWRIGHT_CHANNEL=chrome pnpm test:smoke:web`: 1/1 passed on 3102, confirming pages/media return 404 without preview opt-in.
+- `PLAYWRIGHT_CHANNEL=chrome pnpm exec playwright test --config playwright.reference.config.ts`: 43/43 passed against production on 3103 after fixing People double-Back. Covers collection membership/deletion, variant cart quantity and payment boundary, source media, filter/history/reload, account drafts/card identity, onboarding and captured auxiliary flows, plus 19 rendered-route captures/no-overflow/error checks. Captures are review evidence, not approved pixel baselines.
+- The same reference configuration with `REFERENCE_DEV=1` and `history.spec.ts auxiliary.spec.ts product-flows.spec.ts`: 13/13 passed against dev/Strict Mode on 3103. Each owned test runtime was stopped before the next dev/build operation.
+- Final visual capture review corrected Sol's opaque logo filter using the actual decorative art above its DOM heading. Production rebuild, scoped lint/format and the two affected Sol render/access-sheet checks passed after that change.
+- `node prepare-shop-reference.mjs --verify`: 27/27 originals verified against hashes/dimensions. UI scanner's four review findings correspond to source dock/sticky blur and selected/unselected chip rings; no new decorative treatment was introduced to silence them.
+
+The production-built opt-in preview is left on `http://127.0.0.1:3101` and visibly checked in the in-app browser at 393x793. Source/implementation evidence is local under `.local/shop-build/`, `.local/qa-measure/` and `test-results/`; final route captures were retained for review. In-app inspection included source-sized page and overlay comparisons, gallery Back/focus return, filter persistence, saved collections, profile/card/address edits, corrected product store/related cards and representative 320/430/1440px containment. Browser emulation does not establish physical-device behavior or owner source approval. Coherent local commit: **Implement source-matched Shop mobile website and reference journeys** on `main`; no push/deploy. Upstream was fetched and remained 0/0 before this local commit.
+
+Remaining fidelity work: two unavailable Shea gallery originals; exact full Following/Pura/quilt compositions, Dad Hat original, What's New full hero and Chemical Guys motion; unverified source font metrics and complete motion/gesture matching. Some catalog facts hidden in the frozen viewport use explicitly recorded current merchant facts. Source approval and a complete state-by-state comparison of all 97 flows remain outstanding; rendered route coverage is not that approval. Native OS controls (permissions, passkeys, voice/camera and widgets) have explicit browser/reference boundaries. Keep Tasks 3/6 in Review and Task 5 incomplete until their respective source/service criteria are satisfied. Next: continue the same source-review assignment for these differences; Task 4 owns real data/identity, not fixture expansion disguised as backend completion.
 
 ## Task 4 - Build data, identity and catalog
 

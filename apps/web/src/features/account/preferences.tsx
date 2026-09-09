@@ -1,0 +1,276 @@
+"use client";
+import { useState } from "react";
+import { useAccount } from "./state";
+const sizes = {
+  shoeSize: [
+    "6",
+    "6.5",
+    "7",
+    "7.5",
+    "8",
+    "8.5",
+    "9",
+    "9.5",
+    "10",
+    "10.5",
+    "11",
+    "11.5",
+    "12",
+    "12.5",
+  ],
+  shirtSize: ["XXS", "XS", "S", "M", "L", "XL", "XXL"],
+  pantsSize: ["XXS", "XS", "S", "M", "L", "XL", "XXL"],
+};
+const skinTypes = [
+  "Aging",
+  "Combination",
+  "Demanding",
+  "Dry",
+  "Mature",
+  "Normal",
+  "Oily",
+  "Problem",
+  "Rough",
+  "Sensitive",
+  "Very dry",
+  "Wet",
+  "With redness",
+];
+export function Preferences({ personId }: { personId?: string }) {
+  const {
+    profile,
+    updateProfile,
+    preferences: choices,
+    setPreferences: setChoices,
+  } = useAccount();
+  const choiceKey = (key: string) => (personId ? `${personId}:${key}` : key);
+  const [expanded, setExpanded] = useState("");
+  const [skin, setSkin] = useState(() =>
+    ["skinType", "undertone", "tone"].some((key) =>
+      Boolean(choices[choiceKey(key)]?.length),
+    ),
+  );
+  const [hair, setHair] = useState(() =>
+    ["hairType", "hairColor"].some((key) =>
+      Boolean(choices[choiceKey(key)]?.length),
+    ),
+  );
+
+  function row(
+    key: string,
+    label: string,
+    options: string[],
+    multiple = false,
+    colors?: string[],
+  ) {
+    const selected = choices[choiceKey(key)] ?? [];
+    return (
+      <div className="preference-section" key={key}>
+        <button
+          className="profile-field"
+          onClick={() => setExpanded(expanded === key ? "" : key)}
+        >
+          <span>{label}</span>
+          <span className="selected-preferences">
+            {selected.length
+              ? selected.map((value) => <b key={value}>{value}</b>)
+              : `Add ${label.toLowerCase()}`}
+          </span>
+          <span>⌄</span>
+        </button>
+        {expanded === key && (
+          <div className={`preference-chips ${colors ? "color-chips" : ""}`}>
+            {options.map((option, i) => (
+              <button
+                key={option}
+                aria-label={option}
+                aria-pressed={selected.includes(option)}
+                className={selected.includes(option) ? "selected" : ""}
+                style={colors ? { background: colors[i] } : undefined}
+                onClick={() =>
+                  setChoices({
+                    ...choices,
+                    [choiceKey(key)]: multiple
+                      ? selected.includes(option)
+                        ? selected.filter((v) => v !== option)
+                        : [...selected, option]
+                      : [option],
+                  })
+                }
+              >
+                {colors ? (selected.includes(option) ? "✓" : "") : option}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+  return (
+    <>
+      <div className="account-panel field-panel">
+        {Object.entries(sizes).map(([key, options]) => {
+          const field = key as keyof typeof sizes;
+          const label =
+            field === "shoeSize"
+              ? "Shoe size"
+              : field === "shirtSize"
+                ? "Shirt size"
+                : "Pants size";
+          return (
+            <div key={key}>
+              <button
+                className="profile-field"
+                onClick={() => setExpanded(expanded === key ? "" : key)}
+              >
+                <span>{label}</span>
+                <span>
+                  {(personId
+                    ? choices[choiceKey(field)]?.[0]
+                    : profile[field]) || `Add ${label.toLowerCase()}`}
+                </span>
+                <span>⌄</span>
+              </button>
+              {expanded === key && (
+                <div className="preference-chips size-chips">
+                  {options.map((option) => (
+                    <button
+                      key={option}
+                      className={
+                        (personId
+                          ? choices[choiceKey(field)]?.[0]
+                          : profile[field]) === option
+                          ? "selected"
+                          : ""
+                      }
+                      aria-pressed={
+                        (personId
+                          ? choices[choiceKey(field)]?.[0]
+                          : profile[field]) === option
+                      }
+                      onClick={() =>
+                        personId
+                          ? setChoices({
+                              ...choices,
+                              [choiceKey(field)]: [option],
+                            })
+                          : updateProfile({ [field]: option })
+                      }
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {skin ? (
+        <div className="account-panel field-panel">
+          {row("skinType", "Skin type", skinTypes, true)}
+          {row(
+            "undertone",
+            "Skin undertone",
+            [
+              "Brown",
+              "Blue",
+              "Pink",
+              "Yellow",
+              "Gray",
+              "Pink/Yellow",
+              "Light pink",
+              "Olive",
+              "Cream",
+              "Coral",
+              "Hot pink",
+              "Orange",
+              "Golden",
+              "Lemon",
+            ],
+            false,
+            [
+              "#a77655",
+              "#5889c8",
+              "#eaa0b8",
+              "#f5d05c",
+              "#aaa",
+              "#fff3b6",
+              "#f8d3da",
+              "#a6a558",
+              "#f6e9c6",
+              "#ed9f86",
+              "#ec6b98",
+              "#efad57",
+              "#f4cc41",
+              "#fff29b",
+            ],
+          )}
+          {row(
+            "tone",
+            "Skin tone",
+            [
+              "Brown skin",
+              "Dark skin",
+              "Deep skin",
+              "Fair skin",
+              "Tan skin",
+              "Golden skin",
+              "Beige skin",
+              "Peach skin",
+              "Warm skin",
+            ],
+            false,
+            [
+              "#9f6948",
+              "#734733",
+              "#49352b",
+              "#f6e2c4",
+              "#c7976a",
+              "#b98548",
+              "#e8c498",
+              "#e9b898",
+              "#b97548",
+            ],
+          )}
+        </div>
+      ) : (
+        <button className="preference-add" onClick={() => setSkin(true)}>
+          + Skin care
+        </button>
+      )}
+      {hair ? (
+        <div className="account-panel field-panel">
+          {row(
+            "hairType",
+            "Hair type",
+            [
+              "Normal",
+              "Dry",
+              "Oily",
+              "Fine",
+              "Thick",
+              "Curly",
+              "Straight",
+              "Wavy",
+              "Coily",
+            ],
+            true,
+          )}
+          {row("hairColor", "Hair color", [
+            "Black",
+            "Brown",
+            "Blonde",
+            "Red",
+            "Gray",
+            "White",
+          ])}{" "}
+        </div>
+      ) : (
+        <button className="preference-add" onClick={() => setHair(true)}>
+          + Hair care
+        </button>
+      )}
+    </>
+  );
+}

@@ -1,0 +1,377 @@
+"use client";
+/* eslint-disable @next/next/no-img-element -- Local allowlisted reference crops. */
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useId, type ReactNode } from "react";
+import { Icon, type IconName } from "./icons";
+import { useDiscovery } from "./state";
+import { formatMoney, type Product, type Store } from "../catalog/types";
+export function IconButton({
+  icon,
+  label,
+  onClick,
+  pressed,
+  className = "",
+}: {
+  icon: IconName;
+  label: string;
+  onClick?: () => void;
+  pressed?: boolean;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      className={`icon-button ${className}`}
+      aria-label={label}
+      aria-pressed={pressed}
+      onClick={onClick}
+    >
+      <Icon name={icon} filled={pressed} />
+    </button>
+  );
+}
+export function FloatingNav({
+  back = false,
+  cart,
+  onBack,
+}: {
+  back?: boolean;
+  cart?: () => void;
+  onBack?: () => void;
+}) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const active = pathname.startsWith("/orders")
+    ? "/orders"
+    : pathname.startsWith("/search")
+      ? "/search"
+      : pathname.startsWith("/explore") || pathname.startsWith("/minis")
+        ? "/explore"
+        : "/";
+  return (
+    <div className="floating-dock">
+      {back && (
+        <IconButton
+          icon="back"
+          label="Go back"
+          onClick={() => {
+            if (onBack) onBack();
+            else if (window.history.length > 1) router.back();
+            else router.push("/");
+          }}
+        />
+      )}
+      <nav aria-label="Main navigation" className="floating-nav">
+        {(
+          [
+            ["/", "home", "Home"],
+            ["/search", "search", "Search"],
+            ["/explore", "explore", "Explore"],
+            ["/orders", "orders", "Orders"],
+          ] as const
+        ).map(([href, icon, label]) => (
+          <Link
+            href={href}
+            aria-label={label}
+            aria-current={active === href ? "page" : undefined}
+            key={href}
+          >
+            <Icon name={icon} filled={icon !== "search"} />
+          </Link>
+        ))}
+      </nav>
+      {cart && <IconButton icon="cart" label="Open cart" onClick={cart} />}
+    </div>
+  );
+}
+export function SaveButton({ product }: { product: Product }) {
+  const state = useDiscovery();
+  return (
+    <IconButton
+      className="save-button"
+      icon="heart"
+      label={`${state.saved.includes(product.id) ? "Unsave" : "Save"} ${product.title}`}
+      pressed={state.saved.includes(product.id)}
+      onClick={() => state.toggleSaved(product.id)}
+    />
+  );
+}
+export function ProductCard({
+  product,
+  compact = false,
+  showPromotion = false,
+  mediaOnly = false,
+  storeName,
+}: {
+  product: Product;
+  compact?: boolean;
+  showPromotion?: boolean;
+  mediaOnly?: boolean;
+  storeName?: string;
+}) {
+  const discovery = useDiscovery();
+  const reported = discovery.reportedProducts.includes(product.id);
+  return (
+    <article className={`product-card ${compact ? "compact" : ""}`}>
+      <div className="product-media">
+        <Link href={`/products/${product.id}`}>
+          <img
+            className={reported ? "product-reported-media" : ""}
+            src={product.images[0]}
+            alt={product.title}
+          />
+        </Link>
+        {reported && (
+          <span className="product-reported-mark">
+            <Icon name="eye-off" />
+          </span>
+        )}
+        {(compact || (showPromotion && product.promotion)) && (
+          <span className={`price-badge ${product.promotion ? "deal" : ""}`}>
+            {product.promotion ?? formatMoney(product.price)}
+          </span>
+        )}
+        <SaveButton product={product} />
+      </div>
+      {!compact && !mediaOnly && (
+        <Link href={`/products/${product.id}`} className="product-copy">
+          {storeName && <span className="product-seller">{storeName}</span>}
+          <strong>{product.title}</strong>
+          {product.ratingCount && (
+            <span className="rating">
+              <span>★★★★★</span> ({product.ratingCount})
+            </span>
+          )}
+          <span>
+            {formatMoney(product.price)}{" "}
+            {showPromotion && product.compareAt && (
+              <del>{formatMoney(product.compareAt)}</del>
+            )}
+          </span>
+        </Link>
+      )}
+    </article>
+  );
+}
+export function StoreRow({
+  store,
+  onMore,
+}: {
+  store: Store;
+  onMore?: () => void;
+}) {
+  return (
+    <div className="store-row">
+      <Link className="store-row-identity" href={`/stores/${store.id}`}>
+        <img src={store.logo} alt="" />
+        <span>
+          <strong>{store.name}</strong>
+          <span>
+            {store.rating} ★ ({store.ratingCount})
+          </span>
+        </span>
+      </Link>
+      {onMore ? (
+        <IconButton icon="more" label="More options" onClick={onMore} />
+      ) : (
+        <Link href={`/stores/${store.id}/info`} aria-label="Store information">
+          <Icon name="more" />
+        </Link>
+      )}
+    </div>
+  );
+}
+let pendingSheetBack: ReturnType<typeof setTimeout> | undefined;
+const liveSheets = new Map<string, HTMLDialogElement>();
+const committedSheetQueries = new Map<string, string>();
+let sheetBodyLocks = 0;
+let sheetBodyOverflow = "";
+function restoreSheetQuery(url: string | undefined) {
+  if (!url) return;
+  const target = new URL(url, window.location.origin);
+  if (target.pathname !== window.location.pathname) return;
+  const state = { ...window.history.state };
+  // Next's public history wrapper copies its internal state itself. Passing
+  // these reserved flags would bypass its useSearchParams synchronization.
+  delete state.__NA;
+  delete state._N;
+  window.history.replaceState(state, "", url);
+}
+// Criteria are committed to the page, not to a temporary overlay entry. Native
+// history keeps client useSearchParams readers in sync without an RSC request.
+export function commitSheetQuery(params: URLSearchParams) {
+  const url = `${window.location.pathname}${params.size ? `?${params}` : ""}${window.location.hash}`;
+  for (const marker of liveSheets.keys())
+    committedSheetQueries.set(marker, url);
+  restoreSheetQuery(url);
+}
+// Call before an imperative route transition from a sheet. The destination
+// replaces the owned overlay entry; cleanup must not issue another back().
+export function consumeSheetHistory(): boolean {
+  if (!window.history.state?.shopSheet) return false;
+  const state = { ...window.history.state };
+  delete state.shopSheet;
+  window.history.replaceState(state, "", window.location.href);
+  return true;
+}
+export function Sheet({
+  open,
+  title,
+  onClose,
+  children,
+  className = "",
+  headerless = false,
+  initialFocus,
+  manageHistory = true,
+}: {
+  open: boolean;
+  title: string;
+  onClose: () => void;
+  children: ReactNode;
+  className?: string;
+  headerless?: boolean;
+  initialFocus?: string;
+  // URL-owned stages already have an entry; only local overlays add one.
+  manageHistory?: boolean;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const router = useRouter();
+  const navigating = useRef(false);
+  const titleId = useId();
+  const closeRef = useRef(onClose);
+  useEffect(() => {
+    closeRef.current = onClose;
+  }, [onClose]);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (!open) {
+      if (el.open) el.close();
+      return;
+    }
+    if (pendingSheetBack) clearTimeout(pendingSheetBack);
+    pendingSheetBack = undefined;
+    navigating.current = false;
+    const trigger =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    if (sheetBodyLocks === 0) sheetBodyOverflow = document.body.style.overflow;
+    sheetBodyLocks += 1;
+    const marker = `sheet-${crypto.randomUUID()}`;
+    let ownsEntry = false;
+    // Defer history registration until after Strict Mode's rehearsal cleanup.
+    // A replacement dialog adopts the same entry instead of racing a back().
+    const onBack = () => {
+      restoreSheetQuery(committedSheetQueries.get(marker));
+      const stack = [...liveSheets.keys()];
+      if (
+        stack.indexOf(marker) > stack.indexOf(window.history.state?.shopSheet)
+      )
+        closeRef.current();
+    };
+    const register = manageHistory
+      ? window.setTimeout(() => {
+          if (pendingSheetBack) clearTimeout(pendingSheetBack);
+          pendingSheetBack = undefined;
+          const historyState = { ...window.history.state, shopSheet: marker };
+          if (
+            window.history.state?.shopSheet &&
+            !liveSheets.has(window.history.state.shopSheet)
+          )
+            window.history.replaceState(historyState, "", window.location.href);
+          else window.history.pushState(historyState, "", window.location.href);
+          liveSheets.set(marker, el);
+          ownsEntry = true;
+          window.addEventListener("popstate", onBack);
+        }, 0)
+      : undefined;
+    document.body.style.overflow = "hidden";
+    if (!el.open) el.showModal();
+    if (initialFocus) el.querySelector<HTMLElement>(initialFocus)?.focus();
+    return () => {
+      if (register !== undefined) window.clearTimeout(register);
+      window.removeEventListener("popstate", onBack);
+      liveSheets.delete(marker);
+      const committedQuery = committedSheetQueries.get(marker);
+      committedSheetQueries.delete(marker);
+      if (
+        !navigating.current &&
+        ownsEntry &&
+        window.history.state?.shopSheet === marker
+      ) {
+        pendingSheetBack = setTimeout(() => {
+          if (window.history.state?.shopSheet === marker) {
+            if (committedQuery)
+              window.addEventListener(
+                "popstate",
+                () => restoreSheetQuery(committedQuery),
+                { once: true },
+              );
+            window.history.back();
+          }
+          pendingSheetBack = undefined;
+        }, 0);
+      }
+      sheetBodyLocks -= 1;
+      if (sheetBodyLocks === 0)
+        document.body.style.overflow = sheetBodyOverflow;
+      if (el.open) el.close();
+      trigger?.focus();
+    };
+  }, [open, initialFocus, manageHistory]);
+  return (
+    <dialog
+      ref={ref}
+      className={`sheet ${className}`}
+      aria-labelledby={titleId}
+      onClickCapture={(event) => {
+        if (
+          event.button !== 0 ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey
+        )
+          return;
+        const link =
+          event.target instanceof Element
+            ? event.target.closest<HTMLAnchorElement>("a[href]")
+            : null;
+        if (!link || link.target === "_blank" || link.hasAttribute("download"))
+          return;
+        const destination = new URL(link.href, window.location.href);
+        if (destination.origin !== window.location.origin) return;
+        // Navigation consumes the sheet entry. Replacing it avoids both an
+        // obsolete duplicate entry and an asynchronous cleanup back() racing
+        // the App Router's transition. Link's own onClick still runs.
+        event.preventDefault();
+        navigating.current = true;
+        consumeSheetHistory();
+        router.replace(
+          `${destination.pathname}${destination.search}${destination.hash}`,
+        );
+      }}
+      onCancel={(e) => {
+        e.preventDefault();
+        closeRef.current();
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) closeRef.current();
+      }}
+    >
+      {headerless ? (
+        <h2 id={titleId} className="sr-only">
+          {title}
+        </h2>
+      ) : (
+        <div className="sheet-header">
+          <h2 id={titleId}>{title}</h2>
+          <IconButton icon="close" label={`Close ${title}`} onClick={onClose} />
+        </div>
+      )}
+      {children}
+    </dialog>
+  );
+}

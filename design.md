@@ -96,6 +96,52 @@ The source stills above provide candidate component families, not a ready-to-cod
 
 Proposed platform review: match source content at 393x852; review mobile web at 320/390/430 widths, browser chrome and keyboard/back separately; verify Android safe areas/system back in its actual app; compose tablet/desktop at 768/1024/1440 without stretching mobile screenshots. These are test targets, not inspected source dimensions or approved adaptations. Physical device and motion proof remains necessary. The discovery slice is better source-backed now, but owner/design review of the measured geometry, transitions and platform adaptations is still required before frontend implementation.
 
+### Mobile-web reconstruction plan (owner-directed, 2026-09-09)
+
+The owner explicitly directed implementation of the complete Shop **website at mobile widths in apps/web**, correcting the initial interpretation as Expo. This execution does not change apps/mobile. The instruction authorizes the frontend slices of Tasks 3, 5 and 6 to proceed with isolated reference state before their backend dependencies; it does not mark their real-service requirements complete or approve visual fidelity. Astra agents with low reasoning implement bounded batches; the orchestrator reviews source, coordinates one code writer on shared main, runs browser checks and assigns corrections. No new branch, deployment or paid provider is part of this work.
+
+Implementation uses real DOM, App Router pages, shared visual components and typed state. Source images provide product/brand media only, never whole-screen backgrounds with click targets. Catalog fixtures enter through the existing opt-in server adapter. Account/order fixtures use synthetic personal details. Forms and local transitions are implemented now; absent authentication, OAuth, payment, AI and delivery integrations must remain explicitly unavailable or isolated reference states, with no false service success.
+
+**Measured comparison frame:** inspected 1179x2676 source files normalize to 393x892; app content ends at y852 and the Mobbin footer occupies y852-892. The source iOS status area occupies y0-59. Mobile-web comparison therefore uses the y59-852 content crop (393x793), with no painted status bar or attribution footer. At other browser heights, preserve component dimensions and bottom anchoring, rather than scaling a screenshot. Physical Safari browser chrome, fonts and safe-area behavior still require device evidence.
+
+| Shared visual owner | Initial measured source geometry at 393px width |
+| --- | --- |
+| Home feed | 16px horizontal gutter; dark rail x16/y271, 361x308; 135px square media cards at x32/175/318, 8px gap |
+| Floating navigation | Home/Search/Explore/Orders; x86/y764, 221x56, 32px source bottom clearance; profile is the top avatar entry |
+| Product gallery | x16/y119, 361px square, next image edge visible; title/options/quantity follow in normal scroll flow |
+| Filter sheet | Large sheet x16/y221, 361x597; short sort sheet y454, height364; action footer y756, height44 |
+| Search | Recent/result content scrolls; composer stays above floating navigation; query/filter state and browser history agree |
+
+All y coordinates in the table refer to the source including its 59px status area. Do not add that area back to the website. System sans-serif is provisional on Windows: source font identity and matching iOS font metrics are not established by a visually similar fallback. Exact motion durations remain pending playback review.
+
+The following map accounts for all **97** ordered flow entries in [the frozen manifest](references/shop/manifest.json). Numbers are 1-based catalogue positions, not additional tasks. Each entry's exact flow UUID and ordered files are stored in that manifest; flow frame 001 frequently shows the previous page. Flow occurrence records do not contain a global screen UUID, so use flow UUID plus frame order unless an identical hash establishes a screen match.
+
+| Catalogue flows | Page/component family and transition coverage | Owning task |
+| --- | --- | --- |
+| 1, 94 | Onboarding/login: introduction, contact/code entry, preferences, return destination; real identity remains Task 4 | 6 |
+| 2-6, 42 | Home, notifications, deals, following/feed/list; shelf menu and not-interested state | 3 / 6 |
+| 7-13 | Saved grid; create collection, select products, details/ideas, edit name, visibility, deletion | 3 / 6 |
+| 14-16, 40-41, 96-97 | Storefront/information/collections/video; store search, filter, follow | 3 |
+| 17-20, 32 | Product, gallery, description, options/quantity, save-to-collection, add/cart feedback | 3 |
+| 21-31 | Seller cart, checkout, Review & Pay; remove/save-for-later, phone/address/payment forms, selectors/deletion, summary/receipt | 5 frontend |
+| 33-39 | Product/store reviews; search/helpful/report, contact shop, report product | 6 |
+| 43-44, 48-49 | Search entry/suggestions/results, all filter/subfilter states, recently viewed | 3 |
+| 45-47 | Assistant thread, answer detail and feedback; fixture recommendations/composer, no invented live AI | 6 |
+| 50-51 | Explore, category detail and product/store destinations | 3 |
+| 52-59 | Minis catalogue/setup, Sol voice/text/mute, skin analysis, similar clothes, Gift Sense; captured frontend states and browser permission differences | 6 |
+| 60-68, 79 | Orders/list/detail/archive/history; copy number, delivery confirmation/progress, tracking edits, review, manual order entry | 5 / 6 frontend |
+| 69-78 | Profile/account/public profile; photo, name, gender, birthday, shoe size, skin condition, people preferences | 6 |
+| 80-84 | Payment method list/detail/add/delete; address list/add/edit/delete, shared checkout form owners | 6 frontend |
+| 85-89, 93 | Security, notifications, connections/provider return, account deletion and logout | 6 frontend |
+| 90-92 | Support, support assistant and About | 6 |
+| 95 | Native widget flow: explicit browser adaptation remains unresolved; no web equivalent is silently claimed | 6 review |
+
+**Execution and review:** build one connected family batch, run scoped type/lint and interaction checks, compare its source states at 393x793 plus 320px and 430px widths, then fix the batch together. Verify navigation/back/scroll, focus containment/return, keyboard, form validation, empty/error/loading and reload state where applicable. Broader device/desktop regression retains its existing task ownership. Record actual outcomes in tasks.md. A mapped family, a rendered route or a passing screenshot regression does not constitute full source approval.
+
+**Implemented source work (2026-09-09):** 47 canonical website page routes cover the mapped families with synthetic local reference state. Home/store/product geometry, purchase options, description, gallery, review/report states, collections, account forms, checkout/order states and captured Mini/assistant stages received source-led correction batches and in-app browser inspection. Native system chrome is excluded from the 393x793 browser comparison. The website uses the Apple system font stack where available and Arial fallback on Windows; that does not prove exact iOS font metrics. Controls and text are rendered DOM, with clean photography/brand/decorative media only. The product store card's crop ends before seller copy and Follow, which remain interactive DOM.
+
+**Media and remaining differences:** 27 full originals or exact decoded frames are verified through `references/shop/product-media-provenance.json`, including the store hero, upsell products, Mob Armor cap and Sugar/Charcoal related products. The complete captured Shea description is implemented; its related grid and the bag's different related grid use the source ordering. Two Shea gallery originals remain unavailable. Following/Pura/quilt and Dad Hat currently use clean partial interiors; the What's New full hero composition and exact Chemical Guys recording remain unresolved. Some frozen facts hidden by the dock use explicitly attributed current merchant facts, not invented source values. Motion timings, all gestures and full 97-flow state-by-state acceptance are still unverified. No generated fills, stretched photos, screenshot controls or automatically approved baselines may conceal these differences.
+
 ## 4. Components and interaction rules
 
 Derive scales for spacing/type/radius/colors/icons/shadows/motion from inspected source. Shared tokens are platform-neutral; web and native have their own components. One canonical implementation per visual role per platform. Use needed primitives rather than a universal card with dozens of historical flags.

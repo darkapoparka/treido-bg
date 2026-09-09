@@ -1,0 +1,200 @@
+"use client";
+/* eslint-disable @next/next/no-img-element */
+import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { formatMoney, type Catalog } from "../catalog/types";
+import {
+  FloatingNav,
+  IconButton,
+  ProductCard,
+  Sheet,
+  StoreRow,
+} from "./components";
+import { Icon } from "./icons";
+import { useDiscovery } from "./state";
+import { useAccount } from "../account/state";
+export function Home({ catalog }: { catalog: Catalog }) {
+  const router = useRouter();
+  const [notice, setNotice] = useState("");
+  const state = useDiscovery(),
+    { profile } = useAccount();
+  const [shopMenu, setShopMenu] = useState("");
+  const [reasonView, setReasonView] = useState(false);
+  const [hidden, setHidden] = useState<string[]>([]);
+  const recent = state.viewedProducts
+    .flatMap((id) => {
+      const p = catalog.products.find((p) => p.id === id);
+      return p ? [p] : [];
+    })
+    .slice(0, 3);
+  return (
+    <main className="shop-page home-page">
+      <header className="home-shortcuts">
+        <Link href="/profile" aria-label="Profile" className="avatar">
+          {profile.avatar ? (
+            <img src={profile.avatar} alt="" />
+          ) : (
+            <span>{profile.firstName[0]}</span>
+          )}
+        </Link>
+        <IconButton
+          icon="bell"
+          label="Notifications"
+          onClick={() => router.push("/notifications")}
+        />
+        <Link className="pill" href="/search?deals=1">
+          <Icon name="tag" filled />
+          Deals
+        </Link>
+        <Link className="pill" href="/following">
+          <Icon name="badge-check" />
+          Following
+        </Link>
+        <Link className="pill" href="/saved">
+          <Icon name="heart" filled />
+          Saved
+        </Link>
+      </header>
+      <Link href="/orders" className="delivery-card">
+        <img src={catalog.stores.find((s) => s.id === "kitsch")!.logo} alt="" />
+        <span>
+          <small>KITSCH</small>
+          <strong>Ordered Jul 27</strong>
+        </span>
+        <img src="/api/reference-media/shampoo-bag" alt="Shampoo bar bag" />
+      </Link>
+      <button
+        className="email-card"
+        onClick={() => router.push("/account/connections")}
+      >
+        <img src="/api/reference-media/parcel" alt="" />
+        <span>
+          <strong>Connect email to see more deliveries</strong>
+          <span>Track more of your packages with Shop</span>
+        </span>
+        <Icon name="back" />
+      </button>
+      <section className="recent-panel">
+        <p>Jump back in</p>
+        <div className="product-rail">
+          {recent.map((p) => (
+            <ProductCard
+              key={p.id}
+              product={
+                p.id === "round-sunglasses"
+                  ? { ...p, promotion: "Save $20" }
+                  : p
+              }
+              compact
+            />
+          ))}
+        </div>
+        <Link href="/search" className="recent-title">
+          <h1>Recently viewed</h1>
+          <Icon name="arrow" />
+        </Link>
+      </section>
+      {catalog.stores
+        .filter((s) => ["vehla", "pura"].includes(s.id))
+        .map((store) => (
+          <section className="store-feed" key={store.id}>
+            <StoreRow
+              store={store}
+              onMore={() => {
+                setShopMenu(store.id);
+                setReasonView(false);
+              }}
+            />
+            {hidden.includes(store.id) ? (
+              <div className="hidden-shop">
+                <Icon name="eye-off" />
+                <p>We’ll show you less like this</p>
+                <button
+                  onClick={() =>
+                    setHidden((v) => v.filter((id) => id !== store.id))
+                  }
+                >
+                  Undo
+                </button>
+              </div>
+            ) : (
+              <div>
+                {catalog.products
+                  .filter((p) => p.storeId === store.id)
+                  .slice(0, 1)
+                  .map((p) => (
+                    <div className="home-product-row" key={p.id}>
+                      <ProductCard
+                        product={
+                          p.id === "round-sunglasses"
+                            ? { ...p, promotion: "Save $20" }
+                            : p
+                        }
+                        compact
+                      />
+                      <Link href={`/products/${p.id}`}>
+                        <strong>{p.title}</strong>
+                        <p className="rating">
+                          <span>★★★★★</span> ({p.ratingCount})
+                        </p>
+                        <p>{formatMoney(p.price)}</p>
+                      </Link>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </section>
+        ))}
+      <Sheet
+        open={!!shopMenu}
+        title={
+          reasonView
+            ? "Not interested"
+            : (catalog.stores.find((s) => s.id === shopMenu)?.name ?? "Shop")
+        }
+        onClose={() => setShopMenu("")}
+      >
+        {reasonView ? (
+          <>
+            <p>Please select a reason</p>
+            <div className="filter-options">
+              {[
+                "I just don’t like it",
+                "Products are too expensive",
+                "Want to see fewer shops like this",
+                `Want to see less of ${catalog.stores.find((s) => s.id === shopMenu)?.name}`,
+              ].map((reason) => (
+                <button
+                  key={reason}
+                  onClick={() => {
+                    setHidden((v) => [...v, shopMenu]);
+                    setShopMenu("");
+                  }}
+                >
+                  {reason}
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="filter-options">
+            <Link href={`/stores/${shopMenu}`}>Visit shop</Link>
+            <button onClick={() => state.toggleFollow(shopMenu)}>
+              {state.followed.includes(shopMenu) ? "Unfollow" : "Follow"}
+            </button>
+            <button onClick={() => setReasonView(true)}>Not interested</button>
+            <Link href={`/stores/${shopMenu}/info`}>Report shop</Link>
+          </div>
+        )}
+      </Sheet>
+      <FloatingNav />
+      <Sheet open={!!notice} title={notice} onClose={() => setNotice("")}>
+        <p className="sheet-copy">
+          This reference preview does not connect an email account or deliver
+          notifications.
+        </p>
+      </Sheet>
+    </main>
+  );
+}
