@@ -73,6 +73,13 @@ export function CartContents({
                   </p>
                 </div>
               </header>
+              {storeId === "kitsch" &&
+                lines.some((l) => l.productId === "shampoo-bag") && (
+                  <p className="cart-captured-error" role="status">
+                    <span>!</span> The spring20orderdiscountold discount code is
+                    not honoured
+                  </p>
+                )}
               {lines.map((l) => (
                 <article
                   className="commerce-line"
@@ -226,13 +233,8 @@ export function CartContents({
                   </button>
                   <button
                     className="move-to-cart"
-                    onClick={() =>
-                      state.moveToCart(
-                        l.productId,
-                        l.variantId,
-                        l.variant.availableQuantity,
-                      )
-                    }
+                    disabled
+                    title="Unavailable in the captured saved-for-later state"
                   >
                     Move to cart
                   </button>

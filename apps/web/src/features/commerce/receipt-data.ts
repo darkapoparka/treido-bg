@@ -1,5 +1,13 @@
+import {
+  shopSourceAddress,
+  shopSourceBuyer,
+  shopSourceOrderNumber,
+  shopSourcePayment,
+} from "./source-fixtures";
+
 // Isolated captured-order fixtures. They never represent a newly completed checkout.
 export type CapturedReceipt = {
+  displayOrderNumber: string;
   date: string;
   // Net amount: the captured subtotal already includes the discount.
   itemAmount: number;
@@ -20,16 +28,17 @@ export type CapturedReceipt = {
   shippingMethod: string;
 };
 const base = {
+  displayOrderNumber: shopSourceOrderNumber,
   date: "July 27, 2026",
-  name: "Mira Petkova",
-  street: "100 Reference Lane",
-  city: "Example City",
-  region: "California",
-  postalCode: "00000",
-  country: "United States",
-  phone: "+1 202 555 0100",
-  email: "mira@example.test",
-  cardLast4: "4242",
+  name: `${shopSourceBuyer.firstName} ${shopSourceBuyer.lastName}`,
+  street: shopSourceAddress.street,
+  city: shopSourceAddress.city,
+  region: shopSourceAddress.region,
+  postalCode: shopSourceAddress.postalCode,
+  country: shopSourceAddress.country,
+  phone: shopSourceBuyer.phone,
+  email: shopSourceBuyer.email,
+  cardLast4: shopSourcePayment.last4,
   shippingMethod: "Standard Shipping",
 };
 export const capturedReceipts: Record<string, CapturedReceipt> = {
@@ -43,6 +52,7 @@ export const capturedReceipts: Record<string, CapturedReceipt> = {
   },
   "REF-1002": {
     ...base,
+    displayOrderNumber: "12748252",
     itemAmount: 1400,
     discount: 0,
     shipping: 0,

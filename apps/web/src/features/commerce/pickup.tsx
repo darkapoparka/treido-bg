@@ -4,14 +4,17 @@ import Link from "next/link";
 import { Icon } from "../discovery/icons";
 import { AccountIcon } from "../account/icons";
 import { useState } from "react";
-import { useAccount } from "../account/state";
 import { Boundary } from "../account/forms";
+import {
+  shopSourceAddress,
+  shopSourceBuyer,
+  shopSourcePayment,
+  shopSourcePickup,
+} from "./source-fixtures";
+
 // Flow21/006–007 captures this seller checkout, but does not reveal the item name.
 // The item is intentionally checkout-only and is not linked to an invented PDP.
 export function PickupCheckout() {
-  const { profile, addresses, paymentCards } = useAccount();
-  const paymentCard = paymentCards[0];
-  const address = addresses.find((a) => a.isDefault) ?? addresses[0];
   const [pickup, setPickup] = useState(false),
     [offers, setOffers] = useState(true),
     [discount, setDiscount] = useState(false),
@@ -28,7 +31,7 @@ export function PickupCheckout() {
       </header>
       <div className="checkout-identity">
         <strong>shop</strong>
-        <span>{profile.email}</span>
+        <span>{shopSourceBuyer.email}</span>
       </div>
       <div className="fulfillment-tabs" role="tablist" aria-label="Fulfillment">
         <button
@@ -49,13 +52,13 @@ export function PickupCheckout() {
       {pickup && (
         <>
           <p className="pickup-warning">
-            <Icon name="alert" /> The closest location with your item is more
-            than 100 mi from <u>00000</u>
+            <Icon name="alert" /> {shopSourcePickup.warning}
           </p>
           <p className="pickup-count">
             1 location with your item{" "}
             <button onClick={() => setBoundary("Location lookup")}>
-              <AccountIcon name="location" /> 00000
+              <AccountIcon name="location" />{" "}
+              {shopSourcePickup.searchPostalCode}
             </button>
           </p>
         </>
@@ -67,16 +70,21 @@ export function PickupCheckout() {
             <input
               type="radio"
               name="pickup-location"
-              aria-label="White Rock Soap Gallery"
+              aria-label={shopSourcePickup.name}
               checked
               readOnly
             />
             <p>
-              <strong>White Rock Soap Gallery (1,468.9 mi) · Free</strong>
+              <strong>
+                {shopSourcePickup.name} ({shopSourcePickup.distance}) ·{" "}
+                {shopSourcePickup.price}
+              </strong>
               <br />
-              100 Example Avenue, Suite 101, Example City TX
+              {shopSourcePickup.street}
               <br />
-              <span>Usually ready in 24 hours</span>
+              {shopSourcePickup.cityRegionPostal}
+              <br />
+              <span>{shopSourcePickup.readiness}</span>
             </p>
           </div>
         ) : (
@@ -85,19 +93,19 @@ export function PickupCheckout() {
               <small>Ship to</small>
               <p>
                 <strong>
-                  {profile.firstName} {profile.lastName}
+                  {shopSourceBuyer.firstName} {shopSourceBuyer.lastName}
                 </strong>
                 <br />
-                {address
-                  ? `${address.street}, ${address.city}, ${address.region} ${address.postalCode}, US`
-                  : "Add shipping address"}
+                {shopSourceAddress.street}, {shopSourceAddress.city},{" "}
+                {shopSourceAddress.region} {shopSourceAddress.postalCode}, US
               </p>
-              <Link
-                href="/account/addresses"
-                aria-label="Edit shipping address"
+              <button
+                type="button"
+                aria-label="Shipping address is a captured source value"
+                onClick={() => setBoundary("Address service")}
               >
                 ⌄
-              </Link>
+              </button>
             </div>
             <div>
               <small>Shipping</small>
@@ -114,23 +122,16 @@ export function PickupCheckout() {
         <div>
           <small>Payment</small>
           <strong>
-            {paymentCard ? (
-              <>
-                Visa •••• {paymentCard.last4}{" "}
-                <span className="visa-mark">VISA</span>
-              </>
-            ) : (
-              "Add payment method"
-            )}
+            Visa •••• {shopSourcePayment.last4}{" "}
+            <span className="visa-mark">VISA</span>
           </strong>
-          <Link
-            href="/account/payments"
-            aria-label={
-              paymentCard ? "Edit payment method" : "Add payment method"
-            }
+          <button
+            type="button"
+            aria-label="Payment method is a captured source value"
+            onClick={() => setBoundary("Payment method")}
           >
             ⌄
-          </Link>
+          </button>
         </div>
       </section>
       <label className="pickup-offers">
@@ -182,11 +183,7 @@ export function PickupCheckout() {
         </div>
       )}
       <div className="checkout-pay">
-        <button
-          className="primary"
-          disabled={!paymentCard || (!pickup && !address)}
-          onClick={() => setBoundary("Payment")}
-        >
+        <button className="primary" onClick={() => setBoundary("Payment")}>
           <span>Pay now</span>
           <b>${total}</b>
         </button>

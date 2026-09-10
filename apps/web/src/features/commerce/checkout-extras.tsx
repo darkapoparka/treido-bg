@@ -24,10 +24,12 @@ export function CheckoutExtras({
   catalog,
   onAdd,
   added = [],
+  disabled = false,
 }: {
   catalog: Catalog;
   onAdd?: (id: string) => void;
   added?: string[];
+  disabled?: boolean;
 }) {
   const [reverse, setReverse] = useState(false);
   const products = reverse
@@ -39,12 +41,14 @@ export function CheckoutExtras({
         <h2>Don’t forget our most loved</h2>
         <button
           aria-label="Previous recommendations"
+          disabled={disabled}
           onClick={() => setReverse(!reverse)}
         >
           <Icon name="back" />
         </button>
         <button
           aria-label="Next recommendations"
+          disabled={disabled}
           onClick={() => setReverse(!reverse)}
         >
           <Icon name="arrow" />
@@ -68,7 +72,10 @@ export function CheckoutExtras({
             </p>
             <span>{formatMoney({ amount: p.amount, currency: "USD" })}</span>
           </div>
-          <button disabled={added.includes(p.id)} onClick={() => onAdd?.(p.id)}>
+          <button
+            disabled={disabled || added.includes(p.id)}
+            onClick={() => onAdd?.(p.id)}
+          >
             {added.includes(p.id) ? "Added" : "Add"}
           </button>
         </article>

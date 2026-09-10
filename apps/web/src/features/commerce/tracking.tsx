@@ -8,15 +8,17 @@ import { Sheet, ProductCard } from "../discovery/components";
 import { Icon } from "../discovery/icons";
 import { useAccount, type ReferenceOrder } from "../account/state";
 import type { Catalog } from "../catalog/types";
+import { capturedReceipts } from "./receipt-data";
+import { shopSourceAddress } from "./source-fixtures";
 const events = [
-  ["Jul 31, 6:04pm", "Successfully delivered"],
-  ["Jul 31, 10:56am", "Out for delivery"],
-  ["Jul 31, 1:45am", "Arrival at transport hub"],
-  ["Jul 30, 8:36pm", "Departure from transport hub"],
-  ["Jul 30, 2:44pm", "Arrival at transport hub"],
-  ["Jul 30, 2:21am", "Departure from transport hub"],
-  ["Jul 29, 4:26pm", "Arrival at transport hub"],
-  ["Jul 29, 4:26pm", "Pick-up successful"],
+  ["Milpitas, CA, 95035, US · Jul 31, 6:04pm", "Successfully delivered"],
+  ["Milpitas, CA, 95035, US · Jul 31, 10:56am", "Out for delivery"],
+  ["Milpitas, CA, 95035, US · Jul 31, 1:45am", "Arrival at transport hub"],
+  ["Oakley, CA, 94561, US · Jul 30, 8:36pm", "Departure from transport hub"],
+  ["Oakley, CA, 94561, US · Jul 30, 2:44pm", "Arrival at transport hub"],
+  ["Jurupa Valley, CA, US · Jul 30, 2:21am", "Departure from transport hub"],
+  ["Jurupa Valley, CA, US · Jul 29, 4:26pm", "Arrival at transport hub"],
+  ["Jurupa Valley, CA, US · Jul 29, 4:26pm", "Pick-up successful"],
   ["Jul 28, 4:16am", "Parcel data submitted to carrier"],
 ];
 export function TrackingDetail({
@@ -28,35 +30,63 @@ export function TrackingDetail({
   order: ReferenceOrder;
   onEdit: () => void;
 }) {
-  const { saveOrder, addresses } = useAccount(),
+  const { saveOrder } = useAccount(),
     router = useRouter(),
     params = useSearchParams();
   const [activity, setActivity] = useState(false),
     [boundary, setBoundary] = useState(""),
-    [copied, setCopied] = useState(false);
+    [copied, setCopied] = useState(false),
+    [statusToast, setStatusToast] = useState(""),
+    [celebrate, setCelebrate] = useState(false);
   const product = catalog.products.find((p) => p.id === order.productId),
     delivered = order.status === "Delivered",
+    waiting = order.status === "Ordered" && Boolean(product),
+    manualLabel = order.status === "Ordered" && !product,
     map = params.get("map") === "1";
-  const visible =
-    order.status === "Ordered"
+  const sourceReceipt = capturedReceipts[order.id];
+  const displayOrderNumber = sourceReceipt?.displayOrderNumber ?? order.id;
+  const sourceCarrier =
+    order.id === "REF-1001" ? "Amazon Logistics" : order.carrier;
+  const sourceTracking =
+    order.id === "REF-1001" ? "TBA333200762603" : order.tracking;
+  const visible = waiting
+    ? []
+    : manualLabel
       ? [events.at(-1)!]
       : delivered
         ? [events[0], events[1], events.at(-1)!]
-        : [events[2], events.at(-1)!];
-  const all =
-    order.status === "Ordered"
+        : [events[6], events.at(-1)!];
+  const all = waiting
+    ? []
+    : manualLabel
       ? [events.at(-1)!]
       : delivered
         ? events
-        : events.slice(2);
-  const address = addresses.find((a) => a.isDefault) ?? addresses[0];
-  const mark = () =>
-    saveOrder({ ...order, status: delivered ? "In transit" : "Delivered" });
+        : events.slice(6);
+  const mark = () => {
+    const next = delivered ? "In transit" : "Delivered";
+    saveOrder({ ...order, status: next });
+    setStatusToast(
+      next === "Delivered" ? "Marked as delivered" : "Unmarked as delivered",
+    );
+    if (next === "Delivered") {
+      setCelebrate(true);
+      window.setTimeout(() => setCelebrate(false), 1400);
+    }
+    window.setTimeout(() => setStatusToast(""), 1800);
+  };
   return (
     <AccountPage
       className={`tracking-detail ${map ? "tracking-map-view" : ""}`}
       onBack={() => router.back()}
     >
+      {celebrate && (
+        <div className="delivery-confetti" aria-hidden="true">
+          {Array.from({ length: 18 }, (_, index) => (
+            <i key={index} />
+          ))}
+        </div>
+      )}
       {map && (
         <div className="tracking-map" aria-label="Illustrative delivery map">
           <img
@@ -76,7 +106,7 @@ export function TrackingDetail({
             <img className="map-product" src={product.images[0]} alt="" />
           )}
           <span className="map-location" />
-          <small>Example City</small>
+          <small>{delivered ? "Milpitas" : "Jurupa Valley"}</small>
         </div>
       )}
       <div className="tracking-body">
@@ -89,60 +119,71 @@ export function TrackingDetail({
           }}
         >
           <small>
-            {order.name}
-            {product ? " KITSCH" : ""}
+            {product
+              ? delivered
+                ? `${order.name} KITSCH`
+                : "KITSCH"
+              : order.name}
           </small>
           <h1>
             {delivered
-              ? "Delivered Aug 1"
-              : order.status === "Ordered"
-                ? "Label created"
-                : "Arrives Jul 31–Aug 1"}
+              ? product
+                ? "Delivered Aug 1"
+                : "Delivered today"
+              : waiting
+                ? "Expected by Aug 3"
+                : manualLabel
+                  ? "Label created"
+                  : "Arrives Jul 31–Aug 1"}
           </h1>
-          <p>
-            {delivered
-              ? "Arrived at 8:04 AM"
-              : order.status === "Ordered"
-                ? "Waiting for details"
-                : "In transit"}
-          </p>
+          {!manualLabel && (
+            <p>
+              {delivered
+                ? product
+                  ? "Arrived at 8:04 AM"
+                  : "Arrived at 7:34 PM"
+                : waiting
+                  ? "Waiting for details"
+                  : "In transit"}
+            </p>
+          )}
           <div className={`tracking-progress ${delivered ? "delivered" : ""}`}>
             <span />
           </div>
         </button>
-        <section className="tracking-carrier">
-          <strong className="carrier-wordmark">{order.carrier}</strong>
-          <p>
-            {order.carrier === "Amazon Logistics"
-              ? "Amazon Logistics"
-              : order.carrier}
-          </p>
-          <small>Tracking no.</small>
-          <div>
-            <span>{order.tracking}</span>
-            <button
-              aria-label="Copy tracking number"
-              onClick={async () => {
-                try {
-                  await navigator.clipboard.writeText(order.tracking);
-                  setCopied(true);
-                } catch {
-                  setBoundary("Clipboard");
-                }
-              }}
-            >
-              <Icon name="copy" />
-            </button>
-            <button
-              aria-label="Open carrier tracking"
-              onClick={() => setBoundary("Carrier tracking")}
-            >
-              <Icon name="share" />
-            </button>
-          </div>
-          {copied && <p role="status">Tracking number copied</p>}
-        </section>
-        {order.status === "Ordered" && (
+        {!waiting && (
+          <section className="tracking-carrier">
+            <strong className="carrier-wordmark">
+              {sourceCarrier === "Amazon Logistics" ? "amazon" : sourceCarrier}
+            </strong>
+            <p>{sourceCarrier}</p>
+            <small>Tracking no.</small>
+            <div>
+              <span>{sourceTracking}</span>
+              <button
+                aria-label="Copy tracking number"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(sourceTracking);
+                    setCopied(true);
+                  } catch {
+                    setBoundary("Clipboard");
+                  }
+                }}
+              >
+                <Icon name="copy" />
+              </button>
+              <button
+                aria-label="Open carrier tracking"
+                onClick={() => setBoundary("Carrier tracking")}
+              >
+                <Icon name="share" />
+              </button>
+            </div>
+            {copied && <p role="status">Tracking number copied</p>}
+          </section>
+        )}
+        {manualLabel && (
           <section className="tracking-empty">
             <h2>No delivery updates</h2>
             <p>
@@ -163,11 +204,18 @@ export function TrackingDetail({
             }}
           >
             <span className="order-store-mark">/kit·sch/</span>
-            <strong>Order #{order.id}</strong>
+            <strong>Order #{displayOrderNumber}</strong>
             <p>Jul 27, 2026</p>
             <div className="order-item">
               <img src={product.images[0]} alt="" />
-              <span>{order.name}</span>
+              <span>
+                {order.name}
+                <small>
+                  {sourceReceipt
+                    ? `$${(sourceReceipt.itemAmount / 100).toFixed(2)}`
+                    : ""}
+                </small>
+              </span>
             </div>
             <button
               className="muted-button"
@@ -183,48 +231,73 @@ export function TrackingDetail({
             </Link>
           </section>
         )}
-        <section className="delivery-preview">
-          <h2>Delivery progress</h2>
-          <div className="delivery-destination">
-            <small>Delivery to</small>
-            <strong>
-              {address
-                ? `${address.street}, ${address.city}, ${address.postalCode}`
-                : "Add a delivery address"}
-            </strong>
-          </div>
-          <Activity rows={visible} />
-          {all.length > 1 && (
-            <button className="muted-button" onClick={() => setActivity(true)}>
-              View all activity
-            </button>
-          )}
-        </section>
+        {!manualLabel && (
+          <section className="delivery-preview">
+            <h2>Delivery progress</h2>
+            <div className="delivery-destination">
+              <small>Delivery to</small>
+              <strong>
+                {shopSourceAddress.street}, {shopSourceAddress.city},{" "}
+                {shopSourceAddress.postalCode}
+              </strong>
+            </div>
+            {visible.length > 0 && <Activity rows={visible} />}
+            {all.length > visible.length && (
+              <button
+                className="muted-button"
+                onClick={() => setActivity(true)}
+              >
+                View all activity
+              </button>
+            )}
+          </section>
+        )}
         <div className="tracking-action-panel">
-          <Row
-            label={delivered ? "Unmark as delivered" : "Mark as delivered"}
-            onClick={mark}
-          />
-          <Row label="Edit tracking details" onClick={onEdit} />
+          {!waiting && (
+            <Row
+              label={delivered ? "Unmark as delivered" : "Mark as delivered"}
+              onClick={mark}
+            />
+          )}
+          {!waiting && !manualLabel && !delivered && (
+            <Row label="Edit tracking details" onClick={onEdit} />
+          )}
           <Row
             label="Report incorrect information"
             onClick={() => setBoundary("Tracking report")}
           />
         </div>
         <h2>{product ? "Popular at KITSCH" : "Your deals"} ›</h2>
-        <div className="product-rail">
-          {[
-            "black-conditioner-bag",
-            "chocolate-body-bag",
-            "shower-caddy",
-            "solid-shave-butter",
-          ]
-            .map((id) => catalog.products.find((p) => p.id === id))
-            .filter((p) => !!p)
-            .map((p) => (
-              <ProductCard key={p.id} product={p} />
+        {product ? (
+          <div className="product-rail">
+            {[
+              "black-conditioner-bag",
+              "chocolate-body-bag",
+              "shower-caddy",
+              "solid-shave-butter",
+            ]
+              .map((id) => catalog.products.find((p) => p.id === id))
+              .filter((p) => !!p)
+              .map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+          </div>
+        ) : (
+          <div className="tracking-deal-rail">
+            {[0, 2].map((deal) => (
+              <img
+                key={deal}
+                src={`/api/reference-media/order-deal-${deal}`}
+                alt=""
+              />
             ))}
-        </div>
+          </div>
+        )}
+        {statusToast && (
+          <p className="order-action-toast" role="status">
+            {statusToast}
+          </p>
+        )}
       </div>
       <Sheet
         open={activity}
@@ -249,7 +322,7 @@ function Activity({ rows }: { rows: string[][] }) {
         <div key={`${time}-${label}`}>
           <i>{i === 0 ? "●" : ""}</i>
           <span>
-            <small>Example City, CA, 00000, US · {time}</small>
+            <small>{time}</small>
             <strong>{label}</strong>
           </span>
         </div>
