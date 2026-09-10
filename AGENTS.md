@@ -2,7 +2,7 @@
 
 ## Execute the requested numbered task
 
-Owner instruction (2026-09-08): work directly on `main` for all subsequent tasks. Preserve existing work, fetch and inspect upstream changes before synchronization, and use fast-forward-only updates where possible. Do not create feature branches or separate writing worktrees unless the owner changes this instruction. Helpers may inspect independently; serialize edits on the shared main checkout. Local commits are authorized; pushing or deploying still requires the applicable authorization.
+Owner instruction (updated 2026-09-11): work directly on the single `J:\treido-bg` checkout and `main`. Do not create feature branches or worktrees. Preserve existing work and inspect upstream before synchronization. For the Shop 1:1 phase, up to three sessions may run in parallel only under [parallel-execution.md](parallel-execution.md): fixed non-overlapping lanes, explicit path ownership, ignored lane locks, explicit-path commits, and Lane C as the sole shared-file/integration/push owner. Outside that protocol, serialize edits. Local commits are authorized; pushing or deploying still requires the applicable authorization.
 
 When the user says **Execute Task N**, open [tasks.md](tasks.md), locate Task N, read its listed sources and implement that work package. Do not return another proposal, ask the user to name files, or execute the entire roadmap. **Continue Task N** resumes its recorded progress. Task numbers are the only execution interface; feature IDs in [product.md](product.md) describe requirements, not a second queue.
 
@@ -30,7 +30,7 @@ Build [product.md](product.md) from a clean foundation. `apps/web` is the full b
 
 Old projects are optional references for specific questions, not required code/schema imports or parity targets. New code is the default. Optional reuse must satisfy this specification, publication rights and the current tests independently. Existing systems remain untouched.
 
-Build the buyer frontend against the exact selected Shop reference in [design.md](design.md). Task 3 begins discovery UI, Tasks 5-6 complete the declared flows, and Task 6 records source approval. Task 7 applies Treido branding/food content through the same components. Do not copy old Treido layouts, invent reference values, rebrand early or make a disposable clone. Merchant/admin have their own specified operational layouts.
+Build the buyer frontend against the exact selected Shop reference in [design.md](design.md). During the Shop 1:1 phase, [shop-parity-checklist.md](shop-parity-checklist.md) is the acceptance authority for all 97 frozen flows; route existence or old prose does not substitute for its evidence checkboxes. Task 3 begins discovery UI, Tasks 5-6 complete the declared flows, and Task 6 records source approval. Task 7 applies Treido branding/food content through the same components. Do not copy old Treido layouts, invent reference values, rebrand early or make a disposable clone. Merchant/admin have their own specified operational layouts.
 
 ## Non-negotiable boundaries
 
