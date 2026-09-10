@@ -46,9 +46,9 @@ export type ReferenceOrder = {
   review: string;
 };
 const initialProfile: Profile = {
-  firstName: "Mira",
-  lastName: "Petkova",
-  email: "mira@example.test",
+  firstName: "",
+  lastName: "",
+  email: "alexsmith.mobbin+3@gmail.com",
   phone: "",
   gender: "",
   birthday: "",
