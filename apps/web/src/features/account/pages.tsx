@@ -440,7 +440,11 @@ export function AccountDetails() {
             {p.name}
           </Link>
         ))}
-        <Link className="add-person-tile" href="/account/people?view=nickname&new=1&return=account" scroll={false}>
+        <Link
+          className="add-person-tile"
+          href="/account/people?view=nickname&new=1&return=account"
+          scroll={false}
+        >
           <span>+</span>
           {people.length ? "Add someone new" : "Add someone"}
         </Link>
@@ -598,7 +602,11 @@ export function PeoplePage() {
   const stage = ["profile", "nickname", "birthday"].includes(route.view ?? "")
     ? route.view
     : "list";
-  const [personChoice, setPersonChoice] = useState<"relation" | "gender" | null>(null);
+  const editingPerson = stage === "nickname" || stage === "birthday";
+  const showAccountBackground = returnToAccount && editingPerson;
+  const [personChoice, setPersonChoice] = useState<
+    "relation" | "gender" | null
+  >(null);
   const setStage = (next: "list" | "nickname" | "birthday" | "profile") => {
     if (next === "list") {
       if (returnToAccount) route.exit();
@@ -631,7 +639,8 @@ export function PeoplePage() {
       setStage("profile");
     }
   };
-  return (
+
+  const personPage = (
     <AccountPage
       className={stage === "profile" ? "person-profile-page" : ""}
       onBack={stage !== "list" ? () => setStage("list") : undefined}
@@ -657,31 +666,54 @@ export function PeoplePage() {
             />
           </div>
           <div className="account-panel field-panel person-core-fields">
-            <button className="profile-field" onClick={() => setPersonChoice("relation")}>
+            <button
+              className="profile-field"
+              onClick={() => setPersonChoice("relation")}
+            >
               <span>Relation</span>
               <span>{person.relation || "Select relation"}</span>
-              <svg data-select-arrows aria-hidden="true" viewBox="0 0 12 14" fill="none" stroke="currentColor">
+              <svg
+                data-select-arrows
+                aria-hidden="true"
+                viewBox="0 0 12 14"
+                fill="none"
+                stroke="currentColor"
+              >
                 <path d="m3 5 3-3 3 3M3 9l3 3 3-3" />
               </svg>
             </button>
-            <button className="profile-field" onClick={() => setPersonChoice("gender")}>
+            <button
+              className="profile-field"
+              onClick={() => setPersonChoice("gender")}
+            >
               <span>Gender</span>
-              <span className={!person.gender ? "profile-placeholder" : undefined}>
+              <span
+                className={!person.gender ? "profile-placeholder" : undefined}
+              >
                 {person.gender || "Select gender"}
               </span>
-              <svg data-select-arrows aria-hidden="true" viewBox="0 0 12 14" fill="none" stroke="currentColor">
+              <svg
+                data-select-arrows
+                aria-hidden="true"
+                viewBox="0 0 12 14"
+                fill="none"
+                stroke="currentColor"
+              >
                 <path d="m3 5 3-3 3 3M3 9l3 3 3-3" />
               </svg>
             </button>
             <div className="profile-field person-birthday-row">
               <span>Birthday</span>
-              <span className={!person.birthday ? "profile-placeholder" : undefined}>
-                {person.birthday ? displayBirthday(person.birthday) : "MM/DD/YYYY"}
+              <span
+                className={!person.birthday ? "profile-placeholder" : undefined}
+              >
+                {person.birthday
+                  ? displayBirthday(person.birthday)
+                  : "MM/DD/YYYY"}
               </span>
               <span aria-hidden="true" />
             </div>
           </div>
-
           {birthdayError && (
             <p className="form-error" role="alert">
               {birthdayError}
@@ -695,49 +727,91 @@ export function PeoplePage() {
               setStage("list");
             }}
           >
-            Delete {person.name}
+            <Icon name="trash" /> Delete {person.name}
           </button>
         </>
       ) : (
-        <>
-          <div className="account-panel">
-            {people.map((p) => (
-              <button
-                className="account-row"
-                key={p.id}
-                onClick={() => {
-                  setPerson(p);
-                  route.go("profile", p.id);
-                }}
-              >
-                <ProfileAvatar name={p.name} initial />
-                <strong>{p.name}</strong>
-                <span>›</span>
-              </button>
-            ))}
+        <div className="account-panel">
+          {people.map((p) => (
             <button
               className="account-row"
+              key={p.id}
               onClick={() => {
-                setPerson({
-                  id: crypto.randomUUID(),
-                  name: "",
-                  relation: "",
-                  birthday: "",
-                  gender: "",
-                });
-                setStage("nickname");
+                setPerson(p);
+                route.go("profile", p.id);
               }}
             >
-              + Add someone new
+              <ProfileAvatar name={p.name} initial />
+              <strong>{p.name}</strong>
+              <span>›</span>
             </button>
-          </div>
+          ))}
+          <button
+            className="account-row"
+            onClick={() => {
+              setPerson({
+                id: crypto.randomUUID(),
+                name: "",
+                relation: "",
+                birthday: "",
+                gender: "",
+              });
+              setStage("nickname");
+            }}
+          >
+            + Add someone new
+          </button>
+        </div>
+      )}
+      {person && (
+        <>
+          <ProfileChoice
+            open={personChoice === "relation"}
+            title="Select relation"
+            top={304}
+            value={person.relation}
+            options={relations.map((value) => ({ value, label: value }))}
+            onSelect={(relation) => {
+              const next = { ...person, relation };
+              setPerson(next);
+              savePerson(next);
+            }}
+            onClose={() => setPersonChoice(null)}
+          />
+          <ProfileChoice
+            open={personChoice === "gender"}
+            title="Select gender"
+            top={356}
+            value={person.gender}
+            options={[
+              { value: "", label: "Select gender" },
+              { value: "Female", label: "Female" },
+              { value: "Male", label: "Male" },
+              { value: "Other", label: "Other" },
+            ]}
+            onSelect={(gender) => {
+              const next = { ...person, gender };
+              setPerson(next);
+              savePerson(next);
+            }}
+            onClose={() => setPersonChoice(null)}
+          />
         </>
       )}
+    </AccountPage>
+  );
+
+  return (
+    <>
+      {showAccountBackground ? <AccountDetails /> : personPage}
       <Sheet
-        open={stage === "nickname" || stage === "birthday"}
+        open={editingPerson}
         manageHistory={false}
+        headerless={stage === "nickname"}
         className="person-editor-sheet"
-        initialFocus={stage === "nickname" ? ".nickname-input" : '[aria-label="Month"]'}
+        initialFocus={
+          stage === "nickname" ? ".nickname-input" : '[aria-label="Month"]'
+        }
         title={
           stage === "birthday"
             ? `Add ${person?.name ?? ""}'s birthday`
@@ -817,42 +891,7 @@ export function PeoplePage() {
           </form>
         )}
       </Sheet>
-      {person && (
-        <>
-          <ProfileChoice
-            open={personChoice === "relation"}
-            title="Select relation"
-            top={304}
-            value={person.relation}
-            options={relations.map((value) => ({ value, label: value }))}
-            onSelect={(relation) => {
-              const next = { ...person, relation };
-              setPerson(next);
-              savePerson(next);
-            }}
-            onClose={() => setPersonChoice(null)}
-          />
-          <ProfileChoice
-            open={personChoice === "gender"}
-            title="Select gender"
-            top={356}
-            value={person.gender}
-            options={[
-              { value: "", label: "Select gender" },
-              { value: "Female", label: "Female" },
-              { value: "Male", label: "Male" },
-              { value: "Other", label: "Other" },
-            ]}
-            onSelect={(gender) => {
-              const next = { ...person, gender };
-              setPerson(next);
-              savePerson(next);
-            }}
-            onClose={() => setPersonChoice(null)}
-          />
-        </>
-      )}
-    </AccountPage>
+    </>
   );
 }
 export function AddressesPage() {

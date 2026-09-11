@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAccount } from "./state";
 const sizes = {
   shoeSize: [
@@ -55,6 +55,16 @@ export function Preferences({ personId }: { personId?: string }) {
       Boolean(choices[choiceKey(key)]?.length),
     ),
   );
+  const sizePanel = useRef<HTMLDivElement>(null);
+  const skinPanel = useRef<HTMLDivElement>(null);
+
+  function alignPanel(panel: { current: HTMLDivElement | null }, top: number) {
+    requestAnimationFrame(() => {
+      const current = panel.current;
+      if (!current) return;
+      window.scrollBy(0, current.getBoundingClientRect().top - top);
+    });
+  }
 
   function row(
     key: string,
@@ -84,9 +94,11 @@ export function Preferences({ personId }: { personId?: string }) {
                     </b>
                   );
                 })
-              : `Add ${label.toLowerCase()}`}
+              : expanded === key
+                ? null
+                : `Add ${label.toLowerCase()}`}
           </span>
-          <span>⌄</span>
+          <span>{expanded === key ? "⌃" : "⌄"}</span>
         </button>
         {expanded === key && (
           <div className={`preference-chips ${colors ? "color-chips" : ""}`}>
@@ -118,7 +130,7 @@ export function Preferences({ personId }: { personId?: string }) {
   }
   return (
     <>
-      <div className="account-panel field-panel">
+      <div ref={sizePanel} className="account-panel field-panel">
         {Object.entries(sizes).map(([key, options]) => {
           const field = key as keyof typeof sizes;
           const label =
@@ -131,7 +143,11 @@ export function Preferences({ personId }: { personId?: string }) {
             <div key={key}>
               <button
                 className="profile-field"
-                onClick={() => setExpanded(expanded === key ? "" : key)}
+                onClick={() => {
+                  const next = expanded === key ? "" : key;
+                  setExpanded(next);
+                  if (next) alignPanel(sizePanel, 155);
+                }}
               >
                 <span>{label}</span>
                 <span className="selected-preferences">
@@ -143,11 +159,11 @@ export function Preferences({ personId }: { personId?: string }) {
                         ? choices[choiceKey(field)]?.[0]
                         : profile[field]}
                     </b>
-                  ) : (
+                  ) : expanded === key ? null : (
                     `Add ${label.toLowerCase()}`
                   )}
                 </span>
-                <span>⌄</span>
+                <span>{expanded === key ? "⌃" : "⌄"}</span>
               </button>
               {expanded === key && (
                 <div className="preference-chips size-chips">
@@ -185,7 +201,7 @@ export function Preferences({ personId }: { personId?: string }) {
         })}
       </div>
       {skin ? (
-        <div className="account-panel field-panel">
+        <div ref={skinPanel} className="account-panel field-panel">
           {row("skinType", "Skin type", skinTypes, true)}
           {row(
             "undertone",
@@ -253,7 +269,14 @@ export function Preferences({ personId }: { personId?: string }) {
           )}
         </div>
       ) : (
-        <button className="preference-add" onClick={() => setSkin(true)}>
+        <button
+          className="preference-add"
+          onClick={() => {
+            setSkin(true);
+            setExpanded("skinType");
+            alignPanel(skinPanel, 114);
+          }}
+        >
           + Skin care
         </button>
       )}

@@ -369,6 +369,26 @@
   padding: 8px 16px;
   font-weight: 600;
 }
+.person-editor-sheet .editor-actions {
+  gap: 8px;
+}
+.person-editor-sheet .editor-actions > * {
+  min-height: 44px;
+  margin-top: 0;
+}
+.person-editor-sheet .form-cancel {
+  border: 1px solid #dedede;
+  border-radius: 24px;
+}
+.person-profile-page > .danger-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.person-profile-page > .danger-text svg {
+  width: 15px;
+  height: 15px;
+}
 .person-editor-sheet .relationship-chips button.selected {
   background: #111;
   color: #fff;

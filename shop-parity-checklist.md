@@ -4,7 +4,7 @@
 
 **Frozen source:** 97 flows - 424 ordered flow frames - 323 standalone media entries.
 
-**Acceptance progress:** 0 / 97 flows accepted at ledger creation. Source capture is complete; acceptance is intentionally reset to evidence-backed checkmarks.
+**Acceptance progress:** 10 / 97 flows accepted. Source capture is complete; acceptance advances only with evidence-backed checkmarks.
 
 ## Checkbox meaning
 
@@ -88,16 +88,16 @@ The single execution session owns this file. The Lane column is retained only as
 | 66 | Archived orders from Orders<br><sub>`fd0628d8-b28d-4e15-b677-89c328603be6`</sub> | 3 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 67 | Reviewing an order from Orders<br><sub>`7e196d37-7a35-4e2c-a398-eaae5dcf8f26`</sub> | 4 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 68 | Creating an order from Orders<br><sub>`bdd3954f-d943-464a-8c57-6621ffba7fa6`</sub> | 6 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 69 | Profile<br><sub>`cf77c541-39be-418c-91ef-2ca98f8d9f73`</sub> | 7 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 70 | Account from Profile<br><sub>`537d6d87-4f1a-4202-a1aa-82fc3bdb934b`</sub> | 2 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 71 | Uploading profile picture from Account<br><sub>`bb30504f-8cba-413a-9d99-ea413dd27406`</sub> | 3 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 72 | Public profile from Account<br><sub>`15438558-fbdc-457c-ac42-903c2ce730d2`</sub> | 3 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 73 | Adding a name from Account<br><sub>`ac3a3958-4d65-4687-91b5-d9489c7a5996`</sub> | 3 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 74 | Selecting a gender from Account<br><sub>`eed20121-4176-4109-8b3b-3eef33911769`</sub> | 3 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 75 | Adding a birthday from Account<br><sub>`037b3248-e197-46f1-be66-b1bf2b560990`</sub> | 3 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 76 | Adding a shoe size from Account<br><sub>`8b113fe6-f2d5-4756-ba1f-82a5e1fb571b`</sub> | 3 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 77 | Adding a skin condition from Account<br><sub>`232ee098-779e-4cb4-85c4-2a49de1a8a98`</sub> | 6 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 78 | Adding a person to shop from Account<br><sub>`e4568c11-f824-4bfe-9d63-ac0d62665a7d`</sub> | 8 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 69 | Profile<br><sub>`cf77c541-39be-418c-91ef-2ca98f8d9f73`</sub> | 7 | A Account | ACCEPTED | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
+| 70 | Account from Profile<br><sub>`537d6d87-4f1a-4202-a1aa-82fc3bdb934b`</sub> | 2 | A Account | ACCEPTED | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
+| 71 | Uploading profile picture from Account<br><sub>`bb30504f-8cba-413a-9d99-ea413dd27406`</sub> | 3 | A Account | ACCEPTED | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
+| 72 | Public profile from Account<br><sub>`15438558-fbdc-457c-ac42-903c2ce730d2`</sub> | 3 | A Account | ACCEPTED | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
+| 73 | Adding a name from Account<br><sub>`ac3a3958-4d65-4687-91b5-d9489c7a5996`</sub> | 3 | A Account | ACCEPTED | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
+| 74 | Selecting a gender from Account<br><sub>`eed20121-4176-4109-8b3b-3eef33911769`</sub> | 3 | A Account | ACCEPTED | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
+| 75 | Adding a birthday from Account<br><sub>`037b3248-e197-46f1-be66-b1bf2b560990`</sub> | 3 | A Account | ACCEPTED | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
+| 76 | Adding a shoe size from Account<br><sub>`8b113fe6-f2d5-4756-ba1f-82a5e1fb571b`</sub> | 3 | A Account | ACCEPTED | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
+| 77 | Adding a skin condition from Account<br><sub>`232ee098-779e-4cb4-85c4-2a49de1a8a98`</sub> | 6 | A Account | ACCEPTED | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
+| 78 | Adding a person to shop from Account<br><sub>`e4568c11-f824-4bfe-9d63-ac0d62665a7d`</sub> | 8 | A Account | ACCEPTED | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
 | 79 | Order history from Profile<br><sub>`36ccec04-834a-4bdb-85e8-8f828c1070be`</sub> | 2 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 80 | Adding a card (profile) from Profile<br><sub>`0b84e516-1c43-4a00-8832-a659bdb587e7`</sub> | 8 | A Account | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 81 | Card detail from Profile<br><sub>`78af4bc8-3317-4c8b-9d7f-1cd3c82061ea`</sub> | 2 | A Account | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
@@ -122,6 +122,9 @@ The single execution session owns this file. The Lane column is retained only as
 
 A flow becomes **Accept** only after the required boxes are checked from actual evidence. Never infer checkmarks from route count, old prose, screenshots from another commit, or another flow in the same family. If native/system chrome or an unavailable provider is outside the web implementation boundary, document the exact exception next to the flow before acceptance.
 
+### Evidence — flows 69–78 (2026-09-11)
+
+All 41 ordered frozen frames were visually reviewed as one family. The canonical Account/Profile/People implementation was driven at 393×793 through Home → Profile → Account, profile-photo menu/upload state, public profile, name/gender/birthday edits, shoe-size and skin-preference states, and the full add-person nickname → relation → birthday → person-detail → Account return. Source-required preference-panel scroll alignment and the Account-backed person sheet were corrected; native file-picker/keyboard chrome remains outside the web boundary. 320/430 containment passed in the focused family test. `tests/reference/parity-account-69-78.spec.ts`: 3/3 passed. Web typecheck passed; web lint completed with one pre-existing unrelated `discovery/store.tsx:949` warning and no errors; `git diff --check` passed.
 ## Current active queue
 
 Parallel lanes are retired. Follow `single-session-execution.md`. Immediate order:
