@@ -45,7 +45,7 @@ export function Home({ catalog }: { catalog: Catalog }) {
           label="Notifications"
           onClick={() => router.push("/notifications")}
         />
-        <Link className="pill" href="/search?deals=1">
+        <Link className="pill" href="/deals">
           <Icon name="tag" filled />
           Deals
         </Link>

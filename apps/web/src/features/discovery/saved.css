@@ -741,3 +741,60 @@
 .saved-product[data-original-photo="true"] .product-media img {
   filter: brightness(0.96);
 }
+
+/* Frozen Following flows 5–6 share this discovery owner. */
+.saved-page .following-empty {
+  padding: 10px 12px;
+  margin-bottom: 20px;
+}
+.saved-page .following-empty p {
+  margin: 10px 0;
+  line-height: 22px;
+}
+.following-quilt-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+}
+.following-quilt-card > img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+.following-quilt-deal {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 2px 8px;
+  border-radius: 14px;
+  background: #5a33ee;
+  color: #fff;
+  font-size: 12px;
+  line-height: 18px;
+}
+.following-quilt-save {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  border-radius: 50%;
+  background: #999a96d9;
+  color: #fff;
+}
+.following-quilt-save[aria-pressed="true"] {
+  background: #5a33ee;
+}
+.following-quilt-save svg {
+  width: 20px;
+  height: 20px;
+}
+@media (max-width: 359px) {
+  .saved-page .following-empty h2 {
+    font-size: 25px;
+  }
+}

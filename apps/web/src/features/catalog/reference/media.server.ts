@@ -86,6 +86,54 @@ const media: Record<
     file: "flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/009.webp",
     rect: [0, 59, 140, 210],
   },
+  "deals-rinse-logo": {
+    file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp",
+    rect: [24, 184, 26, 26],
+  },
+  "deals-rinse-tres": {
+    file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp",
+    rect: [30, 248, 118, 118],
+  },
+  "deals-rinse-rainbow": {
+    file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp",
+    rect: [210, 268, 120, 113],
+  },
+  "deals-syman-logo": {
+    file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp",
+    rect: [24, 516, 26, 26],
+  },
+  "deals-syman-fir": {
+    file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp",
+    rect: [30, 584, 118, 118],
+  },
+  "deals-syman-lilac": {
+    file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp",
+    rect: [210, 581, 118, 118],
+  },
+  "deals-francesco-logo": {
+    file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/003.webp",
+    rect: [24, 127, 26, 26],
+  },
+  "deals-francesco-goat": {
+    file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/003.webp",
+    rect: [34, 185, 112, 122],
+  },
+  "deals-francesco-lavender": {
+    file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/003.webp",
+    rect: [210, 184, 118, 122],
+  },
+  "deals-solid-logo": {
+    file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/003.webp",
+    rect: [24, 454, 26, 26],
+  },
+  "deals-solid-raquels": {
+    file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/003.webp",
+    rect: [60, 523, 75, 155],
+  },
+  "deals-solid-mask": {
+    file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/003.webp",
+    rect: [220, 519, 105, 130],
+  },
   "home-princess-top": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
     rect: [33, 314, 89, 98],

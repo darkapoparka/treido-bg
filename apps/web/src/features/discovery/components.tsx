@@ -40,10 +40,12 @@ export function FloatingNav({
   back = false,
   cart,
   onBack,
+  showCartWhenEmpty = false,
 }: {
   back?: boolean;
   cart?: () => void;
   onBack?: () => void;
+  showCartWhenEmpty?: boolean;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -61,7 +63,7 @@ export function FloatingNav({
         : "/";
   return (
     <div
-      className={`floating-dock ${back || (cart && cartQuantity > 0) ? "has-side-controls" : ""}`}
+      className={`floating-dock ${back || (cart && (showCartWhenEmpty || cartQuantity > 0)) ? "has-side-controls" : ""}`}
     >
       {back && (
         <IconButton
@@ -94,7 +96,7 @@ export function FloatingNav({
           </Link>
         ))}
       </nav>
-      {cart && cartQuantity > 0 && (
+      {cart && (showCartWhenEmpty || cartQuantity > 0) && (
         <button
           type="button"
           className={`icon-button dock-cart ${cartQuantity > 0 ? "cart-filled" : ""}`}

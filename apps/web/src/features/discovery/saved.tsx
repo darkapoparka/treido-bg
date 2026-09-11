@@ -743,6 +743,7 @@ export function Following({ catalog }: { catalog: Catalog }) {
     router = useRouter();
   const manage = params.get("manage") === "1";
   const [listIds] = useState(() => state.followed);
+  const [quiltSaved, setQuiltSaved] = useState(false);
   const ids = manage
     ? Array.from(new Set([...listIds, ...state.followed]))
     : state.followed;
@@ -824,10 +825,22 @@ export function Following({ catalog }: { catalog: Catalog }) {
                     </p>
                   </span>
                 </div>
-                <img
-                  src="/api/reference-media/following-quilt"
-                  alt="Purple and green quilt"
-                />
+                <div className="following-quilt-card">
+                  <img
+                    src="/api/reference-media/following-quilt"
+                    alt="Purple and green quilt"
+                  />
+                  <span className="following-quilt-deal">Save $3</span>
+                  <button
+                    type="button"
+                    className="following-quilt-save"
+                    aria-label={`${quiltSaved ? "Unsave" : "Save"} quilt pattern`}
+                    aria-pressed={quiltSaved}
+                    onClick={() => setQuiltSaved((value) => !value)}
+                  >
+                    <Icon name="heart" filled={quiltSaved} />
+                  </button>
+                </div>
               </section>
             </>
           ) : (
@@ -913,7 +926,12 @@ export function Following({ catalog }: { catalog: Catalog }) {
           )}
         </>
       )}
-      <FloatingNav back onBack={manage ? () => router.back() : undefined} />
+      <FloatingNav
+        back
+        cart={!manage && !stores.length ? () => router.push("/cart") : undefined}
+        showCartWhenEmpty={!manage && !stores.length}
+        onBack={manage ? () => router.back() : undefined}
+      />
     </main>
   );
 }
