@@ -31,6 +31,7 @@ const paths = {
   edit: "M4 16 16 4l4 4L8 20H4zM14 6l4 4",
   mic: "M9 4a3 3 0 0 1 6 0v8a3 3 0 0 1-6 0ZM5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8",
   camera: "M3 7h4l2-3h6l2 3h4v14H3ZM16 14a4 4 0 1 1-8 0 4 4 0 0 1 8 0",
+  "photo-library": "M3 5h18v14H3zM6 15l4-4 3 3 2-2 4 4M8 9h.01",
   gift: "M3 8h18v5H3zM5 13v8h14v-8M12 8v13M12 8S4 7 6 3s6 5 6 5 8-1 6-5-6 5-6 5",
   reset: "M4 4v6h6M4 10a8 8 0 1 1 0 6",
   home: "M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z",

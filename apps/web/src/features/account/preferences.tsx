@@ -73,7 +73,17 @@ export function Preferences({ personId }: { personId?: string }) {
           <span>{label}</span>
           <span className="selected-preferences">
             {selected.length
-              ? selected.map((value) => <b key={value}>{value}</b>)
+              ? selected.map((value) => {
+                  const swatch = colors?.[options.indexOf(value)];
+                  return (
+                    <b key={value}>
+                      {swatch && (
+                        <i aria-hidden="true" style={{ background: swatch }} />
+                      )}
+                      {value}
+                    </b>
+                  );
+                })
               : `Add ${label.toLowerCase()}`}
           </span>
           <span>⌄</span>
@@ -124,10 +134,18 @@ export function Preferences({ personId }: { personId?: string }) {
                 onClick={() => setExpanded(expanded === key ? "" : key)}
               >
                 <span>{label}</span>
-                <span>
-                  {(personId
-                    ? choices[choiceKey(field)]?.[0]
-                    : profile[field]) || `Add ${label.toLowerCase()}`}
+                <span className="selected-preferences">
+                  {(
+                    personId ? choices[choiceKey(field)]?.[0] : profile[field]
+                  ) ? (
+                    <b>
+                      {personId
+                        ? choices[choiceKey(field)]?.[0]
+                        : profile[field]}
+                    </b>
+                  ) : (
+                    `Add ${label.toLowerCase()}`
+                  )}
                 </span>
                 <span>⌄</span>
               </button>

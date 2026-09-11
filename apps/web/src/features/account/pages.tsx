@@ -4,7 +4,18 @@ import Link from "next/link";
 import { useState, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useDiscovery } from "../discovery/state";
+import { Icon } from "../discovery/icons";
 import { Preferences } from "./preferences";
+import {
+  ProfileAvatar,
+  ProfileChoice,
+  ProfilePhotoMenu,
+} from "./profile-media";
+import {
+  compactProfileEmail,
+  displayBirthday,
+  profileTextPatch,
+} from "./profile-model";
 import type { Catalog } from "../catalog/types";
 import { Sheet, consumeSheetHistory } from "../discovery/components";
 import {
@@ -28,146 +39,212 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
   const { profile, paymentAvailable, orders } = useAccount();
   const discovery = useDiscovery();
   const [logout, setLogout] = useState(false);
+  const starterProfile =
+    !profile.firstName &&
+    !profile.lastName &&
+    !profile.avatar &&
+    !profile.phone;
   return (
     <AccountPage className="profile-overview">
       <Link className="account-panel identity-row" href="/account">
-        <span className="profile-avatar">{profile.firstName.charAt(0)}</span>
+        <ProfileAvatar src={profile.avatar} name={profile.firstName} />
         <span>
-          <strong>
-            {profile.firstName} {profile.lastName}
-          </strong>
-          <small>{profile.email}</small>
+          {starterProfile ? (
+            <strong>{profile.email}</strong>
+          ) : (
+            <>
+              <strong>
+                {profile.firstName} {profile.lastName}
+              </strong>
+              <small>{profile.email}</small>
+            </>
+          )}
         </span>
         <b>›</b>
       </Link>
-      <Link className="account-panel passkey-row" href="/account/security">
-        <span>◉</span>
-        <strong>
-          Add a passkey for fast and secure sign-in on millions of stores
-        </strong>
-        <b>›</b>
-      </Link>
+      {starterProfile ? (
+        <div className="account-panel checkout-faster-card">
+          <strong>Check out faster</strong>
+          <p>
+            Enter and verify a phone number for faster checkout at millions of
+            stores
+          </p>
+          <span className="checkout-faster-art" aria-hidden="true">
+            <i />
+          </span>
+          <Link className="primary" href="/account?edit=phone">
+            Add phone
+          </Link>
+        </div>
+      ) : (
+        <Link className="account-panel passkey-row" href="/account/security">
+          <span>◉</span>
+          <strong>
+            Add a passkey for fast and secure sign-in on millions of stores
+          </strong>
+          <b>›</b>
+        </Link>
+      )}
       <div className="profile-tiles">
         <Link className="account-panel" href="/saved">
           <div className="tile-images">
-            {catalog.products
-              .filter((p) => discovery.saved.includes(p.id))
-              .slice(0, 3)
-              .map((p) => (
-                <img key={p.id} src={p.images[0]} alt="" />
-              ))}
+            {starterProfile ? (
+              <span className="starter-saved-icon" aria-hidden="true">
+                <Icon name="heart" />
+              </span>
+            ) : (
+              catalog.products
+                .filter((p) => discovery.saved.includes(p.id))
+                .slice(0, 3)
+                .map((p) => <img key={p.id} src={p.images[0]} alt="" />)
+            )}
           </div>
           <strong>Saved</strong>
         </Link>
         <Link className="account-panel" href="/following">
           <div className="tile-images">
-            {catalog.stores
-              .filter((store) => discovery.followed.includes(store.id))
-              .slice(0, 3)
-              .map((store) =>
-                store.logo ? (
-                  <img key={store.id} src={store.logo} alt="" />
-                ) : (
-                  <span key={store.id} className="store-logo-fallback">
-                    {store.name[0]}
-                  </span>
-                ),
-              )}
+            {starterProfile ? (
+              <span className="starter-following-logos" aria-hidden="true">
+                <i>/kit·sch/</i>
+                <i>pura.</i>
+              </span>
+            ) : (
+              catalog.stores
+                .filter((store) => discovery.followed.includes(store.id))
+                .slice(0, 3)
+                .map((store) =>
+                  store.logo ? (
+                    <img key={store.id} src={store.logo} alt="" />
+                  ) : (
+                    <span key={store.id} className="store-logo-fallback">
+                      {store.name[0]}
+                    </span>
+                  ),
+                )
+            )}
           </div>
           <strong>Following</strong>
         </Link>
       </div>
       <h2>
-        <Link href="/orders/history">Order history ›</Link>
+        {starterProfile ? (
+          "Order history"
+        ) : (
+          <Link href="/orders/history">Order history ›</Link>
+        )}
       </h2>
       <div className="account-panel profile-order-panel">
-        {orders.slice(0, 2).map((order, i) => {
-          const product = catalog.products.find(
-            (p) => p.id === order.productId,
-          );
-          const seller = catalog.stores.find(
-            (store) => store.id === product?.storeId,
-          );
-          return (
-            <Link
-              className="profile-order-row"
-              key={order.id}
-              href={`/orders/${order.id}`}
-            >
-              <span className="profile-order-logo">
-                {seller?.logo ? (
-                  <img src={seller.logo} alt="" />
-                ) : (
-                  (seller?.name[0] ?? order.name[0])
-                )}
-              </span>
-              <span>
-                <strong>
-                  {i === 0 ? order.name : (seller?.name ?? order.name)}
-                </strong>
-                <small>
-                  {order.status === "In transit"
-                    ? "On the way"
-                    : order.status === "Ordered"
-                      ? "Order placed"
-                      : "Delivered"}
-                </small>
-              </span>
-              {i === 0 ? (
-                <time>Jul 27</time>
-              ) : (
-                product && (
-                  <img
-                    className="profile-order-thumb"
-                    src={product.images[0]}
-                    alt=""
-                  />
-                )
-              )}
+        {starterProfile ? (
+          <div className="profile-empty-orders">
+            <span className="profile-empty-package" aria-hidden="true" />
+            <span>
+              <strong>No orders yet</strong>
+              <small>
+                Orders you place in Shop or sync from your emails will show up
+                here
+              </small>
+            </span>
+            <Link className="pill" href="/account/connections">
+              Connect accounts
             </Link>
-          );
-        })}
-        <EmailConnection />
-      </div>
-      {!!discovery.viewedProducts.length && (
-        <>
-          <h2>Recently viewed ›</h2>
-          <div className="profile-recent-rail">
-            {discovery.viewedProducts.map((id) => {
-              const product = catalog.products.find((p) => p.id === id);
-              return product ? (
-                <Link key={id} href={`/products/${id}`}>
-                  <img src={product.images[0]} alt={product.title} />
-                </Link>
-              ) : null;
-            })}
           </div>
+        ) : (
+          <>
+            {orders.slice(0, 2).map((order, i) => {
+              const product = catalog.products.find(
+                (p) => p.id === order.productId,
+              );
+              const seller = catalog.stores.find(
+                (store) => store.id === product?.storeId,
+              );
+              return (
+                <Link
+                  className="profile-order-row"
+                  key={order.id}
+                  href={`/orders/${order.id}`}
+                >
+                  <span className="profile-order-logo">
+                    {seller?.logo ? (
+                      <img src={seller.logo} alt="" />
+                    ) : (
+                      (seller?.name[0] ?? order.name[0])
+                    )}
+                  </span>
+                  <span>
+                    <strong>
+                      {i === 0 ? order.name : (seller?.name ?? order.name)}
+                    </strong>
+                    <small>
+                      {order.status === "In transit"
+                        ? "On the way"
+                        : order.status === "Ordered"
+                          ? "Order placed"
+                          : "Delivered"}
+                    </small>
+                  </span>
+                  {i === 0 ? (
+                    <time>Jul 27</time>
+                  ) : (
+                    product && (
+                      <img
+                        className="profile-order-thumb"
+                        src={product.images[0]}
+                        alt=""
+                      />
+                    )
+                  )}
+                </Link>
+              );
+            })}
+            <EmailConnection />
+          </>
+        )}
+      </div>
+      {starterProfile ? (
+        <h2 className="starter-family-heading">Family</h2>
+      ) : (
+        <>
+          {!!discovery.viewedProducts.length && (
+            <>
+              <h2>Recently viewed ›</h2>
+              <div className="profile-recent-rail">
+                {discovery.viewedProducts.map((id) => {
+                  const product = catalog.products.find((p) => p.id === id);
+                  return product ? (
+                    <Link key={id} href={`/products/${id}`}>
+                      <img src={product.images[0]} alt={product.title} />
+                    </Link>
+                  ) : null;
+                })}
+              </div>
+            </>
+          )}
+          <div className="profile-payment-heading">
+            <h2>Payment methods</h2>
+            <Link className="pill" href="/account/payments">
+              Add card
+            </Link>
+          </div>
+          {paymentAvailable && (
+            <Link href="/account/payments">
+              <PaymentCard />
+            </Link>
+          )}
+          <div className="account-panel profile-settings-panel">
+            {paymentAvailable && (
+              <Row label="Addresses" href="/account/addresses" />
+            )}
+            <Row label="Sign in & security" href="/account/security" />
+            <Row label="Notifications" href="/account/notifications" />
+            <Row label="Connections" href="/account/connections" />
+            <Row label="Data & privacy" href="/account/privacy" />
+            <Row label="Support" href="/support" />
+          </div>
+          <button className="form-cancel" onClick={() => setLogout(true)}>
+            Sign out
+          </button>
         </>
       )}
-      <div className="profile-payment-heading">
-        <h2>Payment methods</h2>
-        <Link className="pill" href="/account/payments">
-          Add card
-        </Link>
-      </div>
-      {paymentAvailable && (
-        <Link href="/account/payments">
-          <PaymentCard />
-        </Link>
-      )}
-      <div className="account-panel">
-        <Row label="Addresses" href="/account/addresses" />
-      </div>
-      <div className="account-panel">
-        <Row label="Sign in & security" href="/account/security" />
-        <Row label="Notifications" href="/account/notifications" />
-        <Row label="Connections" href="/account/connections" />
-        <Row label="Data & privacy" href="/account/privacy" />
-        <Row label="Support" href="/support" />
-      </div>
-      <button className="form-cancel" onClick={() => setLogout(true)}>
-        Sign out
-      </button>
       <Sheet
         open={logout}
         title="Sign out?"
@@ -211,12 +288,15 @@ export function EmailConnection() {
 }
 export function AccountDetails() {
   const { profile, updateProfile, people } = useAccount();
-  const [field, setField] = useState<keyof Profile | null>(null);
+  const requestedEdit = useSearchParams().get("edit");
+  const [field, setField] = useState<keyof Profile | null>(() =>
+    requestedEdit === "phone" ? "phone" : null,
+  );
   const [draft, setDraft] = useState(profile);
+  const editingName = field === "firstName" || field === "lastName";
   const [draftError, setDraftError] = useState("");
   const [photo, setPhoto] = useState(false);
   const [phoneStage, setPhoneStage] = useState<"phone" | "code">("phone");
-  const [photoError, setPhotoError] = useState("");
   const fields = [
     ["firstName", "First name"],
     ["lastName", "Last name"],
@@ -232,18 +312,22 @@ export function AccountDetails() {
     <AccountPage
       className="profile-editor"
       action={
-        field && field !== "phone" ? (
+        field && field !== "phone" && field !== "gender" ? (
           <button
             className="profile-save"
             onClick={() => {
-              if (!validBirthday(draft.birthday)) {
+              if (field === "birthday" && !validBirthday(draft.birthday)) {
                 setDraftError(
                   "Enter a valid birthday that is not in the future.",
                 );
                 return;
               }
               setDraftError("");
-              updateProfile(draft);
+              if (field === "firstName" || field === "lastName") {
+                updateProfile(profileTextPatch(draft));
+              } else if (field === "birthday") {
+                updateProfile({ birthday: draft.birthday });
+              }
               setField(null);
             }}
           >
@@ -253,43 +337,33 @@ export function AccountDetails() {
       }
     >
       <div className="account-avatar">
-        <span className="profile-avatar large">
-          {profile.avatar ? (
-            <img src={profile.avatar} alt="Your selected profile" />
-          ) : (
-            profile.firstName.charAt(0)
-          )}
-        </span>
+        <ProfileAvatar
+          src={profile.avatar}
+          name={draft.firstName || draft.lastName}
+          large
+        />
         <button
           className="avatar-edit"
           aria-label="Edit profile picture"
           onClick={() => setPhoto(true)}
         >
-          ✎
+          <Icon name="edit" />
         </button>
         <Link className="pill" href="/account/public">
           View public profile
         </Link>
       </div>
-      <div className="account-panel field-panel">
+      <div className="account-panel field-panel profile-contact-fields">
         {fields.map(([key, label]) => (
           <div className="profile-field" key={key}>
             <span>{label}</span>
-            {field === key && key !== "phone" ? (
+            {((editingName && (key === "firstName" || key === "lastName")) ||
+              field === key) &&
+            key !== "phone" ? (
               key === "gender" ? (
-                <select
-                  aria-label="Gender"
-                  value={draft[key]}
-                  onChange={(e) =>
-                    setDraft({ ...draft, [key]: e.target.value })
-                  }
-                >
-                  {["Select gender", "Female", "Male", "Other"].map(
-                    (option) => (
-                      <option key={option}>{option}</option>
-                    ),
-                  )}
-                </select>
+                <button type="button" onClick={() => setField("gender")}>
+                  {draft.gender || "Select gender"}
+                </button>
               ) : key === "birthday" ? (
                 <DateFields
                   value={draft.birthday}
@@ -307,18 +381,44 @@ export function AccountDetails() {
                 />
               )
             ) : (
-              <button disabled={key === "email"} onClick={() => edit(key)}>
-                {(key === "birthday" &&
-                validBirthday(draft.birthday) &&
-                draft.birthday
-                  ? `${draft.birthday.slice(5, 7)}/${draft.birthday.slice(8, 10)}/${draft.birthday.slice(0, 4)}`
-                  : draft[key]) ||
+              <button
+                className={!draft[key] ? "profile-placeholder" : undefined}
+                disabled={key === "email"}
+                onClick={() => edit(key)}
+              >
+                {(key === "email"
+                  ? compactProfileEmail(draft.email)
+                  : key === "birthday" &&
+                      validBirthday(draft.birthday) &&
+                      draft.birthday
+                    ? displayBirthday(draft.birthday)
+                    : draft[key]) ||
                   (key === "gender"
                     ? "Select gender"
-                    : `Add ${label.toLowerCase()}`)}
+                    : key === "birthday"
+                      ? "MM/DD/YYYY"
+                      : key === "firstName" || key === "lastName"
+                        ? label
+                        : `Add ${label.toLowerCase()}`)}
               </button>
             )}
-            <span>{key === "email" ? "⌑" : "›"}</span>
+            {key === "email" ? (
+              <Icon name="lock" />
+            ) : key === "phone" ? (
+              <span aria-hidden="true">›</span>
+            ) : key === "gender" ? (
+              <svg
+                data-select-arrows
+                aria-hidden="true"
+                viewBox="0 0 12 14"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path d="m3 5 3-3 3 3M3 9l3 3 3-3" />
+              </svg>
+            ) : (
+              <span aria-hidden="true" />
+            )}
           </div>
         ))}
       </div>
@@ -333,14 +433,14 @@ export function AccountDetails() {
         {people.map((p) => (
           <Link
             className="person-chip"
-            href={`/account/people?view=profile&id=${p.id}`}
+            href={`/account/people?view=profile&id=${p.id}&return=account`}
             key={p.id}
           >
-            <span className="profile-avatar">{p.name[0]}</span>
+            <ProfileAvatar name={p.name} initial />
             {p.name}
           </Link>
         ))}
-        <Link className="add-person-tile" href="/account/people">
+        <Link className="add-person-tile" href="/account/people?view=nickname&new=1&return=account" scroll={false}>
           <span>+</span>
           {people.length ? "Add someone new" : "Add someone"}
         </Link>
@@ -359,37 +459,28 @@ export function AccountDetails() {
           }}
         />
       </Sheet>
-      <Sheet
+      <ProfileChoice
+        open={field === "gender"}
+        title="Select gender"
+        top={259}
+        value={draft.gender}
+        options={[
+          { value: "", label: "Select gender" },
+          { value: "Female", label: "Female" },
+          { value: "Male", label: "Male" },
+          { value: "Other", label: "Other" },
+        ]}
+        onSelect={(gender) => {
+          setDraft({ ...draft, gender });
+          updateProfile({ gender });
+        }}
+        onClose={() => setField(null)}
+      />
+      <ProfilePhotoMenu
         open={photo}
-        title="Profile picture"
         onClose={() => setPhoto(false)}
-      >
-        <label className="form-field">
-          Choose photo
-          <input
-            type="file"
-            accept="image/png,image/jpeg,image/webp"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              if (file.size > 3_000_000) {
-                setPhotoError("Choose an image smaller than 3 MB.");
-                return;
-              }
-              const reader = new FileReader();
-              reader.onload = () => {
-                updateProfile({ avatar: String(reader.result) });
-                setPhoto(false);
-              };
-              reader.readAsDataURL(file);
-            }}
-          />
-        </label>
-        {photoError && <p role="alert">{photoError}</p>}
-        <p className="form-note">
-          The image stays in this page session and is not uploaded.
-        </p>
-      </Sheet>
+        onSelect={(avatar) => updateProfile({ avatar })}
+      />
     </AccountPage>
   );
 }
@@ -404,13 +495,7 @@ export function PublicProfile({ catalog }: { catalog: Catalog }) {
   return (
     <AccountPage>
       <div className="public-profile">
-        <span className="profile-avatar large">
-          {profile.avatar ? (
-            <img src={profile.avatar} alt="Your selected profile" />
-          ) : (
-            profile.firstName[0]
-          )}
-        </span>
+        <ProfileAvatar src={profile.avatar} name={profile.firstName} large />
         {!!publicCollections.length && (
           <h1>
             {profile.firstName} {profile.lastName}
@@ -494,17 +579,34 @@ export function PublicProfile({ catalog }: { catalog: Catalog }) {
 export function PeoplePage() {
   const { people, savePerson, deletePerson } = useAccount();
   const route = useAccountStage();
-  const [person, setPerson] = useState<Person | null>(
-    () => people.find((p) => p.id === route.id) ?? null,
-  );
+  const params = useSearchParams();
+  const returnToAccount = params.get("return") === "account";
+  const [person, setPerson] = useState<Person | null>(() => {
+    const existing = people.find((p) => p.id === route.id);
+    if (existing) return existing;
+    if (route.view === "nickname" && params.get("new") === "1") {
+      return {
+        id: crypto.randomUUID(),
+        name: "",
+        relation: "",
+        birthday: "",
+        gender: "",
+      };
+    }
+    return null;
+  });
   const stage = ["profile", "nickname", "birthday"].includes(route.view ?? "")
     ? route.view
     : "list";
+  const [personChoice, setPersonChoice] = useState<"relation" | "gender" | null>(null);
   const setStage = (next: "list" | "nickname" | "birthday" | "profile") => {
-    if (next === "list") route.back();
-    else {
+    if (next === "list") {
+      if (returnToAccount) route.exit();
+      else route.back();
+    } else {
       consumeSheetHistory();
-      route.go(next, person?.id);
+      if (returnToAccount) route.replace(next, person?.id);
+      else route.go(next, person?.id);
     }
   };
   const [birthdayError, setBirthdayError] = useState("");
@@ -531,13 +633,19 @@ export function PeoplePage() {
   };
   return (
     <AccountPage
+      className={stage === "profile" ? "person-profile-page" : ""}
       onBack={stage !== "list" ? () => setStage("list") : undefined}
       title={stage === "profile" ? undefined : "Others you shop for"}
     >
       {stage === "profile" && person ? (
         <>
           <div className="person-profile">
-            <span className="profile-avatar large">{person.name[0]}</span>
+            <div className="person-avatar-wrap">
+              <ProfileAvatar name={person.name} large initial />
+              <span className="avatar-edit" aria-hidden="true">
+                <Icon name="edit" />
+              </span>
+            </div>
             <input
               aria-label="Nickname"
               value={person.name}
@@ -548,50 +656,30 @@ export function PeoplePage() {
               }}
             />
           </div>
-          <div className="account-panel field-panel">
-            {(["relation", "gender", "birthday"] as const).map((key) => (
-              <label className="profile-field" key={key}>
-                <span>
-                  {key === "relation"
-                    ? "Relation"
-                    : key === "gender"
-                      ? "Gender"
-                      : "Birthday"}
-                </span>
-                {key === "birthday" ? (
-                  <DateFields
-                    value={person.birthday}
-                    onChange={(birthday) => {
-                      const next = { ...person, birthday };
-                      setPerson(next);
-                      if (validBirthday(birthday)) {
-                        savePerson(next);
-                        setBirthdayError("");
-                      } else
-                        setBirthdayError(
-                          "Enter a valid birthday that is not in the future.",
-                        );
-                    }}
-                  />
-                ) : (
-                  <select
-                    value={person[key]}
-                    onChange={(e) => {
-                      const next = { ...person, [key]: e.target.value };
-                      setPerson(next);
-                      savePerson(next);
-                    }}
-                  >
-                    {(key === "relation"
-                      ? relations
-                      : ["Select gender", "Female", "Male", "Other"]
-                    ).map((o) => (
-                      <option key={o}>{o}</option>
-                    ))}
-                  </select>
-                )}
-              </label>
-            ))}
+          <div className="account-panel field-panel person-core-fields">
+            <button className="profile-field" onClick={() => setPersonChoice("relation")}>
+              <span>Relation</span>
+              <span>{person.relation || "Select relation"}</span>
+              <svg data-select-arrows aria-hidden="true" viewBox="0 0 12 14" fill="none" stroke="currentColor">
+                <path d="m3 5 3-3 3 3M3 9l3 3 3-3" />
+              </svg>
+            </button>
+            <button className="profile-field" onClick={() => setPersonChoice("gender")}>
+              <span>Gender</span>
+              <span className={!person.gender ? "profile-placeholder" : undefined}>
+                {person.gender || "Select gender"}
+              </span>
+              <svg data-select-arrows aria-hidden="true" viewBox="0 0 12 14" fill="none" stroke="currentColor">
+                <path d="m3 5 3-3 3 3M3 9l3 3 3-3" />
+              </svg>
+            </button>
+            <div className="profile-field person-birthday-row">
+              <span>Birthday</span>
+              <span className={!person.birthday ? "profile-placeholder" : undefined}>
+                {person.birthday ? displayBirthday(person.birthday) : "MM/DD/YYYY"}
+              </span>
+              <span aria-hidden="true" />
+            </div>
           </div>
 
           {birthdayError && (
@@ -622,7 +710,7 @@ export function PeoplePage() {
                   route.go("profile", p.id);
                 }}
               >
-                <span className="profile-avatar">{p.name[0]}</span>
+                <ProfileAvatar name={p.name} initial />
                 <strong>{p.name}</strong>
                 <span>›</span>
               </button>
@@ -633,7 +721,7 @@ export function PeoplePage() {
                 setPerson({
                   id: crypto.randomUUID(),
                   name: "",
-                  relation: "Friend",
+                  relation: "",
                   birthday: "",
                   gender: "",
                 });
@@ -648,9 +736,11 @@ export function PeoplePage() {
       <Sheet
         open={stage === "nickname" || stage === "birthday"}
         manageHistory={false}
+        className="person-editor-sheet"
+        initialFocus={stage === "nickname" ? ".nickname-input" : '[aria-label="Month"]'}
         title={
           stage === "birthday"
-            ? `Add ${person?.name ?? ""}’s birthday`
+            ? `Add ${person?.name ?? ""}'s birthday`
             : "Add a nickname"
         }
         onClose={() => setStage("list")}
@@ -695,13 +785,12 @@ export function PeoplePage() {
                 </p>
               </>
             ) : (
-              <label className="form-field">
-                Birthday
+              <div className="person-birthday-editor">
                 <DateFields
                   value={person.birthday}
                   onChange={(birthday) => setPerson({ ...person, birthday })}
                 />
-              </label>
+              </div>
             )}
             {birthdayError && (
               <p role="alert" className="form-error">
@@ -728,6 +817,41 @@ export function PeoplePage() {
           </form>
         )}
       </Sheet>
+      {person && (
+        <>
+          <ProfileChoice
+            open={personChoice === "relation"}
+            title="Select relation"
+            top={304}
+            value={person.relation}
+            options={relations.map((value) => ({ value, label: value }))}
+            onSelect={(relation) => {
+              const next = { ...person, relation };
+              setPerson(next);
+              savePerson(next);
+            }}
+            onClose={() => setPersonChoice(null)}
+          />
+          <ProfileChoice
+            open={personChoice === "gender"}
+            title="Select gender"
+            top={356}
+            value={person.gender}
+            options={[
+              { value: "", label: "Select gender" },
+              { value: "Female", label: "Female" },
+              { value: "Male", label: "Male" },
+              { value: "Other", label: "Other" },
+            ]}
+            onSelect={(gender) => {
+              const next = { ...person, gender };
+              setPerson(next);
+              savePerson(next);
+            }}
+            onClose={() => setPersonChoice(null)}
+          />
+        </>
+      )}
     </AccountPage>
   );
 }
@@ -1098,6 +1222,13 @@ function useAccountStage() {
     entered.current = true;
     router.push(`${pathname}?${query}`, { scroll: false });
   };
+  const replace = (view: string, id?: string) => {
+    const query = new URLSearchParams(params.toString());
+    query.set("view", view);
+    query.delete("new");
+    if (id) query.set("id", id);
+    router.replace(`${pathname}?${query}`, { scroll: false });
+  };
   const back = () => {
     if (entered.current) {
       entered.current = false;
@@ -1108,6 +1239,8 @@ function useAccountStage() {
     view: params.get("view"),
     id: params.get("id"),
     go,
+    replace,
+    exit: () => router.back(),
     back,
     overview: () => router.replace(pathname, { scroll: false }),
   };
