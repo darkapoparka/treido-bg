@@ -1,3 +1,7 @@
+# RETIRED: do not launch these parallel prompts
+
+Owner update 2026-09-11: use the single-session prompt/loop in `single-session-execution.md`. The old prompts below are historical only.
+
 # Copy-paste prompts for parallel Shop parity sessions
 
 Run all sessions against the same machine/repository. These prompts assume the discipline in `AGENTS.md`, `parallel-execution.md` and `shop-parity-checklist.md` is present in the local checkout.

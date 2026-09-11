@@ -16,16 +16,16 @@
 - **Test**: focused automated coverage for the flow/family passed.
 - **Accept**: all required evidence is satisfied or a named exception is documented and approved.
 
-Only Session C / Integrator edits this file during parallel execution. Workers report evidence in their lane notes.
+The single execution session owns this file. The Lane column is retained only as historical family grouping; do not launch parallel writers or lane locks.
 
 | # | Flow | Frames | Lane | State | Src | Impl | UX | 393 | Widths | Test | Accept |
 |---:|---|---:|---|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | 1 | Onboarding<br><sub>`b778fdce-2c65-4153-aaee-6703098f27d4`</sub> | 15 | A Account | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 2 | Home<br><sub>`8d7a8acd-de80-444e-93ba-65c61d7b6444`</sub> | 6 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 3 | Notifications from Home<br><sub>`7d658ff4-e530-401f-9ce3-07b9533e913b`</sub> | 2 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 4 | Deals from Home<br><sub>`7fd66949-219c-4ef9-ba53-a3482dbe2e60`</sub> | 3 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 5 | Following from Home<br><sub>`d0ac7fdc-d174-4a9c-a18d-3136f358c5a7`</sub> | 4 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 6 | Following list from Following<br><sub>`86f7d1aa-4b5a-485d-b106-c0bc09983673`</sub> | 2 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 2 | Home<br><sub>`8d7a8acd-de80-444e-93ba-65c61d7b6444`</sub> | 6 | C Discovery | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 3 | Notifications from Home<br><sub>`7d658ff4-e530-401f-9ce3-07b9533e913b`</sub> | 2 | C Discovery | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 4 | Deals from Home<br><sub>`7fd66949-219c-4ef9-ba53-a3482dbe2e60`</sub> | 3 | C Discovery | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 5 | Following from Home<br><sub>`d0ac7fdc-d174-4a9c-a18d-3136f358c5a7`</sub> | 4 | C Discovery | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 6 | Following list from Following<br><sub>`86f7d1aa-4b5a-485d-b106-c0bc09983673`</sub> | 2 | C Discovery | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 7 | Saved from Home<br><sub>`75b26fee-826f-4403-9288-be499890cd72`</sub> | 4 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 8 | Creating a collection from Saved<br><sub>`b74ee3f5-005d-40d3-9466-f6d080f62b40`</sub> | 7 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 9 | Collection detail (saved) from Saved<br><sub>`a3ff00dc-6536-4966-89ae-2af61582d347`</sub> | 3 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
@@ -40,17 +40,17 @@ Only Session C / Integrator edits this file during parallel execution. Workers r
 | 18 | Photos from Product detail<br><sub>`0f9653b4-5412-485a-a3a4-62bfb492a27e`</sub> | 3 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 19 | Saving a product to a collection from Product detail<br><sub>`300d3e11-4ba4-4c43-b720-a7132c6eb7f5`</sub> | 3 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 20 | Adding a product to cart from Product detail<br><sub>`9211553e-bc3c-45f9-943b-f032766e6799`</sub> | 3 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 21 | Purchasing a product from Adding a product to cart<br><sub>`968f374e-69af-4adb-b913-0bb5c0e5e8b1`</sub> | 10 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 22 | Deleting a product from cart from Purchasing a product<br><sub>`c5c9c07b-c093-4221-a2f8-44ca7c29ded0`</sub> | 2 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 23 | Saving a product for later from Purchasing a product<br><sub>`07f5c915-d967-4ef4-89f7-e08ac90c974c`</sub> | 2 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 24 | Adding a phone number from Purchasing a product<br><sub>`5d20e36e-e6c5-4561-b42b-b0385bf6ae86`</sub> | 6 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 25 | Adding an address from Purchasing a product<br><sub>`e116f3b1-f952-4b4d-a0ba-0125bd3e65f7`</sub> | 6 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 26 | Adding a card (purchasing a product) from Purchasing a product<br><sub>`d92a8091-56fb-4119-baf8-13c9baaba2ad`</sub> | 3 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 27 | Adding an address (review & pay) from Purchasing a product<br><sub>`8ecf7b0b-df5a-4773-9ac4-c61d62ca4459`</sub> | 6 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 28 | Deleting an address from Adding an address (review & pay)<br><sub>`797e33cd-30bd-4d70-b3ef-72aa655394fb`</sub> | 4 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 29 | Adding a card (review & pay) from Purchasing a product<br><sub>`604544ec-654f-4358-b33b-ce189f5fd4e4`</sub> | 5 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 30 | Order summary from Purchasing a product<br><sub>`5a094147-42c1-4132-9f3d-b8ac55a25ef4`</sub> | 2 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 31 | Order receipt (purchasing a product) from Purchasing a product<br><sub>`c61e4d3b-629f-48b5-a322-5472f46e9b1b`</sub> | 3 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 21 | Purchasing a product from Adding a product to cart<br><sub>`968f374e-69af-4adb-b913-0bb5c0e5e8b1`</sub> | 10 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 22 | Deleting a product from cart from Purchasing a product<br><sub>`c5c9c07b-c093-4221-a2f8-44ca7c29ded0`</sub> | 2 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 23 | Saving a product for later from Purchasing a product<br><sub>`07f5c915-d967-4ef4-89f7-e08ac90c974c`</sub> | 2 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 24 | Adding a phone number from Purchasing a product<br><sub>`5d20e36e-e6c5-4561-b42b-b0385bf6ae86`</sub> | 6 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 25 | Adding an address from Purchasing a product<br><sub>`e116f3b1-f952-4b4d-a0ba-0125bd3e65f7`</sub> | 6 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 26 | Adding a card (purchasing a product) from Purchasing a product<br><sub>`d92a8091-56fb-4119-baf8-13c9baaba2ad`</sub> | 3 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 27 | Adding an address (review & pay) from Purchasing a product<br><sub>`8ecf7b0b-df5a-4773-9ac4-c61d62ca4459`</sub> | 6 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 28 | Deleting an address from Adding an address (review & pay)<br><sub>`797e33cd-30bd-4d70-b3ef-72aa655394fb`</sub> | 4 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 29 | Adding a card (review & pay) from Purchasing a product<br><sub>`604544ec-654f-4358-b33b-ce189f5fd4e4`</sub> | 5 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 30 | Order summary from Purchasing a product<br><sub>`5a094147-42c1-4132-9f3d-b8ac55a25ef4`</sub> | 2 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 31 | Order receipt (purchasing a product) from Purchasing a product<br><sub>`c61e4d3b-629f-48b5-a322-5472f46e9b1b`</sub> | 3 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 32 | Description from Product detail<br><sub>`1dc39cc8-951e-4207-96a5-296145053e26`</sub> | 2 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 33 | Reviews (product detail) from Product detail<br><sub>`4e59dce2-d2a0-4f4e-ae16-54267243df75`</sub> | 2 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 34 | Searching keywords from Reviews (product detail)<br><sub>`b2a75fc0-0d02-462f-8bb7-65ae38d08840`</sub> | 2 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
@@ -79,26 +79,26 @@ Only Session C / Integrator edits this file during parallel execution. Workers r
 | 57 | Analyzing skin from Minis<br><sub>`01972be8-07ed-4dfa-9ec9-d1e6824c35bc`</sub> | 7 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 58 | Finding similar clothes from Minis<br><sub>`d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24`</sub> | 8 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 59 | Chatting with Gift Sense from Minis<br><sub>`dc8fb947-e214-4d8c-ad6d-e814406e6ef7`</sub> | 11 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 60 | Orders<br><sub>`8f406a69-ad1c-4de8-a699-12aa504efb74`</sub> | 6 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 61 | Order detail from Orders<br><sub>`d3bf7c94-4d9e-4298-a255-eaf177f9efd1`</sub> | 11 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 62 | Copying order number from Order detail<br><sub>`5dacb846-9f3f-4c7f-9378-d6178924867d`</sub> | 3 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 63 | Marking an order as delivered from Order detail<br><sub>`e6c06e9f-26c9-476e-a3e5-d34c968eaa3d`</sub> | 3 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 64 | Delivery progress from Order detail<br><sub>`10af411e-3523-4f6a-bb2f-ed4355895f4b`</sub> | 3 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 65 | Updating tracking detail from Order detail<br><sub>`db478544-df8f-4e16-9e16-39a4829975f8`</sub> | 4 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 66 | Archived orders from Orders<br><sub>`fd0628d8-b28d-4e15-b677-89c328603be6`</sub> | 3 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 67 | Reviewing an order from Orders<br><sub>`7e196d37-7a35-4e2c-a398-eaae5dcf8f26`</sub> | 4 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 68 | Creating an order from Orders<br><sub>`bdd3954f-d943-464a-8c57-6621ffba7fa6`</sub> | 6 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 69 | Profile<br><sub>`cf77c541-39be-418c-91ef-2ca98f8d9f73`</sub> | 7 | A Account | ACTIVE | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 70 | Account from Profile<br><sub>`537d6d87-4f1a-4202-a1aa-82fc3bdb934b`</sub> | 2 | A Account | ACTIVE | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 71 | Uploading profile picture from Account<br><sub>`bb30504f-8cba-413a-9d99-ea413dd27406`</sub> | 3 | A Account | ACTIVE | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 72 | Public profile from Account<br><sub>`15438558-fbdc-457c-ac42-903c2ce730d2`</sub> | 3 | A Account | ACTIVE | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 73 | Adding a name from Account<br><sub>`ac3a3958-4d65-4687-91b5-d9489c7a5996`</sub> | 3 | A Account | ACTIVE | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 74 | Selecting a gender from Account<br><sub>`eed20121-4176-4109-8b3b-3eef33911769`</sub> | 3 | A Account | ACTIVE | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 75 | Adding a birthday from Account<br><sub>`037b3248-e197-46f1-be66-b1bf2b560990`</sub> | 3 | A Account | ACTIVE | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 76 | Adding a shoe size from Account<br><sub>`8b113fe6-f2d5-4756-ba1f-82a5e1fb571b`</sub> | 3 | A Account | ACTIVE | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 77 | Adding a skin condition from Account<br><sub>`232ee098-779e-4cb4-85c4-2a49de1a8a98`</sub> | 6 | A Account | ACTIVE | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 78 | Adding a person to shop from Account<br><sub>`e4568c11-f824-4bfe-9d63-ac0d62665a7d`</sub> | 8 | A Account | ACTIVE | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 79 | Order history from Profile<br><sub>`36ccec04-834a-4bdb-85e8-8f828c1070be`</sub> | 2 | B Commerce | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 60 | Orders<br><sub>`8f406a69-ad1c-4de8-a699-12aa504efb74`</sub> | 6 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 61 | Order detail from Orders<br><sub>`d3bf7c94-4d9e-4298-a255-eaf177f9efd1`</sub> | 11 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 62 | Copying order number from Order detail<br><sub>`5dacb846-9f3f-4c7f-9378-d6178924867d`</sub> | 3 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 63 | Marking an order as delivered from Order detail<br><sub>`e6c06e9f-26c9-476e-a3e5-d34c968eaa3d`</sub> | 3 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 64 | Delivery progress from Order detail<br><sub>`10af411e-3523-4f6a-bb2f-ed4355895f4b`</sub> | 3 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 65 | Updating tracking detail from Order detail<br><sub>`db478544-df8f-4e16-9e16-39a4829975f8`</sub> | 4 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 66 | Archived orders from Orders<br><sub>`fd0628d8-b28d-4e15-b677-89c328603be6`</sub> | 3 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 67 | Reviewing an order from Orders<br><sub>`7e196d37-7a35-4e2c-a398-eaae5dcf8f26`</sub> | 4 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 68 | Creating an order from Orders<br><sub>`bdd3954f-d943-464a-8c57-6621ffba7fa6`</sub> | 6 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 69 | Profile<br><sub>`cf77c541-39be-418c-91ef-2ca98f8d9f73`</sub> | 7 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 70 | Account from Profile<br><sub>`537d6d87-4f1a-4202-a1aa-82fc3bdb934b`</sub> | 2 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 71 | Uploading profile picture from Account<br><sub>`bb30504f-8cba-413a-9d99-ea413dd27406`</sub> | 3 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 72 | Public profile from Account<br><sub>`15438558-fbdc-457c-ac42-903c2ce730d2`</sub> | 3 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 73 | Adding a name from Account<br><sub>`ac3a3958-4d65-4687-91b5-d9489c7a5996`</sub> | 3 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 74 | Selecting a gender from Account<br><sub>`eed20121-4176-4109-8b3b-3eef33911769`</sub> | 3 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 75 | Adding a birthday from Account<br><sub>`037b3248-e197-46f1-be66-b1bf2b560990`</sub> | 3 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 76 | Adding a shoe size from Account<br><sub>`8b113fe6-f2d5-4756-ba1f-82a5e1fb571b`</sub> | 3 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 77 | Adding a skin condition from Account<br><sub>`232ee098-779e-4cb4-85c4-2a49de1a8a98`</sub> | 6 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 78 | Adding a person to shop from Account<br><sub>`e4568c11-f824-4bfe-9d63-ac0d62665a7d`</sub> | 8 | A Account | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 79 | Order history from Profile<br><sub>`36ccec04-834a-4bdb-85e8-8f828c1070be`</sub> | 2 | B Commerce | REVIEW | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 80 | Adding a card (profile) from Profile<br><sub>`0b84e516-1c43-4a00-8832-a659bdb587e7`</sub> | 8 | A Account | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 81 | Card detail from Profile<br><sub>`78af4bc8-3317-4c8b-9d7f-1cd3c82061ea`</sub> | 2 | A Account | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 82 | Deleting a card from Card detail<br><sub>`57811b67-ea3f-4231-bdc0-1776716034db`</sub> | 3 | A Account | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
@@ -124,8 +124,12 @@ A flow becomes **Accept** only after the required boxes are checked from actual 
 
 ## Current active queue
 
-1. **Lane A:** finish flows 69-78 first; then 80-84; then 85-89/93; then 90-92; then 1/94.
-2. **Lane B:** flows 21-31 first; then 60-68 and 79.
-3. **Lane C:** audit/fix discovery in family order: 2-6/42, 7-13, 14-20/32/37-41/96-97, 33-36/38-39, 43-51, 52-59, then 95.
+Parallel lanes are retired. Follow `single-session-execution.md`. Immediate order:
 
-The Integrator may change queue order only to resolve a dependency or a shared-file request; record the reason in `parallel-execution.md`.
+1. Finish and accept flows **69–78** from the consolidated Account/Profile checkpoint.
+2. Continue **80–84**, then **85–94**.
+3. Revisit/fix **2–6 + 42**, then **7–13**, then **14–20 + 32 + 37–41 + 96–97**.
+4. Continue **33–36 + 38–39**, **43–51**, **52–59**, then **95**.
+5. Validate/fix commerce **21–31 + 60–68 + 79** as one acceptance pass; preserve `0f92453` rather than rebuilding it.
+
+Work family-by-family: inspect source once, implement in one pass, QA at 393x793, run one focused family test batch, update this ledger, commit/push, then continue.

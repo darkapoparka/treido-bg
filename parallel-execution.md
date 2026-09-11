@@ -1,3 +1,7 @@
+# RETIRED: parallel writer mode
+
+Owner update 2026-09-11: the multi-session writer experiment is retired. Do not use lane locks or run parallel writers. Follow `single-session-execution.md`. The material below is kept only as historical coordination evidence.
+
 # Parallel Shop parity execution
 
 This file defines how 2–3 ChatGPT/Codex sessions may work on the same `J:\treido-bg` checkout without branches or worktrees. The objective is faster Shop 1:1 completion without corrupting shared `main`.

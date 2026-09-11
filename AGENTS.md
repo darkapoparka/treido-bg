@@ -2,7 +2,7 @@
 
 ## Execute the requested numbered task
 
-Owner instruction (updated 2026-09-11): work directly on the single `J:\treido-bg` checkout and `main`. Do not create feature branches or worktrees. Preserve existing work and inspect upstream before synchronization. For the Shop 1:1 phase, up to three sessions may run in parallel only under [parallel-execution.md](parallel-execution.md): fixed non-overlapping lanes, explicit path ownership, ignored lane locks, explicit-path commits, and Lane C as the sole shared-file/integration/push owner. Outside that protocol, serialize edits. Local commits are authorized; pushing or deploying still requires the applicable authorization.
+Owner instruction (updated 2026-09-11): use **one execution session** directly on the single `J:\treido-bg` checkout and `main`. Do not create feature branches, worktrees or parallel writer lanes. Preserve existing work and inspect upstream before synchronization. During the Shop 1:1 phase follow [single-session-execution.md](single-session-execution.md) and [shop-parity-checklist.md](shop-parity-checklist.md). The older parallel documents are historical only. Local commits and pushes to the authorized `darkapoparka/treido-bg` `main` are allowed for coherent verified batches; deployment still requires separate authorization.
 
 When the user says **Execute Task N**, open [tasks.md](tasks.md), locate Task N, read its listed sources and implement that work package. Do not return another proposal, ask the user to name files, or execute the entire roadmap. **Continue Task N** resumes its recorded progress. Task numbers are the only execution interface; feature IDs in [product.md](product.md) describe requirements, not a second queue.
 
