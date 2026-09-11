@@ -67,6 +67,17 @@ node .qa/shop-parity/shop-parity.cjs compare-runs --before payments-before --aft
 ```
 
 Run against the owned preview with `SHOP_REFERENCE_PREVIEW=1`; current development target is `http://127.0.0.1:6412`. Each scored frame writes `reference.png`, `live.png`, `overlay.png`, `difference-heatmap.png`, plus ranked JSON/CSV/Markdown at the run root.
+
+The `.qa/shop-parity/` scorer is intentionally machine-local and untracked. On the authorized `J:\treido-bg` machine, reuse it. A fresh checkout/account that does not have `.qa/shop-parity/` must recreate the disposable scorer from this document before broad tuning; do not replace quantitative QA with manual "looks close" review.
+
+### Scorer runtime invariants
+
+- Port **6412 must serve the live `J:\treido-bg` development source**, not an old `next start` production build. Verify the listener/process before trusting a score.
+- Every route-changing replay action must wait for the target state to become visible before capture. A click completing is not proof that App Router navigation rendered.
+- Focus is part of the visual state. Blur fields when the frozen frame is unfocused; do not tune CSS to compensate for browser focus rings that are absent in the source.
+- Wait for `document.fonts.ready`, decoded images and two animation frames before screenshotting. Use a fresh browser context for every independently scored frame.
+- If a score changes implausibly after a CSS rule that cannot affect that state, inspect the live artifact and replay recipe before accepting/rejecting the source change.
+
 ## Shared visual primitives and leverage
 
 | Owner | Primary files | Dependent flow families |
@@ -86,30 +97,39 @@ Run against the owned preview with `SHOP_REFERENCE_PREVIEW=1`; current developme
 
 Fix the highest-leverage shared primitive only when the ranked heatmaps show the same residual pattern across siblings. Otherwise fix the family-specific owner.
 
-## Current quantitative baseline
+## Current quantitative baseline and exact resume point
 
-Run: `.qa/shop-parity/runs/current-80-84-scored/` against the preserved working tree. 19/19 mapped frames scored successfully.
+Pushed checkpoint: **`782d507`** (`feat(account): score and refine Shop payment address parity`). Flows 80–84 are REVIEW, not accepted. The machine-local scorer currently reproduces all 19 mapped 80–84 frames.
+
+Latest truthful payment-family run after replay-state corrections and the validated Profile composition source change:
 
 | Family | Frames | Mean MAE % | Worst MAE % | Mean bad-pixel-12 % |
 | --- | ---: | ---: | ---: | ---: |
-| account-payments | 13 | 4.102 | 7.108 | 14.540 |
-| account-addresses | 6 | 2.635 | 4.869 | 8.132 |
+| account-payments | 13 | **3.787** | **7.108** | **14.035** |
+| account-addresses | 6 | **2.635** | **4.869** | **8.132** |
 
-Worst mapped states now: flow 80 frame 7 `add-card-save-visible` 7.108%; flow 80 frame 8 `profile-two-cards` 5.341%; flow 80 frame 6 `add-card-name-and-billing` 5.287%; shared profile payment-method state 4.869%; card detail 4.823%; address detail 3.002%; address-delete dialog 2.860%. Best mapped state is flow 80 frame 2 at 0.981%.
-Measured improvement already established: the flow-80 add-card bottom-space sweep found **185px** as the local optimum; frame 7 improved **11.664% -> 7.108% MAE** while every other scored payment sibling remained numerically unchanged. This scoped rule is therefore retained.
+Payment ranking now: flow 80/007 `add-card-save-visible` **7.108%**; flow 80/006 `add-card-name-and-billing` **5.054%**; delete-card dialog **4.830%**; card detail **4.823%**; flow 80/008 `profile-two-cards` **4.533%**; repeated Profile payment-method states **3.850%**; flow 80/005 **2.059%**; 80/003 **1.923%**; 80/004 **1.541%**; 80/002 **0.981%**.
 
-A disposable clean-`HEAD` preview on port 6413 confirmed that the prior committed implementation was materially worse at the first two reproducible flow-80 states: frame 1 **6.213%** vs current **4.869%**, frame 2 **13.201%** vs current **0.981%**. Later HEAD states use an older incompatible interaction structure, so they are not assigned fabricated before scores.
+Validated source change in `apps/web/src/features/account/account.css`: Profile payment heading `translateY(-3px)`, Add-card pill `#f4f5f6`, Profile payment stack `translateY(-6px)`, Profile payment-card height `226px`, settings panel `translateY(-7px)`. Compared with the `782d507` baseline this improves the repeated Profile payment state **4.869 -> 3.850%** and the two-card Profile **5.341 -> 4.533%**, with all non-Profile payment states unchanged. Keep it.
+
+The QA recipe was also corrected to wait for the `Add card` heading after route-changing clicks and to blur `Name on card` for the unfocused frozen frame. The blur correction changes the truthful frame-80/006 score from 5.287 to **5.054%**; this is a replay correction, not a product CSS win.
+
+Previously retained measured win: the flow-80 add-card bottom-space sweep selected **185px**; frame 80/007 improved **11.664 -> 7.108%** with no payment-sibling regression.
+
+**Next exact experiment:** the frozen frame 80/007 keeps an opaque `Add card` header region pinned while form content scrolls below it. A disposable naive sticky-heading sweep improved 7.108 -> **6.263%** at `top: 7px`, proving leverage, but direct inspection showed it is structurally incomplete: it pins only the ~22px heading while the reference masks roughly a 50px header region. Do **not** commit the naive injected rule. Implement the correct payment-add-page sticky header/background owner, recapture frames 80/002–007, and keep it only if the family improves with no sibling regression above 0.15 MAE points.
+
+A disposable clean-`HEAD` preview previously confirmed the committed pre-80–84 implementation was materially worse at the first two reproducible flow-80 states: frame 1 **6.213%** vs the checkpoint's 4.869%, frame 2 **13.201%** vs 0.981%. Do not rebuild that older structure.
 
 ## Priority order
 
-1. Finish account payment shared residuals: profile payment-method composition, card detail, delete-card dialog, then the remaining add-card frames. These currently dominate mapped error and share owners with checkout payment flows.
-2. Finish account address residuals and lock flows 83-84 after sibling regression comparison.
-3. Map and score 69-78; correct shared account canvas/typography/rows before per-field exceptions.
-4. Map 85-94, then score the complete Account/Profile family so shared account changes are judged together.
-5. Map 2-6 + 42 and fix Home canvas/dock/campaign shared owners.
-6. Map 7-13, then 14-20 + 32 + 37-41 + 96-97; prioritize ProductCard/StoreRow/product shell by family-average error.
-7. Map 33-39, Search 43-51, Minis 52-59, then widget adaptation 95.
-8. Map commerce 21-31 + 60-68 + 79 and run one commerce-wide visual pass, preserving its existing functional checkpoint.
+1. Finish account payment shared residuals in 80–82, starting with the exact sticky-header experiment above, then card detail/delete-card dialog and remaining add-card states.
+2. Finish account address residuals and lock flows 83–84 after sibling regression comparison.
+3. Map/score 85–94, then rank the complete mapped Account/Profile family by error + shared owner.
+4. Return to 69–78 with quantitative scoring; their behavior/source evidence exists but visual acceptance is reopened.
+5. Map 2–6 + 42 and fix Home canvas/dock/campaign shared owners.
+6. Map 7–13, then 14–20 + 32 + 37–41 + 96–97; prioritize ProductCard/StoreRow/product shell by family-average error.
+7. Map 33–39, Search 43–51, Minis 52–59, then widget adaptation 95.
+8. Map commerce 21–31 + 60–68 + 79 and run one commerce-wide visual pass, preserving its existing functional checkpoint.
 9. Once every reproducible frame is mapped, run a whole-corpus ranked baseline and iterate worst -> best by shared DOM/CSS owner.
 
 Do not follow catalogue number merely because it is next. After mapping, ranking error + shared leverage decides implementation order.

@@ -2,7 +2,7 @@
 
 ## Execute the requested numbered task
 
-Owner instruction (updated 2026-09-11): use **one execution session** directly on the single `J:\treido-bg` checkout and `main`. Do not create feature branches, worktrees or parallel writer lanes. Preserve existing work and inspect upstream before synchronization. During the Shop 1:1 phase follow [single-session-execution.md](single-session-execution.md) and [shop-parity-checklist.md](shop-parity-checklist.md). The older parallel documents are historical only. Local commits and pushes to the authorized `darkapoparka/treido-bg` `main` are allowed for coherent verified batches; deployment still requires separate authorization.
+Owner instruction (updated 2026-09-11): use **one execution session** directly on the single `J:\treido-bg` checkout and `main`. Do not create feature branches, worktrees or parallel writer lanes. Preserve existing work and inspect upstream before synchronization. During the Shop 1:1 phase follow [single-session-execution.md](single-session-execution.md), [shop-implementation-map.md](shop-implementation-map.md) and [shop-parity-checklist.md](shop-parity-checklist.md). The older parallel documents are historical only. Local commits and pushes to the authorized `darkapoparka/treido-bg` `main` are allowed for coherent verified batches; deployment still requires separate authorization.
 
 When the user says **Execute Task N**, open [tasks.md](tasks.md), locate Task N, read its listed sources and implement that work package. Do not return another proposal, ask the user to name files, or execute the entire roadmap. **Continue Task N** resumes its recorded progress. Task numbers are the only execution interface; feature IDs in [product.md](product.md) describe requirements, not a second queue.
 
@@ -46,6 +46,6 @@ This repository is public. No secrets, connection strings, real customer records
 
 Do not reset shared data, edit applied migrations, force-push, kill unknown processes or overwrite other work. Serialize schema/lockfile work and avoid simultaneous dev/build on the same .next output. Paid provisioning, live activation, DNS changes, real-data transfer, deployment and store submission require specific authorization; installing code does not grant it.
 
-At the batch end, update only the owning docs and tasks.md with what was built, what remains, actual check results/environment, a concise evidence/commit pointer and the next task. Commit coherent work locally unless instructed otherwise; do not automatically push/deploy. A skipped check, screenshot, export or HTTP 200 does not prove broader behavior. Report facts without guarantees of perfect software.
+At the batch end, update only the owning docs and tasks.md with what was built, what remains, actual check results/environment, a concise evidence/commit pointer and the next task. During the active Shop 1:1 phase, follow `single-session-execution.md`: commit coherent objectively improved batches directly on `main`, fetch again and push when fast-forward safe. Deployment still requires separate explicit authorization. A skipped check, screenshot, export or HTTP 200 does not prove broader behavior. Report facts without guarantees of perfect software.
 
 The normal user instruction is simply: **Execute Task 1.**

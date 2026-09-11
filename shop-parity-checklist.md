@@ -128,17 +128,18 @@ All 41 ordered frozen frames were visually reviewed as one family. The canonical
 
 ### Evidence — flows 80–84 (2026-09-11)
 
-All 19 ordered frozen frames were opened and mapped to deterministic profile/payment/address states. The screenshot scorer compared every mapped frame at the 393×793 web-owned crop. Current family means are 4.102% MAE for 13 payment frames and 2.635% for 6 address frames; these are REVIEW evidence, not 1:1 acceptance because several states remain above the implementation-map threshold. A bounded bottom-space sweep improved flow 80 frame 7 from 11.664% to 7.108% with no measured sibling regression. `tests/reference/parity-account-80-84.spec.ts` exercises card validation/save/detail/delete, address list/detail/delete, Back/history behavior and 320/430 containment; combined with the 69–78 focused suite, 6/6 tests passed in reference dev mode. Seven failures in older broad account/commerce specs were reproduced against exact pre-batch `HEAD`, so they are pre-existing/stale expectations rather than regressions introduced by this batch.
+All 19 ordered frozen frames were opened and mapped to deterministic profile/payment/address states. The screenshot scorer compared every mapped frame at the 393×793 web-owned crop. Latest truthful family means are **3.787% MAE for 13 payment frames** and **2.635% for 6 address frames**; these are REVIEW evidence, not 1:1 acceptance because several states remain above the implementation-map threshold. A bounded bottom-space sweep improved flow 80 frame 7 from 11.664% to 7.108% with no measured sibling regression. A later Profile composition correction improved the repeated payment state 4.869% -> 3.850% and the two-card Profile 5.341% -> 4.533% without changing non-Profile payment states. Replay QA now waits for route targets and removes a non-source Name-on-card focus state; that correction makes frame 80/006 5.054%. `tests/reference/parity-account-80-84.spec.ts` exercises card validation/save/detail/delete, address list/detail/delete, Back/history behavior and 320/430 containment; combined with the 69–78 focused suite, 6/6 tests passed in reference dev mode. Seven failures in older broad account/commerce specs were reproduced against exact pre-batch `HEAD`, so they are pre-existing/stale expectations rather than regressions introduced by this batch.
 
 ## Current active queue
 
 Parallel lanes are retired. Follow `single-session-execution.md`. Immediate order:
 
-1. Finish and accept flows **69–78** from the consolidated Account/Profile checkpoint.
-2. Continue **80–84**, then **85–94**.
-3. Revisit/fix **2–6 + 42**, then **7–13**, then **14–20 + 32 + 37–41 + 96–97**.
-4. Continue **33–36 + 38–39**, **43–51**, **52–59**, then **95**.
-5. Validate/fix commerce **21–31 + 60–68 + 79** as one acceptance pass; preserve `0f92453` rather than rebuilding it.
+1. Finish the quantified residuals in **80–84** from `shop-implementation-map.md`; do not mark them accepted until the visual thresholds are met.
+2. Map/score and refine **85–94** as the next Account family.
+3. Return to **69–78** with the scorer; behavior/source evidence exists, but owner visual acceptance is reopened.
+4. Revisit/fix **2–6 + 42**, then **7–13**, then **14–20 + 32 + 37–41 + 96–97**.
+5. Continue **33–36 + 38–39**, **43–51**, **52–59**, then **95**.
+6. Validate/fix commerce **21–31 + 60–68 + 79** as one acceptance pass; preserve `0f92453` rather than rebuilding it.
 
 Work family-by-family: inspect source once, implement in one pass, QA at 393x793, run one focused family test batch, update this ledger, commit/push, then continue.
 

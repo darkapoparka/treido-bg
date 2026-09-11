@@ -3769,12 +3769,23 @@
 }
 
 /* Measured final pass: Shop profile payment/address flows 80–84. */
+.profile-overview .profile-payment-heading {
+  transform: translateY(-3px);
+}
+.profile-overview .profile-payment-heading .pill {
+  background: #f4f5f6;
+}
+.profile-overview .payment-card-stack {
+  transform: translateY(-6px);
+}
 .profile-overview .source-payment-card {
+  height: 226px;
   margin-top: 11px;
   margin-bottom: 37px;
 }
 .profile-overview .profile-settings-panel {
   padding: 0 16px;
+  transform: translateY(-7px);
 }
 .profile-overview .profile-settings-panel .account-row {
   height: 52.5px;

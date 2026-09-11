@@ -20,8 +20,9 @@ The three-lane experiment created coordination overhead, stale locks and partial
 - `0f92453` — commerce/cart/checkout/order continuation, including focused parity specs.
 - `f78ef18` — Account/Profile/People parity continuation for flows 69–78.
 - `4c9e902` — Home Deals/Notifications/Following continuation for flows 2–6 family.
+- `782d507` — quantified Account payment/address parity checkpoint for flows 80–84, including `shop-implementation-map.md` and focused parity coverage.
 
-These are implementation checkpoints, **not automatic 1:1 acceptance**. Preserve them; fix forward rather than reverting them wholesale.
+These are implementation checkpoints, **not automatic 1:1 acceptance**. Preserve them; fix forward rather than reverting them wholesale. The quantitative scorer and current resume state in `shop-implementation-map.md` override older prose when choosing the next visual fix.
 ## Fast execution loop
 
 Work in coherent families of roughly 5–10 flows. Do **not** stop after every screenshot and do not rerun the full repository suite after every small change.
@@ -41,9 +42,9 @@ Run the broad reference suite only after several families, before a major handof
 
 ## Immediate queue
 
-1. **Finish 69–78**: inspect current Account/Profile work, fix only remaining mismatches, add focused parity coverage, then close the batch.
-2. **Then 80–84**: profile cards/payment methods/addresses.
-3. **Then 85–94**: security, notifications, connections/Gmail, delete/logout, support/About, onboarding/login.
+1. **Finish quantified 80–84 residuals first.** Continue from the exact resume state in `shop-implementation-map.md`: payment/Profile still has the highest mapped Account error. Keep only measured family-wide wins.
+2. **Then map/score 85–94** and fix the complete Account/Profile family by ranked error + shared owner, not catalogue number alone.
+3. **Return to 69–78 with the scorer**. Functional/source evidence exists, but owner visual acceptance is explicitly reopened; do not call them accepted until their scoreable frames pass the visual gates.
 4. **Then audit/fix 2–6 + 42**, preserving `4c9e902` and avoiding a rewrite if the new states already match.
 5. **Then 7–13**, then **14–20 + 32 + 37–41 + 96–97**.
 6. **Then 33–36 + 38–39**, **43–51**, **52–59**, then **95**.
