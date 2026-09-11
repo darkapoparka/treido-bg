@@ -60,7 +60,7 @@ export function Row({
         {label}
         {value && <small>{value}</small>}
       </span>
-      <span aria-hidden="true">›</span>
+      <span aria-hidden="true">{"\u203a"}</span>
     </>
   );
   return href ? (
@@ -136,7 +136,17 @@ export function AddressEditor({
           baseFields[8],
           ...baseFields.slice(5, 8),
         ]
-      : baseFields;
+      : variant === "account" && value.country === "Singapore"
+        ? [
+            baseFields[0],
+            baseFields[1],
+            baseFields[3],
+            baseFields[4],
+            baseFields[2],
+            baseFields[8],
+            baseFields[7],
+          ]
+        : baseFields;
   const countryField = (
     <label className="form-field">
       Country/region
@@ -150,6 +160,18 @@ export function AddressEditor({
           ),
         )}
       </select>
+      {variant === "account" && (
+        <span
+          className={`address-country-flag ${
+            value.country === "Singapore"
+              ? "singapore"
+              : value.country === "United States"
+                ? "united-states"
+                : ""
+          }`}
+          aria-hidden="true"
+        />
+      )}
     </label>
   );
   return (
@@ -162,10 +184,37 @@ export function AddressEditor({
     >
       {variant === "checkout" && countryField}
       {fields.map(([key, label]) => (
-        <div className="address-field-row" key={key}>
+        <div className={`address-field-row address-field-${key}`} key={key}>
           <label className="form-field">
-            {label}
-            {key === "region" && value.country === "United States" ? (
+            {key === "phone" &&
+            variant === "account" &&
+            value.country === "Singapore"
+              ? null
+              : key === "postalCode" && value.country !== "United States"
+                ? "Postal code"
+                : label}
+            {key === "phone" &&
+            variant === "account" &&
+            value.country === "Singapore" ? (
+              <span className="address-phone-input">
+                <b>+65</b>
+                <input
+                  aria-label="Phone (optional)"
+                  type="tel"
+                  value={value.phone}
+                  maxLength={160}
+                  placeholder="Phone (optional)"
+                  onChange={(e) => change({ ...value, phone: e.target.value })}
+                />
+                <i
+                  className="address-phone-flag singapore"
+                  aria-hidden="true"
+                />
+                <span className="address-phone-chevron" aria-hidden="true">
+                  ?
+                </span>
+              </span>
+            ) : key === "region" && value.country === "United States" ? (
               <select
                 aria-label="State"
                 value={value.region}
@@ -230,7 +279,11 @@ export function AddressEditor({
               </select>
             ) : (
               <input
-                aria-label={label}
+                aria-label={
+                  key === "postalCode" && value.country !== "United States"
+                    ? "Postal code"
+                    : label
+                }
                 required={
                   !["apartment", "company", "phone", "region"].includes(key)
                 }
@@ -246,9 +299,11 @@ export function AddressEditor({
       ))}
       {variant !== "initial" && (
         <>
-          <p className="address-phone-help">
-            In case we need to contact you about your order
-          </p>
+          {variant === "checkout" && (
+            <p className="address-phone-help">
+              In case we need to contact you about your order
+            </p>
+          )}
           <label className="check-row">
             <input
               type="checkbox"
@@ -262,7 +317,7 @@ export function AddressEditor({
         </>
       )}
       <div className="editor-actions">
-        {variant !== "initial" && (
+        {variant === "checkout" && (
           <button className="form-cancel" type="button" onClick={onCancel}>
             Cancel
           </button>
@@ -374,7 +429,7 @@ export function PhoneEditor({
               onStageChange?.("phone");
             }}
           >
-            ‹ Back
+            {"\u2039"} Back
           </button>
 
           <p>
@@ -425,20 +480,34 @@ export function PhoneEditor({
     </form>
   );
 }
-export function PaymentEditor({ checkout = false }: { checkout?: boolean }) {
+export function PaymentEditor({
+  checkout = false,
+  onSaved,
+}: {
+  checkout?: boolean;
+  onSaved?: (cardId: string) => void;
+}) {
   const [error, setError] = useState("");
-  const [hasNumber, setHasNumber] = useState(false);
+  const [cardDigits, setCardDigits] = useState("");
   const [cardTail, setCardTail] = useState("");
+  const [expiryValue, setExpiryValue] = useState("");
+  const [cvcValue, setCvcValue] = useState("");
+  const [cardName, setCardName] = useState("");
+  const hasNumber = cardDigits.length > 0;
+  const validCard = cardDigits.length >= 12 && cardDigits.length <= 19;
   const account = useAccount();
   const [billing, setBilling] = useState(
     account.addresses.find((a) => a.isDefault)?.id ?? "",
   );
   const [editBilling, setEditBilling] = useState(false);
   const [method, setMethod] = useState("card");
+  const selectedBilling =
+    account.addresses.find((address) => address.id === billing) ??
+    account.addresses[0];
   return (
     <>
       <form
-        className={`account-form card-editor ${checkout ? "card-editor-checkout" : "card-editor-profile"} ${hasNumber ? "has-number" : ""}`}
+        className={`account-form card-editor ${checkout ? "card-editor-checkout" : "card-editor-profile"} ${hasNumber ? "has-number" : ""} ${validCard ? "valid-card" : ""} ${expiryValue && cvcValue ? "details-complete" : ""} ${cardName.trim() ? "has-name" : ""} ${error ? "has-error" : ""}`}
         onSubmit={(e) => {
           e.preventDefault();
           if (method === "apple") {
@@ -465,21 +534,31 @@ export function PaymentEditor({ checkout = false }: { checkout?: boolean }) {
             setError("Check the expiry date and security code.");
             return;
           }
-          setError(
-            "Payment service is not connected. Your card was not added.",
-          );
+          if (checkout) {
+            setError(
+              "Payment service is not connected. Your card was not added.",
+            );
+            return;
+          }
+          const id = `card-preview-${crypto.randomUUID()}`;
+          account.savePayment({ id, last4: number.slice(-4), expiry });
+          onSaved?.(id);
         }}
       >
         {!checkout && (
           <div
-            className={`payment-illustration ${cardTail.length === 4 ? "entered" : ""}`}
+            className={`payment-illustration ${validCard ? "valid" : ""} ${validCard && cardName.trim() ? "entered" : ""}`}
           >
             <svg viewBox="0 0 30 24" aria-hidden="true">
               <rect x="1" y="1" width="28" height="22" rx="4" />
               <path d="M10 1v22m10-22v22M1 8h28M1 16h28" />
             </svg>
-            <span>{hasNumber ? `•••• •••• •••• ${cardTail}` : ""}</span>
-            {cardTail.length === 4 && <b>VISA</b>}
+            <span>
+              {hasNumber
+                ? `\u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 ${cardTail}`
+                : ""}
+            </span>
+            {validCard && <b>VISA</b>}
           </div>
         )}
         {!checkout && (
@@ -505,9 +584,15 @@ export function PaymentEditor({ checkout = false }: { checkout?: boolean }) {
               disabled={method === "apple"}
               name="cardNumber"
               onChange={(e) => {
-                setHasNumber(Boolean(e.target.value));
-                setCardTail(e.target.value.replace(/\D/g, "").slice(-4));
+                const digits = e.target.value.replace(/\D/g, "");
+                setCardDigits(digits);
+                setCardTail(digits.slice(-4));
                 setError("");
+              }}
+              onBlur={(e) => {
+                const digits = e.target.value.replace(/\D/g, "");
+                if (digits && (digits.length < 12 || digits.length > 19))
+                  setError("Check your card number and try again.");
               }}
               aria-label="Card number"
               inputMode="numeric"
@@ -527,6 +612,8 @@ export function PaymentEditor({ checkout = false }: { checkout?: boolean }) {
               maxLength={5}
               required
               autoComplete="off"
+              value={expiryValue}
+              onChange={(e) => setExpiryValue(e.target.value)}
             />
           </label>
           <label>
@@ -540,9 +627,16 @@ export function PaymentEditor({ checkout = false }: { checkout?: boolean }) {
               maxLength={4}
               required
               autoComplete="off"
+              value={cvcValue}
+              onChange={(e) => setCvcValue(e.target.value)}
             />
           </label>
         </div>
+        {!checkout && error && (
+          <p className="form-error card-error" role="alert">
+            {error}
+          </p>
+        )}
         <label className="form-field">
           Name on card
           <input
@@ -550,6 +644,8 @@ export function PaymentEditor({ checkout = false }: { checkout?: boolean }) {
             required
             autoComplete="off"
             placeholder="Name on card"
+            value={cardName}
+            onChange={(e) => setCardName(e.target.value)}
           />
         </label>
         {checkout && (
@@ -569,35 +665,78 @@ export function PaymentEditor({ checkout = false }: { checkout?: boolean }) {
             </label>
           </>
         )}
-        <details open>
-          <summary>Bill to</summary>
-          {account.addresses.map((a) => (
-            <label className="shipping-option" key={a.id}>
-              <input
-                type="radio"
-                name="billing"
-                checked={billing === a.id}
-                onChange={() => setBilling(a.id)}
-              />
-              <span>
-                {a.firstName} {a.lastName}
-                <br />
-                {a.street}
-                <br />
-                {a.city}, {a.region} {a.postalCode}
-              </span>
-            </label>
-          ))}
-          <button
-            type="button"
-            className="checkout-link"
-            onClick={() => setEditBilling(true)}
-          >
-            + Use a different address
-          </button>
-        </details>
+        {checkout ? (
+          <details open>
+            <summary>Bill to</summary>
+            {account.addresses.map((a) => (
+              <label className="shipping-option" key={a.id}>
+                <input
+                  type="radio"
+                  name="billing"
+                  checked={billing === a.id}
+                  onChange={() => setBilling(a.id)}
+                />
+                <span>
+                  {a.firstName} {a.lastName}
+                  <br />
+                  {a.street}
+                  <br />
+                  {a.city}, {a.region} {a.postalCode}
+                </span>
+              </label>
+            ))}
+            <button
+              type="button"
+              className="checkout-link"
+              onClick={() => setEditBilling(true)}
+            >
+              + Use a different address
+            </button>
+          </details>
+        ) : cardName.trim() ? (
+          <section className="profile-billing">
+            <h2>Billing address</h2>
+            {selectedBilling && (
+              <label className="profile-billing-address">
+                <input
+                  type="radio"
+                  name="billing"
+                  checked
+                  readOnly
+                  aria-label={`Billing address ${selectedBilling.firstName} ${selectedBilling.lastName}`}
+                />
+                <span>
+                  {selectedBilling.firstName} {selectedBilling.lastName}
+                  <br />
+                  {selectedBilling.street}
+                  <br />
+                  {selectedBilling.city},{" "}
+                  {selectedBilling.region === "CA"
+                    ? "California"
+                    : selectedBilling.region}{" "}
+                  {selectedBilling.postalCode}
+                  <br />
+                  {selectedBilling.country}
+                  {selectedBilling.phone && (
+                    <>
+                      <br />
+                      {selectedBilling.phone}
+                    </>
+                  )}
+                </span>
+              </label>
+            )}
+            <button
+              type="button"
+              className="checkout-link"
+              onClick={() => setEditBilling(true)}
+            >
+              + Use a different address
+            </button>
+          </section>
+        ) : null}
 
-        {error && (
+        {checkout && error && (
           <p className="form-error" role="alert">
             {error}
           </p>
@@ -755,7 +894,8 @@ export function AddressLookup({
                 }
               >
                 <span>
-                  ⌖　{a.street}
+                  {"\u2316\u3000"}
+                  {a.street}
                   <small>
                     {a.city}, {a.region} {a.postalCode}, {a.country}
                   </small>

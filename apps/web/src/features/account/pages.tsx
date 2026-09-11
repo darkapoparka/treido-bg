@@ -36,7 +36,7 @@ import {
   type Person,
 } from "./state";
 export function ProfilePage({ catalog }: { catalog: Catalog }) {
-  const { profile, paymentAvailable, orders } = useAccount();
+  const { profile, paymentAvailable, paymentCards, orders } = useAccount();
   const discovery = useDiscovery();
   const [logout, setLogout] = useState(false);
   const starterProfile =
@@ -221,14 +221,29 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
           )}
           <div className="profile-payment-heading">
             <h2>Payment methods</h2>
-            <Link className="pill" href="/account/payments">
+            <Link
+              className="pill"
+              href="/account/payments?view=add&return=profile"
+              scroll={false}
+            >
               Add card
             </Link>
           </div>
           {paymentAvailable && (
-            <Link href="/account/payments">
-              <PaymentCard />
-            </Link>
+            <div
+              className={`payment-card-stack ${paymentCards.length > 1 ? "multiple" : ""}`}
+            >
+              {paymentCards.map((card) => (
+                <Link
+                  className="payment-card-button"
+                  key={card.id}
+                  href={`/account/payments?view=detail&id=${card.id}&return=profile`}
+                  scroll={false}
+                >
+                  <PaymentCard last4={card.last4} />
+                </Link>
+              ))}
+            </div>
           )}
           <div className="account-panel profile-settings-panel">
             {paymentAvailable && (
@@ -910,8 +925,20 @@ export function AddressesPage() {
   const [deleting, setDeleting] = useState(false);
   return (
     <AccountPage
+      className={editing ? "address-detail-page" : "addresses-overview"}
       title={editing ? "Shipping address" : "Manage addresses"}
       onBack={editing ? () => setEditing(null) : undefined}
+      action={
+        editing && addresses.some((address) => address.id === editing.id) ? (
+          <button
+            className="address-delete-action"
+            aria-label="Delete address"
+            onClick={() => setDeleting(true)}
+          >
+            <Icon name="trash" />
+          </button>
+        ) : undefined
+      }
     >
       {editing ? (
         <AddressEditor
@@ -923,11 +950,6 @@ export function AddressesPage() {
             setEditing(null);
           }}
           onCancel={() => setEditing(null)}
-          onDelete={
-            addresses.some((a) => a.id === editing.id)
-              ? () => setDeleting(true)
-              : undefined
-          }
         />
       ) : (
         <>
@@ -940,7 +962,11 @@ export function AddressesPage() {
                   </strong>
                   <span>{a.street}</span>
                   <span>
-                    {a.city}, {a.region}, {a.country}
+                    {a.country === "United States"
+                      ? `${a.city}, ${a.region}, US`
+                      : a.country === "Singapore"
+                        ? `${a.city}, ${a.region}`
+                        : `${a.city}, ${a.region}, ${a.country}`}
                   </span>
                 </span>
                 {a.isDefault && <small>Default</small>}
@@ -969,9 +995,8 @@ export function AddressesPage() {
         onClose={() => setDeleting(false)}
       >
         <p>
-          Are you sure you want to delete the address {editing?.firstName}{" "}
-          {editing?.lastName}, {editing?.street}, {editing?.city},{" "}
-          {editing?.region} {editing?.postalCode}, {editing?.country}?
+          Are you sure you want to remove this address from your Shop Pay
+          account?
         </p>
         <div className="editor-actions">
           <button className="form-cancel" onClick={() => setDeleting(false)}>
@@ -995,21 +1020,37 @@ export function AddressesPage() {
 }
 export function PaymentsPage() {
   const route = useAccountStage();
+  const router = useRouter();
+  const returnToProfile = useSearchParams().get("return") === "profile";
   const { paymentAvailable, removePayment, addresses, paymentCards } =
     useAccount();
-  const [cardId, setCardId] = useState("card-reference-1");
+  const [cardId, setCardId] = useState(() => paymentCards[0]?.id ?? "");
   const card = paymentCards.find((c) => c.id === (route.id ?? cardId));
   const billing = addresses.find((a) => a.isDefault) ?? addresses[0];
   const view =
     route.view === "detail" || route.view === "add" ? route.view : "list";
+  const finish = () =>
+    returnToProfile
+      ? router.replace("/profile", { scroll: false })
+      : route.overview();
+  const backFromSubpage = () =>
+    returnToProfile
+      ? router.replace("/profile", { scroll: false })
+      : route.back();
   const setView = (next: "list" | "detail" | "add") =>
-    next === "list" ? route.back() : route.go(next, cardId);
+    next === "list" ? backFromSubpage() : route.go(next, cardId);
   const [remove, setRemove] = useState(false);
   const [receipts, setReceipts] = useState<Record<string, boolean>>({});
   return (
     <AccountPage
-      className={view === "list" ? "payment-overview" : "payment-detail-page"}
-      onBack={view !== "list" ? route.back : undefined}
+      className={
+        view === "list"
+          ? "payment-overview"
+          : view === "add"
+            ? "payment-detail-page payment-add-page"
+            : "payment-detail-page payment-card-detail-page"
+      }
+      onBack={view !== "list" ? backFromSubpage : undefined}
       title={
         view === "add"
           ? "Add card"
@@ -1025,7 +1066,7 @@ export function PaymentsPage() {
       )}
       {view === "add" ? (
         <>
-          <PaymentEditor />
+          <PaymentEditor onSaved={finish} />
         </>
       ) : (
         <>
@@ -1063,9 +1104,17 @@ export function PaymentsPage() {
                     <br />
                     {billing.street}
                     <br />
-                    {billing.city}, {billing.region} {billing.postalCode}
+                    {billing.city},{" "}
+                    {billing.region === "CA" ? "California" : billing.region}{" "}
+                    {billing.postalCode}
                     <br />
                     {billing.country}
+                    {billing.phone && (
+                      <>
+                        <br />
+                        {billing.phone}
+                      </>
+                    )}
                   </p>
                 ) : (
                   <Link href="/account/addresses">Add billing address</Link>
@@ -1074,7 +1123,10 @@ export function PaymentsPage() {
               <label className="account-row">
                 <span>
                   In-store receipts
-                  <small>Get receipts for purchases made with this card.</small>
+                  <small>
+                    Get receipts in the Shop app when shopping in store using
+                    this card.
+                  </small>
                 </span>
                 <input
                   type="checkbox"
@@ -1092,7 +1144,7 @@ export function PaymentsPage() {
                 className="danger-text form-cancel"
                 onClick={() => setRemove(true)}
               >
-                Delete card
+                Delete
               </button>
             </>
           ) : null}
@@ -1116,7 +1168,7 @@ export function PaymentsPage() {
               removePayment(card.id);
               consumeSheetHistory();
               setRemove(false);
-              route.overview();
+              finish();
             }}
           >
             Delete

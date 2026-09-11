@@ -3116,3 +3116,912 @@
   height: 24px;
   stroke-width: 1;
 }
+
+/* Frozen profile payment/address flows 80-84. */
+.addresses-overview {
+  padding-top: 12px;
+}
+.addresses-overview .address-list > button {
+  height: 94px;
+  padding: 14px 0;
+  font-size: 14px;
+}
+.addresses-overview .address-list strong,
+.addresses-overview .address-list span span {
+  line-height: 22px;
+}
+.addresses-overview .address-list b {
+  font-size: 23px;
+  font-weight: 400;
+  line-height: 1;
+}
+.addresses-overview .address-help {
+  margin-top: 0;
+  padding-top: 14px;
+  font-size: 12px;
+  line-height: 17px;
+}
+.addresses-overview .account-bottom-action {
+  bottom: 103px;
+}
+
+.address-detail-page {
+  padding-top: 8px;
+}
+.address-detail-page .account-heading {
+  margin-bottom: 13px;
+}
+.address-delete-action {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f4f5f6;
+}
+.address-delete-action svg {
+  width: 20px;
+  height: 20px;
+}
+.address-editor-account {
+  gap: 16px;
+}
+.address-editor-account .form-field {
+  height: 58px;
+  min-height: 58px;
+  padding: 6px 12px;
+  gap: 2px;
+  border-radius: 12px;
+  font-size: 11px;
+}
+.address-editor-account .form-field input,
+.address-editor-account .form-field select {
+  min-height: 24px;
+  font-size: 16px;
+}
+.address-editor-account .address-field-lastName + .form-field {
+  height: 59px;
+  min-height: 59px;
+}
+.address-editor-account .address-field-street .form-field {
+  position: relative;
+  padding-left: 48px;
+}
+.address-editor-account .address-field-street .form-field::before {
+  content: "";
+  position: absolute;
+  left: 19px;
+  top: 20px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid #c8c8c8;
+  border-radius: 50%;
+}
+.address-editor-account .address-field-street .form-field::after {
+  content: "";
+  position: absolute;
+  left: 29px;
+  top: 31px;
+  width: 6px;
+  height: 2px;
+  background: #c8c8c8;
+  transform: rotate(45deg);
+  transform-origin: left center;
+}
+.address-editor-account .form-field:has(.address-country-flag) {
+  position: relative;
+}
+.address-country-flag,
+.address-phone-flag {
+  display: block;
+  width: 18px;
+  height: 12px;
+  border: 1px solid #e6e6e6;
+  border-radius: 1px;
+  background: linear-gradient(#e33139 0 50%, #fff 50% 100%);
+  box-shadow: 0 0 0 0.5px #0000000a;
+}
+.address-country-flag {
+  position: absolute;
+  right: 51px;
+  bottom: 17px;
+  pointer-events: none;
+}
+.address-editor-account .address-phone-input {
+  display: grid;
+  grid-template-columns: 32px 1fr 18px 12px;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  font-size: 16px;
+}
+.address-editor-account .address-phone-input b {
+  font-weight: 400;
+}
+.address-editor-account .address-phone-input input {
+  min-width: 0;
+}
+.address-phone-chevron {
+  color: #111;
+  font-size: 17px;
+  line-height: 1;
+  transform: translateY(-2px);
+}
+.address-editor-account .check-row {
+  min-height: 22px;
+  gap: 8px;
+  font-size: 16px;
+}
+.address-editor-account .check-row input {
+  width: 20px;
+  height: 20px;
+}
+.address-editor-account .editor-actions {
+  position: fixed;
+  z-index: 4;
+  left: 16px;
+  right: 16px;
+  bottom: 41px;
+  max-width: 568px;
+  margin: auto;
+}
+.address-editor-account .editor-actions .primary {
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  background: #5433e9;
+}
+
+.payment-add-action {
+  min-height: 40px;
+  padding: 8px 18px;
+  border-radius: 22px;
+  background: #f4f5f6;
+  color: #111;
+  font-weight: 600;
+}
+.payment-add-page .account-heading {
+  transform: translateY(-7px);
+}
+.card-editor-profile .payment-illustration {
+  position: relative;
+  width: 240px;
+  height: 160px;
+  margin: 30px auto 18px;
+  overflow: hidden;
+  border-radius: 14px;
+  padding: 0;
+  background: linear-gradient(125deg, #5940b7, #8277bd);
+}
+.card-editor-profile .payment-illustration::before {
+  content: "";
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 49px;
+  height: 49px;
+  border-radius: 10px;
+  background: #6f60b6aa;
+}
+.card-editor-profile .payment-illustration::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 26px;
+  height: 16px;
+  border-radius: 10px;
+  background: #6a59af88;
+}
+.card-editor-profile .payment-illustration > svg {
+  position: absolute;
+  z-index: 1;
+  left: 16px;
+  top: 64px;
+  width: 42px;
+  height: 34px;
+  opacity: 0.2;
+  fill: none;
+  stroke: #3b277f;
+  stroke-width: 1.4;
+}
+.card-editor-profile .payment-illustration > span {
+  position: absolute;
+  z-index: 3;
+  left: 16px;
+  bottom: 27px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.card-editor-profile .payment-illustration > b {
+  position: absolute;
+  z-index: 3;
+  left: 16px;
+  bottom: 22px;
+  padding: 3px 4px;
+  border-radius: 1px;
+  background: white;
+  color: #1c2c8c;
+  font-size: 9px;
+  font-style: italic;
+}
+.card-editor-profile .payment-illustration.valid > span {
+  left: 53px;
+  bottom: 26px;
+}
+.card-editor-profile .payment-illustration.entered {
+  background:
+    repeating-radial-gradient(
+      ellipse at 120% 150%,
+      transparent 0 11px,
+      #5360c155 12px 13px,
+      transparent 14px 20px
+    ),
+    linear-gradient(135deg, #090b63, #303b9d 60%, #111359);
+}
+.card-editor-profile .payment-illustration.entered::before,
+.card-editor-profile .payment-illustration.entered::after,
+.card-editor-profile .payment-illustration.entered > svg {
+  display: none;
+}
+.card-editor-profile .payment-illustration.entered > b {
+  left: auto;
+  right: 24px;
+  bottom: 24px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: #b2b4e17a;
+  color: #1b237d;
+  font-size: 28px;
+}
+.card-editor-profile .payment-illustration.entered > span {
+  left: 16px;
+  top: 17px;
+  bottom: auto;
+}
+.card-editor-profile > .form-note.centered {
+  transform: translateY(-14px);
+  font-size: 14px;
+  line-height: 20px;
+}
+.card-editor-profile .card-inputs {
+  position: relative;
+  margin-top: -6px;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  height: 58px;
+  padding: 0;
+  gap: 0;
+  border: 1px solid #d5d5d5;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.card-editor-profile.has-number .card-inputs {
+  border-color: #5433e9;
+}
+.card-editor-profile .card-inputs label {
+  position: relative;
+  display: grid;
+  align-items: center;
+  min-width: 0;
+  height: 56px;
+  padding: 0 12px;
+  border-right: 1px solid #f2f2f2;
+  color: transparent;
+  font-size: 0;
+}
+.card-editor-profile .card-inputs label:last-child {
+  border-right: 0;
+}
+.card-editor-profile .card-inputs input {
+  width: 100%;
+  min-width: 0;
+  min-height: 56px;
+  padding: 0;
+  font-size: 16px;
+  color: #111;
+}
+.card-editor-profile.valid-card .card-inputs label:first-child::before {
+  content: "VISA";
+  position: absolute;
+  z-index: 2;
+  left: 16px;
+  top: 18px;
+  padding: 2px 4px;
+  border: 1px solid #e5e5e5;
+  border-radius: 1px;
+  background: #fff;
+  color: #1d2b8e;
+  font-size: 9px;
+  font-style: italic;
+  font-weight: 700;
+}
+.card-editor-profile.valid-card .card-inputs label:first-child::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  left: 68px;
+  top: 18px;
+  width: 43px;
+  height: 18px;
+  background: #c5c5c5;
+}
+.card-editor-profile.valid-card .card-inputs label:first-child input {
+  color: transparent;
+  caret-color: transparent;
+}
+.card-editor-profile.details-complete .card-inputs label:nth-child(2)::after,
+.card-editor-profile.details-complete .card-inputs label:nth-child(3)::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 18px;
+  width: 43px;
+  height: 18px;
+  transform: translateX(-50%);
+  background: #c5c5c5;
+}
+.card-editor-profile.details-complete .card-inputs label:nth-child(2) input,
+.card-editor-profile.details-complete .card-inputs label:nth-child(3) input {
+  color: transparent;
+  caret-color: transparent;
+}
+.card-editor-profile.has-error .card-inputs label:first-child::after {
+  content: "!";
+  position: absolute;
+  right: 7px;
+  left: auto;
+  top: 18px;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #cf442e;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+.card-editor-profile:not(.has-number) .card-inputs > label:not(:first-child),
+.card-editor-profile:not(.has-number) > label,
+.card-editor-profile:not(.has-number) > .primary,
+.card-editor-profile:not(.has-number) > .profile-billing {
+  display: none;
+}
+.card-editor-profile .card-error {
+  margin: -8px 0 0;
+  color: #b82f22;
+  font-size: 13px;
+}
+.card-editor-profile > .form-field {
+  height: 58px;
+  min-height: 58px;
+  padding: 0 12px;
+  border-radius: 14px;
+  gap: 0;
+  justify-content: center;
+  font-size: 0;
+}
+.card-editor-profile > .form-field input {
+  min-height: 56px;
+  font-size: 16px;
+}
+.card-editor-profile:not(.has-number) .card-inputs input::placeholder {
+  color: #333;
+  opacity: 1;
+}
+.card-editor-profile:not(.has-name) > .primary {
+  display: none;
+}
+.card-editor-profile > .primary {
+  background: #5433e9;
+}
+.card-editor-profile .profile-billing {
+  margin-top: 18px;
+}
+.card-editor-profile .profile-billing h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+.profile-billing-address {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  line-height: 1.35;
+}
+.profile-billing-address input {
+  width: 16px;
+  height: 16px;
+  accent-color: #111;
+  flex: none;
+}
+.card-editor-profile .profile-billing .checkout-link {
+  margin: 10px 0 0;
+  color: #5433e9;
+  font-weight: 600;
+}
+
+.payment-card-detail-page .account-heading {
+  transform: translateY(5px);
+}
+.payment-card-detail-page > .source-payment-card {
+  margin: 32px 0 13px;
+  background:
+    repeating-radial-gradient(
+      ellipse at 120% 150%,
+      transparent 0 11px,
+      #5360c155 12px 13px,
+      transparent 14px 20px
+    ),
+    linear-gradient(135deg, #090b63, #303b9d 60%, #111359);
+}
+.payment-card-detail-page > h2 {
+  margin: 14px 0 8px;
+  font-size: 20px;
+  line-height: 26px;
+}
+.payment-card-detail-page > .account-row:not(label) {
+  height: 50px;
+  min-height: 50px;
+  padding: 0;
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+}
+.payment-card-detail-page .billing-details {
+  grid-template-columns: 114px 1fr;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 0;
+  font-size: 14px;
+  line-height: 18px;
+}
+.payment-card-detail-page .billing-details h3 {
+  font-size: 14px;
+}
+.payment-card-detail-page .billing-details p {
+  margin: 0;
+  line-height: 18px;
+}
+.payment-card-detail-page > label.account-row {
+  min-height: 78px;
+  margin-top: 6px;
+  padding: 10px 0 8px;
+  gap: 16px;
+  border-top: 0;
+  border-bottom: 0;
+}
+.payment-card-detail-page > label.account-row > span {
+  flex: 1;
+  font-size: 16px;
+}
+.payment-card-detail-page > label.account-row small {
+  display: block;
+  max-width: 245px;
+  margin-top: 3px;
+  color: #555;
+  font-size: 14px;
+  line-height: 18px;
+}
+.payment-card-detail-page input[role="switch"] {
+  appearance: none;
+  width: 62px;
+  height: 29px;
+  flex: none;
+  position: relative;
+  border-radius: 20px;
+  background: #ccc;
+}
+.payment-card-detail-page input[role="switch"]:checked {
+  background: #5530e8;
+}
+.payment-card-detail-page input[role="switch"]::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background: #fff;
+}
+.payment-card-detail-page input[role="switch"]:checked::before {
+  transform: translateX(33px);
+}
+.payment-card-detail-page > .danger-text {
+  width: 100%;
+  min-height: 47px;
+  margin-top: 5px;
+  padding: 10px 16px;
+  border: 1px solid #d83a23;
+  border-radius: 24px;
+  color: #d62f19;
+}
+.delete-card-confirm .sheet-header h2 {
+  font-size: 20px;
+  max-width: 290px;
+}
+.delete-card-confirm > p {
+  font-size: 16px;
+  margin: 12px 0 20px;
+}
+.delete-card-confirm .editor-actions > *,
+.delete-address-confirm .editor-actions > * {
+  height: 44px;
+  min-height: 44px;
+  margin: 0;
+}
+.delete-card-confirm .danger-button,
+.delete-address-confirm .danger-button {
+  background: #e72508;
+  border-radius: 24px;
+}
+.delete-card-confirm .form-cancel,
+.delete-address-confirm .form-cancel {
+  border: 1px solid #dedede;
+  border-radius: 24px;
+}
+
+/* Measured 393x793 alignment for frozen address flows 83-84. */
+.addresses-overview .account-heading h1,
+.address-detail-page .account-heading h1 {
+  font-size: 27px;
+  letter-spacing: -0.1px;
+  -webkit-text-stroke: 0.25px currentColor;
+  transform: translateX(1px);
+}
+.addresses-overview .address-list {
+  transform: translateY(-3px);
+}
+.addresses-overview .address-list > button {
+  position: relative;
+}
+.addresses-overview .address-list > button > b {
+  margin-right: 9px;
+  font-size: 20px;
+  line-height: 1;
+  transform: translateY(-5px);
+}
+.addresses-overview .address-help {
+  transform: translateY(-8px);
+}
+.addresses-overview .account-bottom-action {
+  bottom: 107px;
+}
+.addresses-overview .account-bottom-action .primary {
+  font-size: 16px;
+}
+.address-detail-page .address-delete-action {
+  width: 44px;
+  height: 44px;
+}
+.address-editor-account .form-field:has(.address-country-flag) select {
+  appearance: none;
+  padding-right: 72px;
+}
+.address-editor-account .form-field:has(.address-country-flag)::after {
+  content: "";
+  position: absolute;
+  right: 24px;
+  top: 28px;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid #111;
+  border-bottom: 2px solid #111;
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+.address-editor-account .address-country-flag {
+  right: 49px;
+  bottom: 26px;
+}
+.address-editor-account .address-phone-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-right: 56px;
+}
+.address-editor-account .address-phone-input b {
+  width: 32px;
+  flex: none;
+}
+.address-editor-account .address-phone-flag {
+  position: absolute;
+  right: 38px;
+  top: 16px;
+}
+.address-editor-account .address-phone-chevron {
+  position: absolute;
+  right: 12px;
+  top: 20px;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid #111;
+  border-bottom: 2px solid #111;
+  font-size: 0;
+  transform: rotate(45deg);
+}
+.address-country-flag.singapore::before,
+.address-phone-flag.singapore::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #fff;
+}
+.address-country-flag.singapore::after,
+.address-phone-flag.singapore::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #e33139;
+}
+
+/* Measured final pass: Shop profile payment/address flows 80–84. */
+.profile-overview .source-payment-card {
+  margin-top: 11px;
+  margin-bottom: 37px;
+}
+.profile-overview .profile-settings-panel {
+  padding: 0 16px;
+}
+.profile-overview .profile-settings-panel .account-row {
+  height: 52.5px;
+  min-height: 52.5px;
+  padding: 0;
+  font-size: 16px;
+}
+.source-payment-card {
+  background:
+    repeating-radial-gradient(
+      ellipse at 120% 150%,
+      transparent 0 11px,
+      #3d478f66 12px 13px,
+      transparent 14px 20px
+    ),
+    linear-gradient(135deg, #080957, #242c76 60%, #0b0d50);
+}
+.source-payment-card > div {
+  gap: 8px;
+  font-size: 12px;
+}
+.source-payment-card b {
+  width: 22px;
+  height: 13px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 8px;
+}
+.source-payment-card > strong {
+  right: 24px;
+  bottom: 22px;
+  width: 77px;
+  height: 49px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  font-size: 26px;
+}
+.card-editor-profile:not(.details-complete) > .form-field {
+  display: none;
+}
+.card-editor-profile > .form-field {
+  color: transparent;
+  font-size: 0;
+  display: grid;
+  align-items: center;
+  padding: 0 12px;
+}
+.card-editor-profile > .form-field input {
+  min-height: 56px;
+  font-size: 16px;
+  color: #111;
+}
+.card-editor-profile .card-inputs {
+  grid-template-columns: 41.6% 34.1% 24.3%;
+}
+.card-editor-profile .card-inputs label {
+  padding: 0 13px;
+  border-right: 0;
+}
+.card-editor-profile .card-inputs label:nth-child(2) {
+  padding-left: 24px;
+}
+.card-editor-profile .card-inputs label:nth-child(3) {
+  padding-left: 17px;
+}
+.card-editor-profile.valid-card .card-inputs label:first-child::before {
+  left: 20px;
+}
+.card-editor-profile .payment-illustration.valid:not(.entered) > span,
+.card-editor-profile .payment-illustration.entered > span {
+  color: transparent;
+  overflow: visible;
+}
+.card-editor-profile .payment-illustration.valid:not(.entered) > span::before,
+.card-editor-profile .payment-illustration.entered > span::before,
+.card-editor-profile .payment-illustration.valid:not(.entered) > span::after,
+.card-editor-profile .payment-illustration.entered > span::after {
+  content: "";
+  position: absolute;
+  display: block;
+}
+.card-editor-profile .payment-illustration.valid:not(.entered) > span::before {
+  content: "•••• •••• ••••";
+  left: 0;
+  top: -1px;
+  color: white;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.card-editor-profile .payment-illustration.valid:not(.entered) > span::after {
+  left: 68px;
+  top: 1px;
+  width: 30px;
+  height: 12px;
+  background: #bfc0bf;
+}
+.card-editor-profile .payment-illustration.entered::before {
+  content: "VISA";
+  display: grid !important;
+  place-items: center;
+  left: 16px;
+  right: auto;
+  top: 17px;
+  width: 22px;
+  height: 13px;
+  border-radius: 1px;
+  background: white;
+  color: #1b2a85;
+  font-size: 8px;
+  font-style: italic;
+  font-weight: 700;
+}
+.card-editor-profile .payment-illustration.entered > span {
+  left: 49px;
+  top: 17px;
+}
+.card-editor-profile .payment-illustration.entered > span::before {
+  content: "••••";
+  left: 0;
+  top: -1px;
+  color: white;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.card-editor-profile .payment-illustration.entered > span::after {
+  left: 22px;
+  top: 1px;
+  width: 35px;
+  height: 12px;
+  background: #52534d;
+}
+.payment-card-detail-page > .account-row:not(label) {
+  display: grid;
+  grid-template-columns: 113px 1fr;
+  gap: 16px;
+}
+.payment-card-detail-page > .account-row:not(label) strong {
+  justify-self: start;
+  width: 60px;
+  height: 16px;
+  overflow: hidden;
+  border-radius: 1px;
+  background: #f0f1f1;
+  color: transparent;
+  font-size: 0;
+}
+.payment-card-detail-page .billing-details {
+  grid-template-columns: 113px 1fr;
+}
+.payment-card-detail-page input[role="switch"] {
+  width: 63px;
+}
+.addresses-overview .account-heading h1 {
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  -webkit-text-stroke: 0.2px currentColor;
+  transform: translate(1px, -1px);
+}
+.address-detail-page .account-heading h1 {
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  -webkit-text-stroke: 0.2px currentColor;
+  transform: translate(1px, -3px);
+}
+.addresses-overview .account-bottom-action {
+  bottom: 104px;
+}
+.address-editor-account .form-field {
+  transform: translateY(-3px);
+}
+.address-editor-account .address-field-firstName > .form-field,
+.address-editor-account .address-field-lastName > .form-field {
+  transform: translateY(-4px);
+}
+.address-phone-chevron {
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  font-size: 0;
+  transform: rotate(45deg) translate(-2px, 2px);
+}
+.delete-card-confirm {
+  bottom: 34px;
+  height: 226px;
+  min-height: 226px;
+  overflow: hidden;
+}
+.delete-card-confirm .editor-actions {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  gap: 16px;
+  height: 42px;
+}
+.delete-card-confirm .editor-actions > * {
+  height: 42px;
+  min-height: 42px;
+}
+.delete-address-confirm {
+  inset: 281px 24px auto;
+  width: calc(100% - 48px);
+  max-width: 500px;
+  height: 172px;
+  min-height: 172px;
+  padding: 24px;
+  overflow: hidden;
+  border-radius: 24px;
+}
+.delete-address-confirm .sheet-header {
+  min-height: 24px;
+  margin: 0 0 8px;
+}
+.delete-address-confirm .sheet-header h2 {
+  font-size: 20px;
+  line-height: 24px;
+}
+.delete-address-confirm .sheet-header .icon-button {
+  display: none;
+}
+.delete-address-confirm > p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 18px;
+}
+.delete-address-confirm .editor-actions {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 24px;
+  gap: 8px;
+  height: 41px;
+}
+.delete-address-confirm .editor-actions > * {
+  height: 41px;
+  min-height: 41px;
+}
+
+/* Screenshot-scored: flow 80 frame 7 needs enough scroll range to match the frozen content position. */
+.payment-add-page {
+  padding-bottom: 185px;
+}

@@ -60,18 +60,32 @@ const initialProfile: Profile = {
 };
 const initialAddresses: Address[] = [
   {
-    id: "address-reference-1",
-    firstName: "Mira",
-    lastName: "Petkova",
+    id: "address-source-alex",
+    firstName: "Alex",
+    lastName: "Smith",
     country: "United States",
-    street: "100 Reference Lane",
+    street: "1226 University Dr",
     apartment: "",
     company: "",
-    phone: "",
-    city: "Example City",
+    phone: "+16502137552",
+    city: "Menlo Park",
     region: "CA",
-    postalCode: "00000",
+    postalCode: "94025",
     isDefault: true,
+  },
+  {
+    id: "address-source-sam",
+    firstName: "Sam",
+    lastName: "Lee",
+    country: "Singapore",
+    street: "75 Ayer Rajah Crescent",
+    apartment: "",
+    company: "ASMOBBIN",
+    phone: "",
+    city: "Singapore",
+    region: "SG",
+    postalCode: "139953",
+    isDefault: false,
   },
 ];
 const initialOrders: ReferenceOrder[] = [
@@ -113,6 +127,7 @@ type AccountState = {
   setPreferences: (value: Record<string, string[]>) => void;
   paymentCards: { id: string; last4: string; expiry: string }[];
   paymentAvailable: boolean;
+  savePayment: (value: { id: string; last4: string; expiry: string }) => void;
   removePayment: (id?: string) => void;
   notifications: Record<string, boolean>;
   toggleNotification: (name: string) => void;
@@ -127,8 +142,11 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   const [people, setPeople] = useState<Person[]>([]);
   const [preferences, setPreferences] = useState<Record<string, string[]>>({});
   const [paymentCards, setPaymentCards] = useState([
-    { id: "card-reference-1", last4: "4242", expiry: "12/30" },
-    { id: "card-reference-2", last4: "1881", expiry: "11/31" },
+    {
+      id: "card-source-4263",
+      last4: "4263",
+      expiry: "\u2022\u2022/\u2022\u2022",
+    },
   ]);
   const [notifications, setNotifications] = useState<Record<string, boolean>>(
     {},
@@ -164,6 +182,11 @@ export function AccountProvider({ children }: { children: ReactNode }) {
         setPreferences,
         paymentCards,
         paymentAvailable: paymentCards.length > 0,
+        savePayment: (value) =>
+          setPaymentCards((cards) => [
+            ...cards.filter((card) => card.id !== value.id),
+            value,
+          ]),
         removePayment: (id) =>
           setPaymentCards((cards) =>
             cards.filter((card) => card.id !== (id ?? cards[0]?.id)),
@@ -178,8 +201,11 @@ export function AccountProvider({ children }: { children: ReactNode }) {
           setPeople([]);
           setPreferences({});
           setPaymentCards([
-            { id: "card-reference-1", last4: "4242", expiry: "12/30" },
-            { id: "card-reference-2", last4: "1881", expiry: "11/31" },
+            {
+              id: "card-source-4263",
+              last4: "4263",
+              expiry: "\u2022\u2022/\u2022\u2022",
+            },
           ]);
           setNotifications({});
         },
