@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { savedCollectionsReducer, type Collection } from "./saved-model";
+import { useMiniHistory } from "./mini-history";
 export type { Collection } from "./saved-model";
 export type CartLine = {
   productId: string;
@@ -104,9 +105,7 @@ export function DiscoveryProvider({
       ].slice(0, 24),
     );
   }, []);
-  const [visitedMinis, setVisitedMinis] = useState<string[]>(
-    () => initial?.visitedMinis ?? [],
-  );
+  const { visitedMinis, visitMini } = useMiniHistory(initial?.visitedMinis);
   const [reportedProducts, setReportedProducts] = useState<string[]>(
     () => initial?.reportedProducts ?? [],
   );
@@ -146,7 +145,7 @@ export function DiscoveryProvider({
         visitedMinis,
         visitMini: (id) => {
           setRecentActivity("minis");
-          setVisitedMinis((v) => [id, ...v.filter((x) => x !== id)]);
+          visitMini(id);
         },
         followed,
         cart,

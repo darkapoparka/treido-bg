@@ -124,7 +124,9 @@ test("Beauty retains every captured section and its saved product uses the share
     "Skincare starter set",
     "Vacation-ready nails",
   ]);
-  await expect(page.locator(".explore-page h2")).toHaveText([
+  await expect(
+    page.locator(".explore-page").getByRole("heading", { level: 2 }),
+  ).toHaveText([
     "Top rated ›",
     "What’s new ›",
     "Scent & body",
