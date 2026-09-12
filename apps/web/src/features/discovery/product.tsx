@@ -7,6 +7,10 @@ import { useState, useEffect, useRef } from "react";
 import { ProductOptions } from "./reviews";
 import { moveProductPhoto, productPhotoSwipe } from "./product-gallery";
 import {
+  ProductAdditionFlight,
+  useProductAddition,
+} from "./product-addition";
+import {
   formatMoney,
   type Catalog,
   type Product as ProductType,
@@ -42,6 +46,7 @@ export function ProductDetail({
   const [gallery, setGallery] = useState<number | null>(null),
     [cart, setCart] = useState(false),
     [offer, setOffer] = useState(false),
+    [offerPending, setOfferPending] = useState(false),
     [added, setAdded] = useState(false),
     [detail, setDetail] = useState(""),
     [options, setOptions] = useState(false),
@@ -51,6 +56,7 @@ export function ProductDetail({
     [toast, setToast] = useState(false),
     [subscription, setSubscription] = useState(false);
   const [postalCode, setPostalCode] = useState("94025");
+  const addition = useProductAddition();
   const galleryRail = useRef<HTMLDivElement>(null);
   const photoGesture = useRef<{ pointer: number; x: number; y: number } | null>(
     null,
@@ -75,21 +81,39 @@ export function ProductDetail({
     : product.images;
   const price =
     subscription && shea ? { ...product.price, amount: 1050 } : product.price;
-  function add(showOffer = true) {
+  function add(showFeedback = true) {
     if (!selected?.availableQuantity) return;
     const prior =
       state.cart.find(
         (l) => l.productId === product.id && l.variantId === variant,
       )?.quantity ?? 0;
+    const increment = Math.min(quantity, selected.availableQuantity - prior);
+    if (increment <= 0) return;
+    if (
+      showFeedback &&
+      bag &&
+      !addition.begin(photos[0], product.title, increment)
+    )
+      return;
     state.add({
       productId: product.id,
       variantId: variant,
-      quantity: Math.min(selected.availableQuantity, prior + quantity),
+      quantity: prior + increment,
     });
     setAdded(true);
-    // The captured bag flow enters this offer after adding. Local cart updates
-    // are synchronous; do not simulate a network request or its delay.
-    if (showOffer && bag) setOffer(true);
+    if (showFeedback && bag) setOfferPending(true);
+  }
+  function openCart() {
+    // The recording leaves the product interactive after its flight/confirmation.
+    // Open the pending offer through a real cart action, not an invented network
+    // timer that steals focus several seconds after the shopper moves elsewhere.
+    if (
+      offerPending &&
+      state.cart.some((line) => line.productId === product.id)
+    ) {
+      setOfferPending(false);
+      setOffer(true);
+    } else setCart(true);
   }
   function buy() {
     if (!selected?.availableQuantity) return;
@@ -192,6 +216,10 @@ export function ProductDetail({
     <ShopSurface
       className={`shop-page product-page ${cart ? "cart-visible" : ""}`}
     >
+      <ProductAdditionFlight flight={addition.flight} />
+      <span className="sr-only" aria-live="polite">
+        {addition.announcement}
+      </span>
       <div className="product-underlay">
         {store && <StoreRow store={store} onMore={() => setOptions(true)} />}
         <div className="product-gallery" ref={galleryRail}>
@@ -375,10 +403,22 @@ export function ProductDetail({
             <div className="pdp-purchase-buttons">
               <button
                 className="primary"
-                disabled={!selected?.availableQuantity}
+                data-addition={bag ? addition.phase : undefined}
+                disabled={
+                  !selected?.availableQuantity ||
+                  (bag && addition.phase === "flying")
+                }
                 onClick={() => add()}
               >
-                {added && !bag ? "Added to cart" : "Add to cart"}
+                {bag && addition.phase === "confirmed" ? (
+                  <>
+                    <Icon name="check" /> Added to cart
+                  </>
+                ) : added && !bag ? (
+                  "Added to cart"
+                ) : (
+                  "Add to cart"
+                )}
               </button>
               <button
                 onClick={buy}
@@ -527,10 +567,7 @@ export function ProductDetail({
           </div>
         </section>
       </div>
-      <FloatingNav
-        back
-        cart={state.cart.length ? () => setCart(true) : undefined}
-      />
+      <FloatingNav back cart={state.cart.length ? openCart : undefined} />
       <Cart catalog={catalog} open={cart} onClose={() => setCart(false)} />
       <CartOffer
         catalog={catalog}
