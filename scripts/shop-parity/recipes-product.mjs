@@ -160,14 +160,20 @@ export const productRecipes = {
       {
         state: "shea-product-more-options",
         overlay: "dialog",
-        actions: [click("button", "More options"), visible("dialog", "More options")],
+        actions: [
+          click("button", "More options"),
+          visible("dialog", "More options"),
+        ],
       },
       {
         state: "kitsch-contact-links-and-address",
         overlay: "dialog",
         notes:
           "Only the app-owned contact panel is replayed. No website, social account, phone call, email or clipboard operation is executed by this capture.",
-        actions: [click("button", "Contact KITSCH"), visible("dialog", "Contact KITSCH")],
+        actions: [
+          click("button", "Contact KITSCH"),
+          visible("dialog", "Contact KITSCH"),
+        ],
       },
     ],
   },
@@ -177,11 +183,18 @@ export const productRecipes = {
     startUrl: shea,
     scenario: "home-welcome",
     frames: [
-      { state: "shea-more-options-before-report", overlay: "dialog", actions: options },
+      {
+        state: "shea-more-options-before-report",
+        overlay: "dialog",
+        actions: options,
+      },
       {
         state: "product-report-no-reason",
         overlay: "dialog",
-        actions: [click("button", "Report"), visible("dialog", "Report product")],
+        actions: [
+          click("button", "Report"),
+          visible("dialog", "Report product"),
+        ],
       },
       {
         state: "product-report-other-selected",
@@ -197,7 +210,12 @@ export const productRecipes = {
         state: "product-report-optional-notes-testing",
         overlay: "dialog",
         actions: [
-          { type: "fill", role: "textbox", name: "Tell us more", value: "testing" },
+          {
+            type: "fill",
+            role: "textbox",
+            name: "Tell us more",
+            value: "testing",
+          },
           { type: "blur", role: "textbox", name: "Tell us more" },
         ],
       },
@@ -207,8 +225,15 @@ export const productRecipes = {
           "Submission only updates the isolated local preview; it does not transmit a real report. The source's returning promotion and previously saved Rice bundle remain catalog/history differences, not hidden pixels.",
         actions: [
           click("button", "Report"),
-          { type: "waitUrl", url: "**/stores/kitsch?reported=shea-butter#all-products" },
-          { type: "waitVisible", selector: ".product-reported-mark" },
+          {
+            type: "waitUrl",
+            url: "**/stores/kitsch?reported=shea-butter#all-products",
+          },
+          {
+            type: "waitVisible",
+            selector:
+              '#all-products .product-card:has(a[href="/products/shea-butter"]) .product-reported-mark',
+          },
           anchor(".store-grid-heading", 110),
         ],
       },

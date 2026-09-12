@@ -402,10 +402,12 @@ export function ProductDetail({
               Add items to save $20 with your exclusive offer ›
             </button>
           )}
-          <section className="pdp-description">
+          <section
+            className={`pdp-description${bag ? " pdp-description-bag" : ""}`}
+          >
             <h2>Description</h2>
             {descriptionPreview.map((paragraph, index) => (
-              <p key={paragraph} className={bag && index > 0 ? "mt-4" : undefined}>
+              <p key={paragraph}>
                 {paragraph}
                 {index === descriptionPreview.length - 1 && (
                   <button onClick={() => setDetail("Description")}>

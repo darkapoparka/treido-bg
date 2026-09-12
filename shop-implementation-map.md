@@ -4,13 +4,17 @@ Current checkout/branch policy is owned by [AGENTS.md](AGENTS.md); use [single-s
 
 ## Current source checkpoint
 
-The integration preserves application commit `c4584c8` from `main` and documentation/setup commit `758f11c` from `astra-pro`. The main changes include storefront styling, sheet history registration before dialogs become interactive, and 20 product checkpoint definitions.
+Integration `cd4f8fcffd89bfc4ed1a5e117f5454358505e25c` preserves application changes through `57ca1fe` from `main` and documentation/setup through `758f11c` from `astra-pro`. The main changes include storefront styling, sheet history registration before dialogs become interactive, product description states and 20 product checkpoint definitions.
 
-Enumeration on 2026-09-12 found **97 flows, 424 frame entries and 175 registered replay definitions**. The product definitions in `recipes-product.mjs` are not yet imported by the registry, so flows 18-20, 32, 37 and 38 still enumerate as route hints. Next: register those existing definitions, inspect their ordered source frames, replay them and verify the connected product journeys. Flow 17 remains a separate detail/variant obligation.
+Registration commit `fe14af0` connects those existing product definitions to the registry and existing CI selection. Enumeration on 2026-09-12 now finds **97 flows, 424 frame entries and 195 registered replay definitions**. The 20 checkpoints cover flows **18-20, 32, 37 and 38**; their complete ordered source stills were inspected. Flow 17 remains a separate detail/variant obligation.
 
-Local media verification currently rejects `store-hero`, `shower-caddy` and `rice-shampoo`; other listed product assets passed. Keep their expected hashes and inspect provenance before any repair. The old four-asset failure is not the current local result.
+Local media verification rejects `store-hero`, `shower-caddy` and `rice-shampoo`; fresh allowlisted downloads reproduced the last two mismatches. Other listed product assets passed. Keep their expected hashes and inspect provenance before repair. CI has its own verified cached originals; a CI capture does not repair local assets.
 
-This is source/definition discovery, not successful replay or visual acceptance. Current measured results will replace this note after the connected batch; the dated ledger is not regenerated from enumeration.
+The owned checkout's old preview on 6412 is unresponsive and Windows denied stopping PID 16240. Local browser navigation failed; see [status](docs/STATUS.md) for the exact prerequisite. [Non-deploying run 34708336898](https://github.com/darkapoparka/treido-bg/actions/runs/34708336898) evaluates the integrated source. Registration is not replay or visual acceptance; regenerate measurements only from its actual evidence, retaining unmeasured frames.
+
+That run scored **98/99 selected frames**, including **19/20 product checkpoints**, with **67/68 interactions passing**. Product gallery frames `f018-002` and `f018-003` are numerical candidates, not owner approvals. `f038-006` failed an ambiguous reported-marker selector; the bag description test measured 0px where the source/test requires 16px. The scoped follow-up fixes the selector and description heading/paragraph spacing. Its next action is the same capture/interaction verification, including sibling frames and the existing 320/393/430 description tests.
+
+Local inspection artifacts: `.qa/shop-parity/imported-ci-cd4f8fc/` holds the downloaded run reports/pairs; `.qa/shop-parity/local-integration/` holds the source/live contact sheets and full-size bag comparison. The source still has open promotion/arrival-history differences, quantity/button/review typography, description-sheet geometry and the add-to-cart recording's missing intermediate animation/timing. No mask or baseline is changed to hide them.
 
 ## Fixed source and comparison
 
