@@ -5,14 +5,22 @@ export async function GET(
 ) {
   if (!referencePreviewEnabled()) return new Response(null, { status: 404 });
   const { key } = await params;
-  const [{ readReferenceMedia }, { readFollowingMedia }, { readSavedMedia }] =
-    await Promise.all([
-      import("@/features/catalog/reference/media.server"),
-      import("@/features/catalog/reference/following-media.server"),
-      import("@/features/catalog/reference/saved-media.server"),
-    ]);
+  const [
+    { readReferenceMedia },
+    { readFollowingMedia },
+    { readSavedMedia },
+    { readStoreMedia },
+  ] = await Promise.all([
+    import("@/features/catalog/reference/media.server"),
+    import("@/features/catalog/reference/following-media.server"),
+    import("@/features/catalog/reference/saved-media.server"),
+    import("@/features/catalog/reference/store-media.server"),
+  ]);
   const media =
-    readSavedMedia(key) ?? readFollowingMedia(key) ?? readReferenceMedia(key);
+    readStoreMedia(key) ??
+    readSavedMedia(key) ??
+    readFollowingMedia(key) ??
+    readReferenceMedia(key);
   if (!media) return new Response(null, { status: 404 });
   try {
     return new Response(new Uint8Array(await media), {
