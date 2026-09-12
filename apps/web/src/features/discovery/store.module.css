@@ -2,8 +2,27 @@
 .filter {
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
 }
+.page :global(.store-actions) {
+  gap: 8px;
+}
 .filter::backdrop {
   background: rgb(0 0 0 / 40%);
+}
+.filter:global(.store-filter-sheet) :global(.sheet-header) {
+  margin-bottom: 4px;
+}
+.filter :global(.store-filter-options > button) {
+  min-height: 55px;
+  line-height: 20px;
+}
+.filter :global(.sheet-actions > *) {
+  padding-inline: 0;
+}
+.filter
+  :global(.store-filter-options > button > span:not(.store-checkbox):not(.radio-outline) > svg) {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.5;
 }
 
 .store {
@@ -90,6 +109,16 @@
   bottom: 18px;
 }
 
+.search {
+  background: #fff;
+}
+.search :global(.store-search-cancel) {
+  font-weight: 500;
+}
+.search :global(.store-search-suggestions small) {
+  font-size: 12px;
+  line-height: 16px;
+}
 .search :global(.product-copy) > strong {
   font-weight: 500;
 }
@@ -118,7 +147,7 @@
 }
 .information :global(.store-info-categories) {
   margin-top: 28px;
-  gap: 16px;
+  gap: 12px 16px;
 }
 .information :global(.store-info-categories img),
 .information :global(.store-shop-all img) {
