@@ -5,11 +5,14 @@ export async function GET(
 ) {
   if (!referencePreviewEnabled()) return new Response(null, { status: 404 });
   const { key } = await params;
-  const [{ readReferenceMedia }, { readFollowingMedia }] = await Promise.all([
-    import("@/features/catalog/reference/media.server"),
-    import("@/features/catalog/reference/following-media.server"),
-  ]);
-  const media = readFollowingMedia(key) ?? readReferenceMedia(key);
+  const [{ readReferenceMedia }, { readFollowingMedia }, { readSavedMedia }] =
+    await Promise.all([
+      import("@/features/catalog/reference/media.server"),
+      import("@/features/catalog/reference/following-media.server"),
+      import("@/features/catalog/reference/saved-media.server"),
+    ]);
+  const media =
+    readSavedMedia(key) ?? readFollowingMedia(key) ?? readReferenceMedia(key);
   if (!media) return new Response(null, { status: 404 });
   try {
     return new Response(new Uint8Array(await media), {
