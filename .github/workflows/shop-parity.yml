@@ -17,7 +17,7 @@ on:
     inputs:
       flows:
         description: "Frozen flow numbers/ranges; capture is not acceptance"
-        default: "2-16,40-42,84,96-97"
+        default: "2-16,18-20,32,37-38,40-42,84,96-97"
         required: true
 permissions:
   contents: read
@@ -37,7 +37,7 @@ jobs:
       VERCEL_ENV: preview
       PLAYWRIGHT_CHANNEL: chromium
       SHOP_PARITY_BASE_URL: http://127.0.0.1:6412
-      PARITY_FLOWS: ${{ inputs.flows || '2-16,40-42,84,96-97' }}
+      PARITY_FLOWS: ${{ inputs.flows || '2-16,18-20,32,37-38,40-42,84,96-97' }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -246,12 +246,12 @@ jobs:
             node scripts/shop-parity/ledger.mjs "ci-$GITHUB_SHA"
             cp shop-frame-ledger.md .qa/shop-parity/frame-ledger.md
           fi
-      - name: Focused Home, Following, Saved, storefront and navigation interactions
+      - name: Focused Home, Following, Saved, storefront, product and navigation interactions
         if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.products.outcome == 'success' && steps.browser.outcome == 'success' }}
         env:
           REFERENCE_DEV: "1"
           PLAYWRIGHT_JSON_OUTPUT_NAME: .qa/shop-parity/interactions.json
-        run: pnpm exec playwright test --config playwright.reference.config.ts home-overlays.spec.ts following.spec.ts history.spec.ts journeys.spec.ts --reporter=line,json
+        run: pnpm exec playwright test --config playwright.reference.config.ts home-overlays.spec.ts following.spec.ts history.spec.ts journeys.spec.ts product-flows.spec.ts --reporter=line,json
       - name: Preserve failed preview states for diagnosis
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         shell: bash
