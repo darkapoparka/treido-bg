@@ -2,18 +2,20 @@
 
 ## Start here
 
-Treido is a food-manufacturer marketplace and merchant operating platform. We are first reconstructing the frozen Shop buyer UI and complete flows, then adapting the SAME implementation to food commerce. Seller CMS and platform administration are separate workspaces, not buyer screens. The product is not production-qualified.
+Treido connects buyers with food manufacturers, farmers, growers and other eligible food producers. The destination is a producer-first food marketplace: the homepage presents manufacturers with their own product shelves, buyers visit their stores and buy food, and sellers manage their businesses through an operating workspace and storefront CMS. It is not a general-product marketplace or a security-tooling project. The product is not production-qualified.
+
+First reconstruct the frozen Shop buyer UI and complete flows; after source approval, adapt the SAME implementation to Treido. Shop brands, cosmetics and other general-shopping products are comparison fixtures, not the final catalog. Seller CMS and platform administration are separate workspaces, not buyer screens.
 
 Current owner instruction, 2026-09-12: work in **darkapoparka/treido-bg**, branch **astra-pro**, with local Codex on the existing checkout (currently `J:\treido-bg`). GitHub editing and non-deploying Actions are also allowed. This supersedes the older main-only/GitHub-only modes. Do not create another branch, worktree or concurrent writer, change `main`, or touch `treido-next` without a new instruction. Preserve unrelated changes; never reset, clean, force-push or silently stash someone else's work.
 
-Read [docs/STATUS.md](docs/STATUS.md), the requested section of [tasks.md](tasks.md), and the relevant owner below. Inspect actual source, Git status and available tools. Do not reread the whole documentation library, reinstall the stack or restart the project each session. `Continue` resumes the current checkpoint; `Execute Task N` selects the existing numbered task. Make routine implementation decisions and execute a coherent batch. Ask only when missing authorization or a material product decision truly blocks that action; continue independent work.
+At the start of each new session, read [product.md](product.md) and [docs/STATUS.md](docs/STATUS.md), then the requested section of [tasks.md](tasks.md) and its relevant owner below. Do not reload these unchanged files every turn. Inspect actual source, Git status and available tools. Do not reread the whole documentation library, reinstall the stack or restart the project. `Continue` resumes the current checkpoint; `Execute Task N` selects the existing numbered task. Make routine implementation decisions and execute a coherent batch. Ask only when missing authorization or a material product decision truly blocks that action; continue independent work.
 
 ## Find the owner
 
 | Work | Read when relevant |
 | --- | --- |
 | Product scope and phase boundaries | [product.md](product.md), [docs/product/decisions.md](docs/product/decisions.md) |
-| Buyer website | [web.md](web.md), [apps/web/AGENTS.md](apps/web/AGENTS.md) |
+| Buyer website and manufacturer-first homepage | [web.md](web.md), [apps/web/AGENTS.md](apps/web/AGENTS.md) |
 | Native buyer app | [native.md](native.md), [apps/mobile/AGENTS.md](apps/mobile/AGENTS.md) |
 | Seller workspace and store CMS | [app.md](app.md) |
 | Platform operators | [admin.md](admin.md) |
@@ -25,6 +27,8 @@ Read [docs/STATUS.md](docs/STATUS.md), the requested section of [tasks.md](tasks
 | Codex, OpenAI guidance or reusable workflows | [docs/agents/codex.md](docs/agents/codex.md), [docs/agents/skills.md](docs/agents/skills.md) |
 
 Nested instructions apply within their subtree. Docs in `docs/history/` are dated evidence, NEVER current execution policy. `tasks.md` owns the product queue; the existing Shop manifest, frame ledger and flow checklist own parity evidence. Do not invent another progress counter or competing backlog.
+
+When changing documentation, follow the retirement rules in [docs/README.md](docs/README.md): consolidate unique requirements into their current owner, update references, and delete obsolete active guides instead of leaving competing copies. Do not delete all Markdown, historical evidence, source ledgers, generated framework instructions or upstream licenses. A product-doc update must explain what users can do and what acceptance proves, not merely add more warnings or skills.
 
 ## Build and verify
 

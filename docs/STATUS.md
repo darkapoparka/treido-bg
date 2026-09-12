@@ -8,6 +8,8 @@ Repository: `darkapoparka/treido-bg`. Active branch: **astra-pro**, created from
 
 The active implementation phase remains Shop **mobile-web** parity across the frozen buyer corpus. The documentation/skills upgrade does not authorize beginning branding, backend integration, Expo product implementation or seller/admin development. Those remain named later work packages in [tasks.md](../tasks.md).
 
+The owner's follow-up makes the destination concrete: food manufacturers/producers, including eligible homegrown foods; manufacturer-and-product shelves on Home; full food storefront/purchase journeys and seller operations. Read [product.md](../product.md) once per new session and [web.md](../web.md) for that contract. The follow-up refines Task 7 and removes five retired parallel/lane redirects under [the documentation retirement rules](README.md). It changes no application behavior, source corpus, acceptance ledger or commercial-policy approval. Do not restart documentation cleanup instead of continuing Shop.
+
 ## Evidence boundary
 
 The base contains substantial buyer UI and existing reference replay/test infrastructure. [shop-implementation-map.md](../shop-implementation-map.md) owns the next parity investigation and evidence pointers. [shop-parity-checklist.md](../shop-parity-checklist.md) owns flow acceptance; the checked-in frame ledger is a dated measurement, not a live counter. Documentation-only changes do not alter either result.

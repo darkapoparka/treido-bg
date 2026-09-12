@@ -1,12 +1,12 @@
 # Numbered execution tasks
 
-This is the only product work queue. Task numbers 1-14 are retained. Say `Continue Shop parity` or `Execute Task N`; a new session reads [AGENTS.md](AGENTS.md), [current status](docs/STATUS.md), the selected task and its relevant owners. Do not turn individual files into assignments the owner must micromanage.
+This is the only product work queue. Task numbers 1-14 are retained. Say `Continue Shop parity` or `Execute Task N`; a new session reads [AGENTS.md](AGENTS.md), [product.md](product.md), [current status](docs/STATUS.md), the selected task and its relevant owners. Do not turn individual files into assignments the owner must micromanage.
 
 ## Current order
 
 The owner-selected active work is the **buyer mobile-web reference slices of Tasks 3, 5 and 6**, before real backend dependencies. Complete connected related flow families using the existing source/recipes/ledger. Do not reinterpret this exception as permission to begin native, food branding, merchant/admin or backend work. Documentation for those later surfaces is preparation, not implementation.
 
-The Astra documentation/skills reorganization on 2026-09-12 preserves existing code, feature IDs, source corpus, policy proposals and historical evidence. Prior task records are in [history](docs/history/README.md), not a second current queue. Implementation-map checkpoints are dated; current code may contain subsequent fixes.
+The Astra documentation/skills reorganization on 2026-09-12 preserves existing code, feature IDs, source corpus, policy proposals and historical evidence. Prior task records are in [history](docs/history/README.md), not a second current queue. Implementation-map checkpoints are dated; current code may contain subsequent fixes. The owner's follow-up fixes the destination as a manufacturer-first food marketplace with producer-and-product containers; Task 7 must implement that experience, not only rename categories.
 
 Statuses below describe scope, not a fresh test run. `Review` means evidence/approval remains; `In progress` may include only explicitly labeled fixture UI. Full task completion must satisfy its real acceptance contract.
 
@@ -37,7 +37,9 @@ Acceptance: frozen install, actual lint/format/types/unit/import checks, product
 
 Owner: [product.md](product.md), [design.md](design.md), [decisions](docs/product/decisions.md). Preserve all frozen reference identities and complete source inventories. Resolve only decisions necessary for the requested phase; preserve unapproved food, quantity, fee/refund and partner proposals with their numerical examples.
 
-The Astra documentation update adds explicit buyer/native/merchant/admin/CMS/AI contracts and reusable skills, and retires conflicting execution modes. It does not approve DEC-001 through DEC-007 or implement their features. Shopify acquisition remains a separately tracked source task in [shopify/README.md](shopify/README.md).
+The documentation update establishes explicit buyer/native/merchant/admin/CMS/AI contracts and the owner's producer-first direction; it does not approve pending detailed policies, source fidelity or implement the features. Shopify acquisition remains a separately tracked source task in [shopify/README.md](shopify/README.md).
+
+When asked to improve docs, execute the consolidation/retirement rules in [docs/README.md](docs/README.md). Delete superseded active guides after preserving unique requirements and fixing links. Do not create another backlog or restart this audit during every UI session. The five retired parallel/lane redirects have been removed; their deletion is not unfinished cleanup work to repeat.
 
 Acceptance: accurate source/version mapping, nonconflicting current docs, retained requirement IDs, explicit unresolved approvals and validated documentation/skill integrity. Do not run application suites solely to verify prose.
 
@@ -75,17 +77,24 @@ Task 7 requires the approved source gate; this never waives Tasks 4/5/9/10's rea
 
 ## Task 7 - Adapt the approved frontend to Treido
 
-Owner: [style-guide.md](style-guide.md), [web.md](web.md), [product.md](product.md). Only after source approval, apply approved brand/content and food semantics through the SAME components. Implement producer identity, food taxonomy/facts, units/packs, availability and configured fulfillment. Do not create dual permanent skins or replace the source UI with a generic theme.
+Owner: [product.md](product.md), [web.md](web.md), [style-guide.md](style-guide.md). Only after source approval, turn the SAME component/interaction foundation into the manufacturer-first food marketplace. A name, logo and category-text replacement does not complete this task.
 
-Record intentional source-feature dispositions, localization and platform exceptions. Preserve all active product requirements; approve any release deferral explicitly. Acceptance includes the adapted journeys, accessibility, BG/EN and affected purchase/navigation regression plus owner brand review.
+Implement the following as one connected product adaptation, not a new queue:
+
+- Build the producer-container homepage specified in web.md, with identifiable manufacturers and their own product shelves, useful store/follow/product entry points, area/category context and truthful empty/loading/error states.
+- Adapt storefronts, food cards/details, search facets, quantities/units/packs, applicable food facts, cart seller grouping and configured fulfillment. Preserve the tested navigation, overlay, focus and scroll behaviors.
+- Replace general-shopping brands, cosmetics/fashion and random demo sellers in the Treido runtime with appropriate synthetic or real food data, explicitly distinguishing which is present. Remove reference-only runtime copy, irrelevant facets and recommendations; retain the frozen corpus and isolated parity fixtures as evidence, not as production content.
+- Reconcile each source-only feature as adapted, retained, replaced or explicitly deferred with owner approval where scope changes. Do not remove it from the original parity inventory, delete active food/commerce requirements or build dual permanent homes/skins.
+
+Acceptance: the web.md food-adaptation cases with at least two producers and multiple foods each; correct shelf -> store -> product -> cart identity; connected browse/purchase/return and follow/reorder behavior; BG/EN, accessibility, source-derived responsive styling and affected regression. Record the approved food design in the existing style/component owners. When real services are absent, UI evidence stays fixture-only and Tasks 4/5/8 retain their persistence/commerce checks.
 
 ## Task 8 - Build the merchant workspace and CMS
 
 Owner: [app.md](app.md), [Shopify source record](shopify/README.md), architecture. Implement authenticated populated/empty merchant operations: catalog/variants/media/bulk, inventory/lots, orders/fulfillment, customers, finance, teams/settings and storefront editing. A set of dashboard screenshots is not a merchant backend.
 
-CMS refines MER-008: schema-driven draft/preview/publish, revision conflicts, tenant-safe media, immutable versions, rollback under current policy and cache invalidation. Follow inspected Shopify patterns where source evidence exists; mark Treido-specific food/admin differences rather than inventing provenance.
+CMS refines MER-008: schema-driven draft/preview/publish, revision conflicts, tenant-safe media, immutable versions, rollback under current policy and cache invalidation. Follow inspected Shopify patterns where source evidence exists; mark Treido-specific food/admin differences rather than inventing provenance. Public storefront/search and eligible homepage shelves consume the same published catalog; sellers do not need code changes to update their foods. Store customization does not grant control over the marketplace-wide feed.
 
-Acceptance: real persisted server behavior, direct permission/revocation tests, phone/desktop BG/EN journeys, publication reflected to buyers, analytics reconciliation and failure recovery. Basic operations cannot require Premium or AI.
+Acceptance: real persisted server behavior, direct permission/revocation tests, phone/desktop BG/EN journeys, draft isolation and publication reflected to buyers, analytics reconciliation and failure recovery. Basic operations cannot require Premium or AI.
 
 ## Task 9 - Build communication, trust and administration
 
