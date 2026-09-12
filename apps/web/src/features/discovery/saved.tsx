@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import "./saved.css";
 import { KitschWordmark } from "./kitsch-wordmark";
+import { SavedCard } from "./saved-card";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { Catalog, Product } from "../catalog/types";
-import { formatMoney } from "../catalog/types";
+import type { Catalog, SavedListing } from "../catalog/types";
 import {
   FloatingNav,
   IconButton,
@@ -18,60 +18,7 @@ import { Icon } from "./icons";
 import { CartOverlay } from "../commerce/checkout";
 import { useDiscovery } from "./state";
 import { useAccount } from "../account/state";
-function SavedCard({
-  product,
-  seller,
-  selected,
-  onSelect,
-}: {
-  product: Product;
-  seller?: string;
-  selected?: boolean;
-  onSelect?: () => void;
-}) {
-  const state = useDiscovery();
-  return (
-    <article
-      className={`saved-product ${onSelect ? "saved-choosing" : ""}`}
-      data-product-id={product.id}
-      data-original-photo={product.id.startsWith("idea-") ? "true" : undefined}
-    >
-      <div className="product-media">
-        {onSelect ? (
-          <button
-            type="button"
-            aria-label={`Select ${product.title}`}
-            aria-pressed={selected}
-            onClick={onSelect}
-          >
-            <img src={product.images[0]} alt="" />
-          </button>
-        ) : (
-          <Link href={`/products/${product.id}`}>
-            <img src={product.images[0]} alt={product.title} />
-          </Link>
-        )}
-        <IconButton
-          className={`save-button ${(onSelect ? selected : state.saved.includes(product.id)) ? "saved-active" : ""}`}
-          icon={onSelect ? (selected ? "check" : "plus") : "heart"}
-          label={
-            onSelect
-              ? `${selected ? "Remove" : "Add"} ${product.title}`
-              : `${state.saved.includes(product.id) ? "Unsave" : "Save"} ${product.title}`
-          }
-          pressed={onSelect ? selected : state.saved.includes(product.id)}
-          filled={onSelect ? false : undefined}
-          onClick={onSelect ?? (() => state.toggleSaved(product.id))}
-        />
-      </div>
-      {seller && <span>{seller}</span>}
-      <Link href={`/products/${product.id}`}>
-        <strong>{product.title}</strong>
-      </Link>
-      <b>{formatMoney(product.price)}</b>
-    </article>
-  );
-}
+
 export function Saved({ catalog }: { catalog: Catalog }) {
   const state = useDiscovery(),
     account = useAccount(),
@@ -93,7 +40,8 @@ export function Saved({ catalog }: { catalog: Catalog }) {
   const selectionScroll = useRef<number | null>(null);
   const wasSelecting = useRef(false);
   const returnControl = useRef(".find-ideas");
-  const productFor = (id: string) =>
+  const productFor = (id: string): SavedListing | undefined =>
+    catalog.savedListings?.find((item) => item.id === id) ??
     catalog.products.find((item) => item.id === id);
   const fromIds = (ids: readonly string[]) =>
     ids.flatMap((id) => {
@@ -348,7 +296,11 @@ export function Saved({ catalog }: { catalog: Catalog }) {
                 onClick={() => setPanel("Invite collaborators")}
               >
                 <span className="collection-person">
-                  <span>{account.profile.firstName[0]}</span>
+                  {account.profile.avatar ? (
+                    <img src={account.profile.avatar} alt="" />
+                  ) : (
+                    <span>{account.profile.firstName[0]}</span>
+                  )}
                   <Icon name="plus" />
                 </span>
                 Invite collaborators
