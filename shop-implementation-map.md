@@ -1,162 +1,122 @@
 # Shop implementation map
 
-Operational visual-fidelity map for the frozen Shop corpus. This document is the execution source for quantitative 1:1 work; `shop-parity-checklist.md` remains the acceptance ledger.
+Execution and evidence map for the frozen Shop corpus. `shop-frame-ledger.md` remains the frame record; `shop-parity-checklist.md` remains the acceptance ledger. Current owner mode is **GitHub tools + GitHub Actions, main only**; see `single-session-execution.md`. Do not return to a Windows checkout or another local source checkout.
 
-## Fixed source and comparison frame
+## Fixed source and comparison
 
-- Frozen source: 97 flows, 424 ordered flow frames, 323 standalone entries under `references/shop/`.
-- Primary browser viewport: **393x793**.
-- Frozen raster is 1179/1180x2676. Normalize to **393x892**, then crop `(x=0, y=59, width=393, height=793)`.
-- The crop excludes native iOS status chrome at y0-59 and the Mobbin attribution/footer at normalized y852-892.
-- Never recreate excluded chrome in DOM. Never scale the app screenshot to fit a reference.
-- Web-owned pixels are compared 1:1 after this normalization. Any additional native keyboard/file-picker/provider chrome is masked explicitly per frame.
+- Frozen corpus: 97 flows, 424 ordered flow frames, 323 standalone media entries. These are different inventory counts, not interchangeable completed-screen counts.
+- Primary browser viewport: **393×793**.
+- For the documented 1179/1180×2676 flow rasters, normalize the source to 393×892, then crop `(0, 59, 393, 793)`.
+- Do not resize the live screenshot. Do not apply this normalization blindly to standalone media.
+- The fixed crop excludes native status chrome and the Mobbin footer. Additional keyboard/provider boundaries require frame-specific evidence. Never mask app-owned controls, incorrect imagery, typography, layout or missing content.
+- Videos and standalone entries not reconciled with a flow remain explicit obligations; still screenshots do not establish transition parity.
 
-## Machine-readable mapping architecture
+## Mapping and canonical owners
 
-Disposable QA workspace: `.qa/shop-parity/` (excluded locally through `.git/info/exclude`, never committed).
+`node scripts/shop-parity/run.mjs enumerate` produces `.qa/shop-parity/frame-map.json` from the frozen manifest and committed recipes:
 
-`node scripts/shop-parity/run.mjs enumerate` reads `references/shop/manifest.json` and emits `.qa/shop-parity/frame-map.json` with one entry per frozen frame:
+`source frame → family → route/query → scenario → setup/actions → scroll/focus/overlay → comparison/evidence`.
 
-`flowNo + flowId + frameNo -> reference file -> family -> route -> queryState -> setupActions -> scrollPosition -> overlayState -> scoreability`.
+A route hint is not executable coverage. A reproducible definition is not visual completion. Retain every source frame even when several frames share a route or pixels.
 
-Every corpus frame exists in the map immediately. A frame is `route-hint` until its exact deterministic replay is encoded in `scripts/shop-parity/recipes.mjs`; only `reproducible` frames are pixel-scored. Do not guess missing state from a neighboring route.
-### Family route owners
-
-| Flows | Family / canonical route owner |
+| Flows | Family / canonical owner |
 | --- | --- |
 | 1, 94 | onboarding/login: `/onboarding`, `/login` |
-| 2-6, 42 | home/notifications/deals/following: `/`, `/notifications`, `/deals`, `/following` |
-| 7-13 | Saved/collections: `/saved` |
-| 14-16, 40-41, 96-97 | storefront/search/filter/info/video: `/stores/[id]/*` |
-| 17-20, 32, 37-38 | product/gallery/save/cart/contact/report: `/products/[id]` |
-| 21-31 | cart/checkout/review/pay/receipt: `/products/shampoo-bag`, `/checkout`, order receipt routes |
-| 33-39 | product/store reviews and reports: review routes + shared Sheet |
-| 43-49 | Search/assistant/result filters: `/search`, `/assistant` |
-| 50-59 | Explore/Minis: `/explore`, `/minis/*` |
-| 60-68, 79 | Orders/history/tracking/review/manual order: `/orders/*` |
-| 69-78 | Profile/account/people/preferences: `/profile`, `/account`, `/account/people` |
-| 80-82 | profile payment methods/card add/detail/delete: Profile + `/account/payments` |
-| 83-84 | profile addresses/detail/delete: Profile + `/account/addresses` |
-| 85-93 | security/notifications/connections/privacy/support/logout: `/account/*`, `/support`, `/about` |
-| 95 | widgets browser adaptation: `/widgets` |
+| 2–6, 42 | Home/notifications/deals/following |
+| 7–13 | Saved/collections: `saved.tsx`, `saved-card.tsx`, `saved.css` |
+| 14–16, 40–41, 96–97 | storefront/collections/search/filter/info/video |
+| 17–20, 32, 37–38 | product/gallery/save/cart/contact/report |
+| 21–31 | cart/checkout/review/pay/receipt |
+| 33–39 | product/store reviews and reports |
+| 43–49 | Search/assistant/result filters |
+| 50–59 | Explore/Minis |
+| 60–68, 79 | Orders/history/tracking/manual order/review |
+| 69–78 | Profile/account/people/preferences |
+| 80–82 | payment methods/card add/detail/delete |
+| 83–84 | addresses/detail/delete |
+| 85–93 | security/notifications/connections/privacy/support/logout |
+| 95 | widgets web adaptation |
 
-For flows with repeated predecessor frames, replay from the source flow entry state rather than substituting a visually similar direct route. Shared state is recreated inside a fresh browser context for every scored frame.
-## Visual scoring formula
+All families remain in scope. Preserve working canonical components and state rather than making disconnected screenshot pages. Captured history jumps belong in explicit named entries with source notes; do not invent a causal UI transition that the source does not show.
 
-Primary metric is normalized RGB mean absolute error over unmasked pixels:
+## Current checkpoint: 2026-09-12
 
-`MAE% = 100 * sum(abs(referenceRGB - liveRGB)) / (255 * 3 * unmaskedPixels)`
+### Source changes actually committed
 
-Secondary diagnostics:
+The implementation through **`77efe3e2730c0cd65349eb4f0c6b529b1b8cb8e4`** includes:
 
-- `RMSE% = 100 * sqrt(mean((referenceRGB-liveRGB)^2)) / 255` to expose concentrated large errors.
-- `bad-pixel-12%` = percentage of unmasked pixels whose mean RGB absolute error exceeds 12/255.
-- Reference/live 50:50 alpha overlay for alignment inspection.
-- Difference heatmap where intensity is proportional to per-pixel RGB error.
+- A canonical Saved card rendering the captured multi-brand library, size variant, price, offer chip and photograph layouts. A genuinely obscured pink listing retains an honest details boundary and no invented purchase price.
+- Six real, selectable More ideas products, including Jojoba at the visible captured $14 price, with real product navigation and collection/Saved membership transitions.
+- Persistent collaboration-suggestion dismissal, captured public/private confirmation states, and explicit disconnected sharing/invitation boundaries.
+- Separate Saved-library, two-item, expanded, renamed and deletion scenarios where the frozen sequence switches histories.
+- `recipes-saved.mjs` replaying all **27 frames in flows 7–13**, including focused editors and explicitly excluded native-keyboard regions.
+- Ten focused Saved journey tests covering creation, all recommendations, partial-listing boundaries, membership, navigation, visibility, edit/cancel and deletion invariants.
 
-A change is kept only when the affected canonical family improves in aggregate and no important sibling materially regresses. Default regression guard: reject any sibling increase greater than **0.15 MAE points** unless the old state was demonstrably mapped incorrectly. A generic rule that helps one family and hurts another must be scoped at the correct component/state owner.
+**`b12796d8a7fad047b306ed4a60e4c359317d31b4`** additionally applies the measured brightness treatment to acquired Rice/Argan originals in the Saved card. It has lint/typecheck evidence but no rendered evidence yet: its subsequent run failed product acquisition.
 
-## QA commands
+No proposed shared-dialog history fix was committed. The `GitHub.update_file` attempt for `components.tsx` was blocked before writing. Do not treat the proposal or a conversation description as code on main. An unrelated later Saved-card write succeeded; do not describe all GitHub writes as unavailable.
 
-```powershell
+### Coverage and actual Actions results
+
+The `frame-map.json` from run **34677545900** records **148 reproducible definitions / 424 frames**, with **276 still route hints**. It does not mean 148 screens are visually complete. The checked-in frame ledger still needs regeneration from this newer Actions evidence rather than its older PC-only baseline.
+
+Run **34677545900** evaluated `77efe3e2730c0cd65349eb4f0c6b529b1b8cb8e4`:
+
+- Installation, frozen-reference verification, product preparation, web lint and typecheck passed.
+- **52/52 selected frames captured and scored**, across flows 2–13, 42 and 84. This includes all 27 Saved frames.
+- **46 interaction tests passed; 4 failed**. Saved-specific tests: 8 passed, 2 failed.
+- Only **`f005-004` and `f006-002`** cleared both numerical diagnostic thresholds in this run. Neither receives automatic visual/owner acceptance.
+- Artifact **10292614218** contains the exact-commit reports, interaction results and reference/live/overlay/heatmap images.
+
+Run **34678202940** evaluated `b12796d8a7fad047b306ed4a60e4c359317d31b4`:
+
+- Frozen source hashes, web lint/typecheck and browser install passed.
+- Product preparation failed checksums for `rice-bundle`, `shower-caddy`, `home-air-dry-cream`, and `rice-shampoo`.
+- Captures/interactions were skipped. Artifact **10292814536** retains the rejected candidates and log for inspection, not as verified served assets.
+
+The earlier acquisition repair at `19ed8235a9ba1a95a090fc76518fabe39400f43f` enabled actual browser evidence in run **34676399228**. Later changing downloads show that acquisition is still unstable. Do not repeatedly replace hashes without justified inspection or weaken the gate.
+
+Foundation run **34677545892** failed the formatting stage of `pnpm check`; build/smoke steps were not executed. The passing web lint/typecheck is separate from a passing foundation/build workflow. Older local reports and the historical 94/94 test claim do not establish current-main results.
+
+### Exact unresolved frames and behavior
+
+All Saved frames **`f007-001`–`f007-004`, `f008-001`–`f008-007`, `f009-001`–`f009-003`, `f010-001`–`f010-002`, `f011-001`–`f011-005`, `f012-001`–`f012-003`, `f013-001`–`f013-003`** remain visually unresolved. Actual pairs expose typography, compact collection spacing, featured-brand size, photo treatment, translucent dock/scroll fade and rich-library residuals. The obscured lower pink photograph is not reconstructed or masked away.
+
+Open interaction failures, with the original assertions retained:
+
+1. Nested Billing Back closes the Payment methods editor as well as the child sheet.
+2. A filter-history test navigates to `about:blank` after an overlay Back.
+3. The compact Invite collaborators action's fallback avatar initial participates in its accessible name; correct that name rather than dropping the exact assertion.
+4. The More ideas scroll test measures before the click is repositioned clear of the dock. Establish a scrolled, unobscured starting click and retain exact return-scroll/focus and Back/Forward assertions.
+
+Other selected frames also remain open except for the two numerical candidates named above. Some Home scores changed sharply between runs even though the latest changes were Saved-scoped. Inspect the actual artifacts, image availability, stylesheet loading and replay entry state before attributing that change to a CSS improvement or regression.
+
+### Exact next execution point
+
+First restore stable, provenance-verified acquisition of the four rejected product photographs, without silently accepting candidates or serving mismatches. Correct the unblocked Saved accessibility and test-setup issues. Keep the blocked shared-dialog write explicit and do not bypass it through a different interface or the owner's computer.
+
+Next complete coverage family: **14–16, 40–41, 96–97**, using existing storefront owners. Flow 14's ordered montage was inspected; no new storefront code or replay was committed in this batch. Inspect the remaining source sequences before editing. Continue through the other product/review, search/Minis, checkout/orders, onboarding and widget families; do not stop at this next family or polish one card indefinitely while most of the corpus remains unmapped.
+
+Regenerate `shop-frame-ledger.md` with the existing generator in Actions when recording the next measured batch. Keep implemented, interaction-tested, compared, numerically passing, visually unresolved and owner-accepted distinct. **No new owner acceptance has been recorded.**
+
+## Measurement and regression guard
+
+`MAE% = 100 × sum(abs(referenceRGB − liveRGB)) / (255 × 3 × unmaskedPixels)`.
+
+Secondary diagnostics are normalized RMSE, the percentage of pixels whose mean channel error exceeds 12/255, 50:50 overlays and difference heatmaps. Default diagnostic gates remain **MAE ≤ 1.5% and bad-pixel-12 ≤ 8%**; inspect meaningful visual and behavioral mismatches even below those gates.
+
+Keep a shared change only when affected states improve without an important sibling regression. An unexplained increase over **0.15 MAE points** requires investigation, not a lowered threshold or silent baseline approval. Thresholds may be tightened, never loosened merely to increase completion counts.
+
+## Existing execution loop
+
+Run `.github/workflows/shop-parity.yml` on an exact main commit. The ephemeral Actions preview may use `127.0.0.1:6412`; this is not permission to use the owner's computer or a local development checkout.
+
+```sh
 node scripts/shop-parity/run.mjs enumerate
-node scripts/shop-parity/run.mjs baseline --flow 84 --frame 1 --run address-before
-node scripts/shop-parity/run.mjs baseline --family account-payments --run payments-before
-node scripts/shop-parity/run.mjs baseline --all --run corpus-current
-node scripts/shop-parity/run.mjs compare-runs --before payments-before --after payments-after
+node scripts/shop-parity/run.mjs baseline --all --flows 2-13,42,84 --run ci-COMMIT_SHA
+node scripts/shop-parity/run.mjs compare-runs --before BEFORE_RUN --after AFTER_RUN
 ```
 
-Run against the owned preview with `SHOP_REFERENCE_PREVIEW=1`; current development target is `http://127.0.0.1:6412`. Each scored frame writes `reference.png`, `live.png`, `overlay.png`, `difference-heatmap.png`, plus ranked JSON/CSV/Markdown at the run root.
+Use the declared Node/package-manager versions and lockfile. Wait for target UI state, `data-shop-interactive=true`, fonts, image decoding and stable frames. Capture each independent checkpoint in a fresh browser context; drive actual buttons/navigation inside each replay. Inspect reference/live pairs, check relevant 320/430 containment, run focused family tests, commit coherent source batches directly to main and retain exact-commit evidence.
 
-The scorer and replay definitions are versioned in `scripts/shop-parity/`. Only captures and reports stay in ignored `.qa/shop-parity/`. A fresh checkout reuses the same executable commands; do not recreate another scorer or substitute manual "looks close" review.
-
-### Scorer runtime invariants
-
-- Port **6412 must serve the live `J:\treido-bg` development source**, not an old `next start` production build. Verify the listener/process before trusting a score.
-- Every route-changing replay action must wait for the target state to become visible before capture. A click completing is not proof that App Router navigation rendered.
-- Focus is part of the visual state. Blur fields when the frozen frame is unfocused; do not tune CSS to compensate for browser focus rings that are absent in the source.
-- Wait for `document.fonts.ready`, decoded images and two animation frames before screenshotting. Use a fresh browser context for every independently scored frame.
-- If a score changes implausibly after a CSS rule that cannot affect that state, inspect the live artifact and replay recipe before accepting/rejecting the source change.
-
-## Shared visual primitives and leverage
-
-| Owner | Primary files | Dependent flow families |
-| --- | --- | --- |
-| page canvas / gutters / typography | `app/globals.css`, feature CSS roots | all 97 flows |
-| floating dock / back / cart controls | `features/discovery/components.tsx` + shared CSS | nearly every buyer flow |
-| Sheet/dialog geometry/history/focus | `features/discovery/components.tsx` | filters, reports, cart, account confirmations, Minis |
-| ProductCard / StoreRow / media treatment | discovery components + product/store CSS | Home, Saved, Search, Store, Product, Explore |
-| account page/header/rows/forms | `features/account/forms.tsx`, `account.css` | 69-94 |
-| payment card/add/detail | account forms/pages/state/CSS | 21, 26, 29, 80-82 |
-| address forms/list/detail | account forms/pages/state/CSS | 25, 27-28, 83-84 |
-| cart/checkout shell | commerce checkout + account CSS | 20-31 |
-| product detail shell | product/reviews + product CSS | 17-20, 32-38 |
-| Saved/collection grid | `features/discovery/saved.tsx`, `saved.css` | 7-13, 19 |
-| Search/result rails/filters | search/store owners + Sheet | 40, 43-49 |
-| order shell/tracking/review | commerce order owners | 60-68, 79 |
-
-Fix the highest-leverage shared primitive only when the ranked heatmaps show the same residual pattern across siblings. Otherwise fix the family-specific owner.
-
-## Current quantitative baseline and exact resume point
-
-Checkpoint date: 2026-09-12. The tracked runner now replays **100/424 ordered frames**: all 41 Account/Profile/People frames (69–78) plus the 59 payment/address/settings/support/sign-in frames (80–94). **10 frames are numerical candidates; 0/97 flows are owner accepted.**
-
-Current evidence: `resume-account-candidate`, followed by `resume-profile-content-corrected` for 69 and 72, then `wallet-vector-final` and `wallet-settings-siblings` for affected wallet screens. Original comparison: `resume-profile-before`. These are local reports under `.qa/shop-parity/runs/`; the public frame ledger records their numerical outcomes.
-
-| Family | Frames | Mean MAE % | Worst MAE % |
-| --- | ---: | ---: | ---: |
-| account-profile | 24 | 2.872 | 8.888 |
-| account-authentication | 9 | 2.167 | 6.426 |
-| account-addresses | 6 | 2.192 | 3.002 |
-| account-preferences | 9 | 3.411 | 5.706 |
-| account-settings | 11 | 2.663 | 5.143 |
-| account-payments | 13 | 2.794 | 4.602 |
-| account-people | 8 | 3.414 | 4.456 |
-| account-privacy | 7 | 2.335 | 3.918 |
-| account-support | 13 | 2.128 | 3.508 |
-
-The full reference suite passed **94/94** against the owned development preview. The subsequent wallet-only batch passed all 10 focused Account/payment/settings tests plus typecheck and lint with no warnings. Genuine fixes include per-card receipt preference persistence, working nested billing-address editing with retained drafts, stock-aware saved-for-later moves, tracking edits no longer overwritten by display constants, and pickup payment state following account changes. Stale test routes/labels were corrected against inspected source frames while keeping validation, history, identity and provider-boundary assertions.
-
-The source viewport had keyboard space reserved twice in person editing. Fixing the sheet owner improves 78/002 from **23.399 to 3.092%**, 78/003 from **26.007 to 3.239%**, and birthday 78/005 from **15.943 to 2.883%**. Public-profile layout improves 72/002 **5.333 to 1.990%** and 72/003 **4.581 to 1.147%**. These remain review evidence, not acceptance.
-
-Replay corrections are separate from visual improvements: scenarios select the observed buyer/profile state, Skincare AI replaces the wrongly identified Homescape item, and previous product/store history remains after recently viewed Minis. Named synthetic scenarios are selected only behind the existing server preview gate; they never authorize or perform real authentication, payments, account connections or deletion.
-
-### Resume without replanning
-
-1. The measured decorative payment-card vector and compact wallet row typography are now implemented at their canonical owners. The repeated wallet frame improved 3.922% -> 2.216% MAE; no affected sibling regressed by more than 0.15 points. The remaining blank lower-area/dock, typography and account-form residuals remain unaccepted.
-2. Expand deterministic coverage to Home 2–6/42 and Saved 7–13 using the existing scenario loader and canonical components. Do not rebuild working families or make a second scorer.
-3. Continue the store/product/review/search/Minis and commerce families. All 324 unmapped ordered frames remain explicitly open.
-
-Scorer invariants: fresh named scenario context for each checkpoint; wait for `data-shop-interactive=true`; reduced native-keyboard viewports may be padded only inside the explicitly excluded keyboard rectangle. App-owned pixels are never resized, and provider outcomes remain explicit captured-state previews.
-
-## Priority order
-
-Work by shared owner and measured error using the current resume actions above. Map the next complete family while retaining already verified behavior. No flow is accepted on the basis of route existence, a test pass or a low average alone.
-
-## Acceptance thresholds
-
-These are strict visual gates, not substitutes for direct inspection:
-
-- **Excellent candidate:** MAE <= 1.0% with no structural heatmap cluster.
-- **Close candidate:** MAE <= 1.5%, bad-pixel-12 <= 8%, and direct reference/live inspection shows no meaningful geometry/content mismatch.
-- **Needs refinement:** 1.5-3.0% or any coherent geometry hotspot.
-- **Priority mismatch:** >3.0%; >5.0% is high priority unless the frame is partially system-owned.
-- A web-owned frame is visually acceptance-ready only at **<=1.5% MAE**, with no important region mismatch after direct inspection.
-- A flow is acceptance-ready only when every scoreable frame passes its frame gate, family mean is <=1.25%, behavior tests pass, and no required source state is merely a route hint.
-- Numerical similarity never excuses wrong text, missing controls, screenshot-painted UI, broken Back/focus/scroll, or a hidden native boundary.
-
-These thresholds can be tightened if the corpus distribution shows lower stable noise. They cannot be loosened merely to mark more flows complete.
-
-## Native/system boundaries
-
-Always excluded by the fixed crop: iOS status bar and Mobbin attribution/footer.
-
-Frame-level masks are required when a frozen state contains native keyboard, file picker/camera picker, OS permission UI, or provider-owned UI. The app-owned portion above/around that boundary remains scoreable. Pure system/provider states are recorded `system-only` and are not assigned a fake pixel score.
-
-Known families needing boundary classification while recipes are added include form-heavy checkout 24-29, account photo flow 71, account inline-edit/people flows 73-78, Gmail/provider flow 88, login/onboarding 1/94, and Minis permission/camera/microphone states 53-59. Inspect the actual frozen frame before applying a mask; do not blanket-mask a whole family.
-
-## Execution loop
-
-For each implementation change: capture all affected canonical states -> save before scores -> make the smallest owner-level change -> recapture -> compare runs -> keep only an aggregate win with no important sibling regression -> run the focused interaction spec -> update the parity ledger only for evidence actually obtained.
-
-For scalar CSS parameters (size, gap, offset, radius, opacity, blur, rgba, gradient stops/positions), prefer a bounded automated sweep against the exact affected frame/family. Commit and push directly to `main` after a coherent objectively improved batch; `.qa/` artifacts remain local and disposable.
+Do not count routes, test passes, screenshot files, numerical candidates or owner acceptance as the same thing. Do not restart the implementation, invent missing facts, use screenshot-painted controls, hide failures or create another scoring framework.
