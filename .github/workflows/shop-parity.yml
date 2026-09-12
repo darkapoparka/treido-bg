@@ -187,6 +187,12 @@ jobs:
         run: |
           pnpm --filter @treido/web lint
           pnpm --filter @treido/web typecheck
+      - name: Build the web preview without deployment
+        if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.products.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -o pipefail
+          pnpm --filter @treido/web build 2>&1 | tee .qa/shop-parity/build.log
       - name: Capture exact-commit reference comparisons
         if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.products.outcome == 'success' && steps.browser.outcome == 'success' }}
         shell: bash
@@ -232,12 +238,34 @@ jobs:
                           pass
               raise SystemExit(result.returncode)
           PY
+      - name: Regenerate the existing frame ledger from this capture
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        shell: bash
+        run: |
+          if [ -f ".qa/shop-parity/runs/ci-$GITHUB_SHA/report.json" ]; then
+            node scripts/shop-parity/ledger.mjs "ci-$GITHUB_SHA"
+            cp shop-frame-ledger.md .qa/shop-parity/frame-ledger.md
+          fi
       - name: Focused Home, Following, Saved, storefront and navigation interactions
         if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.products.outcome == 'success' && steps.browser.outcome == 'success' }}
         env:
           REFERENCE_DEV: "1"
           PLAYWRIGHT_JSON_OUTPUT_NAME: .qa/shop-parity/interactions.json
         run: pnpm exec playwright test --config playwright.reference.config.ts home-overlays.spec.ts following.spec.ts history.spec.ts journeys.spec.ts --reporter=line,json
+      - name: Preserve failed preview states for diagnosis
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import pathlib, shutil
+          source = pathlib.Path('test-results')
+          destination = pathlib.Path('.qa/shop-parity/interaction-failures')
+          for pattern in ['**/test-failed-*.png', '**/error-context.md']:
+              for item in source.glob(pattern):
+                  target = destination / item.relative_to(source)
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copyfile(item, target)
+          PY
       - name: Publish capture summary
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         shell: bash
@@ -257,6 +285,10 @@ jobs:
           path: |
             .qa/shop-parity/provenance.json
             .qa/shop-parity/product-preparation.log
+            .qa/shop-parity/build.log
+            .qa/shop-parity/frame-ledger.md
+            .qa/shop-parity/interaction-failures/**/test-failed-*.png
+            .qa/shop-parity/interaction-failures/**/error-context.md
             .qa/shop-parity/media-review/report.json
             .qa/shop-parity/media-review/*.png
             .qa/shop-parity/frame-map.json
