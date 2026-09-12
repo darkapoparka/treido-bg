@@ -2,10 +2,15 @@
 import { ShopSurface } from "./hydration-boundary";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { StoreReviews } from "./store-reviews";
 import { useDiscovery } from "./state";
-import { IconButton, Sheet, consumeSheetHistory } from "./components";
+import {
+  IconButton,
+  Sheet,
+  commitSheetQuery,
+  consumeSheetHistory,
+} from "./components";
 import { Icon } from "./icons";
 import {
   ReviewBody,
@@ -13,6 +18,7 @@ import {
   ReviewReport,
   ReviewStars,
 } from "./review-feedback";
+import { useReviewFeedback } from "./review-state";
 import {
   selectReviews,
   type ReviewSearchRecord,
@@ -99,15 +105,28 @@ export function Reviews({
   available?: boolean;
   productId?: string;
 }) {
-  const [sort, setSort] = useState<ReviewSort>("Most relevant");
-  const [q, setQ] = useState("");
-  const [expanded, setExpanded] = useState<string[]>([]);
+  const params = useSearchParams();
+  const q = params.get("q") ?? "";
+  const sort =
+    reviewSorts.find((value) => value === params.get("sort")) ?? "Most relevant";
+  const feedback = useReviewFeedback(`product:${productId}`);
+  const { helpful, reported, expanded } = feedback;
   const searchRef = useRef<HTMLInputElement>(null);
-  const [helpful, setHelpful] = useState<string[]>([]);
-  const [reported, setReported] = useState<Record<string, string>>({});
   const [report, setReport] = useState("");
   const [filter, setFilter] = useState(false);
   const visible = selectReviews(reviews, { query: q, sort, helpful });
+  function updateCriteria(patch: { q?: string; sort?: ReviewSort }) {
+    const next = new URLSearchParams(params.toString());
+    const query = patch.q ?? q;
+    const order = patch.sort ?? sort;
+    if (query) next.set("q", query);
+    else next.delete("q");
+    if (order === "Most relevant") next.delete("sort");
+    else next.set("sort", order);
+    // The existing history owner also commits criteria underneath a sort sheet.
+    // No RSC request or duplicate overlay entry is needed for local filtering.
+    commitSheetQuery(next);
+  }
   if (store && available) return <StoreReviews />;
   if (!available)
     return (
@@ -173,11 +192,11 @@ export function Reviews({
             placeholder="Search"
             enterKeyHint="search"
             value={q}
-            onChange={(event) => setQ(event.target.value)}
+            onChange={(event) => updateCriteria({ q: event.target.value })}
             onKeyDown={(event) => {
               if (event.key === "Escape" && q) {
                 event.preventDefault();
-                setQ("");
+                updateCriteria({ q: "" });
               }
             }}
           />
@@ -190,8 +209,7 @@ export function Reviews({
           <button
             className="pill"
             onClick={() => {
-              setQ("");
-              setSort("Most relevant");
+              updateCriteria({ q: "", sort: "Most relevant" });
               searchRef.current?.focus();
             }}
           >
@@ -203,6 +221,8 @@ export function Reviews({
         <article
           className={`review-card ${reported[review.id] ? "review-reported" : ""}`}
           key={review.id}
+          data-review-id={review.id}
+          aria-label={`Review by ${review.author}`}
         >
           <ReviewStars rating={review.stars} />
           {review.variant && (
@@ -212,13 +232,7 @@ export function Reviews({
           <ReviewBody
             body={review.body}
             expanded={expanded.includes(review.id)}
-            onToggle={() =>
-              setExpanded((value) =>
-                value.includes(review.id)
-                  ? value.filter((id) => id !== review.id)
-                  : [...value, review.id],
-              )
-            }
+            onToggle={() => feedback.toggleExpanded(review.id)}
           />
           <footer>
             <span className="review-avatar" aria-hidden="true">
@@ -230,13 +244,7 @@ export function Reviews({
             <ReviewHelpful
               selected={helpful.includes(review.id)}
               disabled={!!reported[review.id]}
-              onToggle={() =>
-                setHelpful((value) =>
-                  value.includes(review.id)
-                    ? value.filter((id) => id !== review.id)
-                    : [...value, review.id],
-                )
-              }
+              onToggle={() => feedback.toggleHelpful(review.id)}
             />
             <IconButton
               icon="more"
@@ -255,9 +263,7 @@ export function Reviews({
         <ReviewReport
           key={report}
           onClose={() => setReport("")}
-          onReport={(reason) => {
-            setReported((value) => ({ ...value, [report]: reason }));
-          }}
+          onReport={(reason) => feedback.markReported(report, reason)}
         />
       )}
       <Sheet
@@ -271,7 +277,7 @@ export function Reviews({
               key={value}
               aria-pressed={sort === value}
               onClick={() => {
-                setSort(value);
+                updateCriteria({ sort: value });
                 setFilter(false);
               }}
             >
