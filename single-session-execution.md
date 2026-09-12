@@ -1,6 +1,6 @@
 # Single-session execution
 
-Current owner mode, 2026-09-12: one writer on **astra-pro** in `darkapoparka/treido-bg`, normally local Codex in the existing checkout. GitHub editing and non-deploying Actions are permitted. The prior main-only/GitHub-only/parallel-lane modes are retired. Do not create another branch, worktree, lane lock or writer, or modify `main`.
+Use the checkout, two-branch limit and one-writer policy in [AGENTS.md](AGENTS.md). [Codex setup](docs/agents/codex.md) owns synchronization; this file owns only the Shop implementation and reference loop.
 
 ## Resume, do not restart
 
@@ -31,7 +31,7 @@ node scripts/shop-parity/run.mjs baseline --all --flows 14-16,40-41,96-97 --run 
 node scripts/shop-parity/run.mjs compare-runs --before BEFORE_RUN --after AFTER_RUN
 ```
 
-Run the relevant existing Playwright specs with the reference config; its development-server path uses `REFERENCE_DEV=1`. Inspect/reuse the configured harness rather than start competing dev/build processes. `scripts/shop-parity/ledger.mjs` takes the recorded run ID as its positional argument when regenerating the dated ledger from real evidence. Do not regenerate acceptance from mere source definitions.
+Run the relevant existing Playwright specs with the reference config; its development-server path uses `REFERENCE_DEV=1` and owns port 3103. Stop only a confirmed owned 6412 runtime before that harness uses the same `.next` directory, then restart the capture preview if needed. `scripts/shop-parity/ledger.mjs` takes the recorded run ID as its positional argument when regenerating the dated ledger from real evidence. Do not regenerate acceptance from mere source definitions.
 
 ## Decide and act
 
@@ -41,6 +41,6 @@ Treat current access/permission failures precisely. Historical failures are date
 
 ## Close a coherent batch
 
-Run scoped checks, preserve original assertions and diagnostic thresholds, record exact source/run/evidence and update the owning task/flow records. Explicitly stage reviewed files, commit on `astra-pro`, fetch and push only if fast-forward safe. Leave unrelated work untouched. Update the current resume note rather than appending another contradictory queue.
+Run scoped checks, preserve original assertions and diagnostic thresholds, record exact source/run/evidence and update the owning task/flow records. Follow the root commit/synchronization contract and leave unrelated work untouched. Update the current resume note rather than appending another contradictory queue.
 
 The browser/source gate is not payment, native or production acceptance. Missing proof is reported as not run or unresolved. Continue the next useful related work within the current request; do not ask the owner to approve routine component edits.

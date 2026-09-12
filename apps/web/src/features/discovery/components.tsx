@@ -320,8 +320,6 @@ export function Sheet({
     sheetBodyLocks += 1;
     const marker = `sheet-${crypto.randomUUID()}`;
     let ownsEntry = false;
-    // Defer history registration until after Strict Mode's rehearsal cleanup.
-    // A replacement dialog adopts the same entry instead of racing a back().
     const onBack = () => {
       restoreSheetQuery(committedSheetQueries.get(marker));
       const stack = [...liveSheets.keys()];
@@ -330,27 +328,26 @@ export function Sheet({
       )
         closeRef.current();
     };
-    const register = manageHistory
-      ? window.setTimeout(() => {
-          if (pendingSheetBack) clearTimeout(pendingSheetBack);
-          pendingSheetBack = undefined;
-          const historyState = { ...window.history.state, shopSheet: marker };
-          if (
-            window.history.state?.shopSheet &&
-            !liveSheets.has(window.history.state.shopSheet)
-          )
-            window.history.replaceState(historyState, "", window.location.href);
-          else window.history.pushState(historyState, "", window.location.href);
-          liveSheets.set(marker, el);
-          ownsEntry = true;
-          window.addEventListener("popstate", onBack);
-        }, 0)
-      : undefined;
+    // Register before showModal: once a sheet is visible, an immediate Back
+    // must dismiss it, never leave the underlying page. Strict Mode's setup /
+    // cleanup / setup and replacement sheets adopt the retiring entry below;
+    // only cleanup is deferred, not registration of an interactive overlay.
+    if (manageHistory) {
+      const historyState = { ...window.history.state, shopSheet: marker };
+      if (
+        window.history.state?.shopSheet &&
+        !liveSheets.has(window.history.state.shopSheet)
+      )
+        window.history.replaceState(historyState, "", window.location.href);
+      else window.history.pushState(historyState, "", window.location.href);
+      liveSheets.set(marker, el);
+      ownsEntry = true;
+      window.addEventListener("popstate", onBack);
+    }
     document.body.style.overflow = "hidden";
     if (!el.open) el.showModal();
     if (initialFocus) el.querySelector<HTMLElement>(initialFocus)?.focus();
     return () => {
-      if (register !== undefined) window.clearTimeout(register);
       window.removeEventListener("popstate", onBack);
       liveSheets.delete(marker);
       const committedQuery = committedSheetQueries.get(marker);
@@ -377,7 +374,7 @@ export function Sheet({
       if (sheetBodyLocks === 0)
         document.body.style.overflow = sheetBodyOverflow;
       if (el.open) el.close();
-      if (trigger?.isConnected) trigger.focus();
+      if (trigger?.isConnected) trigger.focus({ preventScroll: true });
       else if (!navigating.current && window.location.pathname === returnPath) {
         // Removing the last cart line also removes its floating trigger.
         // Keep focus in a remaining parent Sheet, or return to the active

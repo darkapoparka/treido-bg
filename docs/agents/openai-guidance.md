@@ -1,10 +1,10 @@
 # OpenAI guidance adopted for Treido
 
-Checked 2026-09-12 against official sources. This is a curated adoption record, not an offline mirror of the entire documentation site or a guarantee of future API compatibility. Recheck affected current guidance when changing integrations; do not refresh every link before each CSS edit.
+Checked 2026-09-12 against official sources, including successful searches and fetched skills, AGENTS.md, MCP and Astra instruction-following pages through the running desktop's `openaiDeveloperDocs` connection. This is a curated adoption record, not an offline mirror or a guarantee of future API compatibility. Recheck affected guidance when changing integrations; do not refresh every link before each CSS edit.
 
 ## Coding behavior
 
-The [Astra model guide](https://developers.openai.com/api/docs/guides/latest-model) highlights stronger sensitivity to instructions. Treido therefore has one short entry contract, explicit phase boundaries and task-relevant reading. The guide's API model identifier is `gpt-6-astra`; `astra-pro` is our branch name, not an inferred API model slug. The coding-model selector and Treido's future runtime model configuration are separate decisions. No model or reasoning default is forced by this branch.
+The [Astra instruction-following guide](https://developers.openai.com/api/docs/guides/latest-model#gpt-6-astra-instruction-following) highlights sensitivity to unclear or conflicting guidance. Treido therefore has one short entry contract, explicit phase boundaries and task-relevant reading. Current user instructions take precedence over skill guidelines; an actual skill-imposed pause must identify its file and relevant instruction. `astra-pro` is an optional integration branch, not an API model slug. Coding-model selection and Treido's future runtime AI are separate decisions; project config forces neither a model nor reasoning default.
 
 [Rethinking skills and prompts for GPT-6 Astra](https://learn.chatgpt.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra) motivates narrow skill triggers and less redundant instruction scaffolding. Our adaptation is to retain one writer, existing task IDs and the existing parity runner rather than create more lanes, plans or universal skills. Test scope follows changed risk; critical commerce/permission checks are not postponed.
 

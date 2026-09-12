@@ -8,7 +8,7 @@ The immediate work is faithful reconstruction of the frozen **Shop buyer UI and 
 
 ## Start a development session
 
-Read [AGENTS.md](AGENTS.md), [current status](docs/STATUS.md), and the selected [numbered task](tasks.md). The active branch is `astra-pro`; `main` is preserved. Use one local writer. Existing implementation is retained, not restarted.
+Read [AGENTS.md](AGENTS.md), [product.md](product.md), [current status](docs/STATUS.md), and the selected [numbered task](tasks.md). Use the existing `J:\treido-bg` checkout and canonical `main` branch. The only optional second branch is the existing `astra-pro`; use one writer. [Codex setup](docs/agents/codex.md) owns safe synchronization and verification.
 
 ```sh
 git status --short --branch

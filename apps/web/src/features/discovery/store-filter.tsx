@@ -3,6 +3,7 @@ import { useEffect, useRef, type CSSProperties } from "react";
 import { useSearchParams } from "next/navigation";
 import { Sheet } from "./components";
 import { Icon } from "./icons";
+import styles from "./store.module.css";
 import {
   readStoreFilters,
   STORE_PRICE_CEILING,
@@ -85,9 +86,6 @@ export function StoreFilter() {
     const leaving = wasOpen.current && !open;
     wasOpen.current = open;
     if (!leaving) return;
-    // A child filter replaces the contents of the same Sheet. Its last local
-    // focus target is not the page trigger. Restore the family-level target
-    // after Sheet cleanup, without focusing a hidden slider or scrolling it.
     const frame = requestAnimationFrame(() => {
       if (returnPosition?.path !== location.pathname) return;
       window.scrollTo({ top: returnPosition.scroll, behavior: "instant" });
@@ -139,8 +137,6 @@ export function StoreFilter() {
       window.history.replaceState(null, "", destination);
       return;
     }
-    // Consume parent and child when Price/Done commits the family. The base
-    // route is retained, not duplicated; a later Back leaves the store.
     const commit = () => {
       if (location.pathname === owned.path)
         window.history.replaceState(null, "", destination);
@@ -152,7 +148,7 @@ export function StoreFilter() {
     <Sheet
       open={open}
       title={stage === "price" ? "Price" : stage === "sort" ? "Sort by" : "Filter"}
-      className={stage === "price" ? "store-price-sheet" : "store-filter-sheet"}
+      className={`${styles.filter} ${stage === "price" ? "store-price-sheet" : "store-filter-sheet"}`}
       manageHistory={false}
       initialFocus={
         stage === "price"
@@ -213,7 +209,9 @@ export function StoreFilter() {
               onClick={() => update({ sort: value })}
             >
               {value}
-              <span className={`radio-outline ${sort === value ? "selected" : ""}`} />
+              <span
+                className={`radio-outline ${sort === value ? "selected" : ""}`}
+              />
             </button>
           ))}
         </div>
@@ -221,22 +219,37 @@ export function StoreFilter() {
         <div className="store-filter-options">
           <button onClick={() => openStoreFilter("sort")}>
             Sort by
-            <span>{sort}<Icon name="back" /></span>
+            <span>
+              {sort}
+              <Icon name="back" />
+            </span>
           </button>
           <button aria-pressed={sale} onClick={() => update({ sale: !sale })}>
             On sale
-            <span aria-hidden="true" className={`store-checkbox ${sale ? "checked" : ""}`}>
+            <span
+              aria-hidden="true"
+              className={`store-checkbox ${sale ? "checked" : ""}`}
+            >
               {sale && <Icon name="check" />}
             </span>
           </button>
           <button aria-pressed={stock} onClick={() => update({ stock: !stock })}>
             In-stock
-            <span aria-hidden="true" className={`store-checkbox ${stock ? "checked" : ""}`}>
+            <span
+              aria-hidden="true"
+              className={`store-checkbox ${stock ? "checked" : ""}`}
+            >
               {stock && <Icon name="check" />}
             </span>
           </button>
-          <button className="store-filter-price" onClick={() => openStoreFilter("price")}>
-            Price <span><Icon name="back" /></span>
+          <button
+            className="store-filter-price"
+            onClick={() => openStoreFilter("price")}
+          >
+            Price
+            <span>
+              <Icon name="back" />
+            </span>
           </button>
         </div>
       )}
@@ -255,7 +268,9 @@ export function StoreFilter() {
         >
           {stage === "all" ? "Clear all" : "Reset"}
         </button>
-        <button className="primary" onClick={done}>Done</button>
+        <button className="primary" onClick={done}>
+          Done
+        </button>
       </div>
     </Sheet>
   );

@@ -2,7 +2,7 @@
 
 Repo discovery root: `.agents/skills/`. Load only the skill relevant to the requested workflow. Nine skills are bundled: four selected upstream OpenAI skills and five small Treido workflows. This is deliberately not an installation of every unrelated framework/deployment skill.
 
-**Already in Git:** a complete `astra-pro` checkout contains these skills. Follow [local setup](codex.md#one-time-local-setup) to verify them and the actual client; no additional global skill installation is required. Skills support the producer-first product contracts, not the other way around.
+**Already in Git:** the integrated checkout contains these skills. Follow [local setup](codex.md) to verify them and the actual client; no additional global skill installation is required. Skills support the producer-first product contracts, not the other way around.
 
 ## Pinned upstream skills
 
@@ -52,4 +52,4 @@ node scripts/check-agent-docs.mjs
 
 For an intentional upgrade, review the source commit diff and licenses, stage the new managed files explicitly, update the pin/lock coherently and rerun both checks. Do not modify the global Codex skill directory or execute a downloaded helper without checking its purpose. Python bytecode/cache files are not part of the upstream inventory and must stay out of public source.
 
-[Initial documentation batch validation](validation.md) records that batch's actual checks and boundaries. Later results must identify their own source revision; neither a filesystem check nor a green docs workflow proves client-side discovery or application completion.
+[Initial documentation batch validation](../history/2026-09-12-astra-setup.md) is historical evidence. [Current status](../STATUS.md) records the latest setup and implementation checkpoint; neither a filesystem check nor a green docs workflow proves client-side discovery or application completion.

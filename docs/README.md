@@ -44,4 +44,4 @@ Deletion is file-specific, not `delete all *.md`. Keep all required product beha
 
 Specifications say what must exist; status and evidence say what actually exists. A source link is not a downloaded screen, a replay is not visual acceptance, and an approved screenshot is not working payments. Keep these distinctions in updates.
 
-[The initial documentation batch validation](agents/validation.md) records that batch's checks and boundaries; later exact-commit results are separate evidence.
+[The initial documentation batch validation](history/2026-09-12-astra-setup.md) is archived with its original scope. The current implementation map links older measurements to the immutable archive instead of repeating them as open instructions. [STATUS.md](STATUS.md) owns the latest setup result and resume action.

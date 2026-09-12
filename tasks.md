@@ -130,7 +130,7 @@ Acceptance: successful isolated rehearsal and actionable runbooks. No production
 
 Requires explicit owner authorization of exact web/native artifacts, configuration, targets and live actions. Deploy only the qualified source/configuration, verify hosted roles/journeys and observe recovery/rollback signals. Native submission and store acceptance are separate results.
 
-Do not merge `astra-pro` into `main`, activate live providers, migrate real data or submit stores without that specific authorization. Ordinary code commits do not imply release consent.
+Do not activate live providers, migrate real data or submit stores without that specific authorization. The authorized source integration into `main` is ordinary development and does not imply release consent.
 
 ## Recording progress
 

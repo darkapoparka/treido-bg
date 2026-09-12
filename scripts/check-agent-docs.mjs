@@ -121,8 +121,9 @@ assert(
   "Root AGENTS exceeded the project routing budget; extract task-specific detail",
 );
 assert(
-  text("AGENTS.md").includes("astra-pro"),
-  "Missing active-branch contract",
+  text("AGENTS.md").includes("canonical branch **main**") &&
+    text("AGENTS.md").includes("`astra-pro`"),
+  "Missing canonical main / optional astra-pro branch contract",
 );
 for (let task = 1; task <= 14; task += 1) {
   assert(

@@ -1,6 +1,6 @@
-# Astra documentation batch validation
+# Historical Astra documentation batch validation
 
-Date: 2026-09-12. Repository: darkapoparka/treido-bg. Active branch: astra-pro. Base application/source commit: 1d03706e84b5c19101246f2df42227bfddf78a54. This records documentation/tooling checks, NOT application, Shop acceptance or production qualification.
+Date: 2026-09-12. Repository: darkapoparka/treido-bg. Batch branch: astra-pro. Base application/source commit: 1d03706e84b5c19101246f2df42227bfddf78a54. This is the initial documentation batch's dated evidence, not the current session result or operating policy. It records documentation/tooling checks, NOT application, Shop acceptance or production qualification.
 
 ## Passed locally
 
