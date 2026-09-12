@@ -6,8 +6,7 @@ const paths = {
     "M12 22s8-7.4 8-13A8 8 0 0 0 4 9c0 5.6 8 13 8 13ZM15 9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z",
   truck:
     "M3 5h11v12H3V5Zm11 5h4l3 4v3h-7M7 18a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm13 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z",
-  calendar:
-    "M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2ZM3 9h18M7 2v4m10-4v4",
+  calendar: "M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2ZM3 9h18M7 2v4m10-4v4",
   link: "m9 15 6-6M8 11l-2 2a4 4 0 0 0 6 6l2-2M10 7l2-2a4 4 0 0 1 6 6l-2 2",
   chat: "M3 4h18v13H8l-5 4V4Z",
   "chat-round":
@@ -66,7 +65,7 @@ const paths = {
     "M4 7h7m6 0h3M4 17h3m6 0h7M17 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM13 17a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z",
   filter: "M3 6h18M3 18h18M8 3v6M16 15v6",
   menu: "M3 5h18M3 12h18M3 19h18",
-  bell: "M5 17h14l-2-4V9A5 5 0 0 0 7 9v4ZM10 21h4",
+  bell: "M5 17h14l-2-4V9A5 5 0 0 1 7 9v4ZM10 21h4",
   tag: "M3 3h8l10 10-8 8L3 11ZM7 7h.01",
   check: "m4 12 5 5L20 6",
   more: "M4 12h.01M12 12h.01M20 12h.01",
