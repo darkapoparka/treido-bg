@@ -1,31 +1,33 @@
-# Shopify web reference
+# Shopify web reference acquisition
 
-**Archive status: NOT DOWNLOADED. This folder currently contains source links only, not a screen or flow archive.**
+**Status: NOT DOWNLOADED.** This folder records the selected source and an empty inventory, not an acquired screenshot/flow archive or an implemented Shopify backend.
 
-The owner requested the complete Shopify **web** reference below on 2026-09-09, stored under root `shopify/` on `main`. This is separate from the Shop buyer-app reference already used elsewhere in the repository. Do not substitute Shop screenshots or a different Shopify reference version.
+## Exact owner-selected version
 
-## Exact requested source
+App: `shopify-web-2c0bd6a1-d9cd-4467-8e7b-214f748ea467`. Frozen version: `42a81476-425f-5572-a7bb-bd3b0134c8ec`.
 
-- App: `shopify-web-2c0bd6a1-d9cd-4467-8e7b-214f748ea467`
-- Frozen version: `42a81476-425f-5572-a7bb-bd3b0134c8ec`
-- [All screens](https://mobbin.com/apps/shopify-web-2c0bd6a1-d9cd-4467-8e7b-214f748ea467/42a81476-425f-5572-a7bb-bd3b0134c8ec/screens)
-- [All UI elements](https://mobbin.com/apps/shopify-web-2c0bd6a1-d9cd-4467-8e7b-214f748ea467/42a81476-425f-5572-a7bb-bd3b0134c8ec/ui-elements)
-- [All flows](https://mobbin.com/apps/shopify-web-2c0bd6a1-d9cd-4467-8e7b-214f748ea467/42a81476-425f-5572-a7bb-bd3b0134c8ec/flows)
+[All screens](https://mobbin.com/apps/shopify-web-2c0bd6a1-d9cd-4467-8e7b-214f748ea467/42a81476-425f-5572-a7bb-bd3b0134c8ec/screens), [UI elements](https://mobbin.com/apps/shopify-web-2c0bd6a1-d9cd-4467-8e7b-214f748ea467/42a81476-425f-5572-a7bb-bd3b0134c8ec/ui-elements), [flows](https://mobbin.com/apps/shopify-web-2c0bd6a1-d9cd-4467-8e7b-214f748ea467/42a81476-425f-5572-a7bb-bd3b0134c8ec/flows).
 
-## Actual acquisition state
+The machine-readable [manifest](manifest.json) has no acquired assets; source totals are unknown. No source-fidelity percentage can be calculated yet. Shop buyer screenshots are not substitutes for Shopify merchant screenshots.
 
-| Requested material | Files downloaded | Source total verified |
-| --- | ---: | --- |
-| Screens | 0 | Unknown |
-| UI elements | 0 | Unknown |
-| Flow exports, recordings and ordered steps | 0 | Unknown |
+## Access observations
 
-The available Chromium browser was launched and navigation to the exact screens page returned `net::ERR_BLOCKED_BY_ADMINISTRATOR`. The connected Mobbin tool separately returned `Mobbin MCP requires a paid plan`. These are observations about the execution environment and connection, not a determination of the owner's subscription. No authenticated Computer browser tool was exposed in this session. Web retrieval of all three supplied pages also failed.
+On 2026-09-12, the connected Mobbin flow search returned `Mobbin MCP requires a paid plan`. This describes that connector's access, not a conclusion about the owner's browser subscription. The local folder contained only the earlier source record. A prior browser attempt recorded `net::ERR_BLOCKED_BY_ADMINISTRATOR`; do not treat that dated observation as a guarantee that every future authorized browser is blocked.
 
-No Save/Download control was successfully reached. No reference images, flow recordings, UI-element crops or archive files were acquired. This source record does **not** complete the owner's request.
+A fresh ordinary browser attempt on 2026-09-12 navigated to the exact URL and returned its Shopify page title, but the inspected page content was the unauthenticated marketing page with Log in/Join links, not the requested version gallery. No version screenshots, flow records or exports were acquired. A landing-page screenshot is not a Shopify reference asset.
 
-## Completion requirements
+Use only available, authorized ordinary browser/export access. Do not extract credentials/cookies, bypass a paywall/administrative denial, change access controls or buy a plan automatically. An access barrier blocks acquisition, not documenting the seller product.
 
-Acquire the actual exports through authorized Mobbin access. Preserve original files, screen/element/flow identifiers, names, order and flow-step relationships; reconcile each category against the exact version's displayed totals before marking the archive complete. Keep credentials, cookies, session recordings and signed download URLs out of Git. Respect the repository's public-storage restrictions when handling restricted materials.
+## Acquisition contract
 
-Only this source record was added; application code and the existing Shop reference were not changed.
+Collect the exact version's screen records, UI-element taxonomy/actual exports, ordered flow steps and available recordings through permitted controls. Record original IDs/names/order, source links, logical/raster dimensions, file paths, content type, byte size, SHA-256, capture date and flow-step relationships. Keep standalone assets and repeated flow occurrences distinguishable.
+
+Reconcile displayed totals separately for screens, elements, flows, ordered steps and recordings. Unknown totals remain null. A visible thumbnail, source link, inferred category or copied Shop frame is not a downloaded Shopify asset. Decode media and inspect representative/full relevant flows before claiming usability or completeness.
+
+The repository is public. Store newly acquired originals and private inspection output under ignored `.local/references/shopify/` or `shopify/raw/`. Commit only safe source metadata and our own measured implementation notes until publication rights are established; exclude signed URLs, auth state, personal data and fonts. A source acquisition request does not itself establish third-party redistribution rights.
+
+## Implementation mapping after access
+
+Map inspected source families to [app.md](../app.md): onboarding/home, product list/editor/variants/media/bulk, inventory, orders/fulfillment, customers, analytics/finance, storefront themes/editor/publishing, team/settings and billing. Record entry/action/result, empty/error/restricted states, navigation and viewport. Do not claim that the requested version contains a feature before inspecting it.
+
+Shopify UI is a reference for merchant workflows. Treido's food model, tenant authority, payment/stock services, CMS limits and separately privileged administration remain our product/engineering contracts, not copied Shopify backend code.

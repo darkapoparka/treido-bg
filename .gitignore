@@ -66,3 +66,9 @@ Thumbs.db
 # Local visual captures, overlays and machine-specific diagnostics.
 .qa/
 **/.qa/
+
+# New Shopify exports and Python helper caches remain private/local.
+/shopify/raw/
+/shopify/downloads/
+**/__pycache__/
+*.pyc

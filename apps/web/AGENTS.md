@@ -7,3 +7,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+# Treido web scope
+
+Read the root AGENTS.md and task-relevant web.md (buyer), app.md (merchant/CMS), or admin.md. All three are product surfaces within this app, not separate deployments. Current execution is Shop buyer mobile-web parity on astra-pro; do not begin another surface implicitly.
+
+Preserve the generated framework block above. Use its installed-version docs, the existing canonical components and reference runner. Keep server authority and private data out of client UI. Follow the root verification and safe-write boundaries.

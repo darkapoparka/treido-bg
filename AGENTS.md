@@ -1,51 +1,47 @@
-# Agent instructions
+# Treido agent contract
 
-## Execute the requested numbered task
+## Start here
 
-Owner instruction (updated 2026-09-11): use **one execution session** directly on the single `J:\treido-bg` checkout and `main`. Do not create feature branches, worktrees or parallel writer lanes. Preserve existing work and inspect upstream before synchronization. During the Shop 1:1 phase follow [single-session-execution.md](single-session-execution.md), [shop-implementation-map.md](shop-implementation-map.md) and [shop-parity-checklist.md](shop-parity-checklist.md). The older parallel documents are historical only. Local commits and pushes to the authorized `darkapoparka/treido-bg` `main` are allowed for coherent verified batches; deployment still requires separate authorization.
+Treido is a food-manufacturer marketplace and merchant operating platform. We are first reconstructing the frozen Shop buyer UI and complete flows, then adapting the SAME implementation to food commerce. Seller CMS and platform administration are separate workspaces, not buyer screens. The product is not production-qualified.
 
-When the user says **Execute Task N**, open [tasks.md](tasks.md), locate Task N, read its listed sources and implement that work package. Do not return another proposal, ask the user to name files, or execute the entire roadmap. **Continue Task N** resumes its recorded progress. Task numbers are the only execution interface; feature IDs in [product.md](product.md) describe requirements, not a second queue.
+Current owner instruction, 2026-09-12: work in **darkapoparka/treido-bg**, branch **astra-pro**, with local Codex on the existing checkout (currently `J:\treido-bg`). GitHub editing and non-deploying Actions are also allowed. This supersedes the older main-only/GitHub-only modes. Do not create another branch, worktree or concurrent writer, change `main`, or touch `treido-next` without a new instruction. Preserve unrelated changes; never reset, clean, force-push or silently stash someone else's work.
 
-Read README.md and product.md on the first session. Thereafter read this file, the selected task and the relevant document sections, plus actual changed code. Do not reread every document or audit another repository for every small change. Inspect Git status, current scripts and concurrent edits; preserve unrelated work. Keep one writer per feature, schema, lockfile or visual baseline.
+Read [docs/STATUS.md](docs/STATUS.md), the requested section of [tasks.md](tasks.md), and the relevant owner below. Inspect actual source, Git status and available tools. Do not reread the whole documentation library, reinstall the stack or restart the project each session. `Continue` resumes the current checkpoint; `Execute Task N` selects the existing numbered task. Make routine implementation decisions and execute a coherent batch. Ask only when missing authorization or a material product decision truly blocks that action; continue independent work.
 
-## Implement a batch, then check it
+## Find the owner
 
-A task contains multiple related components, routes and operations. Plan briefly, then build them together. Do not stop after every file/component to ask permission or rerun the full suite. Use compiler/editor feedback and targeted checks when useful; write relevant tests with the feature. Run the task's batch-end checks once the coherent implementation is ready, fix failures and rerun the affected checks. Full product regression belongs to Task 12, not every UI edit.
+| Work | Read when relevant |
+| --- | --- |
+| Product scope and phase boundaries | [product.md](product.md), [docs/product/decisions.md](docs/product/decisions.md) |
+| Buyer website | [web.md](web.md), [apps/web/AGENTS.md](apps/web/AGENTS.md) |
+| Native buyer app | [native.md](native.md), [apps/mobile/AGENTS.md](apps/mobile/AGENTS.md) |
+| Seller workspace and store CMS | [app.md](app.md) |
+| Platform operators | [admin.md](admin.md) |
+| Shop reconstruction | [design.md](design.md), [single-session-execution.md](single-session-execution.md), [shop-implementation-map.md](shop-implementation-map.md) |
+| Styling and later food adaptation | [style-guide.md](style-guide.md) |
+| Data, identity, money and permissions | [architecture.md](architecture.md), relevant detailed requirement |
+| AI product behavior | [ai.md](ai.md) |
+| Commands and proof | [techstack.md](techstack.md), [verification.md](verification.md) |
+| Codex, OpenAI guidance or reusable workflows | [docs/agents/codex.md](docs/agents/codex.md), [docs/agents/skills.md](docs/agents/skills.md) |
 
-Payment/inventory/authorization changes require their focused real-behavior tests before their batch is done; do not defer those to final QA. Target/permission checks before database or external operations are immediate safety checks, not optional end-of-batch testing. [verification.md](verification.md) owns test scope and cadence.
+Nested instructions apply within their subtree. Docs in `docs/history/` are dated evidence, NEVER current execution policy. `tasks.md` owns the product queue; the existing Shop manifest, frame ledger and flow checklist own parity evidence. Do not invent another progress counter or competing backlog.
 
-If the task is too large for one session, record finished portions, remaining work and checks under the same task. Keep it In progress/Review/Blocked as appropriate. Do not invent another backlog, split the owner's command into dozens of required prompts, or claim completion to conceal missing evidence. A missing input blocks only the affected portion; do not silently move to an unrequested task.
+## Build and verify
 
-## Use the available tools
+Keep one canonical component per visual role per platform. Implement complete connected states and actions, not screenshot backgrounds or inert controls. During Shop parity, preserve reference styling/content and named platform exceptions; do not rebrand early. The current push is mobile-width **web**, not permission to begin native, backend or merchant implementation.
 
-Discover and read relevant installed skills for the current work: Next.js/React, Expo/React Native, Turborepo, shadcn, database/auth/payments, and browser/device verification as applicable. Use available documentation tools, Context7/framework MCP, Mobbin or authorized browser access when helpful. Verify actual access; discovering a plugin is not reading a source. Missing tools require a precise limitation and supported fallback, not invented results or bypassed access.
+Use installed-version framework documentation and existing scripts. For Next.js, read relevant `apps/web/node_modules/next/dist/docs/` guidance; the generated nested instructions remain intact. Load only task-relevant skills. Upstream examples do not authorize global installation, permission changes, deployment or branch changes; resolve bundled scripts from the skill's actual path. Prefer the existing Playwright reference runner over installing a second browser pipeline.
 
-Use official CLIs for scaffolding/installing: create-next-app, create-expo-app, shadcn init/add and Expo's compatible package installer. Use the selected package manager and current supported options. Preserve root docs and one lockfile; inspect generated changes. Prefer supported defaults and current version-matched docs. Do not install every skill/provider, guess APIs, or create custom scaffolding/validation frameworks when existing tools suffice.
+Implement a meaningful related batch, then run risk-proportionate checks. Docs-only work gets documentation checks, not the full application suite. Shared UI changes include sibling regression; money, stock and authorization changes need focused real-behavior tests before completion. Never weaken assertions, masks, asset hashes or baselines to manufacture green results. Visual comparison, interaction tests, production services and owner acceptance are distinct evidence.
 
-For every Next.js task, follow [apps/web/AGENTS.md](apps/web/AGENTS.md) and read the relevant installed documentation in `apps/web/node_modules/next/dist/docs/`. Current official workflow skills come from `vercel/next.js/skills`; older cached plugin examples are secondary to the installed framework docs. Use the cache adoption/optimization skills only for their applicable work, not as a reason to add caching to a provider-free bootstrap. For native tasks follow [apps/mobile/AGENTS.md](apps/mobile/AGENTS.md) and Expo SDK 57 documentation. Recheck these version pointers when upgrading.
+## Safe boundaries
 
-## Fixed product and architecture
+The repository is public. Never commit credentials, session state, personal/customer data, signed downloads, restricted reference exports or font collections. Existing reference files are inherited evidence, not blanket publication permission for new assets. Use ignored local/private storage for new Mobbin exports until rights are established. A connector/access denial is not permission to bypass that boundary through another tool.
 
-Build [product.md](product.md) from a clean foundation. `apps/web` is the full browser platform: shopping, personal/business accounts, merchant dashboard, admin and backend. `apps/mobile` is the Expo native buyer app. Follow [architecture.md](architecture.md) and [techstack.md](techstack.md). No routine framework debate; a necessary architecture change needs evidence and an explicit decision.
+One server owns commerce and resource authorization. Client totals, workspace IDs and AI output are untrusted. No secrets or ORM/server modules in native/shared client contracts. Missing providers must not become fake success. Core commerce must work without AI or Premium.
 
-Old projects are optional references for specific questions, not required code/schema imports or parity targets. New code is the default. Optional reuse must satisfy this specification, publication rights and the current tests independently. Existing systems remain untouched.
+Verify the exact authorized non-production target before external writes. No production data transfer, paid provisioning, live money, account activation, DNS, deployment or app-store submission without specific authorization. Never kill an unidentified process; avoid dev/build collisions in the same output directory.
 
-Build the buyer frontend against the exact selected Shop reference in [design.md](design.md). During the Shop 1:1 phase, [shop-parity-checklist.md](shop-parity-checklist.md) is the acceptance authority for all 97 frozen flows; route existence or old prose does not substitute for its evidence checkboxes. Task 3 begins discovery UI, Tasks 5-6 complete the declared flows, and Task 6 records source approval. Task 7 applies Treido branding/food content through the same components. Do not copy old Treido layouts, invent reference values, rebrand early or make a disposable clone. Merchant/admin have their own specified operational layouts.
+## Finish the batch
 
-## Non-negotiable boundaries
-
-One server owner for commercial rules and resource permissions. Web/native share meanings and contracts, not database credentials or a universal UI. Never trust client totals or a requested business ID as authority. Keep server-only code out of client packages.
-
-Implement required features, not speculative services or generic abstraction layers. One canonical component per visual role per platform; no permanent alternate homes/skins. Fix styling at its owner, not global class-substring or blanket !important overrides. Do not hide missing functionality by weakening tests or approving changed baselines automatically.
-
-Reference fixtures are allowed only in isolated, marked development/test paths using the same components as real data. They cannot count as working authentication, payments, delivery, inventory or customer messaging. Failures must not silently become mock success. Source and brand approval belong to the owner/design reviewer.
-
-## Safety and reporting
-
-This repository is public. No secrets, connection strings, real customer records, auth state, private logs, signed downloads, restricted screenshots or licensed font collections in Git. Use placeholders and private/ignored evidence. Verify exact non-production targets/roles before writes. Never use missing test config as a reason to fall back to production.
-
-Do not reset shared data, edit applied migrations, force-push, kill unknown processes or overwrite other work. Serialize schema/lockfile work and avoid simultaneous dev/build on the same .next output. Paid provisioning, live activation, DNS changes, real-data transfer, deployment and store submission require specific authorization; installing code does not grant it.
-
-At the batch end, update only the owning docs and tasks.md with what was built, what remains, actual check results/environment, a concise evidence/commit pointer and the next task. During the active Shop 1:1 phase, follow `single-session-execution.md`: commit coherent objectively improved batches directly on `main`, fetch again and push when fast-forward safe. Deployment still requires separate explicit authorization. A skipped check, screenshot, export or HTTP 200 does not prove broader behavior. Report facts without guarantees of perfect software.
-
-The normal user instruction is simply: **Execute Task 1.**
+Update the owning task/checkpoint with changed behavior, exact source/evidence, checks actually run, failures or not-run checks, and the next concrete action. Keep summaries short and replace stale current-state prose rather than append endless competing handoffs. Commit a reviewed, explicitly staged batch on `astra-pro`; fetch and push only when fast-forward safe. Report the actual commit and evidence, not a claim that the whole platform is finished.

@@ -12,5 +12,11 @@ expo-env.d.ts
 .local
 private-evidence
 reference-assets
-# Keep the existing product/specification prose unchanged; links are checked in tests.
+# Markdown is maintained as source documentation; dedicated checks validate links and integrity.
 **/*.md
+
+# Pinned upstream skills retain their original bytes and license formatting.
+.agents/skills/openai-docs/
+.agents/skills/gh-fix-ci/
+.agents/skills/security-threat-model/
+.agents/skills/security-best-practices/
