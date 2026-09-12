@@ -19,18 +19,24 @@ export async function useReferenceScenario(
   ]);
 }
 
-// Flow 20 opens the exclusive offer after adding the bag. Flow 21's cart starts
-// after that offer is dismissed; clicking through a modal is not a real journey.
+// Preserve flow 20's visible added state before opening its offer. Flow 21's
+// ordinary cart follows dismissal; no clicks through a modal or injected state.
 export async function addShampooBag(page: Page) {
   await page.goto("/products/shampoo-bag");
   await page.getByRole("button", { name: "Add to cart", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Added to cart", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.locator('.pdp-purchase-buttons [data-addition="idle"]'),
+  ).toBeVisible();
+  const cart = page.getByRole("button", { name: "Open cart", exact: true });
+  await cart.click();
   const offer = page.getByRole("dialog", { name: /exclusive offer/ });
   await expect(offer).toBeVisible();
   await offer.getByRole("button", { name: /^Close / }).click();
   await expect(offer).not.toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Open cart", exact: true }),
-  ).toBeVisible();
+  await expect(cart).toBeFocused();
 }
 
 export async function openBagCart(page: Page) {
