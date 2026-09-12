@@ -17,7 +17,7 @@ const RESET_MS = 1800;
 export function useProductAddition() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [flight, setFlight] = useState<Flight | null>(null);
-  const [announcement, setAnnouncement] = useState("");
+  const [announcement, setAnnouncement] = useState({ id: 0, text: "" });
   const cleanup = useRef<() => void>(() => undefined);
   const busy = useRef(false);
   const serial = useRef(0);
@@ -36,7 +36,10 @@ export function useProductAddition() {
       trigger instanceof HTMLElement ? trigger.getBoundingClientRect() : null;
     const timers: ReturnType<typeof setTimeout>[] = [];
     let frame = 0;
-    setAnnouncement(`${quantity} ${title} added to cart`);
+    setAnnouncement({
+      id: operation,
+      text: `${quantity} ${title} added to cart`,
+    });
     setPhase(reduced ? "confirmed" : "flying");
     setFlight(null);
     if (!reduced) {
@@ -55,10 +58,13 @@ export function useProductAddition() {
       timers.push(setTimeout(() => setPhase("confirmed"), CONFIRM_MS));
     }
     timers.push(
-      setTimeout(() => {
-        setFlight(null);
-        busy.current = false;
-      }, reduced ? 0 : FLIGHT_MS),
+      setTimeout(
+        () => {
+          setFlight(null);
+          busy.current = false;
+        },
+        reduced ? 0 : FLIGHT_MS,
+      ),
       setTimeout(() => setPhase("idle"), RESET_MS),
     );
     cleanup.current = () => {
@@ -69,7 +75,13 @@ export function useProductAddition() {
     return true;
   }
 
-  return { phase, flight, announcement, begin };
+  return {
+    phase,
+    flight,
+    announcement: announcement.text,
+    announcementId: announcement.id,
+    begin,
+  };
 }
 
 export function ProductAdditionFlight({ flight }: { flight: Flight | null }) {
