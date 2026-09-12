@@ -57,8 +57,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
     "idea-rosemary-liquid",
     "idea-jojoba",
   ]);
-  const selectionProducts =
-    panel === "More ideas" ? ideas : fromIds(state.saved);
+  const selectionProducts = panel === "More ideas" ? ideas : fromIds(state.saved);
   const selectedPreview =
     collection &&
     fromIds(collection.productIds).find((item) =>
@@ -295,7 +294,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
                 className="invite-collaborators"
                 onClick={() => setPanel("Invite collaborators")}
               >
-                <span className="collection-person">
+                <span className="collection-person" aria-hidden="true">
                   {account.profile.avatar ? (
                     <img src={account.profile.avatar} alt="" />
                   ) : (
@@ -546,8 +545,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
             <button
               title="Changes local preview visibility only; nothing is published"
               onClick={() => {
-                if (collection.visibility === "Private")
-                  setPanel("Make public");
+                if (collection.visibility === "Private") setPanel("Make public");
                 else {
                   state.updateCollection(collection.id, {
                     visibility: "Private",
@@ -628,8 +626,8 @@ export function Saved({ catalog }: { catalog: Catalog }) {
           <>
             <p className="sheet-copy">
               Sharing and invitations are not connected. This collection exists
-              only in your local reference session; no invitation can be sent
-              and no public link is available.
+              only in your local reference session; no invitation can be sent and
+              no public link is available.
             </p>
             <button
               className="primary form-submit"
@@ -638,9 +636,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
                   await navigator.clipboard.writeText(
                     `Local reference collection: ${collection?.name ?? "Collection"}`,
                   );
-                  setNotice(
-                    "Collection name copied. Sharing is not connected.",
-                  );
+                  setNotice("Collection name copied. Sharing is not connected.");
                 } catch {
                   setNotice("Clipboard unavailable. Sharing is not connected.");
                 }
