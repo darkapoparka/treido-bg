@@ -48,6 +48,13 @@ export type Store = Readonly<{
   ratingCount: string;
   description: string;
   categories: readonly string[];
+  /** A storefront shelf is a projection; its snapshot ratings need not replace
+   * the product-detail snapshot, and following must not rewrite the cart. */
+  recommendations?: readonly Readonly<{
+    productId: string;
+    ratingCount?: string;
+  }>[];
+  promotionSavings?: number;
 }>;
 export type Catalog = Readonly<{
   products: readonly Product[];
