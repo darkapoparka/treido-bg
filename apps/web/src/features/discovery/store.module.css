@@ -109,7 +109,7 @@
   bottom: 18px;
 }
 
-.search {
+.search:global(.store-search-editing) {
   background: #fff;
 }
 .search :global(.store-search-cancel) {
