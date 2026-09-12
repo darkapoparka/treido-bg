@@ -3,9 +3,11 @@ import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element -- Existing allowlisted reference crops. */
 import Link from "next/link";
 import { useState } from "react";
-import { IconButton, Sheet } from "./components";
+import { useSearchParams } from "next/navigation";
+import { IconButton, Sheet, commitSheetQuery } from "./components";
 import { Icon } from "./icons";
 import { ReviewHelpful, ReviewReport, ReviewStars } from "./review-feedback";
+import { useReviewFeedback } from "./review-state";
 import {
   selectReviews,
   type ReviewRating,
@@ -16,50 +18,37 @@ import {
 type StoreReview = ReviewSearchRecord & {
   productTitle: string;
   syntheticAuthor: string;
-  source: string;
   dateLabel: string | null;
-  rect393: number[];
-  cropPath: string;
 };
+// Flow 39 and the existing allowlisted store-review artwork. Private inspection
+// paths and crop coordinates are not part of the client-facing review contract.
 const records: StoreReview[] = [
   {
     id: "store-review-1",
     syntheticAuthor: "Avery",
-    source: "screens/128.webp",
     dateLabel: "Yesterday",
     stars: 5,
     title: "Best shampoo set ever",
     productTitle: "Coconut Oil Shampoo & Conditioner Combo",
     body: "Before I started to use all my hair products I had a scalp problem but since I switched everything I use to",
-    rect393: [33, 252, 63, 63],
-    cropPath:
-      ".local\\shop-build\\asset-audit\\catalog-expansion\\store-review-1.png",
   },
   {
     id: "store-review-2",
     syntheticAuthor: "Jamie",
-    source: "screens/128.webp",
     dateLabel: "Yesterday",
     stars: 5,
     title: "Pleasant Surprise",
     productTitle: "Coastal Cottage Hair Perfume Duo",
     body: "I really enjoy these fragrances. Especially beach sorbet, so light and makes me feel happy. I keep in it my purse to apply in the",
-    rect393: [33, 489, 63, 63],
-    cropPath:
-      ".local\\shop-build\\asset-audit\\catalog-expansion\\store-review-2.png",
   },
   {
     id: "store-review-3",
     syntheticAuthor: "Morgan",
-    source: "screens/128.webp",
     dateLabel: null,
     stars: 5,
     title: "Love Everything Kitsch",
     productTitle: "Tula Rose Hair & Body Perfume Mist",
     body: "I have a breathing issue and I like to smell good as well I can do that with Kitsch finally.",
-    rect393: [33, 726, 63, 63],
-    cropPath:
-      ".local\\shop-build\\asset-audit\\catalog-expansion\\store-review-3.png",
   },
 ];
 
@@ -71,14 +60,34 @@ const sorts: ReviewSort[] = [
 ];
 const ratings: ReviewRating[] = [5, 4, 3, 2, 1];
 export function StoreReviews() {
-  const [q, setQ] = useState("");
+  const params = useSearchParams();
+  const q = params.get("q") ?? "";
+  const sort =
+    sorts.find((value) => value === params.get("sort")) ?? "Most recent";
+  const rating =
+    ratings.find((value) => value === Number(params.get("rating"))) ?? null;
   const [panel, setPanel] = useState("");
-  const [sort, setSort] = useState<ReviewSort>("Most recent");
-  const [rating, setRating] = useState<ReviewRating | null>(null);
-  const [helpful, setHelpful] = useState<string[]>([]);
   const [report, setReport] = useState("");
-  const [reported, setReported] = useState<Record<string, string>>({});
+  const feedback = useReviewFeedback("store:kitsch");
+  const { helpful, reported } = feedback;
   const visible = selectReviews(records, { query: q, sort, rating, helpful });
+  function updateCriteria(patch: {
+    q?: string;
+    sort?: ReviewSort;
+    rating?: ReviewRating | null;
+  }) {
+    const next = new URLSearchParams(params.toString());
+    const query = patch.q ?? q;
+    const order = patch.sort ?? sort;
+    const selected = patch.rating === undefined ? rating : patch.rating;
+    if (query) next.set("q", query);
+    else next.delete("q");
+    if (order === "Most recent") next.delete("sort");
+    else next.set("sort", order);
+    if (selected === null) next.delete("rating");
+    else next.set("rating", String(selected));
+    commitSheetQuery(next);
+  }
   return (
     <ShopSurface className="shop-page store-reviews">
       <header className="section-heading">
@@ -119,11 +128,9 @@ export function StoreReviews() {
           <p>No captured reviews match these filters.</p>
           <button
             className="pill"
-            onClick={() => {
-              setQ("");
-              setRating(null);
-              setSort("Most recent");
-            }}
+            onClick={() =>
+              updateCriteria({ q: "", rating: null, sort: "Most recent" })
+            }
           >
             Clear filters
           </button>
@@ -133,6 +140,8 @@ export function StoreReviews() {
         {visible.map((review) => (
           <article
             key={review.id}
+            data-review-id={review.id}
+            aria-label={`Review by ${review.syntheticAuthor}`}
             className={reported[review.id] ? "review-reported" : ""}
           >
             <div className="store-review-product">
@@ -158,13 +167,7 @@ export function StoreReviews() {
               <ReviewHelpful
                 selected={helpful.includes(review.id)}
                 disabled={!!reported[review.id]}
-                onToggle={() =>
-                  setHelpful((value) =>
-                    value.includes(review.id)
-                      ? value.filter((id) => id !== review.id)
-                      : [...value, review.id],
-                  )
-                }
+                onToggle={() => feedback.toggleHelpful(review.id)}
               />
               <IconButton
                 icon="more"
@@ -184,9 +187,7 @@ export function StoreReviews() {
         <ReviewReport
           key={report}
           onClose={() => setReport("")}
-          onReport={(reason) => {
-            setReported((value) => ({ ...value, [report]: reason }));
-          }}
+          onReport={(reason) => feedback.markReported(report, reason)}
         />
       )}
       <Sheet open={!!panel} title={panel} onClose={() => setPanel("")}>
@@ -197,7 +198,7 @@ export function StoreReviews() {
               <input
                 value={q}
                 type="search"
-                onChange={(event) => setQ(event.target.value)}
+                onChange={(event) => updateCriteria({ q: event.target.value })}
                 placeholder="Search reviews"
               />
             </label>
@@ -215,7 +216,7 @@ export function StoreReviews() {
                 key={value}
                 aria-pressed={sort === value}
                 onClick={() => {
-                  setSort(value);
+                  updateCriteria({ sort: value });
                   setPanel("");
                 }}
               >
@@ -231,7 +232,7 @@ export function StoreReviews() {
             <button
               aria-pressed={rating === null}
               onClick={() => {
-                setRating(null);
+                updateCriteria({ rating: null });
                 setPanel("");
               }}
             >
@@ -245,7 +246,7 @@ export function StoreReviews() {
                 key={value}
                 aria-pressed={rating === value}
                 onClick={() => {
-                  setRating(value);
+                  updateCriteria({ rating: value });
                   setPanel("");
                 }}
               >
