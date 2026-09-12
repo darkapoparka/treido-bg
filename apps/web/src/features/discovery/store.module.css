@@ -1,0 +1,179 @@
+.page {
+  font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
+}
+
+.store :global(.store-hero) {
+  border-radius: 36px 36px 0 0;
+}
+.store :global(.store-brand) > span > svg {
+  display: block;
+  width: 228px;
+  height: 56px;
+  margin: auto;
+}
+.store :global(.store-recommendations) {
+  background: #dddcd5;
+}
+.store :global(.product-copy) {
+  padding-top: 10px;
+  font-size: 12px;
+  line-height: 16px;
+}
+.store :global(.product-copy) > strong {
+  font-weight: 500;
+}
+.store :global(.product-copy .rating) {
+  font-size: 12px;
+  line-height: 16px;
+}
+.store :global(.store-actions .follow[aria-pressed="true"]) {
+  color: #111;
+  background: #d7d4ca;
+  border: 1px solid #ffffffa8;
+}
+
+.collection {
+  background: #c1beb4;
+}
+.collection :global(.product-copy) > strong {
+  font-weight: 500;
+}
+.collection :global(.product-copy .rating) {
+  color: #080808;
+}
+.collection[data-collection="best-sellers"] :global(.store-collection-hero) {
+  height: 242px;
+  border-radius: 0;
+}
+.collection[data-collection="best-sellers"] :global(.store-collection-hero) > img {
+  height: 100%;
+  opacity: 0.76;
+}
+
+.search :global(.product-copy) > strong {
+  font-weight: 500;
+}
+.search :global(.store-search-products .product-media),
+.search :global(.product-grid .product-media) {
+  background: #e1e1e1;
+  border: 1px solid #d8d8d8;
+}
+.search :global(.store-search-products .product-media) {
+  box-shadow: 0 3px 10px #00000009;
+}
+
+.information {
+  background: #c1beb4;
+}
+.information :global(.store-info-brand) {
+  font-size: 14px;
+}
+.information :global(.store-info-brand small) {
+  font-size: 12px;
+  line-height: 16px;
+}
+.information :global(.store-description) {
+  color: #393939;
+  line-height: 18px;
+}
+.information :global(.store-info-categories) {
+  margin-top: 28px;
+  gap: 16px;
+}
+.information :global(.store-info-categories img),
+.information :global(.store-shop-all img) {
+  border: 4px solid #c5c2b9;
+  box-shadow: 0 0 0 1px #b6b3a9, 0 8px 20px #0000000b;
+  border-radius: 24px;
+}
+.information :global(.store-info-categories span) {
+  margin: 10px 8px 0;
+  line-height: 18px;
+  font-weight: 500;
+}
+.information :global(.store-info-panel) {
+  margin-top: 20px;
+  padding: 16px;
+  background: #dcd9d3;
+}
+.information :global(.store-info-panel h2) {
+  margin: 0;
+  font-size: 24px;
+  line-height: 29px;
+  font-weight: 600;
+  letter-spacing: -0.65px;
+}
+.information :global(.store-info-panel .detail-row) {
+  min-height: 44px;
+  padding: 12px 0;
+  font-size: 16px;
+  line-height: 20px;
+  color: #393939;
+}
+.information :global(.store-info-panel .detail-row h2) {
+  color: #111;
+}
+.information :global(.store-info-panel .detail-row svg) {
+  width: 20px;
+  height: 20px;
+  color: #73736e;
+}
+.information :global(.store-info-panel > .detail-row:first-child) {
+  padding-top: 0;
+  min-height: 40px;
+}
+.information :global(.store-info-rating) {
+  margin-top: 16px;
+}
+.information :global(.store-info-rating > b) {
+  font-size: 24px;
+  line-height: 28px;
+}
+.information :global(.store-info-rating > span) {
+  font-size: 0;
+  position: relative;
+}
+.information :global(.store-info-rating > span)::before,
+.information :global(.store-info-rating > span)::after {
+  content: "★★★★★";
+  font-size: 24px;
+  line-height: 28px;
+  letter-spacing: 1px;
+}
+.information :global(.store-info-rating > span)::before {
+  color: #95958e;
+}
+.information :global(.store-info-rating > span)::after {
+  position: absolute;
+  inset: 0;
+  width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  color: #080808;
+}
+.information :global(.store-info-panel > p) {
+  margin: 0;
+  font-size: 14px;
+  line-height: 18px;
+}
+.information :global(.store-review-previews) {
+  margin-top: 20px;
+}
+.information :global(.store-review-preview) {
+  min-height: 116px;
+  margin-top: 0;
+  border: 1px solid #c2c2c0;
+  background: #cececd;
+}
+.information :global(.store-review-preview b) {
+  font-weight: 400;
+}
+.information :global(.store-review-preview small) {
+  color: #767672;
+}
+.information > :global(a.store-info-panel),
+.information > :global(button.store-info-panel) {
+  min-height: 64px;
+  padding: 16px;
+  line-height: 20px;
+}
