@@ -931,3 +931,39 @@
 .profile-overview .profile-recent-rail + .profile-payment-heading {
   margin-top: 38px;
 }
+
+/* Wallet and settings share the captured compact text scale. */
+.profile-overview .profile-payment-heading h2 {
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+}
+.profile-overview .profile-settings-panel .account-row {
+  font-size: 14px;
+  gap: 18px;
+}
+.profile-overview .profile-settings-panel .account-icon {
+  width: 18px;
+  height: 18px;
+}
+.profile-overview .profile-payment-heading .pill {
+  min-width: 91px;
+  font-weight: 600;
+}
+.profile-overview .payment-card-stack {
+  transform: translateY(-8px);
+}
+.profile-overview .profile-settings-panel {
+  transform: translateY(-9px);
+}
+.profile-overview .profile-settings-panel .account-row > span:last-child {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  margin-right: 8px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  font-size: 0;
+  transform: rotate(45deg);
+}

@@ -101,21 +101,21 @@ Fix the highest-leverage shared primitive only when the ranked heatmaps show the
 
 Checkpoint date: 2026-09-12. The tracked runner now replays **100/424 ordered frames**: all 41 Account/Profile/People frames (69–78) plus the 59 payment/address/settings/support/sign-in frames (80–94). **10 frames are numerical candidates; 0/97 flows are owner accepted.**
 
-Current evidence: `resume-account-candidate`, followed by `resume-profile-content-corrected` for 69 and 72. Original comparison: `resume-profile-before`. These are local reports under `.qa/shop-parity/runs/`; the public frame ledger records their numerical outcomes.
+Current evidence: `resume-account-candidate`, followed by `resume-profile-content-corrected` for 69 and 72, then `wallet-vector-final` and `wallet-settings-siblings` for affected wallet screens. Original comparison: `resume-profile-before`. These are local reports under `.qa/shop-parity/runs/`; the public frame ledger records their numerical outcomes.
 
 | Family | Frames | Mean MAE % | Worst MAE % |
 | --- | ---: | ---: | ---: |
-| account-profile | 24 | 2.978 | 8.888 |
+| account-profile | 24 | 2.872 | 8.888 |
 | account-authentication | 9 | 2.167 | 6.426 |
-| account-addresses | 6 | 3.253 | 6.179 |
+| account-addresses | 6 | 2.192 | 3.002 |
 | account-preferences | 9 | 3.411 | 5.706 |
-| account-settings | 11 | 3.128 | 5.143 |
-| account-payments | 13 | 3.434 | 4.621 |
+| account-settings | 11 | 2.663 | 5.143 |
+| account-payments | 13 | 2.794 | 4.602 |
 | account-people | 8 | 3.414 | 4.456 |
-| account-privacy | 7 | 2.579 | 3.922 |
-| account-support | 13 | 2.330 | 3.922 |
+| account-privacy | 7 | 2.335 | 3.918 |
+| account-support | 13 | 2.128 | 3.508 |
 
-The full reference suite passed **94/94** against the owned development preview. Genuine fixes include per-card receipt preference persistence, working nested billing-address editing with retained drafts, stock-aware saved-for-later moves, tracking edits no longer overwritten by display constants, and pickup payment state following account changes. Stale test routes/labels were corrected against inspected source frames while keeping validation, history, identity and provider-boundary assertions.
+The full reference suite passed **94/94** against the owned development preview. The subsequent wallet-only batch passed all 10 focused Account/payment/settings tests plus typecheck and lint with no warnings. Genuine fixes include per-card receipt preference persistence, working nested billing-address editing with retained drafts, stock-aware saved-for-later moves, tracking edits no longer overwritten by display constants, and pickup payment state following account changes. Stale test routes/labels were corrected against inspected source frames while keeping validation, history, identity and provider-boundary assertions.
 
 The source viewport had keyboard space reserved twice in person editing. Fixing the sheet owner improves 78/002 from **23.399 to 3.092%**, 78/003 from **26.007 to 3.239%**, and birthday 78/005 from **15.943 to 2.883%**. Public-profile layout improves 72/002 **5.333 to 1.990%** and 72/003 **4.581 to 1.147%**. These remain review evidence, not acceptance.
 
@@ -123,7 +123,7 @@ Replay corrections are separate from visual improvements: scenarios select the o
 
 ### Resume without replanning
 
-1. Finish the shared payment-card decorative vector texture and the remaining Profile/field geometry. An experimental vector-only texture is local at `.qa/shop-parity/traced-payment-texture.svg`; it is **not** product code or accepted evidence. Keep dynamic labels, card details and controls in DOM. Validate 69 and 80–94 siblings after changing this shared art.
+1. The measured decorative payment-card vector and compact wallet row typography are now implemented at their canonical owners. The repeated wallet frame improved 3.922% -> 2.216% MAE; no affected sibling regressed by more than 0.15 points. The remaining blank lower-area/dock, typography and account-form residuals remain unaccepted.
 2. Expand deterministic coverage to Home 2–6/42 and Saved 7–13 using the existing scenario loader and canonical components. Do not rebuild working families or make a second scorer.
 3. Continue the store/product/review/search/Minis and commerce families. All 324 unmapped ordered frames remain explicitly open.
 

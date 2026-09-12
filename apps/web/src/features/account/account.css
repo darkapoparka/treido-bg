@@ -3782,16 +3782,7 @@
   padding: 0;
   font-size: 16px;
 }
-.source-payment-card {
-  background:
-    repeating-radial-gradient(
-      ellipse at 120% 150%,
-      transparent 0 11px,
-      #3d478f66 12px 13px,
-      transparent 14px 20px
-    ),
-    linear-gradient(135deg, #080957, #242c76 60%, #0b0d50);
-}
+
 .source-payment-card > div {
   gap: 8px;
   font-size: 12px;
@@ -3813,7 +3804,7 @@
   display: grid;
   place-items: center;
   border-radius: 8px;
-  font-size: 26px;
+  font-size: 24px;
 }
 .card-editor-profile:not(.details-complete) > .form-field {
   display: none;

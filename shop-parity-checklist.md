@@ -143,3 +143,7 @@ Use the current ranked checkpoint in `shop-implementation-map.md` and the single
 ### 2026-09-12 Account/Profile and behavior checkpoint
 
 The versioned replay now covers 100/424 frames (69–78 and 80–94); 324 remain unmapped. The full reference suite passed 94/94 against the live J:\treido-bg preview on port 6412. Person-sheet keyboard geometry, public-profile composition, preference alignment, per-card receipt state, nested billing, saved-for-later stock behavior, tracking edits and pickup/account payment consistency were corrected. The frame ledger records current measured errors; 10 numerical candidates do not imply owner acceptance. Source-state corrections and remaining visual residuals are recorded in shop-implementation-map.md. No deployment or provider operation was performed.
+
+### Wallet visual refinement (2026-09-12)
+
+Replaced conflicting decorative card backgrounds with one measured vector asset; corrected wallet title/row typography, filled settings icons, chevrons and card geometry. The repeated wallet frame improves 3.922% to 2.216% MAE. All 57 affected frames were recaptured across `wallet-vector-final` and `wallet-settings-siblings`; no sibling increased more than 0.15 MAE points. The 10 focused Account/payment/settings tests, web typecheck and lint passed. This is visual refinement, not 1:1 acceptance. Browser temporary profiles were redirected to ignored `.qa/browser-temp` after the system temporary disk ran out of space; no unrelated files were deleted.

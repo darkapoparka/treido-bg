@@ -56,7 +56,7 @@ export function Row({
   )[label as "Addresses"];
   const content = (
     <>
-      {glyph && <AccountIcon name={glyph} />}
+      {glyph && <AccountIcon name={glyph} filled />}
       <span>
         {label}
         {value && <small>{value}</small>}

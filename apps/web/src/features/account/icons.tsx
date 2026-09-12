@@ -20,19 +20,36 @@ const paths = {
   person: "M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM4 22v-3a8 8 0 0 1 16 0v3",
   document: "M5 2h10l4 4v16H5ZM14 2v5h5M8 12h8M8 16h8",
 } as const;
-export function AccountIcon({ name }: { name: keyof typeof paths }) {
+const solidPaths: Partial<Record<keyof typeof paths, string>> = {
+  location:
+    "M12 23S3 15 3 9a9 9 0 1 1 18 0c0 6-9 14-9 14Zm0-17a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z",
+  shield:
+    "M12 1 2 5v8c0 6 10 10 10 10s10-4 10-10V5Zm-5 11 3 3 7-7 1 2-8 8-5-4Z",
+  bell: "M3 17c2-3 2-5 2-8a7 7 0 0 1 14 0c0 3 0 5 2 8 0 3-18 3-18 0Zm6 4a3 3 0 0 0 6 0Z",
+  lock: "M4 10h2V6a6 6 0 0 1 12 0v4h2v13H4Zm5 0h6V6a3 3 0 0 0-6 0Zm2 5v4h2v-4Z",
+  help: "M12 1a11 10 0 0 0-11 10c0 3 1 5 3 7l-2 5 7-2a11 10 0 1 0 3-20Zm-4 7h2c0-3 5-3 5 0 0 2-4 2-4 6h2c0-2 4-3 4-6 0-6-9-6-9 0Zm3 8v3h2v-3Z",
+};
+export function AccountIcon({
+  name,
+  filled = false,
+}: {
+  name: keyof typeof paths;
+  filled?: boolean;
+}) {
+  const solid = filled ? solidPaths[name] : undefined;
   return (
     <svg
       className="account-icon"
       aria-hidden="true"
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
+      fill={solid ? "currentColor" : "none"}
+      fillRule="evenodd"
+      stroke={solid ? "none" : "currentColor"}
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <path d={paths[name]} />
+      <path d={solid || paths[name]} />
     </svg>
   );
 }

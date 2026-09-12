@@ -4,7 +4,7 @@ Generated from the frozen manifest and deterministic replay definitions. This is
 
 **Corpus:** 97 flows / 424 ordered frames. **Mapped:** 100/424. **Scored:** 100/424. **Numerical candidates:** 10; not automatic visual acceptance.
 
-Evidence: `resume-account-candidate`, followed by `resume-profile-content-corrected` for flows 69 and 72. Source HEAD `31fcd90`; the reports record working-tree state. Viewport: 393x793.
+Evidence: `resume-account-candidate`, followed by `resume-profile-content-corrected` for flows 69 and 72. Wallet update evidence: `wallet-vector-final` and `wallet-settings-siblings` at HEAD `4340209` plus measured working-tree changes. Original source HEAD `31fcd90`; the reports record working-tree state. Viewport: 393x793.
 
 A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region inspection, complete UX coverage, sibling regression checks and owner acceptance remain required. Unchecked entries are not complete.
 
@@ -664,11 +664,11 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-069:001 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/001.webp` | home-kitsch-before-profile | Recorded | 8.888 | 26.273 | REFINE |
 | [ ] SF-069:002 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/002.webp` | starter-profile | Recorded | 4.746 | 13.719 | REFINE |
-| [ ] SF-069:003 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/003.webp` | complete-profile-overview | Recorded | 6.032 | 16.018 | REFINE |
-| [ ] SF-069:004 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/004.webp` | recent-products-before-wallet | Recorded | 4.027 | 12.473 | REFINE |
-| [ ] SF-069:005 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/005.webp` | recent-minis-and-wallet | Recorded | 4.173 | 16.438 | REFINE |
-| [ ] SF-069:006 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/006.webp` | profile-payment-methods | Recorded | 3.922 | 14.462 | REFINE |
-| [ ] SF-069:007 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/007.webp` | profile-signout-footer | Recorded | 2.738 | 10.788 | REFINE |
+| [ ] SF-069:003 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/003.webp` | complete-profile-overview | Recorded | 6.032 | 16.019 | REFINE |
+| [ ] SF-069:004 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/004.webp` | recent-products-before-wallet | Recorded | 3.987 | 12.468 | REFINE |
+| [ ] SF-069:005 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/005.webp` | recent-minis-and-wallet | Recorded | 3.925 | 13.767 | REFINE |
+| [ ] SF-069:006 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/006.webp` | profile-payment-methods | Recorded | 2.216 | 5.980 | REFINE |
+| [ ] SF-069:007 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/007.webp` | profile-signout-footer | Recorded | 2.200 | 7.367 | REFINE |
 
 ## SF-070 — Account from Profile
 
@@ -760,35 +760,35 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-080:001 | `flows/0b84e516-1c43-4a00-8832-a659bdb587e7/001.webp` | profile-payment-methods | Recorded | 3.922 | 14.451 | REFINE |
+| [ ] SF-080:001 | `flows/0b84e516-1c43-4a00-8832-a659bdb587e7/001.webp` | profile-payment-methods | Recorded | 2.216 | 5.980 | REFINE |
 | [ ] SF-080:002 | `flows/0b84e516-1c43-4a00-8832-a659bdb587e7/002.webp` | add-card-empty | Recorded | 1.032 | 3.206 | NUMERICAL CANDIDATE |
 | [ ] SF-080:003 | `flows/0b84e516-1c43-4a00-8832-a659bdb587e7/003.webp` | add-card-number-valid | Recorded | 1.974 | 4.874 | REFINE |
 | [ ] SF-080:004 | `flows/0b84e516-1c43-4a00-8832-a659bdb587e7/004.webp` | add-card-number-error | Recorded | 1.547 | 5.282 | REFINE |
 | [ ] SF-080:005 | `flows/0b84e516-1c43-4a00-8832-a659bdb587e7/005.webp` | add-card-details-complete | Recorded | 2.085 | 5.691 | REFINE |
-| [ ] SF-080:006 | `flows/0b84e516-1c43-4a00-8832-a659bdb587e7/006.webp` | add-card-name-and-billing | Recorded | 4.489 | 15.356 | REFINE |
-| [ ] SF-080:007 | `flows/0b84e516-1c43-4a00-8832-a659bdb587e7/007.webp` | add-card-save-visible | Recorded | 4.621 | 10.861 | REFINE |
-| [ ] SF-080:008 | `flows/0b84e516-1c43-4a00-8832-a659bdb587e7/008.webp` | profile-two-cards | Recorded | 4.523 | 15.765 | REFINE |
+| [ ] SF-080:006 | `flows/0b84e516-1c43-4a00-8832-a659bdb587e7/006.webp` | add-card-name-and-billing | Recorded | 4.315 | 13.488 | REFINE |
+| [ ] SF-080:007 | `flows/0b84e516-1c43-4a00-8832-a659bdb587e7/007.webp` | add-card-save-visible | Recorded | 4.602 | 10.768 | REFINE |
+| [ ] SF-080:008 | `flows/0b84e516-1c43-4a00-8832-a659bdb587e7/008.webp` | profile-two-cards | Recorded | 3.374 | 11.204 | REFINE |
 
 ## SF-081 — Card detail from Profile
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-081:001 | `flows/78af4bc8-3317-4c8b-9d7f-1cd3c82061ea/001.webp` | profile-payment-methods | Recorded | 3.922 | 14.451 | REFINE |
-| [ ] SF-081:002 | `flows/78af4bc8-3317-4c8b-9d7f-1cd3c82061ea/002.webp` | card-detail | Recorded | 4.158 | 17.745 | REFINE |
+| [ ] SF-081:001 | `flows/78af4bc8-3317-4c8b-9d7f-1cd3c82061ea/001.webp` | profile-payment-methods | Recorded | 2.216 | 5.980 | REFINE |
+| [ ] SF-081:002 | `flows/78af4bc8-3317-4c8b-9d7f-1cd3c82061ea/002.webp` | card-detail | Recorded | 3.373 | 8.449 | REFINE |
 
 ## SF-082 — Deleting a card from Card detail
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-082:001 | `flows/57811b67-ea3f-4231-bdc0-1776716034db/001.webp` | card-detail | Recorded | 4.158 | 17.745 | REFINE |
-| [ ] SF-082:002 | `flows/57811b67-ea3f-4231-bdc0-1776716034db/002.webp` | delete-card-confirm | Recorded | 4.289 | 17.253 | REFINE |
-| [ ] SF-082:003 | `flows/57811b67-ea3f-4231-bdc0-1776716034db/003.webp` | profile-payment-methods-after-delete-dialog | Recorded | 3.922 | 14.451 | REFINE |
+| [ ] SF-082:001 | `flows/57811b67-ea3f-4231-bdc0-1776716034db/001.webp` | card-detail | Recorded | 3.373 | 8.449 | REFINE |
+| [ ] SF-082:002 | `flows/57811b67-ea3f-4231-bdc0-1776716034db/002.webp` | delete-card-confirm | Recorded | 3.999 | 13.293 | REFINE |
+| [ ] SF-082:003 | `flows/57811b67-ea3f-4231-bdc0-1776716034db/003.webp` | profile-payment-methods-after-delete-dialog | Recorded | 2.216 | 5.980 | REFINE |
 
 ## SF-083 — Addresses from Profile
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-083:001 | `flows/47a532d7-bcaa-4cc6-9322-48325718f109/001.webp` | profile-payment-methods | Recorded | 3.922 | 14.451 | REFINE |
+| [ ] SF-083:001 | `flows/47a532d7-bcaa-4cc6-9322-48325718f109/001.webp` | profile-payment-methods | Recorded | 2.216 | 5.980 | REFINE |
 | [ ] SF-083:002 | `flows/47a532d7-bcaa-4cc6-9322-48325718f109/002.webp` | manage-addresses | Recorded | 1.778 | 5.513 | REFINE |
 
 ## SF-084 — Deleting an address (profile) from Addresses
@@ -798,13 +798,13 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | [ ] SF-084:001 | `flows/7566d104-783f-4762-894a-e1465dfa554b/001.webp` | manage-addresses | Recorded | 1.778 | 5.513 | REFINE |
 | [ ] SF-084:002 | `flows/7566d104-783f-4762-894a-e1465dfa554b/002.webp` | shipping-address-sam | Recorded | 3.002 | 9.258 | REFINE |
 | [ ] SF-084:003 | `flows/7566d104-783f-4762-894a-e1465dfa554b/003.webp` | delete-address-confirm | Recorded | 2.860 | 8.005 | REFINE |
-| [ ] SF-084:004 | `flows/7566d104-783f-4762-894a-e1465dfa554b/004.webp` | manage-addresses-after-delete | Recorded | 6.179 | 14.138 | REFINE |
+| [ ] SF-084:004 | `flows/7566d104-783f-4762-894a-e1465dfa554b/004.webp` | manage-addresses-after-delete | Recorded | 1.520 | 4.837 | REFINE |
 
 ## SF-085 — Sign in & security from Profile
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-085:001 | `flows/ad155bf8-4b64-415c-be6d-43e32d3be745/001.webp` | profile-payment-methods | Recorded | 3.922 | 14.451 | REFINE |
+| [ ] SF-085:001 | `flows/ad155bf8-4b64-415c-be6d-43e32d3be745/001.webp` | profile-payment-methods | Recorded | 2.216 | 5.980 | REFINE |
 | [ ] SF-085:002 | `flows/ad155bf8-4b64-415c-be6d-43e32d3be745/002.webp` | account-and-login | Recorded | 1.522 | 3.860 | REFINE |
 | [ ] SF-085:003 | `flows/ad155bf8-4b64-415c-be6d-43e32d3be745/003.webp` | sign-in-security | Recorded | 2.734 | 7.069 | REFINE |
 
@@ -812,7 +812,7 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-086:001 | `flows/27ee8718-69b7-460f-a26d-96be39cf6ef2/001.webp` | profile-payment-methods | Recorded | 3.922 | 14.451 | REFINE |
+| [ ] SF-086:001 | `flows/27ee8718-69b7-460f-a26d-96be39cf6ef2/001.webp` | profile-payment-methods | Recorded | 2.216 | 5.980 | REFINE |
 | [ ] SF-086:002 | `flows/27ee8718-69b7-460f-a26d-96be39cf6ef2/002.webp` | notification-preferences-on | Recorded | 5.143 | 13.679 | REFINE |
 | [ ] SF-086:003 | `flows/27ee8718-69b7-460f-a26d-96be39cf6ef2/003.webp` | notification-tracking-connections-off | Recorded | 5.141 | 13.605 | REFINE |
 
@@ -820,7 +820,7 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-087:001 | `flows/18dbe0a9-2fa4-4174-887d-41f5272c2fac/001.webp` | profile-payment-methods | Recorded | 3.922 | 14.451 | REFINE |
+| [ ] SF-087:001 | `flows/18dbe0a9-2fa4-4174-887d-41f5272c2fac/001.webp` | profile-payment-methods | Recorded | 2.216 | 5.980 | REFINE |
 | [ ] SF-087:002 | `flows/18dbe0a9-2fa4-4174-887d-41f5272c2fac/002.webp` | connections | Recorded | 1.848 | 4.759 | REFINE |
 
 ## SF-088 — Connect to a Gmail account from Connections
@@ -828,14 +828,14 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-088:001 | `flows/3d1f4110-721a-44e8-b35d-be4c015a9e03/001.webp` | connections | Recorded | 1.848 | 4.759 | REFINE |
-| [ ] SF-088:002 | `flows/3d1f4110-721a-44e8-b35d-be4c015a9e03/002.webp` | choose-connection-provider | Recorded | 2.448 | 6.351 | REFINE |
+| [ ] SF-088:002 | `flows/3d1f4110-721a-44e8-b35d-be4c015a9e03/002.webp` | choose-connection-provider | Recorded | 2.448 | 6.353 | REFINE |
 | [ ] SF-088:003 | `flows/3d1f4110-721a-44e8-b35d-be4c015a9e03/003.webp` | gmail-connection-introduction | Recorded | 1.958 | 4.717 | REFINE |
 
 ## SF-089 — Deleting an account from Profile
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-089:001 | `flows/edf3324f-4112-4d2f-a7cd-f78f6e6ebbc7/001.webp` | profile-payment-methods | Recorded | 3.922 | 14.451 | REFINE |
+| [ ] SF-089:001 | `flows/edf3324f-4112-4d2f-a7cd-f78f6e6ebbc7/001.webp` | profile-payment-methods | Recorded | 2.216 | 5.980 | REFINE |
 | [ ] SF-089:002 | `flows/edf3324f-4112-4d2f-a7cd-f78f6e6ebbc7/002.webp` | privacy-options | Recorded | 2.883 | 6.968 | REFINE |
 | [ ] SF-089:003 | `flows/edf3324f-4112-4d2f-a7cd-f78f6e6ebbc7/003.webp` | delete-account-information | Recorded | 3.918 | 8.619 | REFINE |
 | [ ] SF-089:004 | `flows/edf3324f-4112-4d2f-a7cd-f78f6e6ebbc7/004.webp` | delete-account-confirmation | Recorded | 3.101 | 6.742 | REFINE |
@@ -847,7 +847,7 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-090:001 | `flows/9e7c0890-7d2d-4e20-83eb-bacf3763d443/001.webp` | profile-payment-methods | Recorded | 3.922 | 14.451 | REFINE |
+| [ ] SF-090:001 | `flows/9e7c0890-7d2d-4e20-83eb-bacf3763d443/001.webp` | profile-payment-methods | Recorded | 2.216 | 5.980 | REFINE |
 | [ ] SF-090:002 | `flows/9e7c0890-7d2d-4e20-83eb-bacf3763d443/002.webp` | support-options | Recorded | 2.375 | 6.233 | REFINE |
 
 ## SF-091 — Chatting with AI assistant (support) from Support
@@ -865,14 +865,14 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-092:001 | `flows/ccb0b141-1aac-461e-b8ca-2bfac2886e93/001.webp` | support-options | Recorded | 2.375 | 6.233 | REFINE |
-| [ ] SF-092:002 | `flows/ccb0b141-1aac-461e-b8ca-2bfac2886e93/002.webp` | about-shop | Recorded | 3.027 | 5.900 | REFINE |
+| [ ] SF-092:002 | `flows/ccb0b141-1aac-461e-b8ca-2bfac2886e93/002.webp` | about-shop | Recorded | 3.026 | 5.911 | REFINE |
 
 ## SF-093 — Logging out from Profile
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-093:001 | `flows/9143aaad-196e-459f-bf7d-6482d8c9f330/001.webp` | profile-sign-out-footer | Recorded | 2.739 | 10.783 | REFINE |
-| [ ] SF-093:002 | `flows/9143aaad-196e-459f-bf7d-6482d8c9f330/002.webp` | sign-out-confirmation | Recorded | 2.537 | 7.307 | REFINE |
+| [ ] SF-093:001 | `flows/9143aaad-196e-459f-bf7d-6482d8c9f330/001.webp` | profile-sign-out-footer | Recorded | 2.146 | 6.739 | REFINE |
+| [ ] SF-093:002 | `flows/9143aaad-196e-459f-bf7d-6482d8c9f330/002.webp` | sign-out-confirmation | Recorded | 2.217 | 5.361 | REFINE |
 | [ ] SF-093:003 | `flows/9143aaad-196e-459f-bf7d-6482d8c9f330/003.webp` | signed-out-splash | Recorded | 0.411 | 0.934 | NUMERICAL CANDIDATE |
 | [ ] SF-093:004 | `flows/9143aaad-196e-459f-bf7d-6482d8c9f330/004.webp` | signed-out-introduction | Recorded | 1.314 | 4.036 | NUMERICAL CANDIDATE |
 
