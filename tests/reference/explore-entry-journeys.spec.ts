@@ -15,7 +15,9 @@ async function inspect(page: Page, name: string) {
   await page.evaluate(async () => {
     await document.fonts.ready;
     await Promise.all(
-      [...document.images].map((image) => image.decode().catch(() => undefined)),
+      [...document.images].map((image) =>
+        image.decode().catch(() => undefined),
+      ),
     );
   });
   await test.info().attach(name, {
@@ -97,9 +99,13 @@ test("the Mini heading opens the real catalogue and a Mini visit survives the re
   await page.goBack();
   await expect(page).toHaveURL(/\/explore$/);
   await minis.click();
-  await expect(
-    page.locator('.mini-recent-section a[href="/minis/sol"]'),
-  ).toBeVisible();
+  await expect(page).toHaveURL(/\/minis$/);
+  const recent = page.locator('.mini-recent a[href="/minis/sol"]');
+  await expect(recent).toHaveCount(1);
+  await expect(recent).toBeVisible();
+  await expect(recent).toHaveAccessibleName("Sol: Browse by Voice");
+  await page.reload();
+  await expect(recent).toBeVisible();
 });
 
 test("Beauty retains every captured section and its saved product uses the shared buyer state", async ({
@@ -107,34 +113,35 @@ test("Beauty retains every captured section and its saved product uses the share
 }) => {
   await page.setViewportSize({ width: 393, height: 793 });
   await open(page);
-  await page
-    .locator('.explore-categories a[href="/explore/Beauty"]')
-    .click();
+  await page.locator('.explore-categories a[href="/explore/Beauty"]').click();
   await expect(page).toHaveURL(/\/explore\/Beauty$/);
   await expect(
     page.getByRole("heading", { name: "Beauty", exact: true }),
   ).toBeVisible();
-  await expect(page.locator(".editorial-hero strong")).toHaveText(
+  // Flow 51 contains these three editorials and six section headings in order.
+  await expect(page.locator(".editorial-hero strong")).toHaveText([
     "Summer curl routine",
-  );
-  await expect(
-    page.getByRole("heading", { name: /Trending stores/ }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Feels like summer", exact: true }),
-  ).toBeAttached();
-  await expect(
-    page.getByRole("heading", {
-      name: /Spotlight on Black-owned businesses/,
-    }),
-  ).toBeAttached();
+    "Skincare starter set",
+    "Vacation-ready nails",
+  ]);
+  await expect(page.locator(".explore-page h2")).toHaveText([
+    "Top rated ›",
+    "What’s new ›",
+    "Scent & body",
+    "Favorites for a reason",
+    "Bestsellers ›",
+    "Sweet deals",
+  ]);
   await inspect(page, "beauty-category-top");
   await page
-    .getByRole("button", { name: "Save The Whip Mousse", exact: true })
+    .getByRole("button", {
+      name: "Save Whip Volumizing Mousse",
+      exact: true,
+    })
     .click();
   await expect(
     page.getByRole("button", {
-      name: "Unsave The Whip Mousse",
+      name: "Unsave Whip Volumizing Mousse",
       exact: true,
     }),
   ).toHaveAttribute("aria-pressed", "true");
@@ -165,9 +172,7 @@ test("Explore and Beauty stay within the three reference widths and expose a wor
       page.getByRole("button", { name: "Open cart", exact: true }),
     ).toBeFocused();
   }
-  await page
-    .locator('.explore-categories a[href="/explore/Beauty"]')
-    .click();
+  await page.locator('.explore-categories a[href="/explore/Beauty"]').click();
   await expect(page).toHaveURL(/\/explore\/Beauty$/);
   for (const width of [320, 393, 430]) {
     await page.setViewportSize({ width, height: 793 });

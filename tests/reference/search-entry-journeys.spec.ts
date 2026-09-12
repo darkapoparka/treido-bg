@@ -28,7 +28,9 @@ async function inspect(page: Page, name: string) {
   await page.evaluate(async () => {
     await document.fonts.ready;
     await Promise.all(
-      [...document.images].map((image) => image.decode().catch(() => undefined)),
+      [...document.images].map((image) =>
+        image.decode().catch(() => undefined),
+      ),
     );
   });
   await test.info().attach(name, {
@@ -57,7 +59,9 @@ test("photo drafting keeps one input and removing the photograph preserves its q
   await expect(button(page, "Cancel photo search")).toBeVisible();
   await inspect(page, "search-photo-composer");
   await button(page, "Remove selected photo").click();
-  await expect(page.getByRole("img", { name: "Selected photo" })).toHaveCount(0);
+  await expect(page.getByRole("img", { name: "Selected photo" })).toHaveCount(
+    0,
+  );
   await expect(input(page)).toHaveValue("Find me a baseball cap like this");
   await expect(input(page)).toBeFocused();
   await expect(page.locator(".search-suggestions-surface")).toBeVisible();
@@ -80,13 +84,14 @@ test("an uploaded image remains distinct from the captured example and is never 
 }) => {
   await openSearch(page);
   await button(page, "Add photos").click();
-  const chooser = page.getByLabel("Choose from library", { exact: true });
+  const photos = page.getByRole("dialog", { name: "Add photos", exact: true });
+  const chooser = photos.getByLabel("Choose from library", { exact: true });
   await chooser.setInputFiles({
     name: "not-an-image.txt",
     mimeType: "text/plain",
     buffer: Buffer.from("Not a photograph"),
   });
-  await expect(page.getByRole("alert")).toHaveText("Choose an image file.");
+  await expect(photos.getByRole("alert")).toHaveText("Choose an image file.");
   const artwork = await page.request.get("/api/reference-media/assistant-cap");
   expect(artwork.ok()).toBe(true);
   const writes: string[] = [];
@@ -131,24 +136,35 @@ test("recent history includes real stores and products and removal does not unsa
   await expect(page).toHaveURL(/\/stores\/kitsch$/);
   await expect(page.getByRole("heading", { name: "For you" })).toBeVisible();
   await page.getByRole("link", { name: "Search", exact: true }).click();
-  const store = page.locator('[data-recent-kind="store"][data-recent-id="kitsch"]');
-  const product = page.locator('[data-recent-kind="product"][data-recent-id="shea-butter"]');
+  const store = page.locator(
+    '[data-recent-kind="store"][data-recent-id="kitsch"]',
+  );
+  const product = page.locator(
+    '[data-recent-kind="product"][data-recent-id="shea-butter"]',
+  );
   await expect(store).toBeVisible();
   await expect(product).toBeVisible();
   await inspect(page, "search-mixed-recent-rail");
-  await page.getByRole("link", { name: "Recently viewed", exact: true }).click();
+  await page
+    .getByRole("link", { name: "Recently viewed", exact: true })
+    .click();
   await expect(page).toHaveURL(/view=recent/);
   await expect(store).toBeVisible();
   await expect(product).toBeVisible();
   await inspect(page, "search-mixed-recent-grid");
   await button(page, "Remove KITSCH from recently viewed").click();
   await expect(store).toHaveCount(0);
-  await button(page, "Remove Shea Butter Exfoliating Body Wash from recently viewed").click();
+  await button(
+    page,
+    "Remove Shea Butter Exfoliating Body Wash from recently viewed",
+  ).click();
   await expect(product).toHaveCount(0);
   await expect(page.getByRole("status")).toHaveText(/No recently viewed items/);
   await page.getByRole("link", { name: "Home", exact: true }).click();
   await page.getByRole("link", { name: "Saved", exact: true }).click();
-  await expect(page.locator('.saved-grid [data-product-id="shea-butter"]')).toBeVisible();
+  await expect(
+    page.locator('.saved-grid [data-product-id="shea-butter"]'),
+  ).toBeVisible();
 });
 
 test("the photo composer contains its editable query and controls at all three reference widths", async ({
@@ -164,10 +180,15 @@ test("the photo composer contains its editable query and controls at all three r
     const geometry = await page.locator(".search-form").evaluate((form) => {
       const bounds = form.getBoundingClientRect();
       return {
-        contained: bounds.left >= 0 && bounds.right <= innerWidth && bounds.bottom <= innerHeight,
+        contained:
+          bounds.left >= 0 &&
+          bounds.right <= innerWidth &&
+          bounds.bottom <= innerHeight,
         overflow: document.documentElement.scrollWidth > innerWidth,
         input: form.querySelector("input")!.getBoundingClientRect().bottom,
-        submit: form.querySelector('button[type="submit"]')!.getBoundingClientRect().top,
+        submit: form
+          .querySelector('button[type="submit"]')!
+          .getBoundingClientRect().top,
       };
     });
     expect(geometry.contained).toBe(true);
@@ -175,7 +196,11 @@ test("the photo composer contains its editable query and controls at all three r
     expect(geometry.input).toBeLessThanOrEqual(geometry.submit);
   }
   await button(page, "Cancel photo search").click();
-  await expect(page.getByRole("img", { name: "Selected photo" })).toHaveCount(0);
+  await expect(page.getByRole("img", { name: "Selected photo" })).toHaveCount(
+    0,
+  );
   await expect(input(page)).toHaveValue("");
-  await expect(page.getByRole("link", { name: "Home", exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Home", exact: true }),
+  ).toBeVisible();
 });

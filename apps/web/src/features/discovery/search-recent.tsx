@@ -65,7 +65,9 @@ export function RecentSearchItems({
                   store.id === "kitsch"
                     ? (catalog.products.find(
                         (value) => value.id === "rice-conditioner",
-                      )?.images[0] ?? store.coverImage ?? store.logo)
+                      )?.images[0] ??
+                      store.coverImage ??
+                      store.logo)
                     : store.coverImage || store.logo
                 }
                 alt=""

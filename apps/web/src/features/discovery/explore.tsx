@@ -195,9 +195,8 @@ export function Explore({
                   product={product}
                   showPromotion
                   storeName={
-                    catalog.stores.find(
-                      (store) => store.id === product.storeId,
-                    )?.name ??
+                    catalog.stores.find((store) => store.id === product.storeId)
+                      ?.name ??
                     (product.id === "citizenry-linen"
                       ? "The Citizenry"
                       : undefined)
@@ -232,7 +231,11 @@ export function Explore({
         cart={() => setCart(true)}
         showCartWhenEmpty
       />
-      <CartOverlay catalog={catalog} open={cart} onClose={() => setCart(false)} />
+      <CartOverlay
+        catalog={catalog}
+        open={cart}
+        onClose={() => setCart(false)}
+      />
     </ShopSurface>
   );
 }
