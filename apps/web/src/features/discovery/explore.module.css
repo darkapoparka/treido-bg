@@ -1,0 +1,158 @@
+.page {
+  padding-top: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
+}
+.page > h1 {
+  font-size: 28px;
+  line-height: 34px;
+  margin: 0;
+  letter-spacing: -0.9px;
+}
+.page > h2 {
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+.page :global(.editorial-hero) {
+  height: 200px;
+  margin: 14px 8px 34px 0;
+  border-radius: 28px;
+}
+.page :global(.editorial-hero) > div {
+  left: 20px;
+  bottom: 20px;
+  right: 48px;
+}
+.page :global(.editorial-hero) strong {
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 600;
+}
+.page :global(.editorial-hero) p {
+  font-size: 12px;
+  line-height: 16px;
+}
+.page :global(.editorial-hero) svg {
+  right: -28px;
+  bottom: 0;
+  width: 32px;
+  height: 32px;
+}
+.page :global(.explore-categories) {
+  gap: 8px;
+  margin: 12px 0 32px;
+}
+.page :global(.explore-categories) > a {
+  min-width: 0;
+  height: 123px;
+  border-radius: 20px;
+  padding: 8px;
+}
+.page :global(.explore-categories) h3 {
+  font-size: 14px;
+  line-height: 20px;
+  margin: 0 4px 10px;
+}
+.page :global(.explore-categories) > a > div,
+.page :global(.explore-categories) img {
+  height: 77px;
+}
+.page :global(.explore-categories) img {
+  border-radius: 16px;
+}
+.page :global(.explore-minis) > p {
+  font-size: 14px;
+  line-height: 18px;
+  margin: 4px 0 16px;
+}
+.miniHeading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.miniHeading > h2 {
+  font-size: 18px;
+  line-height: 22px;
+  letter-spacing: -0.3px;
+}
+.miniHeading > svg {
+  width: 20px;
+  height: 20px;
+  padding: 4px;
+  border-radius: 50%;
+  background: #f3f4f5;
+}
+.page :global(.explore-minis) .miniRow {
+  display: flex;
+  gap: 12px;
+  min-height: 44px;
+  margin: 0 0 12px;
+}
+.miniRow > img {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+}
+.miniRow > span {
+  display: block;
+  min-width: 0;
+  flex: 1;
+}
+.miniRow strong {
+  display: block;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+}
+.miniRow small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 16px;
+  color: #767676;
+}
+.page :global(.explore-shelf) {
+  margin-top: 32px;
+}
+.page :global(.explore-shelf) h2 {
+  font-size: 18px;
+  line-height: 22px;
+  margin: 0 0 12px;
+  letter-spacing: -0.3px;
+}
+.page :global(.explore-shelf .product-rail) {
+  gap: 8px;
+}
+.page :global(.explore-shelf .product-card) {
+  width: 170px;
+  flex: 0 0 170px;
+}
+.page :global(.explore-shelf .product-media) {
+  height: 170px;
+  border-radius: 20px;
+}
+.page :global(.explore-shelf .product-copy) {
+  font-size: 12px;
+  line-height: 16px;
+}
+.page :global(.explore-shelf .product-copy) strong {
+  font-size: 12px;
+  line-height: 16px;
+}
+.page :global(.explore-shelf .rating) {
+  font-size: 12px;
+  line-height: 16px;
+}
+.page :global(.explore-shelf .rating) > span {
+  font-size: 14px;
+}
+.page :global(.explore-shelf .price-badge) {
+  font-size: 10px;
+  line-height: 14px;
+}
