@@ -219,6 +219,8 @@ jobs:
           path: |
             .qa/shop-parity/provenance.json
             .qa/shop-parity/product-preparation.log
+            .qa/shop-parity/media-review/report.json
+            .qa/shop-parity/media-review/*.png
             .qa/shop-parity/frame-map.json
             .qa/shop-parity/interactions.json
             .qa/shop-parity/runs/ci-${{ github.sha }}/report.json
