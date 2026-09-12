@@ -61,12 +61,19 @@ export function ReviewBody({
   useEffect(() => {
     const element = ref.current;
     if (!element || expanded) return;
-    const measure = () =>
-      setOverflows(element.scrollHeight > element.clientHeight + 1);
+    let active = true;
+    const measure = () => {
+      if (active)
+        setOverflows(element.scrollHeight > element.clientHeight + 1);
+    };
     const frame = requestAnimationFrame(measure);
+    // A clamped paragraph can keep the same box height while font metrics alter
+    // its hidden lines. ResizeObserver alone does not cover that transition.
+    void document.fonts.ready.then(measure);
     const observer = new ResizeObserver(measure);
     observer.observe(element);
     return () => {
+      active = false;
       cancelAnimationFrame(frame);
       observer.disconnect();
     };
@@ -250,9 +257,9 @@ export function ReviewReport({
             {title}
           </p>
           <p className="review-report-confirmation" role="status">
-            Your selection is marked on this page only. No report was sent to
-            the reviewer, store or moderation service. Moderation is unavailable
-            in this preview; the marked review is a local example.
+            Your selection is marked in this browser preview only. No report was
+            sent to the reviewer, store or moderation service. Moderation is
+            unavailable in this preview; the marked review is a local example.
           </p>
           <button
             ref={closeRef}
