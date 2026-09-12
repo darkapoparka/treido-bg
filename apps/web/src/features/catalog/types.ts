@@ -26,6 +26,19 @@ export type Product = Readonly<{
   saleUnit: "piece" | "package";
   variants: readonly ProductVariant[];
 }>;
+/** A saved-list projection can retain a captured item whose commerce facts are
+ * incomplete. An absent price is unknown, never a free or purchasable product. */
+export type SavedListing = Readonly<{
+  id: string;
+  title: string;
+  storeId: string;
+  images: readonly string[];
+  price?: Money;
+  promotion?: string;
+  variantLabel?: string;
+  detailUnavailable?: string;
+  photoLayout?: "milk" | "pink-partial" | "eye";
+}>;
 export type Store = Readonly<{
   id: string;
   name: string;
@@ -39,6 +52,7 @@ export type Store = Readonly<{
 export type Catalog = Readonly<{
   products: readonly Product[];
   stores: readonly Store[];
+  savedListings?: readonly SavedListing[];
 }>;
 export function formatMoney(money: Money): string {
   return new Intl.NumberFormat("en-US", {
