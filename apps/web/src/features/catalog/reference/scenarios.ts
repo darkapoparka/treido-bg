@@ -73,11 +73,20 @@ const favs = {
   visibility: "Private" as const,
   productIds: ["rice-bundle", "shea-butter"],
 };
-const editedFavs = {
+const expandedFavs = {
   ...favs,
-  name: "Favs💕",
   productIds: ["argan-liquid-combo", ...favs.productIds],
+  collaborationPromptDismissed: true,
 };
+const editedFavs = { ...expandedFavs, name: "Favs💕" };
+const libraryItems = [
+  "rhode-glazing-milk",
+  "home-drmtlgy-eye",
+  "rhode-pink-captured",
+  "argan-liquid-combo",
+  "shea-butter",
+  "rice-bundle",
+];
 const preferenceProfile: Partial<Profile> = {
   ...namedProfile,
   gender: "Female",
@@ -166,16 +175,54 @@ export const referenceScenarios = {
   },
   "saved-empty": { discovery: { ...emptyDiscovery } },
   "saved-pair": { discovery: { ...emptyDiscovery, saved: savedPair } },
+  "saved-library": {
+    account: { profile: completeProfile },
+    discovery: {
+      ...emptyDiscovery,
+      saved: libraryItems,
+      collections: [
+        {
+          ...favs,
+          productIds: [
+            "rice-bundle",
+            "home-drmtlgy-eye",
+            "rhode-glazing-milk",
+            "argan-liquid-combo",
+            "rhode-pink-captured",
+            "shea-butter",
+          ],
+        },
+      ],
+    },
+  },
   "saved-collection": {
     account: { profile: namedProfile },
     discovery: { ...emptyDiscovery, saved: savedPair, collections: [favs] },
   },
+  "saved-collection-expanded": {
+    account: { profile: completeProfile },
+    discovery: {
+      ...emptyDiscovery,
+      saved: expandedFavs.productIds,
+      collections: [expandedFavs],
+    },
+  },
   "saved-collection-edited": {
-    account: { profile: namedProfile },
+    account: { profile: completeProfile },
     discovery: {
       ...emptyDiscovery,
       saved: editedFavs.productIds,
       collections: [editedFavs],
+    },
+  },
+  "saved-collection-deletion": {
+    account: { profile: completeProfile },
+    discovery: {
+      ...emptyDiscovery,
+      saved: expandedFavs.productIds,
+      collections: [
+        { ...expandedFavs, productIds: ["argan-liquid-combo", "rice-bundle"] },
+      ],
     },
   },
   "profile-public": {
