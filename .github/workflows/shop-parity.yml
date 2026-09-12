@@ -8,6 +8,7 @@ on:
       - "tests/reference/**"
       - "scripts/shop-parity/**"
       - "references/shop/**"
+      - "prepare-shop-reference.mjs"
       - "playwright.reference.config.ts"
       - "pnpm-lock.yaml"
       - "package.json"
@@ -26,7 +27,6 @@ concurrency:
 jobs:
   reference:
     if: github.ref == 'refs/heads/main'
-    # Standard hosted runner; use the OS system font without copying font files.
     runs-on: macos-26
     timeout-minutes: 25
     env:
@@ -83,6 +83,17 @@ jobs:
           pathlib.Path('.qa/shop-parity/provenance.json').write_text(json.dumps(counts, indent=2))
           print(json.dumps(counts))
           PY
+      - name: Retain the already-published frozen corpus for inspection
+        uses: actions/upload-artifact@v7
+        with:
+          name: shop-corpus-${{ github.sha }}-${{ github.run_attempt }}
+          retention-days: 2
+          if-no-files-found: error
+          compression-level: 0
+          path: |
+            references/shop/manifest.json
+            references/shop/flows/**
+            references/shop/screens/**
       - name: Prepare ordered sources for visual inspection
         shell: bash
         run: |
@@ -120,17 +131,26 @@ jobs:
           path: |
             .qa/shop-parity/provenance.json
             .qa/shop-parity/source/*.png
+      - name: Prepare the existing allowlisted product originals
+        id: products
+        shell: bash
+        run: |
+          if ! command -v ffmpeg > /dev/null; then brew install ffmpeg; fi
+          set -o pipefail
+          node prepare-shop-reference.mjs 2>&1 | tee .qa/shop-parity/product-preparation.log
+          node prepare-shop-reference.mjs --verify
       - name: Install browser
         id: browser
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: pnpm exec playwright install --with-deps chromium
       - name: Web lint and typecheck
-        id: checks
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         shell: bash
         run: |
           pnpm --filter @treido/web lint
           pnpm --filter @treido/web typecheck
       - name: Capture exact-commit reference comparisons
-        if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.browser.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.products.outcome == 'success' && steps.browser.outcome == 'success' }}
         shell: bash
         run: |
           python3 - <<'PY'
@@ -152,8 +172,6 @@ jobs:
                       raise RuntimeError('Reference preview did not become ready: ' + log_path.read_text())
                   result = subprocess.run(['node', 'scripts/shop-parity/run.mjs', 'baseline', '--all', '--flows', os.environ['PARITY_FLOWS'], '--run', 'ci-' + os.environ['GITHUB_SHA']])
               finally:
-                  # pnpm spawns Next children. Stop this owned process group, not
-                  # only its parent, before Playwright starts its own server.
                   try:
                       os.killpg(server.pid, signal.SIGTERM)
                   except ProcessLookupError:
@@ -176,12 +194,12 @@ jobs:
                           pass
               raise SystemExit(result.returncode)
           PY
-      - name: Focused Home, Following and navigation interactions
-        if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.browser.outcome == 'success' }}
+      - name: Focused Home, Following, collections and navigation interactions
+        if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.products.outcome == 'success' && steps.browser.outcome == 'success' }}
         env:
           REFERENCE_DEV: "1"
           PLAYWRIGHT_JSON_OUTPUT_NAME: .qa/shop-parity/interactions.json
-        run: pnpm exec playwright test --config playwright.reference.config.ts home-overlays.spec.ts following.spec.ts history.spec.ts --reporter=line,json
+        run: pnpm exec playwright test --config playwright.reference.config.ts home-overlays.spec.ts following.spec.ts history.spec.ts journeys.spec.ts --reporter=line,json
       - name: Publish capture summary
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         shell: bash
@@ -200,6 +218,7 @@ jobs:
           if-no-files-found: error
           path: |
             .qa/shop-parity/provenance.json
+            .qa/shop-parity/product-preparation.log
             .qa/shop-parity/frame-map.json
             .qa/shop-parity/interactions.json
             .qa/shop-parity/runs/ci-${{ github.sha }}/report.json
@@ -207,7 +226,7 @@ jobs:
             .qa/shop-parity/runs/ci-${{ github.sha }}/ranking.csv
             .qa/shop-parity/runs/ci-${{ github.sha }}/**/*.png
       - name: Numerical diagnostic gate, not visual approval
-        if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.browser.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.products.outcome == 'success' && steps.browser.outcome == 'success' }}
         shell: bash
         run: |
           node --input-type=module <<'JS'
