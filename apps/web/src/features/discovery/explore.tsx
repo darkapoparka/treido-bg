@@ -2,38 +2,30 @@
 import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { useState } from "react";
 import type { Catalog } from "../catalog/types";
 import { FloatingNav, ProductCard } from "./components";
 import { Icon } from "./icons";
-import { BeautySections } from "./beauty";
-const categories = [
-  { name: "Deals", color: "#251168", images: ["explore-deals-art"] },
-  {
-    name: "Beauty",
-    color: "#b83c59",
-    images: ["explore-beauty-lip", "explore-beauty-wash"],
-  },
-  {
-    name: "Women",
-    color: "#9fa8ad",
-    images: ["explore-women-shirt", "explore-women-jeans"],
-  },
-  {
-    name: "Men",
-    color: "#084786",
-    images: ["explore-men-shirt", "explore-men-jeans"],
-  },
-  {
-    name: "Home",
-    color: "#d76c00",
-    images: ["explore-home-lamp", "explore-home-pan"],
-  },
-  {
-    name: "Fitness & nutrition",
-    color: "#9db995",
-    images: ["explore-fitness-tone", "explore-fitness-shorts"],
-  },
-];
+import { Beauty } from "./beauty";
+import { CartOverlay } from "../commerce/checkout";
+import { featuredMiniIds, miniCatalog, miniHref } from "./mini-model";
+import { useDiscovery } from "./state";
+import styles from "./explore.module.css";
+
+const departments = [
+  ["Deals", "#594acf", "deals-art", ""],
+  ["Beauty", "#5363c9", "explore-beauty1", "explore-beauty2"],
+  ["Womenswear", "#974a17", "explore-women1", "explore-women2"],
+  ["Menswear", "#be3336", "explore-men1", "explore-men2"],
+  ["Home", "#694e8b", "explore-home1", "explore-home2"],
+  ["Top rated", "#1e614d", "explore-top-art", ""],
+] as const;
+const sourceShelves = [
+  ["New in beauty", ["bubble-sunrise", "bare-liquid"], "/explore/Beauty?view=new"],
+  ["New in menswear", ["carbon-crew", "jordan-legend"], "/explore/Menswear"],
+  ["Trending in home", ["buffy-breeze", "citizenry-linen"], "/explore/Home"],
+] as const;
+
 export function Explore({
   catalog,
   category,
@@ -41,145 +33,117 @@ export function Explore({
   catalog: Catalog;
   category?: string;
 }) {
-  const beauty = category === "Beauty";
+  const [cart, setCart] = useState(false);
+  const { visitMini } = useDiscovery();
+  if (category === "Beauty") return <Beauty catalog={catalog} />;
+  const shelves = category
+    ? [
+        {
+          title: category,
+          href: `/search?category=${encodeURIComponent(category)}`,
+          products: catalog.products.filter((product) => product.category === category),
+        },
+      ]
+    : sourceShelves.map(([title, ids, href]) => ({
+        title,
+        href,
+        // "New in beauty" is the captured Bubble/bareMinerals shelf, not all
+        // products whose broad category happens to be Beauty.
+        products: ids.flatMap((id) => {
+          const product = catalog.products.find((value) => value.id === id);
+          return product ? [product] : [];
+        }),
+      }));
   return (
-    <ShopSurface className="shop-page explore-page">
-      <h1>{category ?? "Explore"}</h1>
-      {category && (
-        <div className="category-rail">
-          {(beauty
-            ? ["Skin care", "Hair care", "Makeup", "Scent & body"]
-            : ["Shop all", "Top rated", "What’s new"]
-          ).map((c) => (
-            <Link
-              className="pill"
-              key={c}
-              href={`/search?q=${encodeURIComponent(c)}`}
-            >
-              {beauty && (
-                <img
-                  className="beauty-category-icon"
-                  src={`/api/reference-media/beauty-pill-${c === "Skin care" ? "skin" : c === "Hair care" ? "hair" : c === "Makeup" ? "makeup" : "scent"}`}
-                  alt=""
-                />
-              )}
-              {c}
-            </Link>
-          ))}
-        </div>
-      )}
-      <Link
-        className="editorial-hero"
-        href={`/search?q=${beauty ? "Hair" : "Dresses"}`}
-      >
-        <img
-          src={`/api/reference-media/${beauty ? "explore-curls-upper" : "explore-summer-upper"}`}
-          alt={beauty ? "Wavy hair" : "Summer dress"}
-        />
-        <div>
-          <strong>
-            {beauty ? "Summer curl routine" : "High-rotation summer dresses"}
-          </strong>
-          <p>
-            {beauty
-              ? "Masks, leave-ins, and shine oils."
-              : "Slip dresses, shirt dresses, and linen midis."}
-          </p>
-          <Icon name="arrow" />
-        </div>
-      </Link>
-      {!category ? (
+    <ShopSurface className={`shop-page explore-page ${styles.page}`}>
+      <h1>{category || "Explore"}</h1>
+      {!category && (
         <>
-          <h2>Browse categories</h2>
+          <Link className="editorial-hero" href="/deals">
+            <img src="/api/reference-media/explore-deals" alt="" />
+            <div>
+              <strong>Days of the best deals</strong>
+              <p>Get discounts on your favorite brands</p>
+              <Icon name="chevron" />
+            </div>
+          </Link>
+          <h2>Browse</h2>
           <div className="explore-categories">
-            {categories.map((c) => (
+            {departments.map(([name, color, first, second]) => (
               <Link
-                key={c.name}
+                key={name}
+                style={{ background: color }}
                 href={
-                  c.name === "Deals"
-                    ? "/search?deals=1"
-                    : `/explore/${encodeURIComponent(c.name)}`
+                  name === "Deals"
+                    ? "/deals"
+                    : name === "Top rated"
+                      ? "/search?ratings=4.5%20stars%20and%20up"
+                      : `/explore/${name}`
                 }
-                style={{ background: c.color }}
               >
-                <h3>{c.name}</h3>
+                <h3>{name}</h3>
                 <div>
-                  {c.images.map((i) => (
-                    <img key={i} src={`/api/reference-media/${i}`} alt="" />
-                  ))}
+                  <img src={`/api/reference-media/${first}`} alt="" />
+                  {second && (
+                    <img src={`/api/reference-media/${second}`} alt="" />
+                  )}
                 </div>
               </Link>
             ))}
           </div>
           <section className="explore-minis">
-            <h2>Try something new ›</h2>
-            <p>Discover more ways to shop with Minis</p>
-            {[
-              ["sol", "Sol: Browse by Voice"],
-              ["skin", "Skincare AI"],
-              ["look", "Get the Look"],
-            ].map(([id, name]) => (
-              <Link key={id} href={`/minis/${id}`}>
-                <img src={`/api/reference-media/mini-${id}-icon`} alt="" />
-                <span>{name}</span>
-                <Icon name="arrow" />
+            <Link className={styles.miniHeading} href="/minis">
+              <h2>Try Shop Minis</h2>
+              <Icon name="chevron" />
+            </Link>
+            <p>Smarter ways to find what you love</p>
+            {featuredMiniIds.map((id) => (
+              <Link
+                key={id}
+                className={styles.miniRow}
+                href={miniHref(id)}
+                onClick={() => visitMini(id)}
+              >
+                <img src={`/api/reference-media/mini-${id}`} alt="" />
+                <span>
+                  <strong>{miniCatalog[id].name}</strong>
+                  <small>{miniCatalog[id].description}</small>
+                </span>
               </Link>
             ))}
-            <Link href="/minis">See all Minis ›</Link>
           </section>
         </>
-      ) : null}
-      {(beauty
-        ? ["Top rated", "What’s new"]
-        : ["Top rated in home", "Top rated in menswear", "New in beauty"]
-      ).map((title) => (
+      )}
+      {shelves.map(({ title, href, products }) => (
         <section className="explore-shelf" key={title}>
-          <Link href={`/search?q=${category ?? ""}`}>
-            <h2>{title} ›</h2>
-          </Link>
-          <div className="product-rail">
-            {catalog.products
-              .filter((p) =>
-                beauty
-                  ? title === "Top rated"
-                    ? ["whip-mousse", "hanacure-cleanser"].includes(p.id)
-                    : ["bubble-sunrise", "bare-liquid"].includes(p.id)
-                  : p.category ===
-                    (title === "Top rated in home"
-                      ? "Home"
-                      : title === "Top rated in menswear"
-                        ? "Menswear"
-                        : "Beauty"),
-              )
-              .map((p) => (
+          {!category && (
+            <Link href={href}>
+              <h2>{title} ›</h2>
+            </Link>
+          )}
+          {products.length ? (
+            <div className="product-rail">
+              {products.map((product) => (
                 <ProductCard
-                  key={p.id}
-                  product={p}
+                  key={product.id}
+                  product={product}
                   showPromotion
                   storeName={
-                    catalog.stores.find((s) => s.id === p.storeId)?.name
+                    catalog.stores.find((store) => store.id === product.storeId)?.name ??
+                    (product.id === "citizenry-linen" ? "The Citizenry" : undefined)
                   }
                 />
               ))}
-          </div>
+            </div>
+          ) : (
+            <p className="empty-state" role="status">
+              No products in this reference sample.
+            </p>
+          )}
         </section>
       ))}
-      {beauty && <BeautySections catalog={catalog} />}
-      {!category && (
-        <section className="explore-shelf">
-          <h2>Top rated in womenswear ›</h2>
-          <div className="product-rail explore-women-partials">
-            <div />
-            <div>
-              <img
-                src="/api/reference-media/explore-womenswear-partial"
-                alt="Captured womenswear photograph detail"
-              />
-            </div>
-          </div>
-        </section>
-      )}
-      <FloatingNav back={!!category} />
+      <FloatingNav back cart={() => setCart(true)} showCartWhenEmpty />
+      <CartOverlay catalog={catalog} open={cart} onClose={() => setCart(false)} />
     </ShopSurface>
   );
 }
