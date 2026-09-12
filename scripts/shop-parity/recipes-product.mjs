@@ -96,15 +96,13 @@ export const productRecipes = {
       {
         state: "bag-added-quantity-and-disabled-buy-now",
         notes:
-          "The 11.0167-second source recording shows a stable added state before the offer, including a product flight and temporary Added to cart label. Current code opens the offer immediately; dismissing it exposes the correct settled underlying state for diagnosis, not ordered-motion acceptance. Keep the missing intermediate animation/timing open.",
+          "The 11.0167-second recording shows a photograph flight and temporary Added to cart label before this settled state. This replay now observes the real confirmation and its reset without opening/dismissing an offer to manufacture the underlay. Reduced-motion capture suppresses only the flight; a separate no-preference journey records that animation.",
         actions: [
           click("button", "Add to cart"),
-          offer,
+          visible("button", "Added to cart"),
           {
-            type: "click",
-            role: "button",
-            name: /^Close /,
-            withinDialog: true,
+            type: "waitVisible",
+            selector: '.pdp-purchase-buttons [data-addition="idle"]',
           },
           visible("button", "Open cart"),
           quantity,
@@ -112,16 +110,10 @@ export const productRecipes = {
       },
       {
         state: "bag-exclusive-offer-and-cart-summary",
-        entry: { startUrl: bag, scenario: "home-welcome" },
         overlay: "dialog",
         notes:
-          "Independent replay of the offer currently reached by Add to cart. The recording's intervening added state is not treated as an implemented transition.",
-        actions: [
-          visible("heading", "Shampoo Bar Bag"),
-          quantity,
-          click("button", "Add to cart"),
-          offer,
-        ],
+          "Continue the same added cart through its visible control. The recording establishes ordering, but does not expose pointer events to prove whether its later offer was automatic; this web implementation deliberately requires the cart action rather than inventing a delayed focus-stealing popup.",
+        actions: [click("button", "Open cart"), offer],
       },
     ],
   },
