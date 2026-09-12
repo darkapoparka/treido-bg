@@ -1,0 +1,236 @@
+.page {
+  font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
+  position: relative;
+}
+.page > h1 {
+  font-size: 28px;
+  line-height: 34px;
+  letter-spacing: -1px;
+  margin: 0 0 16px;
+}
+.recent {
+  gap: 8px;
+  margin-right: -16px;
+  padding-bottom: 4px;
+}
+.recent > .item {
+  flex: 0 0 112px;
+  width: 112px;
+}
+.item {
+  position: relative;
+  min-width: 0;
+}
+.item :global(.product-card) {
+  width: 100%;
+}
+.item :global(.product-media),
+.store {
+  position: relative;
+  display: block;
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 20px;
+  border: 1px solid #d4d5d6;
+  background: #e1e1e1;
+  overflow: hidden;
+  box-shadow: 0 5px 14px #00000006;
+}
+.item :global(.price-badge) {
+  font-size: 10px;
+  line-height: 13px;
+  max-width: calc(100% - 16px);
+}
+.store > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.68);
+}
+.wordmark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  color: white;
+  font-size: clamp(20px, 6vw, 32px);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -1px;
+  text-align: center;
+}
+.wordmark > svg {
+  width: 100%;
+  height: auto;
+}
+.history {
+  gap: 12px;
+}
+.history :global(.product-media),
+.history .store {
+  border-radius: 20px;
+}
+.history .remove {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  color: white;
+  background: #7e818577;
+  z-index: 2;
+}
+.history .remove svg {
+  width: 16px;
+  height: 16px;
+}
+.history .item :global(.price-badge) {
+  max-width: calc(100% - 58px);
+}
+.empty {
+  padding: 12px 0 28px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #737373;
+}
+.empty > a {
+  display: inline-block;
+  margin-top: 8px;
+  color: #111;
+  text-decoration: underline;
+}
+.composer {
+  gap: 8px;
+}
+.composer:global(.search-composer) {
+  background: #ffffffed;
+  box-shadow: 0 0 40px #00000008;
+  padding: 8px;
+  min-height: 56px;
+  bottom: calc(104px + var(--search-keyboard-inset, 0px));
+}
+.composer:global(.search-composer) > input {
+  font-size: 16px;
+  line-height: 20px;
+  min-width: 0;
+}
+.composer:global(.search-composer) > button {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  background: white;
+  border: 1px solid #e7e7e7;
+  color: #747474;
+}
+.composer:global(.search-composer) > button[type="submit"] {
+  border: 0;
+  color: white;
+  background: #5433eb;
+  box-shadow: 0 8px 24px #5433eb16;
+}
+.composer:global(.search-composer) > button[type="submit"]:disabled {
+  opacity: 1;
+  background: #e8e8e8;
+  box-shadow: none;
+}
+.photoComposer:global(.search-composer) {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  grid-template-rows: minmax(36px, auto) 40px;
+  gap: 8px;
+  border-radius: 28px;
+  padding: 12px 8px 8px;
+}
+.photoComposer > input {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  width: 100%;
+  align-self: stretch;
+  min-height: 36px;
+  padding: 0 12px;
+}
+.photoComposer > button:first-child {
+  grid-column: 1;
+  grid-row: 2;
+}
+.photoComposer > button[type="submit"] {
+  grid-column: 3;
+  grid-row: 2;
+}
+.photoChip {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: start;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ededed;
+}
+.photoChip > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: inherit;
+  padding: 6px;
+}
+.photoChip > button {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: transparent;
+  padding: 0;
+}
+.photoChip > button > svg {
+  width: 16px;
+  height: 16px;
+  padding: 2px;
+  border-radius: 50%;
+  color: #333;
+  background: white;
+}
+.photoClose {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  z-index: 2;
+  border: 1px solid #f1f1f1;
+  box-shadow: 0 6px 24px #00000004;
+}
+.photoEditing .composer:global(.search-composer),
+.keyboard .composer:global(.search-composer) {
+  bottom: calc(12px + var(--search-keyboard-inset, 0px));
+}
+.photoSheet :global(.account-row) {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  min-height: 56px;
+  padding-inline: 0;
+  font-size: 16px;
+  line-height: 20px;
+}
+.photoSheet :global(.account-row) > input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.photoSheet :global(.account-row):focus-within {
+  outline: 3px solid #5433eb;
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+.photoSheet :global(.account-row) svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
