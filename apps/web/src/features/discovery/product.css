@@ -30,6 +30,21 @@
 .product-page .product-heading > .icon-button:nth-child(3) {
   right: 0;
 }
+.product-page .review-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 20px;
+  max-width: 100%;
+  font-size: 14px;
+  line-height: 20px;
+}
+.product-page .review-link > .review-rating-stars {
+  --review-star-size: 16px;
+  display: inline-flex;
+  flex: none;
+  vertical-align: middle;
+}
 .product-page .product-price {
   font-size: 20px;
   margin-top: 16px;

@@ -6,8 +6,7 @@ import type { Product } from "../types";
 export const detailProducts: readonly Product[] = [
   {
     id: "midi-shirtdress",
-    title:
-      "Midi Shirtdress in Ultrasoft Cotton | Estate Blue/Open Air/White",
+    title: "Midi Shirtdress in Ultrasoft Cotton | Estate Blue/Open Air/White",
     storeId: "",
     category: "Womenswear",
     color: "Estate Blue/Open Air/White",

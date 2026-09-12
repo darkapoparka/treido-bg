@@ -71,7 +71,9 @@ export function CartContents({
               <header>
                 {store?.logo && <img src={store.logo} alt="" />}
                 <div>
-                  <strong>{store?.name ?? "Shop information not captured"}</strong>
+                  <strong>
+                    {store?.name ?? "Shop information not captured"}
+                  </strong>
                   {store?.rating !== undefined && (
                     <p>
                       {store.rating} ★ ({store.ratingCount})
@@ -91,7 +93,9 @@ export function CartContents({
                   className="commerce-line"
                   key={`${l.productId}-${l.variantId}`}
                 >
-                  {l.product.images[0] && <img src={l.product.images[0]} alt="" />}
+                  {l.product.images[0] && (
+                    <img src={l.product.images[0]} alt="" />
+                  )}
                   <div>
                     <div className="cart-line-title">
                       <Link href={`/products/${l.productId}`}>
