@@ -98,22 +98,27 @@ function StoreNavigation({ store }: { store: Store }) {
   const anchor = useRef<HTMLDivElement>(null);
   const [pinned, setPinned] = useState(false);
   const [offers, setOffers] = useState(false);
+  // Campaign presentation comes from the store snapshot, not Follow state.
+  const compactOffer = store.promotionSavings !== 15;
   useEffect(() => {
     const element = anchor.current;
     if (!element) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry) setPinned(entry.boundingClientRect.top < 0);
+        if (entry) setPinned(entry.boundingClientRect.top < 80);
       },
-      { threshold: 1 },
+      { threshold: 0, rootMargin: "-80px 0px 0px 0px" },
     );
     observer.observe(element);
     return () => observer.disconnect();
   }, []);
   return (
     <div className="store-category-anchor" ref={anchor}>
-      <div className={`store-category-navigation ${pinned ? "is-pinned" : ""}`}>
-        {pinned && (
+      <div
+        className={`store-category-navigation ${pinned ? "is-pinned" : ""}`}
+        data-compact-offer={compactOffer}
+      >
+        {pinned && compactOffer && (
           <button
             className="store-compact-promotion"
             onClick={() => setOffers(true)}
@@ -411,7 +416,11 @@ export function Storefront({
             Item marked · no report sent
           </button>
         )}
-      <FloatingNav back cart={() => setCart(true)} />
+      <FloatingNav
+        back
+        cart={() => setCart(true)}
+        showCartWhenEmpty={store.promotionSavings !== 15}
+      />
       <Cart catalog={catalog} open={cart} onClose={() => setCart(false)} />
     </ShopSurface>
   );
@@ -561,10 +570,26 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
   const [more, setMore] = useState(false);
   const kitsch = store.id === "kitsch";
   const policies = [
-    ["Refund policy", "https://www.mykitsch.com/policies/refund-policy", "return-package"],
-    ["Shipping policy", "https://www.mykitsch.com/policies/shipping-policy", "package"],
-    ["Privacy policy", "https://www.mykitsch.com/pages/privacy-policy", "shield-check"],
-    ["Terms and conditions", "https://www.mykitsch.com/pages/terms-of-service", "info"],
+    [
+      "Refund policy",
+      "https://www.mykitsch.com/policies/refund-policy",
+      "return-package",
+    ],
+    [
+      "Shipping policy",
+      "https://www.mykitsch.com/policies/shipping-policy",
+      "package",
+    ],
+    [
+      "Privacy policy",
+      "https://www.mykitsch.com/pages/privacy-policy",
+      "shield-check",
+    ],
+    [
+      "Terms and conditions",
+      "https://www.mykitsch.com/pages/terms-of-service",
+      "info",
+    ],
   ] as const;
   const contacts = [
     ["Website", "https://www.mykitsch.com", "website"],
@@ -616,12 +641,17 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
         <>
           <div className="store-info-categories">
             {storeCategories.map((c) => (
-              <Link href={`/stores/${store.id}/collections/${c.slug}`} key={c.slug}>
+              <Link
+                href={`/stores/${store.id}/collections/${c.slug}`}
+                key={c.slug}
+              >
                 <img src={`/api/reference-media/${c.media}`} alt="" />
                 <span>{c.name}</span>
               </Link>
             ))}
-            <Link href={`/stores/${store.id}/collections/shampoo-conditioner-combo-packs`}>
+            <Link
+              href={`/stores/${store.id}/collections/shampoo-conditioner-combo-packs`}
+            >
               <img
                 src="/api/reference-media/category-combo-partial"
                 alt="Shampoo and conditioner combo packs, partially captured"
@@ -636,7 +666,10 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
               <span>Hair…</span>
             </div>
           </div>
-          <Link className="store-shop-all" href={`/stores/${store.id}#all-products`}>
+          <Link
+            className="store-shop-all"
+            href={`/stores/${store.id}#all-products`}
+          >
             <img src="/api/reference-media/store-shop-all" alt="" />
             <span>Shop all</span>
           </Link>
@@ -654,7 +687,11 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
               <span
                 role="img"
                 aria-label={`${store.rating} out of 5 stars`}
-                style={{ "--store-rating-fill": `${Math.min(100, Math.max(0, store.rating * 20))}%` } as CSSProperties}
+                style={
+                  {
+                    "--store-rating-fill": `${Math.min(100, Math.max(0, store.rating * 20))}%`,
+                  } as CSSProperties
+                }
               >
                 ★★★★★
               </span>
@@ -689,7 +726,13 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
         <h2>Policies</h2>
         {kitsch ? (
           policies.map(([label, href, icon]) => (
-            <a className="detail-row" key={label} href={href} target="_blank" rel="noreferrer">
+            <a
+              className="detail-row"
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noreferrer"
+            >
               {label}
               <Icon name={icon} />
             </a>
@@ -727,7 +770,10 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
           Visit Online Store <Icon name="external-link" />
         </a>
       )}
-      <button className="store-info-panel detail-row" onClick={() => setDetail("Report")}>
+      <button
+        className="store-info-panel detail-row"
+        onClick={() => setDetail("Report")}
+      >
         Report <Icon name="alert" />
       </button>
       <Sheet open={!!detail} title={detail} onClose={() => setDetail("")}>
@@ -817,7 +863,12 @@ export function StoreSearch({
     .filter((product) => product.storeId === store.id)
     .slice(0, 8);
   const best = kitsch
-    ? ordered(catalog, ["rice-shampoo", "rice-conditioner", "rice-bundle", "shea-butter"])
+    ? ordered(catalog, [
+        "rice-shampoo",
+        "rice-conditioner",
+        "rice-bundle",
+        "shea-butter",
+      ])
     : catalog.products
         .filter((product) => product.storeId === store.id)
         .slice(0, 8);
@@ -870,13 +921,22 @@ export function StoreSearch({
             }}
           />
           {value && (
-            <button type="button" className="sr-only" aria-label="Clear search" onClick={clear}>
+            <button
+              type="button"
+              className="sr-only"
+              aria-label="Clear search"
+              onClick={clear}
+            >
               Clear search
             </button>
           )}
         </form>
         {editing && (
-          <button type="button" className="store-search-cancel" onClick={cancel}>
+          <button
+            type="button"
+            className="store-search-cancel"
+            onClick={cancel}
+          >
             Cancel
           </button>
         )}
@@ -901,12 +961,16 @@ export function StoreSearch({
               .filter(
                 (label) =>
                   label !== query &&
-                  query.split(" ").every((word) => normalizeStoreQuery(label).includes(word)),
+                  query
+                    .split(" ")
+                    .every((word) => normalizeStoreQuery(label).includes(word)),
               )
               .map((label) => (
                 <button type="button" key={label} onClick={() => submit(label)}>
                   <Icon name="search" />
-                  <span className="store-suggestion-phrase">{phrase(label)}</span>
+                  <span className="store-suggestion-phrase">
+                    {phrase(label)}
+                  </span>
                 </button>
               ))}
           </div>
@@ -993,12 +1057,24 @@ export function StoreVideo() {
         alt="Chemical Guys Tire and Trim Gel in front of a GMC tailgate"
       />
       <div className="video-top">
-        <Link className="icon-button" href="/stores/chemical-guys" aria-label="Close video">
+        <Link
+          className="icon-button"
+          href="/stores/chemical-guys"
+          aria-label="Close video"
+        >
           <Icon name="close" />
         </Link>
-        <IconButton icon="more" label="Video options" onClick={() => setNotice(true)} />
+        <IconButton
+          icon="more"
+          label="Video options"
+          onClick={() => setNotice(true)}
+        />
       </div>
-      <IconButton icon="mic" label="Video audio unavailable" onClick={() => setNotice(true)} />
+      <IconButton
+        icon="mic"
+        label="Video audio unavailable"
+        onClick={() => setNotice(true)}
+      />
       <div className="video-bottom">
         <Link href="/stores/chemical-guys">
           <b>Chemical Guys</b>
@@ -1008,11 +1084,19 @@ export function StoreVideo() {
           Tire+Trim Gel Plastic and Rubber High-Glo…<small>$24.99</small>
         </button>
         <div>
-          <IconButton icon="arrow" label="Play video" onClick={() => setNotice(true)} />
+          <IconButton
+            icon="arrow"
+            label="Play video"
+            onClick={() => setNotice(true)}
+          />
           <progress value="0" max="100" />
         </div>
       </div>
-      <Sheet open={notice} title="Video preview" onClose={() => setNotice(false)}>
+      <Sheet
+        open={notice}
+        title="Video preview"
+        onClose={() => setNotice(false)}
+      >
         <p className="sheet-copy">
           This captured video frame is available. The matching motion and audio
           asset is not available.

@@ -11,6 +11,9 @@
   overflow: auto;
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
 }
+.first-collection-sheet::backdrop {
+  background: rgb(0 0 0 / 50%);
+}
 .first-collection-sheet::before {
   content: "";
   position: absolute;

@@ -1,9 +1,26 @@
-.page {
+.page,
+.filter {
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
 }
+.filter::backdrop {
+  background: rgb(0 0 0 / 50%);
+}
 
+.store {
+  background: #c2bfb5;
+}
+.store :global(.promotion-owner),
+.store :global(.store-promotion) {
+  background: #393937;
+}
 .store :global(.store-hero) {
   border-radius: 36px 36px 0 0;
+}
+.store :global(.store-hero-kitsch) {
+  background:
+    linear-gradient(to bottom, transparent 140px, #c2bfb5 340px),
+    url("/api/reference-media/store-hero") center -28px / 100% auto no-repeat,
+    #c2bfb5;
 }
 .store :global(.store-brand) > span > svg {
   display: block;
@@ -12,7 +29,22 @@
   margin: auto;
 }
 .store :global(.store-hero-kitsch .store-recommendations) {
-  background: #dddcd5;
+  background: #d9d8d1;
+}
+.store :global(.store-category-navigation.is-pinned) {
+  background: #393937;
+}
+.store :global(.store-category-navigation.is-pinned .category-rail) {
+  background: #c2bfb5;
+}
+.store :global(.store-category-navigation.is-pinned)[data-compact-offer="false"] {
+  padding-top: 8px;
+}
+.store
+  :global(.store-category-navigation.is-pinned)[data-compact-offer="false"]
+  :global(.category-rail) {
+  height: 64px;
+  padding-bottom: 8px;
 }
 .store :global(.product-copy) {
   padding-top: 10px;
@@ -33,7 +65,7 @@
 }
 
 .collection {
-  background: #c1beb4;
+  background: #c2bfb5;
 }
 .collection :global(.product-copy) > strong {
   font-weight: 500;
@@ -42,12 +74,20 @@
   color: #080808;
 }
 .collection[data-collection="best-sellers"] :global(.store-collection-hero) {
-  height: 242px;
+  height: 186px;
   border-radius: 0;
 }
 .collection[data-collection="best-sellers"] :global(.store-collection-hero) > img {
   height: 100%;
-  opacity: 0.76;
+  opacity: 1;
+  object-position: center;
+}
+.collection[data-collection="best-sellers"] :global(.store-collection-hero) > div {
+  bottom: 8px;
+}
+.collection[data-collection="best-sellers"]
+  :global(.store-collection-hero > .icon-button) {
+  bottom: 18px;
 }
 
 .search :global(.product-copy) > strong {
@@ -63,7 +103,7 @@
 }
 
 .information {
-  background: #c1beb4;
+  background: #c2bfb5;
 }
 .information :global(.store-info-brand) {
   font-size: 14px;
