@@ -17,13 +17,20 @@ export async function readCatalog(): Promise<Catalog> {
   await connection();
   // No automatic mock fallback: until Task 4, the isolated preview is opt-in.
   if (!referencePreviewEnabled()) notFound();
-  const [{ referenceCatalog }, { followingProducts }] = await Promise.all([
+  const [
+    { referenceCatalog },
+    { followingProducts },
+    { savedProducts, savedStores, savedListings },
+  ] = await Promise.all([
     import("./reference/catalog"),
     import("./reference/following-fixtures"),
+    import("./reference/saved-fixtures"),
   ]);
   const catalog: Catalog = {
     ...referenceCatalog,
-    products: [...referenceCatalog.products, ...followingProducts],
+    products: [...referenceCatalog.products, ...followingProducts, ...savedProducts],
+    stores: [...referenceCatalog.stores, ...savedStores],
+    savedListings,
   };
   const scenario = resolveReferenceScenario(
     (await cookies()).get(referenceScenarioCookie)?.value,
