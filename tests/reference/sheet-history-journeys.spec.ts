@@ -31,7 +31,9 @@ test("visible filter sheets own history before immediate Back, including reopen 
     );
     await page.goBack();
     await expect(root).not.toBeVisible();
-    await expect(page).toHaveURL(new RegExp(`${path.replace(/[?&]/g, "\\$&")}$`));
+    await expect(page).toHaveURL(
+      new RegExp(`${path.replace(/[?&]/g, "\\$&")}$`),
+    );
     await expect(filter).toBeFocused();
     expect(await page.evaluate(() => document.body.style.overflow)).not.toBe(
       "hidden",
@@ -47,13 +49,17 @@ test("visible filter sheets own history before immediate Back, including reopen 
   await sort.click();
   await expect(child).toBeVisible();
   await expect(child).toHaveAttribute("data-history-at-open", /^sheet-/);
-  expect(await child.getAttribute("data-history-at-open")).not.toBe(parentMarker);
+  expect(await child.getAttribute("data-history-at-open")).not.toBe(
+    parentMarker,
+  );
   await page.goBack();
   await expect(child).not.toBeVisible();
   await expect(root).toBeVisible();
   await expect(root).toHaveAttribute("data-history-at-open", parentMarker!);
   await expect(sort).toBeFocused();
-  expect(await page.evaluate(() => document.body.style.overflow)).toBe("hidden");
+  expect(await page.evaluate(() => document.body.style.overflow)).toBe(
+    "hidden",
+  );
   await page.goBack();
   await expect(root).not.toBeVisible();
   await expect(filter).toBeFocused();

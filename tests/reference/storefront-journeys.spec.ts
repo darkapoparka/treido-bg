@@ -13,7 +13,8 @@ async function openScenario(
   path: string,
   scenario = "home-welcome",
 ) {
-  if (!baseURL) throw new Error("Storefront tests require the reference preview");
+  if (!baseURL)
+    throw new Error("Storefront tests require the reference preview");
   await page.context().addCookies([
     {
       name: "shop-reference-scenario",
@@ -51,7 +52,9 @@ async function criteria(page: Page) {
 async function prepareStoreFilter(page: Page) {
   await page.locator("main img").evaluateAll(async (images) => {
     await document.fonts.ready;
-    await Promise.all(images.map((image) => (image as HTMLImageElement).decode()));
+    await Promise.all(
+      images.map((image) => (image as HTMLImageElement).decode()),
+    );
   });
   const trigger = button(page, "Filter store products");
   await trigger.evaluate((node) =>
@@ -98,8 +101,14 @@ test("store filter drafts do not change committed criteria or results before Don
   await expect(trigger).toBeFocused();
   await expect.poll(() => page.evaluate(() => scrollY)).toBe(scroll);
   await trigger.click();
-  await expect(button(page, "On sale")).toHaveAttribute("aria-pressed", "false");
-  await expect(button(page, "In-stock")).toHaveAttribute("aria-pressed", "true");
+  await expect(button(page, "On sale")).toHaveAttribute(
+    "aria-pressed",
+    "false",
+  );
+  await expect(button(page, "In-stock")).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
 });
 
 test("nested Price Back and Forward preserve drafts, then Done consumes only the filter entries", async ({
@@ -130,11 +139,13 @@ test("nested Price Back and Forward preserve drafts, then Done consumes only the
   );
   await button(page, "Done").click();
   await expect(dialog(page, "Price")).not.toBeVisible();
-  await expect.poll(() => criteria(page)).toMatchObject({
-    max: "380",
-    sale: "1",
-    filter: null,
-  });
+  await expect
+    .poll(() => criteria(page))
+    .toMatchObject({
+      max: "380",
+      sale: "1",
+      filter: null,
+    });
   await expect(trigger).toBeFocused();
   // Filtering can shorten the page; require its exact legal return position.
   const legalScroll = await page.evaluate(
@@ -149,11 +160,13 @@ test("nested Price Back and Forward preserve drafts, then Done consumes only the
   await page.goBack();
   await expect(page).toHaveURL(/\/following$/);
   await page.goForward();
-  await expect.poll(() => criteria(page)).toMatchObject({
-    max: "380",
-    sale: "1",
-    filter: null,
-  });
+  await expect
+    .poll(() => criteria(page))
+    .toMatchObject({
+      max: "380",
+      sale: "1",
+      filter: null,
+    });
 });
 
 test("direct collection price filtering retains the collection and resets the native range", async ({
@@ -172,11 +185,13 @@ test("direct collection price filtering retains the collection and resets the na
   );
   await maximumPrice(page, 380);
   await button(page, "Done").click();
-  await expect.poll(() => criteria(page)).toMatchObject({
-    stock: "0",
-    max: "380",
-    filter: null,
-  });
+  await expect
+    .poll(() => criteria(page))
+    .toMatchObject({
+      stock: "0",
+      max: "380",
+      filter: null,
+    });
   await expect(
     page.getByRole("heading", { name: "Best Sellers", exact: true }),
   ).toBeVisible();
@@ -188,7 +203,10 @@ test("store search suggestions, results, filters and browser history retain the 
   baseURL,
 }) => {
   await openScenario(page, baseURL, `${store}/search`);
-  const input = page.getByRole("textbox", { name: "Search KITSCH", exact: true });
+  const input = page.getByRole("textbox", {
+    name: "Search KITSCH",
+    exact: true,
+  });
   await input.fill("shampoo");
   await expect(page.locator(".store-search-suggestions a")).toHaveCount(3);
   await input.press("Enter");
@@ -198,11 +216,13 @@ test("store search suggestions, results, filters and browser history retain the 
   await button(page, "Price").click();
   await maximumPrice(page, 380);
   await button(page, "Done").click();
-  await expect.poll(() => criteria(page)).toMatchObject({
-    q: "shampoo",
-    max: "380",
-    filter: null,
-  });
+  await expect
+    .poll(() => criteria(page))
+    .toMatchObject({
+      q: "shampoo",
+      max: "380",
+      filter: null,
+    });
   await expect(page.locator(".store-search-results")).toBeVisible();
   await page.goBack();
   await expect(page).toHaveURL(/\/stores\/kitsch\/search$/);
@@ -241,7 +261,10 @@ test("first-save creation uses the shared validated editor and reaches real Save
   await dialog(page, "Start your first collection")
     .getByRole("button", { name: "Create collection", exact: true })
     .click();
-  const name = page.getByRole("textbox", { name: "Collection name", exact: true });
+  const name = page.getByRole("textbox", {
+    name: "Collection name",
+    exact: true,
+  });
   await expect(name).toBeFocused();
   await name.fill("   ");
   await expect(button(page, "Save")).toBeDisabled();
@@ -269,22 +292,38 @@ test("Follow persists through a real information-page visit without altering the
   await openScenario(page, baseURL, store);
   const before = await page.locator(".dock-cart-count").allTextContents();
   await button(page, "Follow").click();
-  await expect(button(page, "Following")).toHaveAttribute("aria-pressed", "true");
-  await page.getByRole("link", { name: "Store information", exact: true }).click();
+  await expect(button(page, "Following")).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await page
+    .getByRole("link", { name: "Store information", exact: true })
+    .click();
   // Following exists on both pages; it cannot establish that navigation ended.
   await expect(page).toHaveURL(/\/stores\/kitsch\/info$/);
   await expect(
     page.getByRole("link", { name: "Close store information", exact: true }),
   ).toBeVisible();
-  await expect(button(page, "Following")).toHaveAttribute("aria-pressed", "true");
+  await expect(button(page, "Following")).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
   await page.goBack();
   await expect(page).toHaveURL(/\/stores\/kitsch$/);
   await expect(page.locator(".store-page")).toBeVisible();
-  await expect(button(page, "Following")).toHaveAttribute("aria-pressed", "true");
-  expect(await page.locator(".dock-cart-count").allTextContents()).toEqual(before);
+  await expect(button(page, "Following")).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  expect(await page.locator(".dock-cart-count").allTextContents()).toEqual(
+    before,
+  );
   await page.goForward();
   await expect(page).toHaveURL(/\/stores\/kitsch\/info$/);
-  await expect(button(page, "Following")).toHaveAttribute("aria-pressed", "true");
+  await expect(button(page, "Following")).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
 });
 
 test("store collection and filter controls remain contained at 320, 393 and 430 pixels", async ({
@@ -300,14 +339,20 @@ test("store collection and filter controls remain contained at 320, 393 and 430 
     await expect(dialog(page, "Filter")).toBeVisible();
     await expect(button(page, "Done")).toBeVisible();
     expect(
-      await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
     ).toBe(true);
     await dialog(page, "Filter")
       .getByRole("button", { name: "Price", exact: true })
       .click();
-    await expect(page.getByRole("slider", { name: "Maximum price" })).toBeVisible();
+    await expect(
+      page.getByRole("slider", { name: "Maximum price" }),
+    ).toBeVisible();
     expect(
-      await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
     ).toBe(true);
     await button(page, "Done").click();
     await expect(dialog(page, "Price")).not.toBeVisible();

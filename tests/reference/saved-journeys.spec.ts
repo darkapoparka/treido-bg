@@ -52,13 +52,15 @@ test("Saved renders the captured multi-brand library, price, variant and promoti
   ).toHaveCount(0);
   await expect
     .poll(() =>
-      page.locator("main img").evaluateAll((images) =>
-        images.every(
-          (image) =>
-            (image as HTMLImageElement).complete &&
-            (image as HTMLImageElement).naturalWidth > 0,
+      page
+        .locator("main img")
+        .evaluateAll((images) =>
+          images.every(
+            (image) =>
+              (image as HTMLImageElement).complete &&
+              (image as HTMLImageElement).naturalWidth > 0,
+          ),
         ),
-      ),
     )
     .toBe(true);
   for (const width of [320, 393, 430]) {
@@ -66,7 +68,9 @@ test("Saved renders the captured multi-brand library, price, variant and promoti
     const tile = await page.locator(".collection-tile").boundingBox();
     expect(tile?.height).toBe(200);
     expect(
-      await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
     ).toBe(true);
   }
 });
@@ -88,7 +92,9 @@ test("an obscured Saved listing never receives an invented price or purchase act
   await expect(
     dialog.getByRole("button", { name: /buy|pay|checkout/i }),
   ).toHaveCount(0);
-  await dialog.getByRole("button", { name: "Back to Saved", exact: true }).click();
+  await dialog
+    .getByRole("button", { name: "Back to Saved", exact: true })
+    .click();
   await expect(dialog).not.toBeVisible();
   await expect(trigger).toBeFocused();
   await button(page, "Unsave Pink rhode tube").click();
@@ -212,7 +218,11 @@ test("More ideas Back, Forward and Done preserve collection scroll and focus", a
   // scrollIntoViewIfNeeded alone considers the target visible under the fixed
   // dock. Put the actual click point in view BEFORE measuring return scroll.
   await ideas.evaluate((element) =>
-    element.scrollIntoView({ block: "center", inline: "nearest", behavior: "instant" }),
+    element.scrollIntoView({
+      block: "center",
+      inline: "nearest",
+      behavior: "instant",
+    }),
   );
   await ideas.click({ trial: true });
   await expect
@@ -276,14 +286,20 @@ test("public and private states match the captured controls without publishing o
   await button(page, "Make public").click();
   await expect(page.getByRole("status")).toHaveText("Collection is now public");
   await button(page, "Share collection").click();
-  await expect(page.getByRole("dialog")).toContainText("no public link is available");
+  await expect(page.getByRole("dialog")).toContainText(
+    "no public link is available",
+  );
   await page.keyboard.press("Escape");
   await button(page, "Invite collaborators").click();
-  await expect(page.getByRole("dialog")).toContainText("no invitation can be sent");
+  await expect(page.getByRole("dialog")).toContainText(
+    "no invitation can be sent",
+  );
   await page.keyboard.press("Escape");
   await button(page, "Collection options").click();
   await button(page, "Make collection private").click();
-  await expect(page.getByRole("status")).toHaveText("Collection is now private");
+  await expect(page.getByRole("status")).toHaveText(
+    "Collection is now private",
+  );
   await expect(button(page, "Share collection")).toHaveCount(0);
 });
 
@@ -317,7 +333,9 @@ test("editing Cancel preserves the name and a later Save commits the emoji name"
     await expect(name).toBeVisible();
     await expect(button(page, "Save")).toBeVisible();
     expect(
-      await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
     ).toBe(true);
   }
   await page.setViewportSize({ width: 393, height: 793 });

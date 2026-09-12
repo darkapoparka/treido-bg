@@ -69,8 +69,7 @@ export const womenCategories = [
 ] as const;
 
 export type FilterSection = keyof typeof filterOptions;
-const text = (value: string) =>
-  value.trim().replace(/\s+/g, " ").toLowerCase();
+const text = (value: string) => value.trim().replace(/\s+/g, " ").toLowerCase();
 
 export function categoryValue(label: string): string {
   if (text(label) === "all categories") return "";
@@ -204,7 +203,9 @@ export function searchProducts(
     if (filters.sort === "Newest")
       return (b.referenceNewnessRank ?? 0) - (a.referenceNewnessRank ?? 0);
     if (
-      ["Lowest → Highest Price", "Highest → Lowest Price"].includes(filters.sort)
+      ["Lowest → Highest Price", "Highest → Lowest Price"].includes(
+        filters.sort,
+      )
     ) {
       // Group different currencies rather than inventing an exchange rate.
       if (a.price.currency !== b.price.currency)

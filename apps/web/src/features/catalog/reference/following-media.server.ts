@@ -103,7 +103,10 @@ export function readFollowingMedia(key: string): Promise<Buffer> | undefined {
         ),
       );
       const metadata = await sharp(input).metadata();
-      if (![1179, 1180].includes(metadata.width ?? 0) || metadata.height !== 2676)
+      if (
+        ![1179, 1180].includes(metadata.width ?? 0) ||
+        metadata.height !== 2676
+      )
         throw new Error("Following source dimensions do not match its capture");
       const normalized = await sharp(input)
         .resize(393, 892, { fit: "fill", kernel: sharp.kernel.lanczos3 })

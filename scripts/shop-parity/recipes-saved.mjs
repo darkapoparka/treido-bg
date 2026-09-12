@@ -1,7 +1,17 @@
 const top = { type: "scroll", y: 0 };
 const click = (name) => ({ type: "click", role: "button", name, exact: true });
-const heading = (name) => ({ type: "waitVisible", role: "heading", name, exact: true });
-const fillName = (value) => ({ type: "fill", role: "textbox", name: "Collection name", value });
+const heading = (name) => ({
+  type: "waitVisible",
+  role: "heading",
+  name,
+  exact: true,
+});
+const fillName = (value) => ({
+  type: "fill",
+  role: "textbox",
+  name: "Collection name",
+  value,
+});
 const viewport = (height) => ({ type: "viewport", width: 393, height });
 const detail = "/saved?collection=source-favs";
 const owner = "apps/web/src/features/discovery/saved.tsx";
@@ -21,7 +31,14 @@ const library = () => ({
 // native iOS region is excluded. App-owned editor, toolbar, visibility controls,
 // thumbnails, backdrop and the gap above the keyboard remain compared.
 const keyboard = [
-  { x: 0, y: 486, width: 393, height: 307, reason: "Native iOS text keyboard in this frame; no app-owned editor controls are excluded" },
+  {
+    x: 0,
+    y: 486,
+    width: 393,
+    height: 307,
+    reason:
+      "Native iOS text keyboard in this frame; no app-owned editor controls are excluded",
+  },
 ];
 
 export const savedRecipes = {
@@ -43,7 +60,8 @@ export const savedRecipes = {
       {
         state: "saved-two-items",
         entry: { startUrl: "/saved", scenario: "saved-pair" },
-        notes: "Source shows a later saved history; its intervening product visits are not captured.",
+        notes:
+          "Source shows a later saved history; its intervening product visits are not captured.",
         actions: [heading("Saved"), top],
       },
       library(),
@@ -97,7 +115,8 @@ export const savedRecipes = {
       {
         state: "private-two-item-collection",
         entry: { startUrl: "/saved", scenario: "saved-collection" },
-        notes: "The source detail returns to the earlier two-item collection, rather than the larger library cover's membership.",
+        notes:
+          "The source detail returns to the earlier two-item collection, rather than the larger library cover's membership.",
         actions: [click("Private Favs"), heading("Favs"), top],
       },
       scrolled(),
@@ -126,7 +145,8 @@ export const savedRecipes = {
       {
         state: "expanded-collection-options",
         entry: { startUrl: detail, scenario: "saved-collection-expanded" },
-        notes: "The captured options background has an additional Argan product and a dismissed collaboration callout; this is a separate entry, not an invented scroll effect.",
+        notes:
+          "The captured options background has an additional Argan product and a dismissed collaboration callout; this is a separate entry, not an invented scroll effect.",
         overlay: "dialog",
         actions: [...options(), top],
       },
@@ -154,11 +174,16 @@ export const savedRecipes = {
     startUrl: detail,
     scenario: "saved-collection-expanded",
     frames: [
-      { state: "private-collection-options", overlay: "dialog", actions: [...options(), top] },
+      {
+        state: "private-collection-options",
+        overlay: "dialog",
+        actions: [...options(), top],
+      },
       {
         state: "make-public-confirmation",
         entry: { startUrl: detail, scenario: "saved-collection-edited" },
-        notes: "The collection name changes between source frames. Local visibility is simulated; sharing/invitation actions expose the disconnected service boundary.",
+        notes:
+          "The collection name changes between source frames. Local visibility is simulated; sharing/invitation actions expose the disconnected service boundary.",
         overlay: "dialog",
         actions: [...options(), click("Make collection public"), top],
       },
@@ -174,19 +199,31 @@ export const savedRecipes = {
     startUrl: detail,
     scenario: "saved-collection-expanded",
     frames: [
-      { state: "collection-options-before-delete", overlay: "dialog", actions: [...options(), top] },
+      {
+        state: "collection-options-before-delete",
+        overlay: "dialog",
+        actions: [...options(), top],
+      },
       {
         state: "delete-collection-confirmation",
         entry: { startUrl: detail, scenario: "saved-collection-deletion" },
-        notes: "The source confirmation background has two items, unlike its preceding three-item options state. Preserve both observed histories explicitly.",
+        notes:
+          "The source confirmation background has two items, unlike its preceding three-item options state. Preserve both observed histories explicitly.",
         overlay: "dialog",
         actions: [...options(), click("Delete collection"), top],
       },
       {
         state: "saved-items-retained-after-deletion",
         entry: { startUrl: detail, scenario: "saved-collection" },
-        notes: "The final capture has the original Shea/Rice saved pair, not the Argan history. Replay real deletion from that captured pair; interaction tests separately require retaining every saved product when deleting expanded collections.",
-        actions: [...options(), click("Delete collection"), click("Delete"), heading("Saved"), top],
+        notes:
+          "The final capture has the original Shea/Rice saved pair, not the Argan history. Replay real deletion from that captured pair; interaction tests separately require retaining every saved product when deleting expanded collections.",
+        actions: [
+          ...options(),
+          click("Delete collection"),
+          click("Delete"),
+          heading("Saved"),
+          top,
+        ],
       },
     ],
   },

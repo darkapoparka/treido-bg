@@ -617,7 +617,8 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
       <p className="store-description">
         {kitsch
           ? "Evolving your everyday essentials, KITSCH is a US designed brand worn & loved by your favorite celebrities. Shop online for free shipping on orders"
-          : store.description || "No additional brand description was captured."}
+          : store.description ||
+            "No additional brand description was captured."}
         {more && (
           <span>
             {" "}

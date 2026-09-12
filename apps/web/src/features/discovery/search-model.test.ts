@@ -85,12 +85,18 @@ test("does not interpret false as an enabled quick filter", () => {
 });
 
 test("restores Relevance for an empty sort parameter", () => {
-  assert.equal(readSearchFilters(new URLSearchParams("sort=")).sort, "Relevance");
+  assert.equal(
+    readSearchFilters(new URLSearchParams("sort=")).sort,
+    "Relevance",
+  );
 });
 
 test("All Categories is the unfiltered selection", () => {
   assert.equal(categoryValue("All Categories"), "");
-  assert.deepEqual(productIds("", { category: "All Categories" }), productIds());
+  assert.deepEqual(
+    productIds("", { category: "All Categories" }),
+    productIds(),
+  );
 });
 
 test("All Women uses declared parent metadata, not a literal leaf name", () => {
@@ -115,7 +121,9 @@ test("matches query words independently of case and excess whitespace", () => {
 });
 
 test("Following works without a text query", () => {
-  assert.deepEqual(productIds("", { following: true }, ["kitsch"]), ["shampoo"]);
+  assert.deepEqual(productIds("", { following: true }, ["kitsch"]), [
+    "shampoo",
+  ]);
 });
 
 test("sort-only and facet-only URLs are results states", () => {
@@ -207,10 +215,5 @@ test("the word men does not match women in search", () => {
 });
 
 test("unfinished search words still match word prefixes", () => {
-  assert.deepEqual(productIds("jean"), [
-    "women",
-    "men",
-    "sold-out",
-    "eu",
-  ]);
+  assert.deepEqual(productIds("jean"), ["women", "men", "sold-out", "eu"]);
 });

@@ -129,7 +129,10 @@ export const homeRecipes = {
     startUrl: "/following",
     scenario: "following-pair",
     frames: [
-      { state: "following-pura-products", actions: [heading("Following"), top] },
+      {
+        state: "following-pura-products",
+        actions: [heading("Following"), top],
+      },
       {
         state: "following-manage-list",
         actions: [click("button", "Manage"), heading("Following list"), top],

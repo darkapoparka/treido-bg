@@ -19,7 +19,8 @@ test.afterEach(async ({ page }, info) => {
 });
 
 test.beforeEach(async ({ context, baseURL }) => {
-  if (!baseURL) throw new Error("Following tests require the reference base URL");
+  if (!baseURL)
+    throw new Error("Following tests require the reference base URL");
   await context.addCookies([
     {
       name: "shop-reference-scenario",
@@ -104,9 +105,7 @@ test("Manage Back and Forward restore the feed scroll position and focus", async
   page,
 }) => {
   await page.goto("/following");
-  await page
-    .locator('[data-following-post="kitsch"]')
-    .scrollIntoViewIfNeeded();
+  await page.locator('[data-following-post="kitsch"]').scrollIntoViewIfNeeded();
   const scroll = await page.evaluate(() => window.scrollY);
   expect(scroll).toBeGreaterThan(0);
   await page.getByRole("button", { name: "Manage", exact: true }).click();
@@ -137,11 +136,13 @@ for (const width of [320, 393, 430]) {
     await expect(page.locator(".following-page .save-button")).toHaveCount(7);
     await expect
       .poll(() =>
-        page.locator(".following-page img").evaluateAll((images) =>
-          images
-            .filter((image) => !image.complete || image.naturalWidth === 0)
-            .map((image) => image.getAttribute("src")),
-        ),
+        page
+          .locator(".following-page img")
+          .evaluateAll((images) =>
+            images
+              .filter((image) => !image.complete || image.naturalWidth === 0)
+              .map((image) => image.getAttribute("src")),
+          ),
       )
       .toEqual([]);
     expect(
@@ -151,7 +152,10 @@ for (const width of [320, 393, 430]) {
       .getByRole("button", { name: "Save Black Bow Hair Clip", exact: true })
       .click();
     await expect(
-      page.getByRole("button", { name: "Unsave Black Bow Hair Clip", exact: true }),
+      page.getByRole("button", {
+        name: "Unsave Black Bow Hair Clip",
+        exact: true,
+      }),
     ).toHaveAttribute("aria-pressed", "true");
     await page
       .getByRole("button", { name: "View earlier Pura item", exact: true })

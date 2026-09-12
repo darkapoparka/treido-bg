@@ -21,10 +21,15 @@ export const savedProducts: readonly Product[] = [
     images: ["/api/reference-media/saved-glazing-milk"],
     price: { amount: 3200, currency: "USD" },
     ratingCount: "",
-    description: "The frozen listing supplies the name, price and saved size. Its full product description is not included in this reference.",
+    description:
+      "The frozen listing supplies the name, price and saved size. Its full product description is not included in this reference.",
     saleUnit: "piece",
     variants: [
-      { id: "rhode-glazing-milk-big", label: "big (4.2 oz)", availableQuantity: 12 },
+      {
+        id: "rhode-glazing-milk-big",
+        label: "big (4.2 oz)",
+        availableQuantity: 12,
+      },
     ],
   },
 ];

@@ -172,12 +172,7 @@
       "width": 1080,
       "height": 470,
       "sha256": "9b331bb8a8555e9bc68e193c8f7883e68e2d647f9395b8a9195c1cac7e13757e",
-      "cropPixels": [
-        0,
-        347,
-        1080,
-        470
-      ],
+      "cropPixels": [0, 347, 1080, 470],
       "verification": "Official store poster crop visually matched to order detail reference.",
       "pixelSha256": "2b9fe510649150d9cc749bd75bc6919854928fd797842cc4dc35d34379d777ee"
     },
@@ -467,9 +462,7 @@
       "width": 1280,
       "height": 1280,
       "sha256": "7c1a631db2c36a6545430c3b637d6bdc1ed2daf50b873c2bcca1d25337ebde08",
-      "mediaKeys": [
-        "idea-rice-wash"
-      ],
+      "mediaKeys": ["idea-rice-wash"],
       "reference": {
         "captureId": "7b6adbde-de48-47c5-979b-f629f1eb87a9",
         "flowId": "972c6dae-9ab4-4aaf-9f21-999808493dc6",
@@ -485,9 +478,7 @@
       "width": 1280,
       "height": 1280,
       "sha256": "b161ef12531a6eae1e2a1b84bd5b6dacf2dc6d10d33385454fdac0ee26341aae",
-      "mediaKeys": [
-        "rice-shampoo"
-      ],
+      "mediaKeys": ["rice-shampoo"],
       "reference": {
         "captureId": "7b6adbde-de48-47c5-979b-f629f1eb87a9",
         "flowId": "1df75dd0-05f6-445c-9709-0e0bda2df3af",
@@ -503,9 +494,7 @@
       "width": 1280,
       "height": 1280,
       "sha256": "620969137b61b1445648b484308416c81583e561b5161af08091871ad3ebfd19",
-      "mediaKeys": [
-        "detox-shampoo"
-      ],
+      "mediaKeys": ["detox-shampoo"],
       "reference": {
         "captureId": "7b6adbde-de48-47c5-979b-f629f1eb87a9",
         "flowId": "1df75dd0-05f6-445c-9709-0e0bda2df3af",
@@ -521,9 +510,7 @@
       "width": 1280,
       "height": 1280,
       "sha256": "853a03bc612fa73f0b1bcadfb0ae8b140cb890e3d19b9cf4a2bb991a023f345c",
-      "mediaKeys": [
-        "rosemary-liquid"
-      ],
+      "mediaKeys": ["rosemary-liquid"],
       "reference": {
         "captureId": "7b6adbde-de48-47c5-979b-f629f1eb87a9",
         "flowId": "1df75dd0-05f6-445c-9709-0e0bda2df3af",
@@ -539,9 +526,7 @@
       "width": 1280,
       "height": 1280,
       "sha256": "c6250f6259843091ebc1fc11f38ec8531b13732f6147c43b8802c8929bc00e95",
-      "mediaKeys": [
-        "idea-rosemary-liquid"
-      ],
+      "mediaKeys": ["idea-rosemary-liquid"],
       "reference": {
         "captureId": "7b6adbde-de48-47c5-979b-f629f1eb87a9",
         "flowId": "972c6dae-9ab4-4aaf-9f21-999808493dc6",
@@ -557,9 +542,7 @@
       "width": 1280,
       "height": 1280,
       "sha256": "ad276604b18496b7702a88cb95d7d73fc4b1e98ccb89a0c922006fa1caaee34b",
-      "mediaKeys": [
-        "idea-jojoba"
-      ],
+      "mediaKeys": ["idea-jojoba"],
       "reference": {
         "captureId": "7b6adbde-de48-47c5-979b-f629f1eb87a9",
         "flowId": "972c6dae-9ab4-4aaf-9f21-999808493dc6",
@@ -575,10 +558,7 @@
       "width": 2570,
       "height": 2570,
       "sha256": "f5c69052a79864cc8ef625ee14c4422bf5b3f73a0e087ed7cb6ad65ea3939aaa",
-      "mediaKeys": [
-        "idea-rosemary-bar",
-        "rosemary-bar"
-      ],
+      "mediaKeys": ["idea-rosemary-bar", "rosemary-bar"],
       "reference": {
         "captureId": "7b6adbde-de48-47c5-979b-f629f1eb87a9",
         "flowId": "972c6dae-9ab4-4aaf-9f21-999808493dc6",
@@ -594,9 +574,7 @@
       "width": 3000,
       "height": 3000,
       "sha256": "d6aafd5bb382373e541fe0e126ec5d44e0277735cf0a572993101eeeccf6343a",
-      "mediaKeys": [
-        "idea-purple-bundle"
-      ],
+      "mediaKeys": ["idea-purple-bundle"],
       "reference": {
         "captureId": "7b6adbde-de48-47c5-979b-f629f1eb87a9",
         "flowId": "972c6dae-9ab4-4aaf-9f21-999808493dc6",
@@ -612,9 +590,7 @@
       "width": 1280,
       "height": 1280,
       "sha256": "4425b38c37ac06f3a31e71224ce9602325b513d2d400da9c80125428246f6520",
-      "mediaKeys": [
-        "idea-rosemary-bundle"
-      ],
+      "mediaKeys": ["idea-rosemary-bundle"],
       "reference": {
         "captureId": "7b6adbde-de48-47c5-979b-f629f1eb87a9",
         "flowId": "972c6dae-9ab4-4aaf-9f21-999808493dc6",
@@ -630,9 +606,7 @@
       "width": 1280,
       "height": 1280,
       "sha256": "b600b42248fef406b2a28039d197f604886ab7612fc3591cd9ed1e30c61073a6",
-      "mediaKeys": [
-        "rice-liquid"
-      ],
+      "mediaKeys": ["rice-liquid"],
       "reference": {
         "captureId": "7b6adbde-de48-47c5-979b-f629f1eb87a9",
         "flowId": "1df75dd0-05f6-445c-9709-0e0bda2df3af",
@@ -648,9 +622,7 @@
       "width": 1280,
       "height": 1280,
       "sha256": "6a2537264df1ffe1ff715811e7474edb489d52340f44f7855ff5138a3d3911f8",
-      "mediaKeys": [
-        "argan-liquid-combo"
-      ],
+      "mediaKeys": ["argan-liquid-combo"],
       "reference": {
         "captureId": "7b6adbde-de48-47c5-979b-f629f1eb87a9",
         "flowId": "c01a7936-24cd-44fb-97fc-a25302b0a2cf",

@@ -13,7 +13,9 @@ import "./following.css";
 function PostIdentity({ store, added }: { store: Store; added: string }) {
   return (
     <Link className="following-post-identity" href={`/stores/${store.id}`}>
-      <span className={`following-logo ${store.id === "pura" ? "has-offer" : ""}`}>
+      <span
+        className={`following-logo ${store.id === "pura" ? "has-offer" : ""}`}
+      >
         <img src={store.logo} alt="" />
       </span>
       <span>
@@ -108,17 +110,32 @@ export function Following({ catalog }: { catalog: Catalog }) {
             );
           })}
           {!stores.length && (
-            <p className="following-list-empty">You’re not following any brands yet.</p>
+            <p className="following-list-empty">
+              You’re not following any brands yet.
+            </p>
           )}
         </div>
       ) : stores.length === 0 ? (
         <>
           <section className="following-empty">
-            <h2>You&apos;re not following<br />any brands yet</h2>
-            <p>Here are new products from brands<br />you might like</p>
-            <Link className="primary" href="/explore">Go shopping</Link>
+            <h2>
+              You&apos;re not following
+              <br />
+              any brands yet
+            </h2>
+            <p>
+              Here are new products from brands
+              <br />
+              you might like
+            </p>
+            <Link className="primary" href="/explore">
+              Go shopping
+            </Link>
           </section>
-          <section className="following-post following-recommendation" aria-label="Recommended brand">
+          <section
+            className="following-post following-recommendation"
+            aria-label="Recommended brand"
+          >
             <button
               className="following-post-identity"
               type="button"
@@ -138,7 +155,10 @@ export function Following({ catalog }: { catalog: Catalog }) {
                 aria-label="View quilt pattern"
                 onClick={() => setDetails("Quilt pattern")}
               >
-                <img src="/api/reference-media/following-photo-quilt" alt="Purple and green star quilt" />
+                <img
+                  src="/api/reference-media/following-photo-quilt"
+                  alt="Purple and green star quilt"
+                />
               </button>
               <span className="price-badge deal">Save $3</span>
               <IconButton
@@ -151,7 +171,8 @@ export function Following({ catalog }: { catalog: Catalog }) {
             </div>
             {quiltSaved && (
               <p className="sr-only" role="status">
-                Pattern bookmarked on this page. Its full catalog record was not captured.
+                Pattern bookmarked on this page. Its full catalog record was not
+                captured.
               </p>
             )}
           </section>
@@ -171,7 +192,11 @@ export function Following({ catalog }: { catalog: Catalog }) {
             ))}
           </nav>
           {pura && (
-            <section className="following-post" data-following-post="pura-new" aria-label="New Pura products">
+            <section
+              className="following-post"
+              data-following-post="pura-new"
+              aria-label="New Pura products"
+            >
               <PostIdentity store={pura} added="7 items added 4 hours ago" />
               <div className="following-product-grid">
                 {products([
@@ -190,7 +215,11 @@ export function Following({ catalog }: { catalog: Catalog }) {
             </section>
           )}
           {kitsch && (
-            <section className="following-post following-post-single" data-following-post="kitsch" aria-label="New KITSCH products">
+            <section
+              className="following-post following-post-single"
+              data-following-post="kitsch"
+              aria-label="New KITSCH products"
+            >
               <PostIdentity store={kitsch} added="1 item added 2 days ago" />
               <div className="following-product-grid">
                 {products(["following-black-bow"]).map((product) => (
@@ -200,7 +229,11 @@ export function Following({ catalog }: { catalog: Catalog }) {
             </section>
           )}
           {pura && (
-            <section className="following-post following-post-single" data-following-post="pura-older" aria-label="Earlier Pura product">
+            <section
+              className="following-post following-post-single"
+              data-following-post="pura-older"
+              aria-label="Earlier Pura product"
+            >
               <PostIdentity store={pura} added="1 item added 3 days ago" />
               <div className="following-partial-photo product-media">
                 <button
@@ -208,41 +241,68 @@ export function Following({ catalog }: { catalog: Catalog }) {
                   aria-label="View earlier Pura item"
                   onClick={() => setDetails("Earlier Pura item")}
                 >
-                  <img src="/api/reference-media/following-photo-older-pura" alt="Visible upper part of the earlier Pura product photograph" />
+                  <img
+                    src="/api/reference-media/following-photo-older-pura"
+                    alt="Visible upper part of the earlier Pura product photograph"
+                  />
                 </button>
                 <span className="price-badge deal">$30 off order</span>
               </div>
             </section>
           )}
-          {stores.filter((store) => !["pura", "kitsch"].includes(store.id)).map((store) => (
-            <section className="following-post" key={store.id} aria-label={`${store.name} products`}>
-              <PostIdentity store={store} added="Products from this brand" />
-              <div className="following-product-grid">
-                {catalog.products.filter((product) => product.storeId === store.id).map((product) => (
-                  <ProductCard key={product.id} product={product} showPromotion />
-                ))}
-              </div>
-            </section>
-          ))}
+          {stores
+            .filter((store) => !["pura", "kitsch"].includes(store.id))
+            .map((store) => (
+              <section
+                className="following-post"
+                key={store.id}
+                aria-label={`${store.name} products`}
+              >
+                <PostIdentity store={store} added="Products from this brand" />
+                <div className="following-product-grid">
+                  {catalog.products
+                    .filter((product) => product.storeId === store.id)
+                    .map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        showPromotion
+                      />
+                    ))}
+                </div>
+              </section>
+            ))}
         </>
       )}
-      <CartOverlay catalog={catalog} open={cartOpen} onClose={() => setCartOpen(false)} />
+      <CartOverlay
+        catalog={catalog}
+        open={cartOpen}
+        onClose={() => setCartOpen(false)}
+      />
       <FloatingNav
         back
         cart={manage ? undefined : () => setCartOpen(true)}
         showCartWhenEmpty={!manage && !stores.length}
-        onBack={manage ? () => {
-          if (enteredFromFeed.current) router.back();
-          else router.replace("/following", { scroll: false });
-        } : undefined}
+        onBack={
+          manage
+            ? () => {
+                if (enteredFromFeed.current) router.back();
+                else router.replace("/following", { scroll: false });
+              }
+            : undefined
+        }
       />
       <Sheet open={!!details} title={details} onClose={() => setDetails("")}>
         <p className="sheet-copy">
           The frozen capture shows this post but does not include its complete
-          product record or a recorded destination. No price, inventory or service
-          response has been invented for this item.
+          product record or a recorded destination. No price, inventory or
+          service response has been invented for this item.
         </p>
-        <button className="primary form-submit" type="button" onClick={() => setDetails("")}>
+        <button
+          className="primary form-submit"
+          type="button"
+          onClick={() => setDetails("")}
+        >
           Return to Following
         </button>
       </Sheet>

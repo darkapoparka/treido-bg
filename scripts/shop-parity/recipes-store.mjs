@@ -4,7 +4,12 @@ const chemical = "/stores/chemical-guys";
 const top = { type: "scroll", y: 0 };
 const click = (role, name) => ({ type: "click", role, name, exact: true });
 const selector = (value) => ({ type: "clickSelector", selector: value });
-const heading = (name) => ({ type: "waitVisible", role: "heading", name, exact: true });
+const heading = (name) => ({
+  type: "waitVisible",
+  role: "heading",
+  name,
+  exact: true,
+});
 const anchor = (selector, y) => ({ type: "anchorSelector", selector, y });
 const recommendations = anchor(".store-recommendations", 79);
 const allProducts = anchor(".store-grid-heading", 79);
@@ -40,7 +45,9 @@ export const storeRecipes = {
       {
         state: "whats-new-collection",
         actions: [
-          selector('.store-collection-rail a[href="/stores/kitsch/collections/whats-new"]'),
+          selector(
+            '.store-collection-rail a[href="/stores/kitsch/collections/whats-new"]',
+          ),
           heading("What's New"),
           top,
         ],
@@ -58,7 +65,12 @@ export const storeRecipes = {
           heading("Best Sellers"),
           top,
           click("button", "Save Rice Water Shampoo & Conditioner Combo"),
-          { type: "waitVisible", role: "dialog", name: "Start your first collection", exact: true },
+          {
+            type: "waitVisible",
+            role: "dialog",
+            name: "Start your first collection",
+            exact: true,
+          },
         ],
       },
     ],
@@ -77,7 +89,12 @@ export const storeRecipes = {
         actions: [
           selector(".store-video-rail a"),
           { type: "waitUrl", url: "**/stores/chemical-guys/video" },
-          { type: "waitVisible", role: "link", name: "Close video", exact: true },
+          {
+            type: "waitVisible",
+            role: "link",
+            name: "Close video",
+            exact: true,
+          },
           top,
         ],
       },
@@ -115,7 +132,10 @@ export const storeRecipes = {
           "The flow's checked-in recording confirms the final $380 range. Use the focused native slider's real keyboard interaction, not injected query state or DOM painting.",
         actions: [
           { type: "key", key: "Home" },
-          ...Array.from({ length: 38 }, () => ({ type: "key", key: "ArrowRight" })),
+          ...Array.from({ length: 38 }, () => ({
+            type: "key",
+            key: "ArrowRight",
+          })),
         ],
       },
       {
@@ -144,7 +164,12 @@ export const storeRecipes = {
       {
         state: "store-search-shampoo-suggestions",
         actions: [
-          { type: "fill", role: "textbox", name: "Search KITSCH", value: "shampoo" },
+          {
+            type: "fill",
+            role: "textbox",
+            name: "Search KITSCH",
+            value: "shampoo",
+          },
           { type: "waitVisible", selector: ".store-search-suggestions" },
           top,
         ],
@@ -201,18 +226,21 @@ export const storeRecipes = {
       {
         state: "kitsch-returning-recommendations-and-collections",
         entry: returning,
-        notes: "The source changes to the returning recommendation history between frames.",
+        notes:
+          "The source changes to the returning recommendation history between frames.",
         actions: [heading("For you"), recommendations],
       },
       {
         ...chemicalFrame(),
         entry: { startUrl: chemical, scenario: "home-welcome" },
-        notes: "A different storefront appears without a captured intervening navigation; retain it as an explicit source entry.",
+        notes:
+          "A different storefront appears without a captured intervening navigation; retain it as an explicit source entry.",
       },
       {
         state: "kitsch-pinned-all-products",
         entry: returning,
-        notes: "The source returns to the Kitsch all-products position without an intervening recorded navigation.",
+        notes:
+          "The source returns to the Kitsch all-products position without an intervening recorded navigation.",
         actions: [heading("For you"), allProducts],
       },
     ],
@@ -229,7 +257,12 @@ export const storeRecipes = {
         actions: [
           click("link", "Store information"),
           { type: "waitUrl", url: "**/stores/kitsch/info" },
-          { type: "waitVisible", role: "link", name: "Close store information", exact: true },
+          {
+            type: "waitVisible",
+            role: "link",
+            name: "Close store information",
+            exact: true,
+          },
           top,
         ],
       },
@@ -239,11 +272,27 @@ export const storeRecipes = {
       },
       {
         state: "store-information-reviews-and-policies",
-        actions: [{ type: "anchor", role: "heading", name: "Reviews", exact: true, y: 95 }],
+        actions: [
+          {
+            type: "anchor",
+            role: "heading",
+            name: "Reviews",
+            exact: true,
+            y: 95,
+          },
+        ],
       },
       {
         state: "store-information-policies-contact-and-report",
-        actions: [{ type: "anchor", role: "heading", name: "Policies", exact: true, y: 46 }],
+        actions: [
+          {
+            type: "anchor",
+            role: "heading",
+            name: "Policies",
+            exact: true,
+            y: 46,
+          },
+        ],
       },
     ],
   },

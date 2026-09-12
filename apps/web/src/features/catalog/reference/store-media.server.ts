@@ -41,7 +41,9 @@ export function readStoreMedia(key: string): Promise<Buffer> | undefined {
         .webp({ quality: 95 })
         .toBuffer();
     })();
-    void sugar.catch(() => { sugar = undefined; });
+    void sugar.catch(() => {
+      sugar = undefined;
+    });
   }
   return sugar;
 }

@@ -113,7 +113,12 @@ for (const asset of assets) {
       reviews.push(review);
       const name = asset.id.replace(/[^a-z0-9-]/gi, "_");
       await sharp(bytes)
-        .resize({ width: 393, height: 480, fit: "inside", withoutEnlargement: true })
+        .resize({
+          width: 393,
+          height: 480,
+          fit: "inside",
+          withoutEnlargement: true,
+        })
         .png()
         .toFile(resolve(reviewRoot, `${name}.png`));
       process.stderr.write(`${JSON.stringify(review)}\n`);
@@ -133,9 +138,15 @@ for (const asset of assets) {
 if (reviews.length) {
   await writeFile(
     resolve(reviewRoot, "report.json"),
-    JSON.stringify({ commit: process.env.GITHUB_SHA ?? null, reviews }, null, 2),
+    JSON.stringify(
+      { commit: process.env.GITHUB_SHA ?? null, reviews },
+      null,
+      2,
+    ),
   );
 }
 if (failures.length) {
-  throw new Error(`Reference media preparation failed:\n${failures.join("\n")}`);
+  throw new Error(
+    `Reference media preparation failed:\n${failures.join("\n")}`,
+  );
 }

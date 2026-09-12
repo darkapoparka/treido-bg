@@ -5,7 +5,8 @@ async function openStore(
   baseURL: string | undefined,
   scenario: "home-welcome" | "following-pair",
 ) {
-  if (!baseURL) throw new Error("Storefront tests require the reference preview");
+  if (!baseURL)
+    throw new Error("Storefront tests require the reference preview");
   await page.context().addCookies([
     {
       name: "shop-reference-scenario",
@@ -25,7 +26,9 @@ async function openStore(
   ).toBeAttached();
   await page.locator("main img").evaluateAll(async (images) => {
     await document.fonts.ready;
-    await Promise.all(images.map((image) => (image as HTMLImageElement).decode()));
+    await Promise.all(
+      images.map((image) => (image as HTMLImageElement).decode()),
+    );
   });
 }
 

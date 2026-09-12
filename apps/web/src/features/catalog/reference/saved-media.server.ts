@@ -23,7 +23,9 @@ export function readSavedMedia(key: string): Promise<Buffer> | undefined {
           "../../references/shop/flows/75b26fee-826f-4403-9288-be499890cd72/004.webp",
         ),
       );
-      const [left, top, width, height] = photographs[key].map((value) => value * 3);
+      const [left, top, width, height] = photographs[key].map(
+        (value) => value * 3,
+      );
       const normalized = await sharp(input)
         .resize(1179, 2676, { fit: "fill", kernel: sharp.kernel.lanczos3 })
         .toBuffer();

@@ -147,7 +147,9 @@ export function StoreFilter() {
   return (
     <Sheet
       open={open}
-      title={stage === "price" ? "Price" : stage === "sort" ? "Sort by" : "Filter"}
+      title={
+        stage === "price" ? "Price" : stage === "sort" ? "Sort by" : "Filter"
+      }
       className={`${styles.filter} ${stage === "price" ? "store-price-sheet" : "store-filter-sheet"}`}
       manageHistory={false}
       initialFocus={
@@ -233,7 +235,10 @@ export function StoreFilter() {
               {sale && <Icon name="check" />}
             </span>
           </button>
-          <button aria-pressed={stock} onClick={() => update({ stock: !stock })}>
+          <button
+            aria-pressed={stock}
+            onClick={() => update({ stock: !stock })}
+          >
             In-stock
             <span
               aria-hidden="true"

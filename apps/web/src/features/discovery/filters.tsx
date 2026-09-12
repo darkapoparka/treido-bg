@@ -38,11 +38,7 @@ export function Filters({ open, ...props }: FilterProps) {
   return open ? <OpenFilters {...props} /> : null;
 }
 
-function OpenFilters({
-  onClose,
-  value,
-  onChange,
-}: Omit<FilterProps, "open">) {
+function OpenFilters({ onClose, value, onChange }: Omit<FilterProps, "open">) {
   const [section, setSection] = useState<FilterSection | null>(null);
   const [categoryPath, setCategoryPath] = useState(false);
   const closeSection = () => {

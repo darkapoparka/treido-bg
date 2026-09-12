@@ -8,17 +8,15 @@ export async function useReferenceScenario(
   const url = test.info().project.use.baseURL;
   if (!url || !["127.0.0.1", "localhost"].includes(new URL(url).hostname))
     throw new Error("Reference fixtures require a configured local preview");
-  await page
-    .context()
-    .addCookies([
-      {
-        name: "shop-reference-scenario",
-        value: name,
-        url,
-        httpOnly: true,
-        sameSite: "Lax",
-      },
-    ]);
+  await page.context().addCookies([
+    {
+      name: "shop-reference-scenario",
+      value: name,
+      url,
+      httpOnly: true,
+      sameSite: "Lax",
+    },
+  ]);
 }
 
 // Flow 20 opens the exclusive offer after adding the bag. Flow 21's cart starts

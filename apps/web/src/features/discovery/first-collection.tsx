@@ -35,7 +35,9 @@ export function FirstCollectionPrompt({ catalog }: { catalog: Catalog }) {
       className={
         editing ? "saved-sheet collection-editor" : "first-collection-sheet"
       }
-      initialFocus={editing ? ".collection-name-input" : ".first-collection-create"}
+      initialFocus={
+        editing ? ".collection-name-input" : ".first-collection-create"
+      }
       onClose={close}
     >
       {editing ? (
@@ -66,11 +68,15 @@ export function FirstCollectionPrompt({ catalog }: { catalog: Catalog }) {
             <span />
             <div>
               {first && <img src={first.images[0]} alt="" />}
-              <i><Icon name="heart" filled /></i>
+              <i>
+                <Icon name="heart" filled />
+              </i>
             </div>
           </div>
           <h2>Start your first collection</h2>
-          <p>Organize your saved items to revisit later or share with others.</p>
+          <p>
+            Organize your saved items to revisit later or share with others.
+          </p>
           <button
             className="primary first-collection-create"
             onClick={() => setEditing(true)}
