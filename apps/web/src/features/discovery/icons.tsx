@@ -65,7 +65,7 @@ const paths = {
     "M4 7h7m6 0h3M4 17h3m6 0h7M17 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM13 17a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z",
   filter: "M3 6h18M3 18h18M8 3v6M16 15v6",
   menu: "M3 5h18M3 12h18M3 19h18",
-  bell: "M5 17h14l-2-4V9A5 5 0 0 1 7 9v4ZM10 21h4",
+  bell: "M5 17h14l-2-4V9A5 5 0 0 0 7 9v4ZM10 21h4",
   tag: "M3 3h8l10 10-8 8L3 11ZM7 7h.01",
   check: "m4 12 5 5L20 6",
   more: "M4 12h.01M12 12h.01M20 12h.01",
