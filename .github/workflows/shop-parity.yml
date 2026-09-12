@@ -163,6 +163,11 @@ jobs:
         with:
           path: reference-assets/shop/products
           key: shop-verified-media-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('references/shop/product-media-provenance.json', 'prepare-shop-reference.mjs', 'pnpm-lock.yaml') }}
+          # Formatting or tooling changes must not discard matching originals.
+          # A prefix hit is only a candidate: both preparation and --verify below
+          # still validate every asset against CURRENT provenance and dimensions.
+          restore-keys: |
+            shop-verified-media-${{ runner.os }}-${{ runner.arch }}-
       - name: Prepare and reverify the existing allowlisted product originals
         id: products
         shell: bash
