@@ -105,7 +105,10 @@ export function ProductDetail({
     // The recording leaves the product interactive after its flight/confirmation.
     // Open the pending offer through a real cart action, not an invented network
     // timer that steals focus several seconds after the shopper moves elsewhere.
-    if (offerPending && state.cart.some((line) => line.productId === product.id)) {
+    if (
+      offerPending &&
+      state.cart.some((line) => line.productId === product.id)
+    ) {
       setOfferPending(false);
       setOffer(true);
     } else setCart(true);
@@ -213,7 +216,12 @@ export function ProductDetail({
     >
       <ProductAdditionFlight flight={addition.flight} />
       <span className="sr-only" aria-live="polite">
-        {addition.announcement}
+        <span
+          key={addition.announcementId}
+          data-addition-announcement={addition.announcementId}
+        >
+          {addition.announcement}
+        </span>
       </span>
       <div className="product-underlay">
         {store && <StoreRow store={store} onMore={() => setOptions(true)} />}
