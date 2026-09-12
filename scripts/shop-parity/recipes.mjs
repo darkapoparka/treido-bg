@@ -335,4 +335,5 @@ flowRecipes[94] = {
 import { accountRecipes } from "./recipes-account.mjs";
 import { homeRecipes } from "./recipes-home.mjs";
 import { savedRecipes } from "./recipes-saved.mjs";
-Object.assign(flowRecipes, accountRecipes, homeRecipes, savedRecipes);
+import { storeRecipes } from "./recipes-store.mjs";
+Object.assign(flowRecipes, accountRecipes, homeRecipes, savedRecipes, storeRecipes);
