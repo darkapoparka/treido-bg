@@ -13,6 +13,12 @@ import {
 type Stage = "all" | "price" | "sort";
 const keys = ["min", "max", "sale", "stock", "sort"] as const;
 const draftKey = (key: string) => `filter-${key}`;
+let returnPosition: {
+  path: string;
+  scroll: number;
+  trigger: HTMLElement | null;
+} | null = null;
+
 function clean(params: URLSearchParams) {
   params.delete("filter");
   for (const key of keys) params.delete(draftKey(key));
@@ -32,16 +38,29 @@ function values(filters: StoreFilters): Record<(typeof keys)[number], string> {
 }
 function ownedEntry(): { depth: number; path: string } | undefined {
   const value = window.history.state?.shopStoreFilter;
-  return value && value.path === location.pathname &&
-    Number.isInteger(value.depth) && value.depth >= 1 && value.depth <= 2
-    ? value : undefined;
+  return value &&
+    value.path === location.pathname &&
+    Number.isInteger(value.depth) &&
+    value.depth >= 1 &&
+    value.depth <= 2
+    ? value
+    : undefined;
 }
-/** Filter pages own URL history, so Sheet must not create additional entries.
+
+/** Filter pages own URL history; the shared Sheet must not add more entries.
  * Draft criteria stay separate from committed results until Done is pressed. */
 export function openStoreFilter(stage: Stage = "all") {
   const params = new URLSearchParams(location.search);
   const parent = params.get("filter") === "all" ? ownedEntry() : undefined;
   if (!parent) {
+    returnPosition = {
+      path: location.pathname,
+      scroll: window.scrollY,
+      trigger:
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null,
+    };
     for (const [key, value] of Object.entries(values(readStoreFilters(params))))
       params.set(draftKey(key), value);
   }
@@ -52,12 +71,32 @@ export function openStoreFilter(stage: Stage = "all") {
     href(params),
   );
 }
+
 export function StoreFilter() {
   const params = useSearchParams();
   const stage = params.get("filter");
   const open = stage === "all" || stage === "price" || stage === "sort";
   const committing = useRef(false);
-  useEffect(() => { committing.current = false; }, [stage]);
+  const wasOpen = useRef(false);
+  useEffect(() => {
+    committing.current = false;
+  }, [stage]);
+  useEffect(() => {
+    const leaving = wasOpen.current && !open;
+    wasOpen.current = open;
+    if (!leaving) return;
+    // A child filter replaces the contents of the same Sheet. Its last local
+    // focus target is not the page trigger. Restore the family-level target
+    // after Sheet cleanup, without focusing a hidden slider or scrolling it.
+    const frame = requestAnimationFrame(() => {
+      if (returnPosition?.path !== location.pathname) return;
+      window.scrollTo({ top: returnPosition.scroll, behavior: "instant" });
+      if (returnPosition.trigger?.isConnected)
+        returnPosition.trigger.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [open]);
+
   const draftParams = new URLSearchParams(params.toString());
   for (const key of keys) {
     const draft = params.get(draftKey(key));
@@ -70,12 +109,19 @@ export function StoreFilter() {
     for (const [key, value] of Object.entries(values({ ...filters, ...patch })))
       next.set(draftKey(key), value);
     window.history.replaceState(
-      { shopStoreFilter: ownedEntry() }, "", href(next),
+      { shopStoreFilter: ownedEntry() },
+      "",
+      href(next),
     );
   }
   function close() {
     if (ownedEntry()) window.history.back();
-    else window.history.replaceState(null, "", href(clean(new URLSearchParams(params.toString()))));
+    else
+      window.history.replaceState(
+        null,
+        "",
+        href(clean(new URLSearchParams(params.toString()))),
+      );
   }
   function done() {
     if (committing.current) return;
@@ -93,8 +139,8 @@ export function StoreFilter() {
       window.history.replaceState(null, "", destination);
       return;
     }
-    // Consume both the parent and child when Price/Done commits the family.
-    // The base route is retained, not duplicated; a later Back leaves the store.
+    // Consume parent and child when Price/Done commits the family. The base
+    // route is retained, not duplicated; a later Back leaves the store.
     const commit = () => {
       if (location.pathname === owned.path)
         window.history.replaceState(null, "", destination);
@@ -108,7 +154,13 @@ export function StoreFilter() {
       title={stage === "price" ? "Price" : stage === "sort" ? "Sort by" : "Filter"}
       className={stage === "price" ? "store-price-sheet" : "store-filter-sheet"}
       manageHistory={false}
-      initialFocus={stage === "price" ? '[aria-label="Maximum price"]' : stage === "sort" ? '.store-sort-options button[aria-pressed="true"]' : ".store-filter-price"}
+      initialFocus={
+        stage === "price"
+          ? '[aria-label="Maximum price"]'
+          : stage === "sort"
+            ? '.store-sort-options button[aria-pressed="true"]'
+            : ".store-filter-price"
+      }
       onClose={close}
     >
       {stage === "price" ? (
@@ -117,29 +169,49 @@ export function StoreFilter() {
             ${min.toLocaleString("en-US")} - ${max.toLocaleString("en-US")}
             {max === STORE_PRICE_CEILING ? "+" : ""}
           </strong>
-          <div style={{
-            "--range-start": `${min / STORE_PRICE_CEILING * 100}%`,
-            "--range-end": `${max / STORE_PRICE_CEILING * 100}%`,
-          } as CSSProperties}>
+          <div
+            style={
+              {
+                "--range-start": `${(min / STORE_PRICE_CEILING) * 100}%`,
+                "--range-end": `${(max / STORE_PRICE_CEILING) * 100}%`,
+              } as CSSProperties
+            }
+          >
             <span className="store-price-track" aria-hidden="true" />
             <input
               aria-label="Minimum price"
               aria-valuetext={`$${min}`}
-              type="range" min="0" max={STORE_PRICE_CEILING} step="10" value={min}
-              onChange={(event) => update({ min: Math.min(Number(event.target.value), max) })}
+              type="range"
+              min="0"
+              max={STORE_PRICE_CEILING}
+              step="10"
+              value={min}
+              onChange={(event) =>
+                update({ min: Math.min(Number(event.target.value), max) })
+              }
             />
             <input
               aria-label="Maximum price"
               aria-valuetext={`$${max}${max === STORE_PRICE_CEILING ? " or more" : ""}`}
-              type="range" min="0" max={STORE_PRICE_CEILING} step="10" value={max}
-              onChange={(event) => update({ max: Math.max(Number(event.target.value), min) })}
+              type="range"
+              min="0"
+              max={STORE_PRICE_CEILING}
+              step="10"
+              value={max}
+              onChange={(event) =>
+                update({ max: Math.max(Number(event.target.value), min) })
+              }
             />
           </div>
         </div>
       ) : stage === "sort" ? (
         <div className="store-filter-options store-sort-options">
           {STORE_SORTS.map((value) => (
-            <button key={value} aria-pressed={sort === value} onClick={() => update({ sort: value })}>
+            <button
+              key={value}
+              aria-pressed={sort === value}
+              onClick={() => update({ sort: value })}
+            >
               {value}
               <span className={`radio-outline ${sort === value ? "selected" : ""}`} />
             </button>
@@ -148,7 +220,8 @@ export function StoreFilter() {
       ) : (
         <div className="store-filter-options">
           <button onClick={() => openStoreFilter("sort")}>
-            Sort by <span>{sort}<Icon name="back" /></span>
+            Sort by
+            <span>{sort}<Icon name="back" /></span>
           </button>
           <button aria-pressed={sale} onClick={() => update({ sale: !sale })}>
             On sale
@@ -168,11 +241,18 @@ export function StoreFilter() {
         </div>
       )}
       <div className="sheet-actions">
-        <button className="pill" onClick={() => update(
-          stage === "price" ? { min: 0, max: STORE_PRICE_CEILING } :
-          stage === "sort" ? { sort: "Best selling" } :
-          readStoreFilters(new URLSearchParams()),
-        )}>
+        <button
+          className="pill"
+          onClick={() =>
+            update(
+              stage === "price"
+                ? { min: 0, max: STORE_PRICE_CEILING }
+                : stage === "sort"
+                  ? { sort: "Best selling" }
+                  : readStoreFilters(new URLSearchParams()),
+            )
+          }
+        >
           {stage === "all" ? "Clear all" : "Reset"}
         </button>
         <button className="primary" onClick={done}>Done</button>
