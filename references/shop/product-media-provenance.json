@@ -78,10 +78,11 @@
       "sourceUrl": "https://cdn.shopify.com/videos/c/vp/c4a836d3780f487193879ee4c17a7b44/c4a836d3780f487193879ee4c17a7b44.SD-480p-1.5Mbps-64900030.mp4",
       "width": 442,
       "height": 480,
-      "sha256": "e63bc8df857e4c505f4f7e0d0f705a32ba084a794477c5f9392239131f5bb11c",
+      "sha256": "2b8a65c4618f75e6e10ffb84f90346ac957bc0858a5d76c65eb8d718f06727e2",
       "frameSeconds": 7.3,
-      "verification": "Visually matched against frozen Shop reference; owner approval remains separate.",
-      "pixelSha256": "08742b83c90e709a921bd97fdbb4b4487cdf3ceff21691ebd9d8af502cd2d390"
+      "verification": "Derivative from Actions run 34675919506 inspected against frozen flow96 frames002/003: same two pink brushes, orientation and pink background. Previous derivative hashes differed; the cause is not established. This pins the inspected revision, not a visual-parity pass or owner approval.",
+      "pixelSha256": "27832f9a21fa7ce63513d5d152d291a2820b279accb5a9772d7ac29adc975f06",
+      "sourceSha256": "78469e747a3cedae293ef4a09c06286619dbe76ad0035af84d4abdb7fc26dc79"
     },
     {
       "id": "whip-mousse",
@@ -217,8 +218,8 @@
       "sourceUrl": "https://cdn.shopify.com/s/files/1/0104/6904/8384/files/7551-SelfDrainingShowerCaddy-BottleFreeBeauty-Hero-1280x1280px_6edcc92e-6a9e-4d46-a947-f270b50c9d4d.jpg?v=1768332837",
       "width": 1280,
       "height": 1280,
-      "sha256": "509027986b0d5f184e2bea5ce7637fdae464e09a7f987490cf2b840ffc596e75",
-      "verification": "Downloaded official product primary photo and visually compared to source flow20 frame003; same product angle, packaging, composition; no baked UI."
+      "sha256": "5436dd038843870fd410a22d9bdb89c03bd200c2a0b372c9ee6475e842c75eeb",
+      "verification": "Downloaded revision from Actions run 34675919506 visually inspected against frozen flow20 frame003: same caddy, beige packaging on the left, angle and shadow. Image identity matches; final app color treatment and layout remain subject to pixel comparison. This is not automatic visual acceptance."
     },
     {
       "id": "solid-shave-butter",
@@ -483,7 +484,7 @@
       "sourceUrl": "https://cdn.shopify.com/s/files/1/0104/6904/8384/files/6745-RiceWaterProteinShampooBar-BottleFreeBeauty-Strengthening-hero-1280x1280px_2.jpg?v=1780529203",
       "width": 1280,
       "height": 1280,
-      "sha256": "d92e2e8c97b7643a7fb3b58b2b6809502d09a230264dc791a69d03348d8c1a96",
+      "sha256": "b161ef12531a6eae1e2a1b84bd5b6dacf2dc6d10d33385454fdac0ee26341aae",
       "mediaKeys": [
         "rice-shampoo"
       ],
@@ -492,7 +493,7 @@
         "flowId": "1df75dd0-05f6-445c-9709-0e0bda2df3af",
         "frame": 4
       },
-      "verification": "Acquired full merchant original, packaging/angle/composition visually compared with the named frozen frame. Source color treatment and obscured areas are not established by this comparison; no hidden commerce facts inferred."
+      "verification": "Downloaded revision from Actions run 34675919506 visually inspected against frozen flow40 frame004 and flow96 frame006: same rice-water package, soap shape, angle and shadow. Image identity matches; app color treatment and final pixels remain unresolved until rendered comparison. No hidden commerce facts inferred."
     },
     {
       "id": "detox-shampoo",
