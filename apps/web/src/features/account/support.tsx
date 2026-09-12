@@ -6,10 +6,11 @@ import { useState } from "react";
 import type { Catalog } from "../catalog/types";
 import { AccountIcon } from "./icons";
 import { Sheet } from "../discovery/components";
-import { AccountPage, Boundary, CodeInput } from "./forms";
+import { AccountPage, Boundary } from "./forms";
+import { ShopSplash } from "./reference-transitions";
 export function SupportPage() {
   return (
-    <AccountPage title="Support">
+    <AccountPage title="Support" className="account-settings-page support-page">
       <div className="support-links">
         <Link href="https://help.shop.app/en/shop">
           <AccountIcon name="person" />
@@ -72,112 +73,21 @@ export function HelpPage() {
     </AccountPage>
   );
 }
-export function SupportChat() {
-  const [draft, setDraft] = useState("");
-  const [attempt, setAttempt] = useState("");
-  const [example, setExample] = useState(false);
-  return (
-    <AccountPage dock={false}>
-      <div className="chat-title">
-        <Link href="/support" aria-label="Close support">
-          ×
-        </Link>
-        <h2>Support</h2>
-      </div>
-      <div className="support-conversation">
-        <p className="form-note centered">
-          You can close this conversation at any time and return to it from your
-          account
-        </p>
-        <p className="chat-bubble">
-          Hi, I’m your AI support assistant, what can I help you with today?
-        </p>
-        {attempt && (
-          <>
-            <p className="chat-bubble user">{attempt}</p>
-            {example ? (
-              <>
-                <div className="chat-bubble">
-                  <p>
-                    Yes, it is possible to cancel an order and request a refund,
-                    but these actions are typically handled by the store where
-                    you made the purchase. The Shop app helps you track your
-                    orders, but the store is responsible for processing
-                    cancellations and refunds.
-                  </p>
-                  <p>
-                    To proceed, you should contact the store directly to request
-                    a cancellation or refund. You can usually find contact
-                    options for the store within the Shop app once you locate
-                    your order.
-                  </p>
-                  <p>
-                    If you need to check the status of your order or find your
-                    order details, you can do so in the Orders tab of the Shop
-                    app.
-                  </p>
-                </div>
-                <Link className="pill" href="/orders">
-                  Go to orders ›
-                </Link>
-              </>
-            ) : (
-              <>
-                <p role="status" className="form-error">
-                  Support is not connected. Your message was not sent.
-                </p>
-                <button
-                  className="form-cancel"
-                  onClick={() => {
-                    setExample(true);
-                    setAttempt(
-                      "Is it possible to cancel an order and request a refund?",
-                    );
-                  }}
-                >
-                  View captured example conversation
-                </button>
-              </>
-            )}
-          </>
-        )}
-      </div>
-      <form
-        className="support-composer"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (draft.trim()) {
-            setExample(false);
-            setAttempt(draft);
-            setDraft("");
-          }
-        }}
-      >
-        <textarea
-          aria-label="Message support"
-          placeholder="Ask a question"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          maxLength={2000}
-        />
-        <button
-          className="primary"
-          aria-label="Send message"
-          disabled={!draft.trim()}
-        >
-          ↑
-        </button>
-      </form>
-    </AccountPage>
-  );
-}
+export { SupportChat } from "./support-chat";
 export function AboutPage() {
   const [document, setDocument] = useState("");
   return (
     <AccountPage className="source-about">
-      <div className="about-mark">shop</div>
+      <div className="about-mark">
+        <img
+          src="/api/reference-media/shop-wordmark"
+          width="123"
+          height="51"
+          alt="Shop"
+        />
+      </div>
       <p className="centered">
-        Pay better. Track better.
+        Pay Better. Track Better.
         <br />
         Shop Better.
         <br />
@@ -202,7 +112,10 @@ export function AboutPage() {
               }
             >
               <span>
-                {["▤", "♙", "▧"][i]}　{label}
+                <AccountIcon
+                  name={(["clipboard", "lock", "document"] as const)[i]}
+                />
+                {label}
               </span>
               <span>›</span>
             </button>
@@ -211,10 +124,10 @@ export function AboutPage() {
       </div>
       <div className="about-social">
         <a href="https://twitter.com/shop" aria-label="Shop on Twitter">
-          𝕏
+          <AccountIcon name="twitter" />
         </a>
         <a href="https://www.instagram.com/shop" aria-label="Shop on Instagram">
-          ◎
+          <AccountIcon name="instagram" />
         </a>
       </div>
       <p className="about-legal">
@@ -252,225 +165,7 @@ export function NotificationsPage() {
     </AccountPage>
   );
 }
-export function LoginPage() {
-  const params = useSearchParams();
-  const [email, setEmail] = useState("");
-  const router = useRouter();
-  const screen = params.get("screen") ?? "email";
-  const step =
-    screen === "track" || screen === "passkey"
-      ? screen
-      : screen.endsWith("code")
-        ? "code"
-        : "email";
-  const setStep = (next: string) =>
-    router.push(`/login?screen=${next === "code" ? "phone-code" : next}`, {
-      scroll: false,
-    });
-  const [code, setCode] = useState("");
-  const [boundary, setBoundary] = useState(false);
-  const emailCode = screen === "email-code";
-  const setEmailCode = (next: boolean) =>
-    router.push(`/login?screen=${next ? "email-code" : "phone-code"}`, {
-      scroll: false,
-    });
-  if (step === "track")
-    return (
-      <AccountPage dock={false} className="returning-login">
-        <Link className="onboarding-skip" href="/onboarding?step=tracking">
-          Skip
-        </Link>
-        <h1>Let’s track your recent order</h1>
-        <p>Select “Allow paste” to check for order information</p>
-        <img src="/api/reference-media/onboarding-package" alt="" />
-        <button
-          className="primary form-submit"
-          onClick={() => {
-            setEmail("mira@example.test");
-            setStep("code");
-          }}
-        >
-          Track my order
-        </button>
-      </AccountPage>
-    );
-  if (step === "passkey")
-    return (
-      <AccountPage dock={false}>
-        <Link className="auth-close" href="/login" aria-label="Close sign in">
-          ×
-        </Link>
-        <div className="auth-content">
-          <img
-            className="auth-art"
-            src="/api/reference-media/auth-passkey"
-            alt=""
-          />
-          <h1>Sign in faster with a passkey</h1>
-          <p>
-            Fast and secure login. At millions of stores.
-            <br />
-            Across all your devices.
-          </p>
-          <button
-            className="primary form-submit"
-            onClick={() => setBoundary(true)}
-          >
-            Add passkey
-          </button>
-        </div>
-        <Sheet
-          open={boundary}
-          title="Passkeys are not connected"
-          onClose={() => setBoundary(false)}
-        >
-          <p>No passkey was created and no account was signed in.</p>
-          <Link
-            className="primary form-submit"
-            href="/onboarding?step=tracking"
-          >
-            Continue in reference preview
-          </Link>
-        </Sheet>
-      </AccountPage>
-    );
-  return (
-    <AccountPage
-      dock={false}
-      className={`login-page ${step === "email" ? "auth-email" : "auth-code"}`}
-    >
-      <Link
-        className="auth-close"
-        href="/onboarding"
-        aria-label="Close sign in"
-      >
-        ×
-      </Link>
-      <div className="auth-content">
-        <img
-          className={`auth-art ${step === "email" ? "auth-loop" : ""}`}
-          src={`/api/reference-media/${step === "email" ? "auth-loop" : emailCode ? "auth-email-phone" : "auth-phone"}`}
-          alt=""
-        />
-        <h1>
-          {step === "email"
-            ? "Sign in to Shop"
-            : emailCode
-              ? "Verify your email"
-              : "Confirm it’s you"}
-        </h1>
-        <p>
-          {step === "email" ? (
-            "Or create an account"
-          ) : (
-            <>
-              Enter code sent to
-              <br />
-              <strong>
-                {emailCode ? email || "mira@example.test" : "+1 ••• ••• 0100"}
-              </strong>
-            </>
-          )}
-        </p>
-        <form
-          className="auth-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (step === "email")
-              router.push("/login?screen=email-code", { scroll: false });
-            else setBoundary(true);
-          }}
-        >
-          {step === "email" ? (
-            <>
-              <input
-                className="auth-email-input"
-                aria-label="Email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                autoComplete="email"
-              />
-              <button className="primary auth-continue">Continue</button>
-            </>
-          ) : (
-            <CodeInput
-              value={code}
-              onChange={(value) => {
-                setCode(value);
-                if (value.length === 6) setBoundary(true);
-              }}
-              label="Verification code"
-            />
-          )}
-        </form>
-        {step === "code" &&
-          (emailCode ? (
-            <button
-              className="auth-change"
-              onClick={() => {
-                setStep("email");
-                setCode("");
-              }}
-            >
-              Change email address
-            </button>
-          ) : (
-            <div className="auth-phone-alternatives">
-              <p>
-                Didn’t receive a code?{" "}
-                <button onClick={() => setBoundary(true)}>Resend</button>, or
-                try another option ↓
-              </p>
-              <button onClick={() => setEmailCode(true)}>
-                Email me code instead
-              </button>
-              <button
-                onClick={() => {
-                  setStep("email");
-                  setCode("");
-                }}
-              >
-                Use a different account
-              </button>
-            </div>
-          ))}
-        {step === "email" && (
-          <p className="auth-terms">
-            By continuing, you agree to the{" "}
-            <Link href="https://shop.app/terms-of-service">terms</Link> and
-            acknowledge the{" "}
-            <Link href="https://www.shopify.com/legal/privacy/consumers">
-              privacy policy
-            </Link>
-            .
-          </p>
-        )}
-      </div>
-      <Sheet
-        open={boundary}
-        title="Authentication is not connected"
-        onClose={() => setBoundary(false)}
-      >
-        <p>No code was sent and no account was signed in.</p>
-        <Link className="form-cancel" href="/login?screen=passkey">
-          Preview passkey screen
-        </Link>
-        <Link
-          className="primary form-submit"
-          href="/onboarding?step=preferences"
-        >
-          Continue in reference preview
-        </Link>
-        <button className="form-cancel" onClick={() => setBoundary(false)}>
-          Back
-        </button>
-      </Sheet>
-    </AccountPage>
-  );
-}
+export { LoginPage } from "./authentication";
 
 export function OnboardingPage({
   initialStep = 0,
@@ -480,14 +175,16 @@ export function OnboardingPage({
 }) {
   const params = useSearchParams();
   const step = initialStep;
-  const setStep = (next: number) =>
-    router.push(
-      `/onboarding?step=${["intro", "preferences", "tracking", "updates"][next]}`,
-      { scroll: false },
-    );
+  const setStep = (next: number) => {
+    const query = new URLSearchParams(params);
+    query.set("step", ["intro", "preferences", "tracking", "updates"][next]);
+    router.push(`/onboarding?${query}`, { scroll: false });
+  };
   const router = useRouter();
   const [choice, setChoice] = useState("");
   const [permission, setPermission] = useState(false);
+  if (params.get("step") === "splash" || params.get("step") === "signout")
+    return <ShopSplash newJourney={params.get("step") === "splash"} />;
   if (params.get("step") === "discover")
     return (
       <AccountPage dock={false} className="source-intro discover-intro">
@@ -614,7 +311,9 @@ export function OnboardingPage({
             href={
               params.get("journey") === "new"
                 ? "/onboarding?step=discover"
-                : "/login?screen=track"
+                : params.get("reference") === "captured"
+                  ? "/login?screen=track&reference=captured"
+                  : "/login?screen=track"
             }
           >
             Get Started
@@ -630,10 +329,18 @@ export function OnboardingPage({
     );
   return (
     <AccountPage dock={false}>
-      <div className={`onboarding-page onboarding-step-${step}`}>
+      <div
+        className={`onboarding-page onboarding-step-${step} ${params.get("journey") === "returning" ? "returning-onboarding" : ""}`}
+      >
         <button
           className="onboarding-skip"
-          onClick={() => (step < 3 ? setStep(step + 1) : router.push("/"))}
+          onClick={() =>
+            params.get("journey") === "returning"
+              ? router.push("/?journey=returning")
+              : step < 3
+                ? setStep(step + 1)
+                : router.push("/")
+          }
         >
           Skip
         </button>
@@ -704,7 +411,7 @@ export function OnboardingPage({
             {Array.from({ length: 9 }, (_, i) => (
               <img
                 key={i}
-                src={`/api/reference-media/${i === 0 ? "onboarding-shoe" : "onboarding-package"}`}
+                src={`/api/reference-media/${params.get("journey") === "returning" ? (i === 0 ? "auth-tracking-product" : "auth-tracking-package") : i === 0 ? "onboarding-shoe" : "onboarding-package"}`}
                 alt=""
               />
             ))}
@@ -751,9 +458,11 @@ export function OnboardingPage({
           ) : step === 2 ? (
             <>
               <Link className="primary form-submit" href="/account/connections">
-                <span className="google-mark" aria-hidden="true">
-                  G
-                </span>{" "}
+                <img
+                  className="onboarding-google-mark"
+                  src="/api/reference-media/connection-google"
+                  alt=""
+                />{" "}
                 Connect Google
               </Link>
               <small>

@@ -41,11 +41,13 @@ export function FloatingNav({
   cart,
   onBack,
   showCartWhenEmpty = false,
+  showExplore = true,
 }: {
   back?: boolean;
   cart?: () => void;
   onBack?: () => void;
   showCartWhenEmpty?: boolean;
+  showExplore?: boolean;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -85,16 +87,18 @@ export function FloatingNav({
             ["/explore", "explore", "Explore"],
             ["/orders", "orders", "Orders"],
           ] as const
-        ).map(([href, icon, label]) => (
-          <Link
-            href={href}
-            aria-label={label}
-            aria-current={active === href ? "page" : undefined}
-            key={href}
-          >
-            <Icon name={icon} filled={icon !== "search"} />
-          </Link>
-        ))}
+        )
+          .filter(([href]) => showExplore || href !== "/explore")
+          .map(([href, icon, label]) => (
+            <Link
+              href={href}
+              aria-label={label}
+              aria-current={active === href ? "page" : undefined}
+              key={href}
+            >
+              <Icon name={icon} filled={icon !== "search"} />
+            </Link>
+          ))}
       </nav>
       {cart && (showCartWhenEmpty || cartQuantity > 0) && (
         <button

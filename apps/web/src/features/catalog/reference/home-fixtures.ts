@@ -39,6 +39,36 @@ export const homeStores: readonly Store[] = [
   },
 ];
 export const homeProducts: readonly Product[] = [
+  ...[
+    {
+      id: "home-drmtlgy-bundle",
+      title: "Eye treatment and tinted SPF duo",
+      amount: 5625,
+      was: 7500,
+    },
+    {
+      id: "home-drmtlgy-masks",
+      title: "Peptide Nourishing Eye Masks",
+      amount: 4400,
+    },
+  ].map<Product>((item) => ({
+    id: item.id,
+    title: item.title,
+    storeId: "drmtlgy",
+    category: "Shop all",
+    images: [`/api/reference-media/${item.id}`],
+    price: { amount: item.amount, currency: "USD" as const },
+    ...(item.was
+      ? { compareAt: { amount: item.was, currency: "USD" as const } }
+      : {}),
+    ratingCount: "",
+    description:
+      "Frozen Home presentation fixture. Product photography is limited to the unobscured source regions; this is not live merchant inventory.",
+    saleUnit: "piece",
+    variants: [
+      { id: `${item.id}-default`, label: "Default", availableQuantity: 12 },
+    ],
+  })),
   {
     id: "home-princess-top",
     title: "Sage green top",

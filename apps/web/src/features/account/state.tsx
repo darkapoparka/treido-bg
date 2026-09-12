@@ -1,5 +1,11 @@
 "use client";
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 export type Address = {
   id: string;
   firstName: string;
@@ -136,6 +142,12 @@ type AccountState = {
 const Context = createContext<AccountState | null>(null);
 // Memory-only fixture state: no personal entries or payment fields are persisted.
 export function AccountProvider({ children }: { children: ReactNode }) {
+  useEffect(() => {
+    document.documentElement.dataset.shopHydrated = "true";
+    return () => {
+      delete document.documentElement.dataset.shopHydrated;
+    };
+  }, []);
   const [profile, setProfile] = useState(initialProfile);
   const [addresses, setAddresses] = useState(initialAddresses);
   const [orders, setOrders] = useState(initialOrders);

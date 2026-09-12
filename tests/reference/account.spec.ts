@@ -4,7 +4,7 @@ test("birthday editing validates calendar dates and permits clearing", async ({
   page,
 }) => {
   await page.goto("/account");
-  await page.getByRole("button", { name: "Add birthday", exact: true }).click();
+  await page.getByRole("button", { name: "MM/DD/YYYY", exact: true }).click();
   await page.getByRole("textbox", { name: "Month", exact: true }).fill("02");
   await page.getByRole("textbox", { name: "Day", exact: true }).fill("31");
   await page.getByRole("textbox", { name: "Year", exact: true }).fill("2000");
@@ -25,7 +25,7 @@ test("birthday editing validates calendar dates and permits clearing", async ({
   }
   await page.getByRole("button", { name: "Save", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "Add birthday", exact: true }),
+    page.getByRole("button", { name: "MM/DD/YYYY", exact: true }),
   ).toBeVisible();
 });
 
@@ -49,7 +49,7 @@ test("address drafts survive browser Back and Forward without becoming saved add
   await expect(
     page.getByRole("textbox", { name: "First name", exact: true }),
   ).toHaveValue("Reference draft");
-  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await page.getByRole("button", { name: "Go back", exact: true }).click();
   await expect(page).toHaveURL(/\/account\/addresses$/);
 });
 
@@ -57,16 +57,30 @@ test("card preferences and deletion retain the selected card identity", async ({
   page,
 }) => {
   await page.goto("/account/payments");
-  await page.getByRole("button", { name: /VISA.*1881/ }).click();
+  // Create the second local display fixture through the form, using public test data.
+  await page.getByRole("button", { name: "Add card", exact: true }).click();
+  await page
+    .getByRole("textbox", { name: "Card number" })
+    .fill("4242424242424242");
+  await page
+    .getByRole("textbox", { name: "Expiry", exact: true })
+    .fill("12/30");
+  await page.getByRole("textbox", { name: "CVC", exact: true }).fill("123");
+  await page.getByPlaceholder("Name on card").fill("Test User");
+  await page.getByRole("button", { name: "Save card", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Payment methods", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: /VISA.*4242/ }).click();
   const receipts = page.getByRole("switch", { name: /In-store receipts/ });
   await receipts.uncheck();
   await page.goBack();
-  await page.getByRole("button", { name: /VISA.*4242/ }).click();
+  await page.getByRole("button", { name: /VISA.*4263/ }).click();
   await expect(receipts).toBeChecked();
   await page.goBack();
-  await page.getByRole("button", { name: /VISA.*1881/ }).click();
+  await page.getByRole("button", { name: /VISA.*4242/ }).click();
   await expect(receipts).not.toBeChecked();
-  await page.getByRole("button", { name: "Delete card", exact: true }).click();
+  await page.getByRole("button", { name: "Delete", exact: true }).click();
   const confirmation = page.getByRole("dialog", {
     name: "Are you sure you want to delete this card?",
     exact: true,
@@ -78,8 +92,8 @@ test("card preferences and deletion retain the selected card identity", async ({
   await expect(
     page.getByRole("heading", { name: "Payment methods", exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole("button", { name: /VISA.*1881/ })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /VISA.*4242/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /VISA.*4242/ })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /VISA.*4263/ })).toBeVisible();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   expect(await page.evaluate(() => document.body.style.overflow)).not.toBe(
     "hidden",

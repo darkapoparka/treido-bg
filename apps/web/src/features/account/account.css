@@ -1899,14 +1899,7 @@
   height: 227px;
   width: 100%;
   border-radius: 22px;
-  background:
-    repeating-radial-gradient(
-      ellipse at 120% 150%,
-      transparent 0 17px,
-      #5360c155 18px 19px,
-      transparent 20px 27px
-    ),
-    linear-gradient(135deg, #0b0d66, #323c9b 60%, #111358);
+  background: url("/images/payment-pattern.svg") center / 100% 100% no-repeat;
   color: white;
   padding: 16px;
   position: relative;
@@ -3281,7 +3274,28 @@
   font-weight: 600;
 }
 .payment-add-page .account-heading {
+  position: sticky;
+  z-index: 6;
+  top: 18px;
   transform: translateY(-7px);
+  background: #fff;
+}
+.payment-add-page .account-heading::before {
+  content: "";
+  position: absolute;
+  inset: -18px -16px 0;
+  z-index: -1;
+  background: #fff;
+}
+.payment-add-page .account-heading::after {
+  content: "";
+  position: absolute;
+  left: -16px;
+  right: -16px;
+  bottom: -20px;
+  height: 20px;
+  background: #fff;
+  pointer-events: none;
 }
 .card-editor-profile .payment-illustration {
   position: relative;
@@ -3351,14 +3365,7 @@
   bottom: 26px;
 }
 .card-editor-profile .payment-illustration.entered {
-  background:
-    repeating-radial-gradient(
-      ellipse at 120% 150%,
-      transparent 0 11px,
-      #5360c155 12px 13px,
-      transparent 14px 20px
-    ),
-    linear-gradient(135deg, #090b63, #303b9d 60%, #111359);
+  background: url("/images/payment-pattern.svg") center / 100% 100% no-repeat;
 }
 .card-editor-profile .payment-illustration.entered::before,
 .card-editor-profile .payment-illustration.entered::after,
@@ -3500,7 +3507,7 @@
   padding: 0 12px;
   border-radius: 14px;
   gap: 0;
-  justify-content: center;
+  justify-content: stretch;
   font-size: 0;
 }
 .card-editor-profile > .form-field input {
@@ -3515,16 +3522,19 @@
   display: none;
 }
 .card-editor-profile > .primary {
+  font-size: 16px;
+  font-weight: 400;
   background: #5433e9;
 }
 .card-editor-profile .profile-billing {
-  margin-top: 18px;
+  margin-top: 14px;
 }
 .card-editor-profile .profile-billing h2 {
   margin: 0 0 12px;
   font-size: 20px;
 }
 .profile-billing-address {
+  font-size: 16px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -3550,14 +3560,7 @@
 }
 .payment-card-detail-page > .source-payment-card {
   margin: 32px 0 13px;
-  background:
-    repeating-radial-gradient(
-      ellipse at 120% 150%,
-      transparent 0 11px,
-      #5360c155 12px 13px,
-      transparent 14px 20px
-    ),
-    linear-gradient(135deg, #090b63, #303b9d 60%, #111359);
+  background: url("/images/payment-pattern.svg") center / 100% 100% no-repeat;
 }
 .payment-card-detail-page > h2 {
   margin: 14px 0 8px;

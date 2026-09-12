@@ -42,8 +42,8 @@ Run the broad reference suite only after several families, before a major handof
 
 ## Immediate queue
 
-1. **Finish quantified 80–84 residuals first.** Continue from the exact resume state in `shop-implementation-map.md`: payment/Profile still has the highest mapped Account error. Keep only measured family-wide wins.
-2. **Then map/score 85–94** and fix the complete Account/Profile family by ranked error + shared owner, not catalogue number alone.
+1. **Close the known regression failures, then reduce the highest measured shared residuals.** Current completed capture covers 59 frames (80–94). `shop-implementation-map.md` records the exact test and visual status; do not repeat the completed sticky-header implementation.
+2. **Extend mapping beyond 80–94**, beginning with the remaining Account/Profile and Home journeys. Use the versioned `scripts/shop-parity/` runner, not another machine-local scorer.
 3. **Return to 69–78 with the scorer**. Functional/source evidence exists, but owner visual acceptance is explicitly reopened; do not call them accepted until their scoreable frames pass the visual gates.
 4. **Then audit/fix 2–6 + 42**, preserving `4c9e902` and avoiding a rewrite if the new states already match.
 5. **Then 7–13**, then **14–20 + 32 + 37–41 + 96–97**.

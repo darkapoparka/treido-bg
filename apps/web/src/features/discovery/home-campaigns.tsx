@@ -106,7 +106,23 @@ const campaigns: Campaign[] = [
   },
 ];
 
-export function HomeCampaigns({ catalog }: { catalog: Catalog }) {
+export function HomeCampaigns({
+  catalog,
+  first,
+  productLayout = "rail",
+}: {
+  catalog: Catalog;
+  first?: string;
+  productLayout?: "rail" | "grid";
+}) {
+  const firstIndex = Math.max(
+    0,
+    campaigns.findIndex((campaign) => campaign.id === first),
+  );
+  const orderedCampaigns = [
+    ...campaigns.slice(firstIndex),
+    ...campaigns.slice(0, firstIndex),
+  ];
   const state = useDiscovery();
   const [menu, setMenu] = useState<Campaign | null>(null);
   const [stage, setStage] = useState<"menu" | "reason" | "report" | "reported">(
@@ -124,7 +140,7 @@ export function HomeCampaigns({ catalog }: { catalog: Catalog }) {
   return (
     <>
       <div className="home-campaigns">
-        {campaigns.map((c) => {
+        {orderedCampaigns.map((c) => {
           const store = catalog.stores.find((s) => s.id === c.store),
             concealed = hidden.includes(c.id);
           const href = c.store ? `/stores/${c.store}` : "/search";
@@ -132,7 +148,7 @@ export function HomeCampaigns({ catalog }: { catalog: Catalog }) {
             <section
               key={c.id}
               aria-label={`${store?.name ?? "Accessories"} campaign`}
-              className={`home-campaign campaign-${c.tone} ${c.tall ? "campaign-tall" : ""} ${concealed ? "campaign-concealed" : ""}`}
+              className={`home-campaign campaign-${c.tone} ${c.tall || (c.id === "drmtlgy" && productLayout === "grid") ? "campaign-tall" : ""} ${c.id === "drmtlgy" && productLayout === "grid" ? "campaign-product-grid" : ""} ${concealed ? "campaign-concealed" : ""}`}
             >
               <div
                 className="campaign-art"
@@ -195,12 +211,22 @@ export function HomeCampaigns({ catalog }: { catalog: Catalog }) {
                   />
                 </header>
                 <div className="campaign-product-rail">
-                  {c.products.map((id) => {
+                  {(c.id === "drmtlgy" && productLayout === "grid"
+                    ? [
+                        "home-drmtlgy-eye",
+                        "home-drmtlgy-retinol",
+                        "home-drmtlgy-tinted",
+                        "home-drmtlgy-bundle",
+                        "home-drmtlgy-eye",
+                        "home-drmtlgy-masks",
+                      ]
+                    : c.products
+                  ).map((id, index) => {
                     const p = catalog.products.find((p) => p.id === id);
                     return p ? (
                       <article
-                        className={`campaign-product ${c.partialProducts ? "campaign-partial-product" : ""}`}
-                        key={id}
+                        className={`campaign-product ${c.partialProducts ? "campaign-partial-product" : ""} ${id === "home-drmtlgy-bundle" ? "campaign-bundle" : id === "home-drmtlgy-masks" ? "campaign-eye-masks" : ["home-drmtlgy-eye", "home-drmtlgy-tinted"].includes(id) ? "campaign-isolated-bottle" : ""}`}
+                        key={`${id}-${index}`}
                       >
                         <Link href={`/products/${id}`} aria-label={p.title}>
                           <img src={p.images[0]} alt={p.title} />

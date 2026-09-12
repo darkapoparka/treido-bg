@@ -369,3 +369,117 @@
     font-size: 10px;
   }
 }
+
+/* The returning capture uses the same campaign, with a two-column product layout. */
+.campaign-product-grid .campaign-product-rail {
+  top: 62px;
+  right: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  overflow: visible;
+}
+.campaign-product-grid .campaign-product {
+  width: 100%;
+  height: 151px;
+  border-radius: 22px;
+}
+.campaign-product-grid .campaign-product img {
+  mix-blend-mode: multiply;
+}
+.campaign-product-grid .campaign-product.campaign-bundle img {
+  position: absolute;
+  left: 28.7%;
+  top: 5.3%;
+  width: 51.7%;
+  height: 92.7%;
+}
+.campaign-product-grid .campaign-product.campaign-eye-masks img {
+  position: absolute;
+  left: 21.2%;
+  top: 7.9%;
+  width: 68.5%;
+  height: 90.1%;
+}
+.campaign-product-grid .campaign-price {
+  left: 12px;
+  top: 12px;
+}
+.campaign-product-grid .save-button {
+  right: 12px;
+  bottom: 12px;
+}
+.campaign-product-grid .campaign-header {
+  padding-top: 12px;
+}
+.home-shortcuts + .email-card {
+  margin-top: 0;
+}
+.recent-stores-panel {
+  height: auto;
+  min-height: 420px;
+}
+.recent-store-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 24px;
+}
+.recent-store-grid a {
+  position: relative;
+  display: block;
+  height: 140px;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #efefef;
+}
+.recent-store-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.recent-store-grid span {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  border-radius: 18px;
+  background: #5433eb;
+  color: #fff;
+  font-size: 12px;
+  padding: 3px 7px;
+}
+.recent-stores-panel .recent-title {
+  margin-top: 24px;
+}
+.home-returning .floating-nav {
+  width: 224px;
+  grid-template-columns: repeat(3, 1fr);
+}
+@media (max-width: 350px) {
+  .campaign-product-grid .campaign-product {
+    height: 134px;
+  }
+  .campaign-product-grid .campaign-brand > span {
+    font-size: 17px;
+    letter-spacing: 4px;
+  }
+  .campaign-product-grid .campaign-price {
+    left: 8px;
+    padding-inline: 4px;
+    font-size: 10px;
+  }
+  .recent-store-grid a {
+    height: 125px;
+  }
+}
+
+.campaign-isolated-bottle img {
+  padding: 7px;
+}
+.campaign-product-grid .campaign-isolated-bottle img,
+.campaign-product-grid .campaign-bundle img,
+.campaign-product-grid .campaign-eye-masks img {
+  mix-blend-mode: normal;
+}

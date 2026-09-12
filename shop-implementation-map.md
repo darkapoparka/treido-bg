@@ -15,11 +15,11 @@ Operational visual-fidelity map for the frozen Shop corpus. This document is the
 
 Disposable QA workspace: `.qa/shop-parity/` (excluded locally through `.git/info/exclude`, never committed).
 
-`node .qa/shop-parity/shop-parity.cjs enumerate` reads `references/shop/manifest.json` and emits `.qa/shop-parity/frame-map.json` with one entry per frozen frame:
+`node scripts/shop-parity/run.mjs enumerate` reads `references/shop/manifest.json` and emits `.qa/shop-parity/frame-map.json` with one entry per frozen frame:
 
 `flowNo + flowId + frameNo -> reference file -> family -> route -> queryState -> setupActions -> scrollPosition -> overlayState -> scoreability`.
 
-Every corpus frame exists in the map immediately. A frame is `route-hint` until its exact deterministic replay is encoded in `.qa/shop-parity/recipes.cjs`; only `reproducible` frames are pixel-scored. Do not guess missing state from a neighboring route.
+Every corpus frame exists in the map immediately. A frame is `route-hint` until its exact deterministic replay is encoded in `scripts/shop-parity/recipes.mjs`; only `reproducible` frames are pixel-scored. Do not guess missing state from a neighboring route.
 ### Family route owners
 
 | Flows | Family / canonical route owner |
@@ -59,16 +59,16 @@ A change is kept only when the affected canonical family improves in aggregate a
 ## QA commands
 
 ```powershell
-node .qa/shop-parity/shop-parity.cjs enumerate
-node .qa/shop-parity/shop-parity.cjs baseline --flow 84 --frame 1 --run address-before
-node .qa/shop-parity/shop-parity.cjs baseline --family account-payments --run payments-before
-node .qa/shop-parity/shop-parity.cjs baseline --all --run corpus-current
-node .qa/shop-parity/shop-parity.cjs compare-runs --before payments-before --after payments-after
+node scripts/shop-parity/run.mjs enumerate
+node scripts/shop-parity/run.mjs baseline --flow 84 --frame 1 --run address-before
+node scripts/shop-parity/run.mjs baseline --family account-payments --run payments-before
+node scripts/shop-parity/run.mjs baseline --all --run corpus-current
+node scripts/shop-parity/run.mjs compare-runs --before payments-before --after payments-after
 ```
 
 Run against the owned preview with `SHOP_REFERENCE_PREVIEW=1`; current development target is `http://127.0.0.1:6412`. Each scored frame writes `reference.png`, `live.png`, `overlay.png`, `difference-heatmap.png`, plus ranked JSON/CSV/Markdown at the run root.
 
-The `.qa/shop-parity/` scorer is intentionally machine-local and untracked. On the authorized `J:\treido-bg` machine, reuse it. A fresh checkout/account that does not have `.qa/shop-parity/` must recreate the disposable scorer from this document before broad tuning; do not replace quantitative QA with manual "looks close" review.
+The scorer and replay definitions are versioned in `scripts/shop-parity/`. Only captures and reports stay in ignored `.qa/shop-parity/`. A fresh checkout reuses the same executable commands; do not recreate another scorer or substitute manual "looks close" review.
 
 ### Scorer runtime invariants
 
@@ -99,26 +99,22 @@ Fix the highest-leverage shared primitive only when the ranked heatmaps show the
 
 ## Current quantitative baseline and exact resume point
 
-Pushed checkpoint: **`782d507`** (`feat(account): score and refine Shop payment address parity`). Flows 80–84 are REVIEW, not accepted. The machine-local scorer currently reproduces all 19 mapped 80–84 frames.
+Local evidence run **checkpoint-account-home**: **59 / 424 ordered frames mapped and scored**, covering flows 80–94. Nine frames meet the numerical MAE/bad-pixel gate; none of this grants owner acceptance. Use `shop-frame-ledger.md` for all 424 frame IDs and current measured results. Generate it with `node scripts/shop-parity/ledger.mjs checkpoint-account-home`.
 
-Latest truthful payment-family run after replay-state corrections and the validated Profile composition source change:
+| Family | Frames | Mean MAE % | Worst MAE % |
+| --- | ---: | ---: | ---: |
+| Payments | 13 | 3.437 | 4.621 |
+| Settings | 11 | 3.131 | 5.143 |
+| Privacy | 7 | 2.580 | 3.933 |
+| Addresses | 6 | 2.479 | 3.933 |
+| Support/sign-out | 13 | 2.332 | 3.933 |
+| Returning sign-in | 9 | 2.166 | 6.426 |
 
-| Family | Frames | Mean MAE % | Worst MAE % | Mean bad-pixel-12 % |
-| --- | ---: | ---: | ---: | ---: |
-| account-payments | 13 | **3.787** | **7.108** | **14.035** |
-| account-addresses | 6 | **2.635** | **4.869** | **8.132** |
+Implemented canonical owners now include the pinned add-card header, settings rows, centered sign-out confirmation and footer, support conversation/search/reset/stop states, captured-only deletion/sign-in outcomes, and returning Home's six-product grid. Authentication/provider outcomes require explicit captured-preview opt-in and do not call a service.
 
-Payment ranking now: flow 80/007 `add-card-save-visible` **7.108%**; flow 80/006 `add-card-name-and-billing` **5.054%**; delete-card dialog **4.830%**; card detail **4.823%**; flow 80/008 `profile-two-cards` **4.533%**; repeated Profile payment-method states **3.850%**; flow 80/005 **2.059%**; 80/003 **1.923%**; 80/004 **1.541%**; 80/002 **0.981%**.
+**Validation on 2026-09-12:** web TypeScript check passed; the account/authentication subset passed **19/19** after fixing a deferred captured-replay state reset. The broad reference run completed **67/92**, with 25 failures: stale fixture selectors and genuine cart/order/history/review issues still need triage. Do not describe that run as green. New account fixes retain validation, per-card identity and unsaved-draft assertions.
 
-Validated source change in `apps/web/src/features/account/account.css`: Profile payment heading `translateY(-3px)`, Add-card pill `#f4f5f6`, Profile payment stack `translateY(-6px)`, Profile payment-card height `226px`, settings panel `translateY(-7px)`. Compared with the `782d507` baseline this improves the repeated Profile payment state **4.869 -> 3.850%** and the two-card Profile **5.341 -> 4.533%**, with all non-Profile payment states unchanged. Keep it.
-
-The QA recipe was also corrected to wait for the `Add card` heading after route-changing clicks and to blur `Name on card` for the unfocused frozen frame. The blur correction changes the truthful frame-80/006 score from 5.287 to **5.054%**; this is a replay correction, not a product CSS win.
-
-Previously retained measured win: the flow-80 add-card bottom-space sweep selected **185px**; frame 80/007 improved **11.664 -> 7.108%** with no payment-sibling regression.
-
-**Next exact experiment:** the frozen frame 80/007 keeps an opaque `Add card` header region pinned while form content scrolls below it. A disposable naive sticky-heading sweep improved 7.108 -> **6.263%** at `top: 7px`, proving leverage, but direct inspection showed it is structurally incomplete: it pins only the ~22px heading while the reference masks roughly a 50px header region. Do **not** commit the naive injected rule. Implement the correct payment-add-page sticky header/background owner, recapture frames 80/002–007, and keep it only if the family improves with no sibling regression above 0.15 MAE points.
-
-A disposable clean-`HEAD` preview previously confirmed the committed pre-80–84 implementation was materially worse at the first two reproducible flow-80 states: frame 1 **6.213%** vs the checkpoint's 4.869%, frame 2 **13.201%** vs 0.981%. Do not rebuild that older structure.
+**Largest current visual residuals:** returning Home 6.426%; notification rows about 5.142%; payment save state 4.621%; repeated Profile/payment card 3.933%. Fix shared owners only with before/after sibling checks. No numerical thresholds were relaxed.
 
 ## Priority order
 

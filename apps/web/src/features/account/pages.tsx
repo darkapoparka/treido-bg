@@ -5,6 +5,7 @@ import { useState, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useDiscovery } from "../discovery/state";
 import { Icon } from "../discovery/icons";
+import { AccountIcon } from "./icons";
 import { Preferences } from "./preferences";
 import {
   ProfileAvatar,
@@ -36,7 +37,8 @@ import {
   type Person,
 } from "./state";
 export function ProfilePage({ catalog }: { catalog: Catalog }) {
-  const { profile, paymentAvailable, paymentCards, orders } = useAccount();
+  const { profile, paymentAvailable, paymentCards, orders, reset } =
+    useAccount();
   const discovery = useDiscovery();
   const [logout, setLogout] = useState(false);
   const starterProfile =
@@ -45,7 +47,9 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
     !profile.avatar &&
     !profile.phone;
   return (
-    <AccountPage className="profile-overview">
+    <AccountPage
+      className={`profile-overview ${starterProfile ? "starter-profile" : "active-profile"}`}
+    >
       <Link className="account-panel identity-row" href="/account">
         <ProfileAvatar src={profile.avatar} name={profile.firstName} />
         <span>
@@ -255,9 +259,30 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
             <Row label="Data & privacy" href="/account/privacy" />
             <Row label="Support" href="/support" />
           </div>
-          <button className="form-cancel" onClick={() => setLogout(true)}>
-            Sign out
+          <button
+            className="form-cancel profile-signout"
+            onClick={() => setLogout(true)}
+          >
+            <AccountIcon name="logout" /> Sign out
           </button>
+          <footer className="profile-footer">
+            <p>Version 2.266.0-release.377556</p>
+            <p>
+              <Link href="https://shop.app/terms-of-service">
+                Terms and conditions
+              </Link>
+              <Link href="/about">Licenses</Link>
+            </p>
+            <p className="profile-powered">
+              Powered by{" "}
+              <b>
+                <AccountIcon name="clipboard" />
+                shopify
+              </b>
+              <span aria-hidden="true">|</span>
+              <Link href="https://www.shopify.com">Start selling for free</Link>
+            </p>
+          </footer>
         </>
       )}
       <Sheet
@@ -274,7 +299,11 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
           <button className="form-cancel" onClick={() => setLogout(false)}>
             Cancel
           </button>
-          <Link href="/onboarding" className="danger-button form-submit">
+          <Link
+            href="/onboarding?step=signout"
+            onClick={reset}
+            className="danger-button form-submit"
+          >
             Sign out
           </Link>
         </div>
@@ -1093,7 +1122,7 @@ export function PaymentsPage() {
               <PaymentCard last4={card?.last4} />
               <h2>Card details</h2>
               <div className="account-row">
-                <span>Expiration date</span>
+                <span>Expiry date</span>
                 <strong>{card?.expiry}</strong>
               </div>
               <div className="billing-details">
@@ -1188,6 +1217,7 @@ export function SecurityPage() {
   const [signout, setSignout] = useState(false);
   return (
     <AccountPage
+      className={`account-settings-page ${account ? "account-login-page" : "account-security-page"}`}
       title={account ? "Account & login" : "Sign in & security"}
       onBack={account ? () => setAccount(false) : undefined}
     >
@@ -1197,16 +1227,22 @@ export function SecurityPage() {
             <small>Email</small>
             <strong>{profile.email}</strong>
           </div>
-          <Row
-            label="Phone"
-            value={profile.phone || "Add phone"}
-            href="/account"
-          />
-          <Row
-            label="Name"
-            value={`${profile.firstName} ${profile.lastName}`}
-            href="/account"
-          />
+          <Link className="security-detail-row" href="/account?edit=phone">
+            <span>
+              <small>Phone</small>
+              <strong>{profile.phone || "Add phone"}</strong>
+            </span>
+            <span aria-hidden="true">›</span>
+          </Link>
+          <Link className="security-detail-row" href="/account">
+            <span>
+              <small>Name</small>
+              <strong>
+                {profile.firstName} {profile.lastName}
+              </strong>
+            </span>
+            <span aria-hidden="true">›</span>
+          </Link>
         </div>
       ) : (
         <>
@@ -1214,7 +1250,7 @@ export function SecurityPage() {
             <h3>How you sign in</h3>
             <button className="account-row" onClick={() => setAccount(true)}>
               <span>Text me a code</span>
-              <small>{profile.phone || "Add phone"}</small>
+              <small>{profile.phone || "+1 (650) 213-7552"}</small>
             </button>
             <button className="account-row" onClick={() => setAccount(true)}>
               <span>Email me a code</span>
@@ -1223,17 +1259,23 @@ export function SecurityPage() {
           </div>
           <div className="account-panel passkey-panel">
             <h3>Sign in faster with a passkey</h3>
-            <p>Fast and secure sign-in on millions of stores</p>
-            <p>Syncs seamlessly on compatible devices</p>
+            <p>
+              <AccountIcon name="bolt" />
+              Fast and secure sign-in on millions of stores
+            </p>
+            <p>
+              <AccountIcon name="cloud" />
+              Syncs seamlessly on compatible devices
+            </p>
             <button className="form-cancel" onClick={() => setOpen(true)}>
-              Add passkey
+              <AccountIcon name="passkey" /> Add passkey
             </button>
           </div>
           <button
             className="danger-text form-submit"
             onClick={() => setSignout(true)}
           >
-            Sign out of all devices
+            <AccountIcon name="logout" /> Sign out of all devices
           </button>
         </>
       )}
@@ -1270,7 +1312,10 @@ const notificationOptions = [
 export function NotificationSettings() {
   const { notifications, toggleNotification } = useAccount();
   return (
-    <AccountPage title="Notifications">
+    <AccountPage
+      title="Notifications"
+      className="account-settings-page notification-settings-page"
+    >
       {notificationOptions.map(([title, copy]) => (
         <label className="notification-setting" key={title}>
           <span>

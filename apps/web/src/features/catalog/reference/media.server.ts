@@ -10,6 +10,9 @@ const media: Record<
   {
     file: string;
     rect: readonly [number, number, number, number];
+    // Remove captured interface occlusions from tightly cropped product photography.
+    // The image never supplies price labels, save controls, card edges or navigation.
+    occlusions?: readonly (readonly [number, number, number, number])[];
   }
 > = {
   "beauty-pill-skin": {
@@ -29,6 +32,22 @@ const media: Record<
     rect: [378, 124, 14, 32],
   },
 
+  "auth-returning-package": {
+    file: "flows/b5716e20-b094-463c-b74b-a5e983dd1651/002.webp",
+    rect: [70, 375, 235, 176],
+  },
+  "auth-tracking-product": {
+    file: "flows/b5716e20-b094-463c-b74b-a5e983dd1651/008.webp",
+    rect: [52, 363, 80, 80],
+  },
+  "auth-tracking-package": {
+    file: "flows/b5716e20-b094-463c-b74b-a5e983dd1651/008.webp",
+    rect: [156, 363, 80, 80],
+  },
+  "auth-reference-avatar": {
+    file: "flows/b5716e20-b094-463c-b74b-a5e983dd1651/007.webp",
+    rect: [168, 183, 57, 57],
+  },
   "connection-shop": {
     file: "flows/3d1f4110-721a-44e8-b35d-be4c015a9e03/003.webp",
     rect: [219, 230, 56, 56],
@@ -133,6 +152,31 @@ const media: Record<
   "deals-solid-mask": {
     file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/003.webp",
     rect: [220, 519, 105, 130],
+  },
+  "home-drmtlgy-eye": {
+    file: "flows/b5716e20-b094-463c-b74b-a5e983dd1651/009.webp",
+    rect: [100, 339, 32, 134],
+  },
+  "home-drmtlgy-tinted": {
+    file: "flows/b5716e20-b094-463c-b74b-a5e983dd1651/009.webp",
+    rect: [93, 497, 36, 141],
+  },
+  "home-drmtlgy-bundle": {
+    file: "flows/b5716e20-b094-463c-b74b-a5e983dd1651/009.webp",
+    rect: [246, 500, 83, 140],
+    occlusions: [
+      [0, 0, 45, 24],
+      [66, 104, 17, 36],
+    ],
+  },
+  "home-drmtlgy-masks": {
+    file: "flows/b5716e20-b094-463c-b74b-a5e983dd1651/009.webp",
+    rect: [234, 664, 110, 136],
+    occlusions: [
+      [0, 0, 26, 18],
+      [77, 93, 33, 37],
+      [0, 99, 77, 37],
+    ],
   },
   "home-princess-top": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
@@ -701,8 +745,6 @@ const originals: Record<string, string> = {
   "argan-liquid-combo": "argan-liquid-combo-original.jpg",
   "home-drmtlgy-retinol": "home-drmtlgy-retinol.jpg",
   "home-drmtlgy-needleless": "home-drmtlgy-needleless.jpg",
-  "home-drmtlgy-eye": "home-drmtlgy-eye.jpg",
-  "home-drmtlgy-tinted": "home-drmtlgy-tinted.jpg",
   "home-curl-cream": "home-curl-cream.jpg",
   "home-air-dry-cream": "home-air-dry-cream.jpg",
   "shea-gallery-hand": "shea-gallery-hand.jpg",
@@ -780,10 +822,32 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
       const [left, top, width, height] = entry.rect.map((value) =>
         Math.round(value * scale),
       );
-      return sharp(input)
-        .extract({ left, top, width, height })
-        .webp({ quality: 95 })
-        .toBuffer();
+      const crop = sharp(input).extract({ left, top, width, height });
+      if (entry.occlusions?.length) {
+        const cleanPhoto = await crop.ensureAlpha().png().toBuffer();
+        const cutouts = await Promise.all(
+          entry.occlusions.map(async ([x, y, w, h]) => ({
+            left: Math.round(x * scale),
+            top: Math.round(y * scale),
+            input: await sharp({
+              create: {
+                width: Math.round(w * scale),
+                height: Math.round(h * scale),
+                channels: 4,
+                background: { r: 0, g: 0, b: 0, alpha: 1 },
+              },
+            })
+              .png()
+              .toBuffer(),
+            blend: "dest-out" as const,
+          })),
+        );
+        return sharp(cleanPhoto)
+          .composite(cutouts)
+          .webp({ quality: 95 })
+          .toBuffer();
+      }
+      return crop.webp({ quality: 95 }).toBuffer();
     })();
     pending.set(key, job);
     void job.catch(() => pending.delete(key));

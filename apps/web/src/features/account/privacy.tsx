@@ -7,9 +7,13 @@ import { AccountPage, Row, CodeInput, Boundary } from "./forms";
 import { Sheet, consumeSheetHistory } from "../discovery/components";
 import { AccountIcon } from "./icons";
 import { useAccount } from "./state";
+import { DeletionOutcomePreview } from "./reference-transitions";
 export function PrivacyPage() {
   return (
-    <AccountPage title="Data & privacy" className="privacy-page">
+    <AccountPage
+      title="Data & privacy"
+      className="account-settings-page privacy-page"
+    >
       <section>
         <h2>Data sharing</h2>
         <p>
@@ -78,11 +82,11 @@ export function ConnectionsPage() {
   return provider ? (
     <AccountPage dock={false} className="gmail-connect">
       <button
-        className="connection-close"
+        className="connection-close connection-drag-handle"
         aria-label="Close connection"
         onClick={() => router.back()}
       >
-        ×
+        <span aria-hidden="true" />
       </button>
       <div className="connection-brands">
         <span className="google-brand">
@@ -138,7 +142,10 @@ export function ConnectionsPage() {
       />
     </AccountPage>
   ) : (
-    <AccountPage title="Connections">
+    <AccountPage
+      title="Connections"
+      className="account-settings-page connections-page"
+    >
       <div className="account-panel">
         <h2>Accounts</h2>
         <button className="account-row" onClick={() => setOpen(true)}>
@@ -176,6 +183,7 @@ export function ConnectionsPage() {
       <Sheet
         open={open}
         title="Connect an account"
+        className="connection-provider-sheet"
         onClose={() => setOpen(false)}
       >
         <div className="connection-choices">
@@ -220,6 +228,13 @@ export function DeleteAccount() {
   const [confirm, setConfirm] = useState(false),
     [code, setCode] = useState(""),
     [boundary, setBoundary] = useState(false);
+  if (
+    params.get("preview") === "1" &&
+    ["processing", "received"].includes(params.get("stage") ?? "")
+  )
+    return (
+      <DeletionOutcomePreview received={params.get("stage") === "received"} />
+    );
   return (
     <AccountPage className="delete-account-page">
       <h1>Delete your Shop account</h1>
@@ -301,6 +316,18 @@ export function DeleteAccount() {
         <p>
           No verification code was sent and no deletion request was submitted.
         </p>
+        <button
+          className="form-cancel"
+          onClick={() => {
+            consumeSheetHistory();
+            setBoundary(false);
+            router.replace("/account/delete?stage=processing&preview=1", {
+              scroll: false,
+            });
+          }}
+        >
+          View captured deletion example
+        </button>
         <button className="form-cancel" onClick={() => setBoundary(false)}>
           Back
         </button>

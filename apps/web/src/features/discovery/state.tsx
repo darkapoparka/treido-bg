@@ -16,6 +16,7 @@ export type CartLine = {
 };
 type ViewedItem = { kind: "product" | "store"; id: string };
 type State = {
+  recentActivity: "products" | "stores" | null;
   viewedItems: ViewedItem[];
   viewStore: (id: string) => void;
   removeViewed: (kind: ViewedItem["kind"], id: string) => void;
@@ -44,6 +45,9 @@ type State = {
 };
 const Context = createContext<State | null>(null);
 export function DiscoveryProvider({ children }: { children: ReactNode }) {
+  const [recentActivity, setRecentActivity] = useState<
+    "products" | "stores" | null
+  >(null);
   // Frozen Home017 already contains these prior visits; subsequent visits use the same state.
   const [viewedProducts, setViewedProducts] = useState<string[]>([
     "cleo",
@@ -56,17 +60,17 @@ export function DiscoveryProvider({ children }: { children: ReactNode }) {
       id,
     })),
   );
-  const viewStore = useCallback(
-    (id: string) =>
-      setViewedItems((v) =>
-        [
-          { kind: "store" as const, id },
-          ...v.filter((x) => x.kind !== "store" || x.id !== id),
-        ].slice(0, 24),
-      ),
-    [],
-  );
+  const viewStore = useCallback((id: string) => {
+    setRecentActivity("stores");
+    setViewedItems((v) =>
+      [
+        { kind: "store" as const, id },
+        ...v.filter((x) => x.kind !== "store" || x.id !== id),
+      ].slice(0, 24),
+    );
+  }, []);
   const viewProduct = useCallback((id: string) => {
+    setRecentActivity("products");
     setViewedProducts((v) => [id, ...v.filter((x) => x !== id)].slice(0, 12));
     setViewedItems((v) =>
       [
@@ -89,6 +93,7 @@ export function DiscoveryProvider({ children }: { children: ReactNode }) {
   return (
     <Context
       value={{
+        recentActivity,
         reportedProducts,
         reportProduct: (id) =>
           setReportedProducts((v) => (v.includes(id) ? v : [...v, id])),

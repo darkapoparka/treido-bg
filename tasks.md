@@ -217,6 +217,12 @@ No build, lint, typecheck, formatter check, unit runner or automated repository 
 
 Commit pointer: the main-branch commit titled **fix(web): match Saved collection states and restore full product photography**. Evidence remains ignored under `.local/shop-build/saved-continuation/`. Continue the same source comparison through the remaining account/order families; this is not a new backlog or completion claim.
 
+### 2026-09-12 — Account/returning-Home implementation checkpoint
+
+Continued on the authorized single main checkout. Versioned the previously local scorer/replay definitions and generated all 424 frame entries. Latest capture: 59 mapped/scored frames (80–94), 9 numerical candidates, no new owner acceptance. Account/settings/support/returning-sign-in and Home composition work is in canonical components, with captured provider outcomes explicitly isolated.
+
+The deferred replay-reset race is fixed; 19 account/auth tests and web TypeScript checking passed. Broad regression: 67/92 passed; 25 failures remain to reconcile against frozen source and real interaction behavior (cart offer dismissal, order menus/tracking, old fixture assumptions, gallery focus and review navigation). These are not waived. Exact scores and continuation live in shop-implementation-map.md; image artifacts remain local.
+
 ## Task 4 - Build data, identity and catalog
 
 **Prerequisites:** Task 1; Task 2's approved catalog contract; authorized fresh development database/auth configuration. Task 3 supplies the UI consumers; backend work need not wait for missing unrelated reference assets.

@@ -122,3 +122,60 @@ test("all five gallery photos are reachable and reduced motion removes sheet ent
     await options.evaluate((el) => getComputedStyle(el).animationName),
   ).toBe("none");
 });
+
+test("Home reflects the actual journey instead of always showing seeded history", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(page.locator("main.home-page")).toHaveAttribute(
+    "data-feed",
+    "welcome",
+  );
+  await expect(page.getByLabel("Recently viewed products")).not.toBeVisible();
+  await expect(page.locator(".delivery-card")).not.toBeVisible();
+  await expect(page.locator(".home-campaign").first()).toHaveAccessibleName(
+    "PRINCESS POLLY campaign",
+  );
+  await page.goto("/products/cleo");
+  await expect(
+    page.getByRole("link", { name: "Home", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Home", exact: true }).click();
+  await expect(page.getByLabel("Recently viewed products")).toBeVisible();
+});
+
+test("the returning campaign uses six real product cards and preserves saving", async ({
+  page,
+}) => {
+  await page.goto("/?journey=returning");
+  const campaign = page.getByRole("region", { name: "DRMTLGY campaign" });
+  await expect(campaign.locator(".campaign-product")).toHaveCount(6);
+  await expect(
+    page.getByRole("navigation", { name: "Main navigation" }).getByRole("link"),
+  ).toHaveCount(3);
+  await expect
+    .poll(() =>
+      campaign
+        .locator(".campaign-product img")
+        .evaluateAll((images) =>
+          images.every(
+            (image) =>
+              (image as HTMLImageElement).complete &&
+              (image as HTMLImageElement).naturalWidth > 0,
+          ),
+        ),
+    )
+    .toBe(true);
+  const save = campaign.locator(".save-button").first();
+  await expect(save).toHaveAttribute("aria-pressed", "false");
+  await save.click();
+  await expect(save).toHaveAttribute("aria-pressed", "true");
+  for (const width of [320, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
+});

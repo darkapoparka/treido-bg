@@ -3,6 +3,7 @@ import { localeSchema } from "@treido/contracts";
 import "./globals.css";
 import "@/features/account/account.css";
 import "@/features/account/profile.css";
+import "@/features/account/settings.css";
 import "@/features/commerce/continuation.css";
 import { AccountProvider } from "@/features/account/state";
 import { DiscoveryProvider } from "@/features/discovery/state";

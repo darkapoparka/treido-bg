@@ -62,3 +62,7 @@ playwright-report/
 *.tsbuildinfo
 .DS_Store
 Thumbs.db
+
+# Local visual captures, overlays and machine-specific diagnostics.
+.qa/
+**/.qa/

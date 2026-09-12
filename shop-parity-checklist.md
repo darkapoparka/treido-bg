@@ -104,16 +104,16 @@ The single execution session owns this file. The Lane column is retained only as
 | 82 | Deleting a card from Card detail<br><sub>`57811b67-ea3f-4231-bdc0-1776716034db`</sub> | 3 | A Account | REVIEW | [x] | [x] | [x] | [x] | [x] | [x] | [ ] |
 | 83 | Addresses from Profile<br><sub>`47a532d7-bcaa-4cc6-9322-48325718f109`</sub> | 2 | A Account | REVIEW | [x] | [x] | [x] | [x] | [x] | [x] | [ ] |
 | 84 | Deleting an address (profile) from Addresses<br><sub>`7566d104-783f-4762-894a-e1465dfa554b`</sub> | 4 | A Account | REVIEW | [x] | [x] | [x] | [x] | [x] | [x] | [ ] |
-| 85 | Sign in & security from Profile<br><sub>`ad155bf8-4b64-415c-be6d-43e32d3be745`</sub> | 3 | A Account | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 86 | Turning off notifications from Profile<br><sub>`27ee8718-69b7-460f-a26d-96be39cf6ef2`</sub> | 3 | A Account | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 87 | Connections from Profile<br><sub>`18dbe0a9-2fa4-4174-887d-41f5272c2fac`</sub> | 2 | A Account | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 88 | Connect to a Gmail account from Connections<br><sub>`3d1f4110-721a-44e8-b35d-be4c015a9e03`</sub> | 3 | A Account | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 89 | Deleting an account from Profile<br><sub>`edf3324f-4112-4d2f-a7cd-f78f6e6ebbc7`</sub> | 7 | A Account | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 90 | Support from Profile<br><sub>`9e7c0890-7d2d-4e20-83eb-bacf3763d443`</sub> | 2 | A Account | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 91 | Chatting with AI assistant (support) from Support<br><sub>`26a34b32-f094-4805-bdff-4024bb3caf5f`</sub> | 5 | A Account | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 92 | About from Support<br><sub>`ccb0b141-1aac-461e-b8ca-2bfac2886e93`</sub> | 2 | A Account | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 93 | Logging out from Profile<br><sub>`9143aaad-196e-459f-bf7d-6482d8c9f330`</sub> | 4 | A Account | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| 94 | Logging in<br><sub>`b5716e20-b094-463c-b74b-a5e983dd1651`</sub> | 9 | A Account | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| 85 | Sign in & security from Profile<br><sub>`ad155bf8-4b64-415c-be6d-43e32d3be745`</sub> | 3 | A Account | REVIEW | [x] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] |
+| 86 | Turning off notifications from Profile<br><sub>`27ee8718-69b7-460f-a26d-96be39cf6ef2`</sub> | 3 | A Account | REVIEW | [x] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] |
+| 87 | Connections from Profile<br><sub>`18dbe0a9-2fa4-4174-887d-41f5272c2fac`</sub> | 2 | A Account | REVIEW | [x] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] |
+| 88 | Connect to a Gmail account from Connections<br><sub>`3d1f4110-721a-44e8-b35d-be4c015a9e03`</sub> | 3 | A Account | REVIEW | [x] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] |
+| 89 | Deleting an account from Profile<br><sub>`edf3324f-4112-4d2f-a7cd-f78f6e6ebbc7`</sub> | 7 | A Account | REVIEW | [x] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] |
+| 90 | Support from Profile<br><sub>`9e7c0890-7d2d-4e20-83eb-bacf3763d443`</sub> | 2 | A Account | REVIEW | [x] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] |
+| 91 | Chatting with AI assistant (support) from Support<br><sub>`26a34b32-f094-4805-bdff-4024bb3caf5f`</sub> | 5 | A Account | REVIEW | [x] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] |
+| 92 | About from Support<br><sub>`ccb0b141-1aac-461e-b8ca-2bfac2886e93`</sub> | 2 | A Account | REVIEW | [x] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] |
+| 93 | Logging out from Profile<br><sub>`9143aaad-196e-459f-bf7d-6482d8c9f330`</sub> | 4 | A Account | REVIEW | [x] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] |
+| 94 | Logging in<br><sub>`b5716e20-b094-463c-b74b-a5e983dd1651`</sub> | 9 | A Account | REVIEW | [x] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] |
 | 95 | Widgets<br><sub>`403ffb92-8c6c-4117-8d75-21555bb8db42`</sub> | 1 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 96 | Shop detail from Home<br><sub>`ea05a60f-ccf7-427a-97b3-9c2bb9a5674c`</sub> | 6 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | 97 | Shop information from Shop detail<br><sub>`069d1098-37bd-4600-85ab-28342cf021ad`</sub> | 5 | C Discovery | OPEN | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
@@ -144,3 +144,7 @@ Parallel lanes are retired. Follow `single-session-execution.md`. Immediate orde
 Work family-by-family: inspect source once, implement in one pass, QA at 393x793, run one focused family test batch, update this ledger, commit/push, then continue.
 
 **Owner visual review (2026-09-11): rejected 1:1 acceptance.** Functional/source/test evidence remains recorded, but 393px visual parity and cross-width visual acceptance are reopened for flows 69-78. These flows are REVIEW, not accepted.
+
+### 2026-09-12 account/support/returning-Home checkpoint
+
+59 ordered frames (80–94) now have deterministic replays and a completed score run: `.qa/shop-parity/runs/checkpoint-account-home/`. The public frame ledger lists all 424 frames and makes the 365 unmapped frames explicit. Nine current frames are numerical candidates; these do not count as accepted flows. The account/authentication subset passed 19/19. Broad regression remains 67/92 and is not waived; current follow-up is recorded in shop-implementation-map.md.
