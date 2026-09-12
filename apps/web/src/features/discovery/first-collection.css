@@ -3,11 +3,13 @@
   max-width: 361px;
   height: 364px;
   max-height: calc(100dvh - 32px);
+  bottom: 0;
   margin: auto auto 33px;
   padding: 16px;
   border-radius: 32px;
   text-align: center;
   overflow: auto;
+  font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
 }
 .first-collection-sheet::before {
   content: "";
