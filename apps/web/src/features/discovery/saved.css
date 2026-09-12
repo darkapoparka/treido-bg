@@ -40,13 +40,17 @@
   border: 1px solid #d6d8d9;
   border-radius: 20px;
   background: #e1e2e3;
+  aspect-ratio: 1;
 }
+.saved-product .product-media > a,
 .saved-product .product-media > button:not(.save-button) {
   display: block;
   width: 100%;
+  aspect-ratio: 1;
   padding: 0;
 }
 .saved-product .product-media img {
+  display: block;
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
@@ -57,12 +61,17 @@
   font-size: 12px;
   line-height: 14px;
 }
-.saved-product > a,
+.saved-product > .saved-item-title,
 .saved-product > b {
   display: block;
   margin: 2px 4px;
+  padding: 0;
   font-size: 12px;
   line-height: 14px;
+  text-align: left;
+}
+.saved-product > .saved-item-title {
+  max-width: calc(100% - 8px);
 }
 .saved-product strong {
   display: block;
@@ -73,6 +82,56 @@
 }
 .saved-product > b {
   font-weight: 500;
+}
+.saved-variant {
+  display: block;
+  margin: 0 4px 2px;
+  font-size: 12px;
+  line-height: 14px;
+  color: #444;
+}
+.saved-promotion {
+  position: absolute;
+  top: 11px;
+  left: 11px;
+  padding: 2px 7px;
+  border-radius: 12px;
+  background: #5433eb;
+  color: white;
+  font-size: 10px;
+  line-height: 14px;
+}
+.saved-product[data-photo-layout] .product-media {
+  border-color: #e2e3e3;
+  background: #f7f7f7;
+  box-shadow: 0 3px 10px #00000004;
+}
+.saved-product[data-photo-layout="eye"] .product-media {
+  background: #f0f0f0;
+}
+.saved-product[data-photo-layout] .product-media img {
+  position: absolute;
+  object-fit: contain;
+  aspect-ratio: auto;
+  max-height: calc(100% - 20px);
+}
+.saved-product[data-photo-layout="milk"] .product-media img {
+  left: calc(50% - 24px);
+  top: 15px;
+  width: 55px;
+  height: 143px;
+}
+.saved-product[data-photo-layout="eye"] .product-media img {
+  left: calc(50% - 15px);
+  top: 10px;
+  width: 38px;
+  height: 148px;
+}
+.saved-product[data-photo-layout="pink-partial"] .product-media img {
+  left: calc(50% - 16px);
+  top: 20px;
+  width: 36px;
+  height: 91px;
 }
 .saved-product .save-button {
   width: 32px;
@@ -155,7 +214,7 @@
   position: relative;
   flex: 0 0 calc((100% - 8px) / 2);
   width: calc((100% - 8px) / 2);
-  height: 242px;
+  height: 200px;
   border-radius: 14px;
   background: #f2f3f4;
   overflow: hidden;
@@ -296,12 +355,14 @@
   display: flex;
   align-items: center;
 }
-.collection-person > span {
+.collection-person > span,
+.collection-person > img {
   display: grid;
   place-items: center;
   width: 24px;
   height: 24px;
   border-radius: 50%;
+  object-fit: cover;
   background: #bfc2c3;
   color: white;
   font-size: 12px;
@@ -418,15 +479,6 @@
   color: #5433eb;
   font-size: 16px;
   font-weight: 500;
-}
-.saved-partial-product > strong {
-  display: block;
-  margin: 2px 4px;
-  font-size: 12px;
-  line-height: 14px;
-}
-.saved-partial-product .product-media img {
-  object-fit: contain;
 }
 .collection-empty {
   padding: 24px 0;
