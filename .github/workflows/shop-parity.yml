@@ -1,0 +1,153 @@
+name: Shop reference parity
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/web/**"
+      - "packages/contracts/**"
+      - "tests/reference/**"
+      - "scripts/shop-parity/**"
+      - "references/shop/**"
+      - "playwright.reference.config.ts"
+      - "pnpm-lock.yaml"
+      - "package.json"
+      - ".github/workflows/shop-parity.yml"
+  workflow_dispatch:
+    inputs:
+      flows:
+        description: "Frozen flow numbers/ranges; capture is not acceptance"
+        default: "2-13,42,84"
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: shop-reference-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  reference:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+      TURBO_TELEMETRY_DISABLED: "1"
+      SHOP_REFERENCE_PREVIEW: "1"
+      VERCEL_ENV: preview
+      PLAYWRIGHT_CHANNEL: chromium
+      SHOP_PARITY_BASE_URL: http://127.0.0.1:6412
+      PARITY_FLOWS: ${{ inputs.flows || '2-13,42,84' }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .node-version
+      - run: npm install --global pnpm@12.3.4
+      - id: install
+        run: pnpm install --frozen-lockfile
+      - name: Verify frozen reference bytes
+        id: references
+        shell: bash
+        run: |
+          mkdir -p .qa/shop-parity
+          printf '\n.qa/\n' >> .git/info/exclude
+          python3 - <<'PY'
+          import hashlib, json, pathlib
+          root = pathlib.Path('references/shop').resolve()
+          manifest = json.loads((root / 'manifest.json').read_text())
+          checked = {}
+          def verify(value):
+              if isinstance(value, dict):
+                  if 'file' in value and 'sha256' in value:
+                      name = value['file']
+                      file = (root / name).resolve()
+                      if root not in file.parents:
+                          raise RuntimeError('Reference path escapes capture root')
+                      digest = hashlib.sha256(file.read_bytes()).hexdigest()
+                      if digest != value['sha256']:
+                          raise RuntimeError('Reference SHA-256 mismatch: ' + name)
+                      checked[name] = digest
+                  for item in value.values():
+                      verify(item)
+              elif isinstance(value, list):
+                  for item in value:
+                      verify(item)
+          verify(manifest)
+          counts = {'flows': len(manifest['flows']), 'frames': sum(len(f['screens']) for f in manifest['flows']), 'standalone': len(manifest['screens']), 'verifiedFiles': len(checked)}
+          if counts['verifiedFiles'] == 0:
+              raise RuntimeError('No reference media verified')
+          pathlib.Path('.qa/shop-parity/provenance.json').write_text(json.dumps(counts, indent=2))
+          print(json.dumps(counts))
+          PY
+      - name: Install browser
+        id: browser
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Web lint and typecheck
+        id: checks
+        shell: bash
+        run: |
+          pnpm --filter @treido/web lint
+          pnpm --filter @treido/web typecheck
+      - name: Capture exact-commit reference comparisons
+        if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.browser.outcome == 'success' }}
+        shell: bash
+        run: |
+          pnpm --filter @treido/web exec next dev --hostname 127.0.0.1 --port 6412 > "$RUNNER_TEMP/shop-preview.log" 2>&1 &
+          server=$!
+          trap 'kill "$server" 2>/dev/null || true' EXIT
+          ready=0
+          for attempt in $(seq 1 90); do
+            if curl --fail --silent http://127.0.0.1:6412/ > /dev/null; then ready=1; break; fi
+            if ! kill -0 "$server" 2>/dev/null; then cat "$RUNNER_TEMP/shop-preview.log"; exit 1; fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then cat "$RUNNER_TEMP/shop-preview.log"; exit 1; fi
+          node scripts/shop-parity/run.mjs baseline --all --flows "$PARITY_FLOWS" --run "ci-$GITHUB_SHA"
+      - name: Focused Home and navigation interactions
+        if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.browser.outcome == 'success' }}
+        env:
+          REFERENCE_DEV: "1"
+          PLAYWRIGHT_JSON_OUTPUT_NAME: .qa/shop-parity/interactions.json
+        run: pnpm exec playwright test --config playwright.reference.config.ts home-overlays.spec.ts history.spec.ts --reporter=line,json
+      - name: Publish capture summary
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        shell: bash
+        run: |
+          echo "## Shop reference evidence" >> "$GITHUB_STEP_SUMMARY"
+          echo "Evaluated commit: $GITHUB_SHA. Captures and numerical scores are not owner acceptance." >> "$GITHUB_STEP_SUMMARY"
+          report=".qa/shop-parity/runs/ci-$GITHUB_SHA/ranking.md"
+          if [ -f "$report" ]; then cat "$report" >> "$GITHUB_STEP_SUMMARY"; fi
+      - name: Retain reference/live pairs and reports only
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: shop-parity-${{ github.sha }}-${{ github.run_attempt }}
+          retention-days: 7
+          include-hidden-files: true
+          if-no-files-found: error
+          path: |
+            .qa/shop-parity/provenance.json
+            .qa/shop-parity/frame-map.json
+            .qa/shop-parity/interactions.json
+            .qa/shop-parity/runs/ci-${{ github.sha }}/report.json
+            .qa/shop-parity/runs/ci-${{ github.sha }}/ranking.md
+            .qa/shop-parity/runs/ci-${{ github.sha }}/ranking.csv
+            .qa/shop-parity/runs/ci-${{ github.sha }}/**/*.png
+      - name: Numerical diagnostic gate, not visual approval
+        if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.browser.outcome == 'success' }}
+        shell: bash
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const report = JSON.parse(fs.readFileSync(`.qa/shop-parity/runs/ci-${process.env.GITHUB_SHA}/report.json`, 'utf8'));
+          if (report.gitHead !== process.env.GITHUB_SHA) throw new Error('Evidence commit does not match the evaluated commit');
+          const unresolved = report.rows.filter(row => row.status !== 'scored' || row.browserErrors?.length || row.maePct > 1.5 || row.badPixelPct > 8);
+          console.log(`${report.rows.length - unresolved.length}/${report.rows.length} numerical candidates; owner acceptance is separate.`);
+          if (unresolved.length) {
+            console.error('Open frame IDs:', unresolved.map(row => row.id).join(', '));
+            process.exitCode = 1;
+          }
+          JS
