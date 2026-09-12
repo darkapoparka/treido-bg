@@ -147,6 +147,20 @@ export function ProductDetail({
     : bag
       ? "Mesh fabric creates a thick, foamy lather for luxurious washing. Our patented design preserves the life of your bar."
       : product.description;
+  // Flow 17's Shea preview and bag preview are distinct compositions. Preserve
+  // their paragraph breaks and visible excerpts without truncating the full
+  // description or assigning the bag Shea's ingredients (flow 32 changes item).
+  const descriptionPreview = shea
+    ? [
+        "Super-hydrating formula moisturizes your skin (you won’t even need body lotion post-shower!)",
+        "Small plant-derived exfoliants gently exfoliate to reveal softer skin...",
+      ]
+    : bag
+      ? [
+          "Mesh fabric creates a thick, foamy lather for luxurious washing.",
+          "Our patented design preserves the life...",
+        ]
+      : [description];
   const relatedIds = shea
     ? [
         "chocolate-body-bag",
@@ -390,12 +404,16 @@ export function ProductDetail({
           )}
           <section className="pdp-description">
             <h2>Description</h2>
-            <p>
-              {description}
-              <button onClick={() => setDetail("Description")}>
-                Read more
-              </button>
-            </p>
+            {descriptionPreview.map((paragraph, index) => (
+              <p key={paragraph} className={bag && index > 0 ? "mt-4" : undefined}>
+                {paragraph}
+                {index === descriptionPreview.length - 1 && (
+                  <button onClick={() => setDetail("Description")}>
+                    Read more
+                  </button>
+                )}
+              </p>
+            ))}
           </section>
           {(shea || bag) && (
             <section className="pdp-review-preview">
