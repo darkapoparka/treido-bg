@@ -14,7 +14,6 @@ import { formatMoney, type Catalog } from "../catalog/types";
 import {
   FloatingNav,
   IconButton,
-  ProductCard,
   SaveButton,
   Sheet,
   commitSheetQuery,
@@ -31,6 +30,8 @@ import {
   searchStores,
 } from "./search-model";
 import { SearchLoading } from "./search-loading";
+import { RecentSearchItems } from "./search-recent";
+import styles from "./search-entry.module.css";
 import "./search-loading.css";
 
 const capturedCapPhoto = "/api/reference-media/assistant-cap";
@@ -54,6 +55,7 @@ export function Search({
     ...readSearchFilters(params),
   };
   const inputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const state = useDiscovery();
   const [draft, setDraft] = useState(query || initialQuery);
   const [draftQuery, setDraftQuery] = useState(query);
@@ -74,15 +76,38 @@ export function Search({
       if (photo.startsWith("blob:")) URL.revokeObjectURL(photo);
     };
   }, [photo]);
+  useEffect(() => {
+    if (!photo) return;
+    // Focus after the photo chooser has returned its own trigger focus. The
+    // same input remains mounted through both composer layouts.
+    const frame = requestAnimationFrame(() => inputRef.current?.focus());
+    return () => cancelAnimationFrame(frame);
+  }, [photo]);
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    const form = formRef.current;
+    if (!viewport || !form) return;
+    const sync = () => {
+      const inset = focused
+        ? Math.max(0, innerHeight - viewport.height - viewport.offsetTop)
+        : 0;
+      form.style.setProperty("--search-keyboard-inset", `${inset}px`);
+    };
+    sync();
+    viewport.addEventListener("resize", sync);
+    viewport.addEventListener("scroll", sync);
+    return () => {
+      viewport.removeEventListener("resize", sync);
+      viewport.removeEventListener("scroll", sync);
+    };
+  }, [focused]);
 
-  const suggestions = focused && !!draft.trim();
-  const recent = state.viewedProducts.flatMap((id) => {
-    const p = catalog.products.find((p) => p.id === id);
-    return p ? [p] : [];
-  });
+  const suggestions = focused && !!draft.trim() && !photo;
+  const photoEditing = !!photo && focused;
   const history = params.get("view") === "recent";
   const filtered = hasSearchFilters(filters);
   const showResults = !!query.trim() || filtered;
+  const resultsMode = (showResults || pending) && !suggestions && !photo;
   const results = searchProducts(catalog, query, filters, state.followed);
   const stores = searchStores(catalog, query, filters, results).slice(0, 2);
 
@@ -96,6 +121,12 @@ export function Search({
   function cancelEditing() {
     setDraft(query);
     closeSuggestions();
+  }
+  function removePhoto() {
+    setPhoto("");
+    setPhotoError("");
+    setPhotoUnavailable(false);
+    requestAnimationFrame(() => inputRef.current?.focus());
   }
   function submitQuery(value: string) {
     const next = value.trim();
@@ -121,13 +152,15 @@ export function Search({
     setPhoto(URL.createObjectURL(file));
     setPhotos(false);
   }
-  // Keep this input at one tree position through entry, suggestions, pending
-  // navigation and results. The page must not key Search by the query either.
+  // Input identity is stable through text/photo entry, suggestions, pending
+  // navigation and results. Keyboard focus must not jump to a replacement node.
   const searchForm = (
     <form
-      className={`search-form ${(showResults || pending) && !suggestions ? "top-search" : "search-composer"}`}
+      ref={formRef}
+      className={`search-form ${resultsMode ? "top-search" : "search-composer"} ${styles.composer} ${photo ? styles.photoComposer : ""}`}
       onSubmit={(e) => {
         e.preventDefault();
+        if (!draft.trim() && !photo) return;
         closeSuggestions();
         if (photo && photo !== capturedCapPhoto) {
           setPhotoUnavailable(true);
@@ -138,7 +171,7 @@ export function Search({
         } else submitQuery(draft);
       }}
     >
-      {showResults || pending ? (
+      {resultsMode ? (
         <Icon name="search" />
       ) : (
         <IconButton
@@ -150,14 +183,8 @@ export function Search({
           }}
         />
       )}
-      {photo && (
-        <img
-          className="search-photo-preview"
-          src={photo}
-          alt="Selected photo"
-        />
-      )}
       <input
+        key="query"
         ref={inputRef}
         aria-label="Search products"
         placeholder="Search or ask anything"
@@ -173,24 +200,52 @@ export function Search({
           }
         }}
       />
-      {(draft || photo) && !suggestions && (
+      {photo && (
+        <div className={styles.photoChip}>
+          <img src={photo} alt="Selected photo" />
+          <button
+            type="button"
+            aria-label="Remove selected photo"
+            onClick={removePhoto}
+          >
+            <Icon name="close" />
+          </button>
+        </div>
+      )}
+      {draft && !suggestions && !photo && (
         <IconButton
           icon="close"
           label="Clear search"
           onClick={() => submitQuery("")}
         />
       )}
-      <button className="icon-button" aria-label="Submit search" type="submit">
+      <button
+        className="icon-button"
+        aria-label="Submit search"
+        type="submit"
+        disabled={!draft.trim() && !photo}
+      >
         <Icon name="arrow" />
       </button>
     </form>
   );
   return (
     <ShopSurface
-      className={`shop-page search-page ${suggestions ? "search-has-suggestions" : ""} ${history ? "search-history" : ""}`}
+      className={`shop-page search-page ${styles.page} ${suggestions ? "search-has-suggestions" : ""} ${history ? "search-history" : ""} ${photoEditing ? styles.photoEditing : ""} ${focused ? styles.keyboard : ""}`}
     >
       {searchForm}
-      {suggestions ? (
+      {photoEditing && (
+        <IconButton
+          icon="close"
+          label="Cancel photo search"
+          className={styles.photoClose}
+          onClick={() => {
+            setPhoto("");
+            cancelEditing();
+          }}
+        />
+      )}
+      {photoEditing && draft.trim() ? null : suggestions ? (
         <section className="search-suggestions-surface">
           <header>
             <h2>Suggestions</h2>
@@ -262,38 +317,7 @@ export function Search({
       ) : history ? (
         <>
           <h1>Recently viewed</h1>
-          <div className="product-grid recent-history-grid">
-            {state.viewedItems.map((item) => {
-              const product =
-                item.kind === "product"
-                  ? catalog.products.find((p) => p.id === item.id)
-                  : undefined;
-              const store =
-                item.kind === "store"
-                  ? catalog.stores.find((s) => s.id === item.id)
-                  : undefined;
-              return (
-                <div className="recent-history-item" key={item.kind + item.id}>
-                  {product ? (
-                    <ProductCard product={product} mediaOnly showPromotion />
-                  ) : store ? (
-                    <Link
-                      className="recent-history-store"
-                      href={`/stores/${store.id}`}
-                    >
-                      <strong>{store.name}</strong>
-                      {store.logo && <img src={store.logo} alt="" />}
-                    </Link>
-                  ) : null}
-                  <IconButton
-                    icon="close"
-                    label={`Remove ${product?.title ?? store?.name} from recently viewed`}
-                    onClick={() => state.removeViewed(item.kind, item.id)}
-                  />
-                </div>
-              );
-            })}
-          </div>
+          <RecentSearchItems catalog={catalog} expanded />
         </>
       ) : showResults ? (
         <>
@@ -425,11 +449,7 @@ export function Search({
               Recently viewed <Icon name="back" />
             </h2>
           </Link>
-          <div className="product-rail">
-            {recent.map((p) => (
-              <ProductCard product={p} compact key={p.id} />
-            ))}
-          </div>
+          <RecentSearchItems catalog={catalog} />
           <section className="keep-shopping">
             <h2>Keep shopping ›</h2>
             <Link href="/assistant">
@@ -444,12 +464,19 @@ export function Search({
           </section>
         </>
       )}
-      <Sheet open={photos} title="Add photos" onClose={() => setPhotos(false)}>
+      <Sheet
+        open={photos}
+        title="Add photos"
+        className={styles.photoSheet}
+        onClose={() => setPhotos(false)}
+      >
         <label className="account-row">
+          <Icon name="photo-library" />
           Choose from library
           <input type="file" accept="image/*" onChange={selectPhoto} />
         </label>
         <label className="account-row">
+          <Icon name="camera" />
           Take a photo
           <input
             type="file"
@@ -463,7 +490,7 @@ export function Search({
           onClick={() => {
             setPhotoError("");
             setPhoto(capturedCapPhoto);
-            setDraft("Find me a baseball cap like this");
+            setDraft("");
             setPhotos(false);
           }}
         >
@@ -486,13 +513,7 @@ export function Search({
           answer, not a result for your photo.
         </p>
         <div className="sheet-actions">
-          <button
-            className="pill"
-            onClick={() => {
-              setPhoto("");
-              setPhotoUnavailable(false);
-            }}
-          >
+          <button className="pill" onClick={removePhoto}>
             Remove photo
           </button>
           <Link className="primary" href="/assistant?example=photo">
@@ -500,7 +521,9 @@ export function Search({
           </Link>
         </div>
       </Sheet>
-      {!suggestions && <FloatingNav back={showResults || history || pending} />}
+      {!suggestions && !photoEditing && !focused && (
+        <FloatingNav back={showResults || history || pending} />
+      )}
       <Filters
         open={filter}
         onClose={() => setFilter(false)}
