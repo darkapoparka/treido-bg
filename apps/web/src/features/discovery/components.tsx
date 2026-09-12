@@ -151,12 +151,21 @@ export function ProductCard({
   return (
     <article className={`product-card ${compact ? "compact" : ""}`}>
       <div className="product-media">
-        <Link href={`/products/${product.id}`}>
-          <img
-            className={reported ? "product-reported-media" : ""}
-            src={product.images[0]}
-            alt={product.title}
-          />
+        <Link
+          href={`/products/${product.id}`}
+          aria-label={product.images[0] ? undefined : product.title}
+        >
+          {product.images[0] ? (
+            <img
+              className={reported ? "product-reported-media" : ""}
+              src={product.images[0]}
+              alt={product.title}
+            />
+          ) : (
+            <span className="sr-only">
+              Product photograph was not included in the reference.
+            </span>
+          )}
         </Link>
         {reported && (
           <span className="product-reported-mark">

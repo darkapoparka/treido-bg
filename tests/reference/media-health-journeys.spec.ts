@@ -31,7 +31,9 @@ test("reference media and hydration remain available through the canonical route
       key,
       status: response.status(),
       contentType: response.headers()["content-type"],
-      errorBody: response.ok() ? undefined : (await response.text()).slice(0, 512),
+      errorBody: response.ok()
+        ? undefined
+        : (await response.text()).slice(0, 512),
     });
   }
   await page.goto("/explore");
@@ -54,7 +56,11 @@ test("reference media and hydration remain available through the canonical route
   await mkdir(".qa/shop-parity/media-review", { recursive: true });
   await writeFile(
     ".qa/shop-parity/media-review/report.json",
-    JSON.stringify({ commit: process.env.GITHUB_SHA, media, failures, errors, images }, null, 2),
+    JSON.stringify(
+      { commit: process.env.GITHUB_SHA, media, failures, errors, images },
+      null,
+      2,
+    ),
   );
   for (const item of media)
     expect.soft(item, JSON.stringify(item)).toMatchObject({ status: 200 });

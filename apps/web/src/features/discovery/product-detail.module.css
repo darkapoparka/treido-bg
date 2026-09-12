@@ -1,0 +1,92 @@
+.detailsOnly :global(.product-details) {
+  margin-top: 12px;
+}
+.detailsOnly :global(.product-heading h1) {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+}
+.detailsOnly :global(.product-heading > .icon-button) {
+  top: -8px;
+}
+.detailsOnly :global(.review-link) {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 0;
+  min-height: 20px;
+}
+.detailsOnly :global(.review-rating-stars) {
+  --review-star-size: 16px;
+  color: #ddc04d;
+}
+.stockNotice {
+  font-size: 14px;
+  line-height: 20px;
+  margin-top: 16px;
+}
+.stockNotice strong {
+  font-weight: 600;
+}
+.detailsOnly :global(.product-price) {
+  margin-top: 12px;
+  line-height: 26px;
+}
+.markdown {
+  font-size: 12px;
+  font-weight: 400;
+}
+.arrival {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 16px;
+}
+.detailsOnly :global(.product-deal) {
+  margin-top: 10px;
+  box-shadow: 0 4px 16px #00000005;
+}
+.detailsOnly :global(.product-deal strong) {
+  color: #090909;
+}
+.detailsOnly :global(.variants) {
+  margin-top: 18px;
+  gap: 8px;
+}
+.detailsOnly :global(.variants legend) {
+  font-size: 12px;
+  line-height: 16px;
+  margin-bottom: 6px;
+}
+.detailsOnly :global(.variants .pill) {
+  padding: 8px 16px;
+  min-width: 44px;
+}
+.detailsOnly :global(.variants .pill[aria-pressed="true"]) {
+  background: white;
+  color: #090909;
+  border: 1.5px solid #090909;
+}
+.detailsOnly :global(.variants .pill:disabled) {
+  opacity: 1;
+  color: #96999b;
+  background: #eef0f1;
+  text-decoration: line-through;
+  border-color: #d5d7d8;
+}
+.detailsOnly :global(.quantity) {
+  margin-top: 16px;
+}
+.detailsOnly :global(.pdp-purchase-buttons) {
+  margin-top: 28px;
+}
+.unrecordedReviews {
+  margin-top: 40px;
+}
+.unrecordedReviews h2 {
+  font-size: 18px;
+}
+.unrecordedReviews p {
+  font-size: 12px;
+  color: #767676;
+  margin-top: 8px;
+}

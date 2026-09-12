@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { ProductOptions } from "./reviews";
+import { ReviewStars } from "./review-feedback";
 import { moveProductPhoto, productPhotoSwipe } from "./product-gallery";
 import { ProductAdditionFlight, useProductAddition } from "./product-addition";
 import { ProductReviewPreview } from "./product-review-preview";
@@ -24,6 +25,7 @@ import {
 import { Icon } from "./icons";
 import { CartOverlay as Cart, CartOffer } from "../commerce/checkout";
 import { useDiscovery } from "./state";
+import styles from "./product-detail.module.css";
 import "./product.css";
 export { CartOverlay as Cart } from "../commerce/checkout";
 export function ProductDetail({
@@ -116,6 +118,12 @@ export function ProductDetail({
   function buy() {
     if (!selected?.availableQuantity) return;
     add(false);
+    if (!store) {
+      // An unidentified seller must not enter another seller's captured checkout.
+      // Product selection and cart editing still work without a provider call.
+      setDetail("Checkout preview");
+      return;
+    }
     // Only an owned overlay entry should be replaced. Ordinary Buy now must
     // keep the product in browser history for checkout cancellation.
     (consumeSheetHistory() ? router.replace : router.push)(
@@ -207,12 +215,14 @@ export function ProductDetail({
           },
         ];
       })
-    : catalog.products
-        .filter((p) => p.storeId === product.storeId && p.id !== product.id)
-        .slice(0, 4);
+    : store
+      ? catalog.products
+          .filter((p) => p.storeId === product.storeId && p.id !== product.id)
+          .slice(0, 4)
+      : [];
   return (
     <ShopSurface
-      className={`shop-page product-page ${cart ? "cart-visible" : ""}`}
+      className={`shop-page product-page ${cart ? "cart-visible" : ""} ${photos.length ? "" : styles.detailsOnly}`}
     >
       <ProductAdditionFlight flight={addition.flight} />
       <span className="sr-only" aria-live="polite">
@@ -225,17 +235,19 @@ export function ProductDetail({
       </span>
       <div className="product-underlay">
         {store && <StoreRow store={store} onMore={() => setOptions(true)} />}
-        <div className="product-gallery" ref={galleryRail}>
-          {photos.map((src, i) => (
-            <button
-              key={src}
-              onClick={() => setGallery(i)}
-              aria-label={`View product image ${i + 1}`}
-            >
-              <img src={src} alt={`${product.title}, image ${i + 1}`} />
-            </button>
-          ))}
-        </div>
+        {photos.length > 0 && (
+          <div className="product-gallery" ref={galleryRail}>
+            {photos.map((src, i) => (
+              <button
+                key={src}
+                onClick={() => setGallery(i)}
+                aria-label={`View product image ${i + 1}`}
+              >
+                <img src={src} alt={`${product.title}, image ${i + 1}`} />
+              </button>
+            ))}
+          </div>
+        )}
         <section className="product-details">
           <div className="product-heading">
             <h1>{product.title}</h1>
@@ -268,13 +280,28 @@ export function ProductDetail({
               className="rating review-link"
               onClick={() => router.push(`/products/${product.id}/reviews`)}
             >
-              <span>★★★★★</span> {product.ratingCount} ratings ›
+              <ReviewStars
+                rating={Math.round(product.rating * 2) / 2}
+                label={`${product.rating} out of 5 stars`}
+              />{" "}
+              {product.ratingCount} ratings ›
             </button>
+          )}
+          {product.detail?.lowStock && (
+            <p className={styles.stockNotice}>
+              <strong>Almost gone.</strong> This item is low in stock.
+            </p>
           )}
           <p className="product-price">
             {formatMoney(price)}{" "}
             {product.compareAt && <del>{formatMoney(product.compareAt)}</del>}
+            {product.detail?.markdownLabel && (
+              <>{" "}<span className={styles.markdown}>{product.detail.markdownLabel}</span></>
+            )}
           </p>
+          {product.detail?.arrivalLabel && (
+            <p className={styles.arrival}>{product.detail.arrivalLabel}</p>
+          )}
           {(shea || bag || product.promotion) && (
             <button
               className="product-deal"
@@ -287,7 +314,7 @@ export function ProductDetail({
                     ? "Save $20 when you spend $50"
                     : product.promotion}
                 </strong>
-                <span>Exclusive to Shop</span>
+                <span>{product.detail?.promotionTerms ?? "Exclusive to Shop"}</span>
               </span>
             </button>
           )}
@@ -452,11 +479,12 @@ export function ProductDetail({
             {descriptionPreview.map((paragraph, index) => (
               <p key={paragraph}>
                 {paragraph}
-                {index === descriptionPreview.length - 1 && (
-                  <button onClick={() => setDetail("Description")}>
-                    Read more
-                  </button>
-                )}
+                {!product.detail?.completeDescription &&
+                  index === descriptionPreview.length - 1 && (
+                    <button onClick={() => setDetail("Description")}>
+                      Read more
+                    </button>
+                  )}
               </p>
             ))}
           </section>
@@ -492,37 +520,48 @@ export function ProductDetail({
               }
             />
           )}
-          <section className="pdp-delivery">
-            <h2>Delivery & Returns</h2>
-            <button onClick={() => setDetail("Ship to")}>
-              <Icon name="location" />
-              <span>
-                Ship to <b>{postalCode}</b>
-              </span>
-              <Icon name="chevron" style={{ transform: "rotate(90deg)" }} />
-            </button>
-            <p>
-              <Icon name="truck" />
-              Shipping calculated at checkout
-            </p>
-            {(shea || bag) && (
+          {!store && product.rating !== undefined && (
+            <section className={styles.unrecordedReviews}>
+              <h2>Reviews</h2>
               <p>
-                <Icon name="calendar" />
-                Arrives as soon as Sun, Aug 2
+                This reference includes {product.ratingCount} ratings. Individual
+                review text was not captured for this product.
               </p>
-            )}
-            <div>
-              <button onClick={() => setDetail("Return policy")}>
-                Return policy
+            </section>
+          )}
+          {store && (
+            <section className="pdp-delivery">
+              <h2>Delivery & Returns</h2>
+              <button onClick={() => setDetail("Ship to")}>
+                <Icon name="location" />
+                <span>
+                  Ship to <b>{postalCode}</b>
+                </span>
+                <Icon name="chevron" style={{ transform: "rotate(90deg)" }} />
               </button>
-              <button onClick={() => setDetail("Shipping policy")}>
-                Shipping policy
-              </button>
-            </div>
-            <Link href={`/stores/${product.storeId}`}>
-              <Icon name="link" /> Visit {store?.name}
-            </Link>
-          </section>
+              <p>
+                <Icon name="truck" />
+                Shipping calculated at checkout
+              </p>
+              {(shea || bag) && (
+                <p>
+                  <Icon name="calendar" />
+                  Arrives as soon as Sun, Aug 2
+                </p>
+              )}
+              <div>
+                <button onClick={() => setDetail("Return policy")}>
+                  Return policy
+                </button>
+                <button onClick={() => setDetail("Shipping policy")}>
+                  Shipping policy
+                </button>
+              </div>
+              <Link href={`/stores/${product.storeId}`}>
+                <Icon name="link" /> Visit {store.name}
+              </Link>
+            </section>
+          )}
           {store && (
             <article
               className={`pdp-store-card ${shea || bag ? "pdp-kitsch-card" : ""}`}
@@ -555,27 +594,33 @@ export function ProductDetail({
               </button>
             </article>
           )}
-          <h2 className="pdp-related-heading">You might also like</h2>
-          <div className="product-grid">
-            {related.map((p) => (
-              <ProductCard
-                key={p.id}
-                product={p}
-                showPromotion={shea}
-                storeName={store?.name}
-              />
-            ))}
-          </div>
+          {related.length > 0 && (
+            <>
+              <h2 className="pdp-related-heading">You might also like</h2>
+              <div className="product-grid">
+                {related.map((p) => (
+                  <ProductCard
+                    key={p.id}
+                    product={p}
+                    showPromotion={shea}
+                    storeName={store?.name}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </section>
       </div>
       <FloatingNav back cart={state.cart.length ? openCart : undefined} />
       <Cart catalog={catalog} open={cart} onClose={() => setCart(false)} />
-      <CartOffer
-        catalog={catalog}
-        storeId={product.storeId}
-        open={offer}
-        onClose={() => setOffer(false)}
-      />
+      {store && (
+        <CartOffer
+          catalog={catalog}
+          storeId={product.storeId}
+          open={offer}
+          onClose={() => setOffer(false)}
+        />
+      )}
       <ProductOptions
         productId={product.id}
         storeId={product.storeId}
@@ -698,7 +743,11 @@ export function ProductDetail({
         ) : (
           <>
             <button className="picker-row" onClick={() => saveTo()}>
-              <img src={photos[0]} alt="" />
+              {photos[0] ? (
+                <img src={photos[0]} alt="" />
+              ) : (
+                <div className="picker-collection-preview" aria-hidden="true" />
+              )}
               <span>
                 Saved <Icon name="lock" />
               </span>
@@ -715,7 +764,7 @@ export function ProductDetail({
                 <div className="picker-collection-preview" aria-hidden="true">
                   {c.productIds.slice(0, 4).flatMap((id) => {
                     const item = catalog.products.find((p) => p.id === id);
-                    return item
+                    return item?.images[0]
                       ? [<img key={id} src={item.images[0]} alt="" />]
                       : [];
                   })}
@@ -742,7 +791,7 @@ export function ProductDetail({
       </Sheet>
       {toast && (
         <div className="product-saved-toast" role="status">
-          <img src={photos[0]} alt="" />
+          {photos[0] && <img src={photos[0]} alt="" />}
           <span>
             <strong>Item saved</strong>
             <small>{product.title}</small>
@@ -808,9 +857,27 @@ export function ProductDetail({
             </>
           ) : detail === "Offer details" ? (
             <p>
-              Save $20 when you spend $50. Exclusive to Shop. This is a
-              reference offer.
+              {shea || bag
+                ? "Save $20 when you spend $50. Exclusive to Shop. This is a reference offer."
+                : `${product.promotion ?? "No offer was captured."} ${product.detail?.promotionTerms ?? ""}`}
             </p>
+          ) : detail === "Checkout preview" ? (
+            <>
+              <p>
+                No seller or checkout details were included for this item.
+                Nothing will be charged. Your selected size and quantity are
+                available in the local cart.
+              </p>
+              <button
+                className="primary"
+                onClick={() => {
+                  setDetail("");
+                  setCart(true);
+                }}
+              >
+                View cart
+              </button>
+            </>
           ) : detail === "Ship to" ? (
             <form
               onSubmit={(e) => {
@@ -834,9 +901,9 @@ export function ProductDetail({
               Subscription selection is available in this preview. Recurring
               checkout is not connected.
             </p>
-          ) : detail.includes("policy") ? (
+          ) : detail.includes("policy") && store ? (
             <Link href={`/stores/${product.storeId}/info`}>
-              View {store?.name} policies
+              View {store.name} policies
             </Link>
           ) : (
             <p>{`/products/${product.id}`}</p>

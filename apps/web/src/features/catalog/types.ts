@@ -20,6 +20,13 @@ export type Product = Readonly<{
   rating?: number;
   ratingCount: string;
   promotion?: string;
+  detail?: Readonly<{
+    lowStock?: boolean;
+    arrivalLabel?: string;
+    promotionTerms?: string;
+    markdownLabel?: string;
+    completeDescription?: boolean;
+  }>;
   /** Order in the captured new-products shelf; not a release date. */
   sourceNewestRank?: number;
   description: string;

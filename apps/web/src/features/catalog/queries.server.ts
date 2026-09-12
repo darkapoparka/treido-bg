@@ -22,11 +22,13 @@ export async function readCatalog(): Promise<Catalog> {
     { followingProducts },
     { savedProducts, savedStores, savedListings },
     { storeProducts, storefrontProjection },
+    { detailProducts },
   ] = await Promise.all([
     import("./reference/catalog"),
     import("./reference/following-fixtures"),
     import("./reference/saved-fixtures"),
     import("./reference/store-fixtures"),
+    import("./reference/detail-fixtures"),
   ]);
   const scenarioName = (await cookies()).get(referenceScenarioCookie)?.value;
   const scenario = resolveReferenceScenario(scenarioName);
@@ -37,6 +39,7 @@ export async function readCatalog(): Promise<Catalog> {
       ...followingProducts,
       ...savedProducts,
       ...storeProducts,
+      ...detailProducts,
     ],
     stores: storefrontProjection(
       [...referenceCatalog.stores, ...savedStores],

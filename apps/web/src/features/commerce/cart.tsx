@@ -38,7 +38,11 @@ export function CartContents({
     });
   const resolved = resolve(state.cart),
     later = resolve(state.later);
-  const stores = [...new Set(resolved.map((l) => l.product.storeId))];
+  // Missing seller identities are not evidence that unrelated items share a
+  // merchant. Keep each unidentified product in its own local cart group.
+  const groupKey = (product: Catalog["products"][number]) =>
+    product.storeId || `uncaptured:${product.id}`;
+  const stores = [...new Set(resolved.map((l) => groupKey(l.product)))];
   return (
     <>
       {!resolved.length ? (
@@ -55,7 +59,7 @@ export function CartContents({
         </div>
       ) : (
         stores.map((storeId) => {
-          const lines = resolved.filter((l) => l.product.storeId === storeId),
+          const lines = resolved.filter((l) => groupKey(l.product) === storeId),
             store = catalog.stores.find((s) => s.id === storeId),
             total = lines.reduce(
               (n, l) =>
@@ -67,10 +71,12 @@ export function CartContents({
               <header>
                 {store?.logo && <img src={store.logo} alt="" />}
                 <div>
-                  <strong>{store?.name}</strong>
-                  <p>
-                    {store?.rating} ★ ({store?.ratingCount})
-                  </p>
+                  <strong>{store?.name ?? "Shop information not captured"}</strong>
+                  {store?.rating !== undefined && (
+                    <p>
+                      {store.rating} ★ ({store.ratingCount})
+                    </p>
+                  )}
                 </div>
               </header>
               {storeId === "kitsch" &&
@@ -85,7 +91,7 @@ export function CartContents({
                   className="commerce-line"
                   key={`${l.productId}-${l.variantId}`}
                 >
-                  <img src={l.product.images[0]} alt="" />
+                  {l.product.images[0] && <img src={l.product.images[0]} alt="" />}
                   <div>
                     <div className="cart-line-title">
                       <Link href={`/products/${l.productId}`}>
@@ -159,7 +165,7 @@ export function CartContents({
                   </div>
                 </article>
               ))}
-              {onOffer && (
+              {onOffer && storeId === "kitsch" && (
                 <button
                   className="cart-offer-link"
                   onClick={() => onOffer(storeId)}
@@ -181,13 +187,20 @@ export function CartContents({
                   {formatMoney({ amount: total, currency: "USD" })}
                 </strong>
               </div>
-              <Link
-                onClick={onContinue}
-                className="primary form-submit"
-                href={`/checkout?store=${encodeURIComponent(storeId)}`}
-              >
-                Continue to checkout
-              </Link>
+              {store ? (
+                <Link
+                  onClick={onContinue}
+                  className="primary form-submit"
+                  href={`/checkout?store=${encodeURIComponent(storeId)}`}
+                >
+                  Continue to checkout
+                </Link>
+              ) : (
+                <p className="form-note">
+                  Checkout details were not captured for this item. Nothing will
+                  be charged.
+                </p>
+              )}
             </section>
           );
         })
@@ -200,7 +213,7 @@ export function CartContents({
               className="commerce-line"
               key={`${l.productId}-${l.variantId}`}
             >
-              <img src={l.product.images[0]} alt="" />
+              {l.product.images[0] && <img src={l.product.images[0]} alt="" />}
               <div>
                 <div className="cart-line-title">
                   <strong>{l.product.title}</strong>

@@ -16,7 +16,9 @@ function decode(raw: string, fallback: string): string[] {
     if (raw.length > 2048) return decode(fallback, "[]");
     const value: unknown = JSON.parse(raw);
     if (!Array.isArray(value)) return decode(fallback, "[]");
-    return [...new Set(value)].filter((id): id is string => typeof id === "string" && !!findMini(id));
+    return [...new Set(value)].filter(
+      (id): id is string => typeof id === "string" && !!findMini(id),
+    );
   } catch {
     return raw === fallback ? [] : decode(fallback, "[]");
   }
@@ -43,10 +45,7 @@ export function useMiniHistory(initial: readonly string[] = empty) {
     }
   }
   const raw = useSyncExternalStore(subscribe, snapshot, () => fallback);
-  const visitedMinis = useMemo(() => decode(raw, fallback), [
-    raw,
-    fallback,
-  ]);
+  const visitedMinis = useMemo(() => decode(raw, fallback), [raw, fallback]);
   return {
     visitedMinis,
     visitMini(id: string) {

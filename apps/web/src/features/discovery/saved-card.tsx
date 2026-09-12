@@ -24,8 +24,12 @@ export function SavedCard({
     product.id.startsWith("idea-") ||
     product.id === "rice-bundle" ||
     product.id === "argan-liquid-combo";
-  const photo = (
+  const photo = product.images[0] ? (
     <img src={product.images[0]} alt={onSelect ? "" : product.title} />
+  ) : (
+    <span className="sr-only">
+      Product photograph was not included in the reference.
+    </span>
   );
   const title = <strong>{product.title}</strong>;
   return (
@@ -54,7 +58,12 @@ export function SavedCard({
             {photo}
           </button>
         ) : (
-          <Link href={`/products/${product.id}`}>{photo}</Link>
+          <Link
+            href={`/products/${product.id}`}
+            aria-label={product.images[0] ? undefined : product.title}
+          >
+            {photo}
+          </Link>
         )}
         {product.promotion && (
           <span className="saved-promotion">{product.promotion}</span>
