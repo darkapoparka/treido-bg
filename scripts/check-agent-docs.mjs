@@ -15,6 +15,42 @@ const tracked = execFileSync(
   { cwd: root, encoding: "utf8" },
 );
 const files = [...new Set(tracked.split("\0").filter(Boolean))];
+const requiredDocs = [
+  "AGENTS.md",
+  "product.md",
+  "web.md",
+  "native.md",
+  "app.md",
+  "admin.md",
+  "ai.md",
+  "design.md",
+  "style-guide.md",
+  "architecture.md",
+  "verification.md",
+  "techstack.md",
+  "tasks.md",
+  "docs/README.md",
+  "docs/STATUS.md",
+  "docs/agents/codex.md",
+  "docs/agents/skills.md",
+];
+for (const file of requiredDocs) {
+  assert(files.includes(file), `Missing current documentation owner: ${file}`);
+  assert(text(file).trim().length > 0, `Empty documentation owner: ${file}`);
+}
+const retiredGuides = [
+  "parallel-execution.md",
+  "parallel-prompts.md",
+  "docs/parity/lane-a-account.md",
+  "docs/parity/lane-b-commerce.md",
+  "docs/parity/lane-c-discovery.md",
+];
+for (const file of retiredGuides) {
+  assert(
+    !files.includes(file) && !fs.existsSync(path.join(root, file)),
+    `Retired active guide reintroduced: ${file}; use docs/README.md retirement rules`,
+  );
+}
 const upstream = JSON.parse(text("docs/agents/upstream-skills.lock.json"));
 const isVendor = (p) =>
   upstream.skills.some((name) => p.startsWith(`.agents/skills/${name}/`));
@@ -65,10 +101,21 @@ for (const file of skillFiles) {
   assert(!names.has(name), `Duplicate repo skill name: ${name}`);
   names.add(name);
 }
+const projectSkills = [
+  "treido-shop-parity",
+  "treido-food-commerce",
+  "treido-merchant-cms",
+  "treido-ai-quality",
+  "treido-session",
+];
+const expectedSkills = new Set([...upstream.skills, ...projectSkills]);
 assert(
-  names.size === upstream.skills.length + 5,
+  names.size === expectedSkills.size,
   "Review expected selected skill inventory",
 );
+for (const name of expectedSkills) {
+  assert(names.has(name), `Missing selected repository skill: ${name}`);
+}
 assert(
   Buffer.byteLength(text("AGENTS.md")) <= 8192,
   "Root AGENTS exceeded the project routing budget; extract task-specific detail",
@@ -113,5 +160,8 @@ console.log(
   `Docs checked: ${markdown.length} Markdown files, ${links} relative links, ${names.size} unique skills, 14 stable tasks, ${oldIds.size} retained requirement IDs, ${Object.keys(archive.files).length} intact historical snapshots.`,
 );
 console.log(
-  "Structural/integrity checks only; not UI, service, source-acceptance or release proof.",
+  `Current setup: ${requiredDocs.length} documentation owners present; ${retiredGuides.length} retired active guides absent; selected skill names verified.`,
+);
+console.log(
+  "Structural/integrity checks only; not client skill discovery, MCP connectivity, UI, service, source-acceptance or release proof.",
 );
