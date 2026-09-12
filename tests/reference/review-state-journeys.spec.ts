@@ -3,14 +3,17 @@ import { useReferenceScenario } from "./helpers";
 
 const product = "/products/shea-butter/reviews";
 const store = "/stores/kitsch/reviews";
-const row = (page: Page, id: string) => page.locator(`[data-review-id="${id}"]`);
+const row = (page: Page, id: string) =>
+  page.locator(`[data-review-id="${id}"]`);
 const button = (page: Page, name: string) =>
   page.getByRole("button", { name, exact: true });
 
 async function open(page: Page, path: string) {
   await useReferenceScenario(page, "home-welcome");
   await page.goto(path);
-  await expect(page.locator('[data-shop-interactive="true"]').first()).toBeAttached();
+  await expect(
+    page.locator('[data-shop-interactive="true"]').first(),
+  ).toBeAttached();
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
 }
 
@@ -82,7 +85,9 @@ test("review reporting validates a reason, cancels without a mark, and preserves
   await expect(wes.locator(".review-helpful")).toBeDisabled();
   await expect(wes.getByRole("button", { name: "Read less" })).toBeVisible();
   await expect(options).toBeFocused();
-  await page.screenshot({ path: test.info().outputPath("review-reported.png") });
+  await page.screenshot({
+    path: test.info().outputPath("review-reported.png"),
+  });
   await page.getByRole("link", { name: "Close reviews", exact: true }).click();
   await expect(page).toHaveURL(/\/products\/shea-butter$/);
   await page.goBack();
@@ -100,7 +105,9 @@ test("store review filters recover from empty results and retain scoped helpful 
   await first.getByRole("button", { name: "Helpful", exact: true }).click();
   await button(page, "Rating").click();
   await button(page, "4 stars").click();
-  await expect(page.getByRole("heading", { name: "No matching reviews" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "No matching reviews" }),
+  ).toBeVisible();
   await button(page, "Clear filters").click();
   await expect(page.locator(".store-review-list article")).toHaveCount(3);
   await button(page, "Filter reviews").click();
@@ -119,10 +126,9 @@ test("store review filters recover from empty results and retain scoped helpful 
   await button(page, "Filter reviews").click();
   await page.getByRole("searchbox", { name: "Search reviews" }).fill("");
   await button(page, "Done").click();
-  await expect(page.locator(".store-review-list article").first()).toHaveAttribute(
-    "data-review-id",
-    "store-review-1",
-  );
+  await expect(
+    page.locator(".store-review-list article").first(),
+  ).toHaveAttribute("data-review-id", "store-review-1");
   await expect(first.locator(".review-helpful")).toHaveAttribute(
     "aria-pressed",
     "true",
@@ -130,7 +136,9 @@ test("store review filters recover from empty results and retain scoped helpful 
   await page.getByRole("link", { name: "Close reviews", exact: true }).click();
   await page.getByRole("link", { name: "Shop all", exact: true }).click();
   await page.locator('a[href="/products/shea-butter"]').first().click();
-  await page.getByRole("link", { name: "Read all reviews", exact: true }).click();
+  await page
+    .getByRole("link", { name: "Read all reviews", exact: true })
+    .click();
   await expect(row(page, "wes").locator(".review-helpful")).toHaveAttribute(
     "aria-pressed",
     "false",
@@ -151,7 +159,9 @@ test("all report reasons and closing controls remain usable at 320, 393 and 430 
     await expect(reason).toBeChecked();
     await expect(button(page, "Report")).toBeEnabled();
     expect(
-      await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
     ).toBe(true);
     await button(page, "Cancel").click();
     await expect(page.getByRole("dialog")).not.toBeVisible();
