@@ -3,6 +3,7 @@ export type Collection = {
   name: string;
   visibility: "Private" | "Public";
   productIds: string[];
+  collaborationPromptDismissed?: boolean;
 };
 
 export type SavedCollectionsState = {
