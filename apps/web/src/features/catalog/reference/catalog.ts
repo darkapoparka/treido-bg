@@ -220,6 +220,15 @@ export const referenceCatalog: Catalog = {
     },
   ],
   products: [
+    // Flow 10 / 002 exposes the Jojoba title and $14.00 beneath the translucent
+    // dock. The original photograph is already provenance-verified. Ratings,
+    // detailed description and real inventory are not supplied by that frame.
+    product({
+      id: "idea-jojoba",
+      title: "Jojoba Bead Exfoliating Body Wash Bar",
+      images: [image("idea-jojoba")],
+      price: { amount: 1400, currency: "USD" },
+    }),
     // Title/price from frozen collection flow 11 / 002. The full liquid-pair
     // original is independently recorded in product-media-provenance.json.
     product({
