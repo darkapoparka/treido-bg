@@ -33,6 +33,7 @@ function SavedCard({
   return (
     <article
       className={`saved-product ${onSelect ? "saved-choosing" : ""}`}
+      data-product-id={product.id}
       data-original-photo={product.id.startsWith("idea-") ? "true" : undefined}
     >
       <div className="product-media">
@@ -87,7 +88,6 @@ export function Saved({ catalog }: { catalog: Catalog }) {
   const [visibility, setVisibility] = useState<"Private" | "Public">("Private");
   const [notice, setNotice] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
-  const [dismissedInvites, setDismissedInvites] = useState<string[]>([]);
   const editorRef = useRef<HTMLInputElement>(null);
   const submitting = useRef(false);
   const selectionScroll = useRef<number | null>(null);
@@ -107,6 +107,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
     "idea-rosemary-bundle",
     "idea-purple-bundle",
     "idea-rosemary-liquid",
+    "idea-jojoba",
   ]);
   const selectionProducts =
     panel === "More ideas" ? ideas : fromIds(state.saved);
@@ -341,7 +342,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
             )}
           {collection &&
             !addMode &&
-            (dismissedInvites.includes(collection.id) ? (
+            (collection.collaborationPromptDismissed ? (
               <button
                 className="invite-collaborators"
                 onClick={() => setPanel("Invite collaborators")}
@@ -358,7 +359,9 @@ export function Saved({ catalog }: { catalog: Catalog }) {
                   icon="close"
                   label="Dismiss collaboration suggestion"
                   onClick={() =>
-                    setDismissedInvites((ids) => [...ids, collection.id])
+                    state.updateCollection(collection.id, {
+                      collaborationPromptDismissed: true,
+                    })
                   }
                 />
                 <strong>Collaborate with people you know</strong>
@@ -384,27 +387,6 @@ export function Saved({ catalog }: { catalog: Catalog }) {
                 onSelect={addMode ? () => choose(product.id) : undefined}
               />
             ))}
-            {panel === "More ideas" && (
-              <article
-                className="saved-product saved-partial-product"
-                data-original-photo="true"
-              >
-                <div className="product-media">
-                  <img
-                    src="/api/reference-media/idea-jojoba"
-                    alt="Jojoba Bead Exfoliating Body Wash Bar"
-                  />
-                  <IconButton
-                    icon="plus"
-                    label="Jojoba Bar details unavailable"
-                    className="save-button"
-                    onClick={() => setModal("Product details unavailable")}
-                  />
-                </div>
-                <span>KITSCH</span>
-                <strong>Jojoba Bead Exfoliating Body Wash Bar</strong>
-              </article>
-            )}
           </div>
           {collection && !addMode && (
             <>
@@ -453,11 +435,8 @@ export function Saved({ catalog }: { catalog: Catalog }) {
                   Find more ideas
                 </span>
                 <div>
-                  {[
-                    ...ideas.map((product) => product.images[0]),
-                    "/api/reference-media/idea-jojoba",
-                  ].map((src) => (
-                    <img key={src} src={src} alt="" />
+                  {ideas.map((product) => (
+                    <img key={product.id} src={product.images[0]} alt="" />
                   ))}
                 </div>
               </button>
@@ -613,6 +592,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
               Add from saved
             </button>
             <button
+              title="Changes local preview visibility only; nothing is published"
               onClick={() => {
                 if (collection.visibility === "Private")
                   setPanel("Make public");
@@ -620,7 +600,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
                   state.updateCollection(collection.id, {
                     visibility: "Private",
                   });
-                  setNotice("Collection is now private · local preview");
+                  setNotice("Collection is now private");
                   setPanel("");
                 }
               }}
@@ -642,21 +622,27 @@ export function Saved({ catalog }: { catalog: Catalog }) {
         ) : panel === "Make public" && collection ? (
           <>
             <p className="collection-confirm-copy">
-              Public is a local preview setting. Nothing is published or shared.
+              Your collection will be discoverable by others and may appear on
+              the feed.
             </p>
+            <span id="collection-public-boundary" className="sr-only">
+              Local reference preview only. Nothing is published or shared.
+              Sharing and invitation actions explain this service boundary.
+            </span>
             <div className="sheet-actions">
               <button className="pill" onClick={() => setPanel("")}>
                 Cancel
               </button>
               <button
                 className="primary"
+                aria-describedby="collection-public-boundary"
                 title="Changes local preview visibility only; nothing is published"
                 onClick={() => {
                   state.updateCollection(collection.id, {
                     visibility: "Public",
                   });
                   setPanel("");
-                  setNotice("Collection is now public · local preview");
+                  setNotice("Collection is now public");
                 }}
               >
                 Make public
@@ -714,20 +700,10 @@ export function Saved({ catalog }: { catalog: Catalog }) {
           </>
         )}
       </Sheet>
-      <Sheet
-        open={addMode && modal === "Product details unavailable"}
-        title="Product details unavailable"
-        onClose={() => setModal("")}
-      >
-        <p className="sheet-copy">
-          This Jojoba Bar is visible in the frozen reference, but its complete
-          product record and price are not captured. It cannot be selected in
-          this preview.
-        </p>
-      </Sheet>
       {notice && (
         <button
           className="local-toast"
+          title="Local reference preview only; no remote account was changed"
           onClick={() => setNotice("")}
           role="status"
         >
