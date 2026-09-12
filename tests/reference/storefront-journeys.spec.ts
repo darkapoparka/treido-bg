@@ -35,18 +35,19 @@ async function openScenario(
 }
 
 async function criteria(page: Page) {
-  return page.evaluate(() => {
-    const params = new URLSearchParams(location.search);
-    return {
-      min: params.get("min"),
-      max: params.get("max"),
-      sale: params.get("sale"),
-      stock: params.get("stock"),
-      sort: params.get("sort"),
-      q: params.get("q"),
-      filter: params.get("filter"),
-    };
-  });
+  // These assertions inspect the committed main-frame URL, not DOM state.
+  // Reading it through evaluate races a cross-document Forward restoration:
+  // the page can correctly return while its previous JS context is destroyed.
+  const params = new URL(page.url()).searchParams;
+  return {
+    min: params.get("min"),
+    max: params.get("max"),
+    sale: params.get("sale"),
+    stock: params.get("stock"),
+    sort: params.get("sort"),
+    q: params.get("q"),
+    filter: params.get("filter"),
+  };
 }
 
 async function prepareStoreFilter(page: Page) {
@@ -160,6 +161,13 @@ test("nested Price Back and Forward preserve drafts, then Done consumes only the
   await page.goBack();
   await expect(page).toHaveURL(/\/following$/);
   await page.goForward();
+  await expect(page).toHaveURL(/\/stores\/kitsch\?/);
+  await expect(
+    page.locator('[data-shop-interactive="true"]').first(),
+  ).toBeAttached();
+  await expect(page.locator(".store-all-products")).toBeVisible();
+  await expect(dialog(page, "Filter")).not.toBeVisible();
+  await expect(dialog(page, "Price")).not.toBeVisible();
   await expect
     .poll(() => criteria(page))
     .toMatchObject({

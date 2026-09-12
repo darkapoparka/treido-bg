@@ -38,8 +38,8 @@ A route hint is not executable coverage. A reproducible definition is not visual
 | 1, 94 | onboarding/login: `/onboarding`, `/login` |
 | 2-6, 42 | Home/notifications/deals/following |
 | 7-13 | Saved/collections: `saved.tsx`, `saved-card.tsx`, `saved.css` |
-| 14-16, 40-41, 96-97 | storefront/collections/search/filter/info/video |
-| 17-20, 32, 37-38 | product/gallery/save/cart/contact/report |
+| 14-16, 40-41, 96-97 | storefront/collections/search/filter/info/video: `store.tsx`, `store-filter.tsx`, `store.module.css` |
+| 17-20, 32, 37-38 | product/gallery/save/cart/contact/report: `product.tsx`, `product.css`, `reviews.tsx` |
 | 21-31 | cart/checkout/review/pay/receipt |
 | 33-39 | product/store reviews and reports |
 | 43-49 | Search/assistant/result filters |
@@ -56,6 +56,10 @@ All families remain in scope. Preserve working canonical components and state ra
 ## Historical evidence
 
 The earlier `77efe3e` / `b12796d` implementation, Actions runs, unresolved frame list and historical next step are already preserved in the [immutable pre-Astra map](docs/history/pre-astra-2026-09-12/shop-implementation-map.md.txt). Consult that specific record for older evidence; do not repeat its failures as current facts. Later main commits changed storefronts, Saved behavior and shared sheet history.
+
+[Concurrent main checkpoint at 41445f9](https://github.com/darkapoparka/treido-bg/blob/41445f956883a15cf0e28cecc8521558670adc6d/shop-implementation-map.md) preserves its four intermediate Actions runs/artifact IDs, measured storefront improvements and that session's connector denial. Its GitHub-only operating mode and 175-definition limit predate this explicitly authorized local integration and its actual 195-definition/99-frame CI selection. They are historical evidence, not current instructions. The integration retains `a1bbc46`'s search-editing-only canvas and `87a1652`'s stronger Forward observation; the overlapping `701e4d8` paragraph fix is consolidated into the canonical product CSS.
+
+Flow 17 still includes the distinct Midi Shirtdress in Ultrasoft Cotton / Estate Blue, Open Air, White source state; do not substitute Shea or invent its seller. Storefront residuals include filter-underlay alignment, photography, incomplete search-result rows, the returning Kitsch hero and Chemical Guys inventory/video. These remain source obligations alongside the product residuals above.
 
 ## Measurement and execution
 
