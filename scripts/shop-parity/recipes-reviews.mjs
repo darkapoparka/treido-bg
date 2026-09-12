@@ -54,7 +54,12 @@ export const reviewRecipes = {
       {
         state: "shea-reviews-nice-search-results",
         actions: [
-          { type: "fill", role: "searchbox", name: "Search reviews", value: "nice" },
+          {
+            type: "fill",
+            role: "searchbox",
+            name: "Search reviews",
+            value: "nice",
+          },
           { type: "key", key: "Enter" },
           top,
         ],
@@ -97,7 +102,9 @@ export const reviewRecipes = {
       {
         state: "review-report-spam-selected",
         overlay: "dialog",
-        actions: [{ type: "check", role: "radio", name: "It’s spam", exact: true }],
+        actions: [
+          { type: "check", role: "radio", name: "It’s spam", exact: true },
+        ],
       },
       {
         state: "review-report-local-confirmation",
