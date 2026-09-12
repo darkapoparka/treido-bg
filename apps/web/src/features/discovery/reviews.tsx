@@ -108,7 +108,8 @@ export function Reviews({
   const params = useSearchParams();
   const q = params.get("q") ?? "";
   const sort =
-    reviewSorts.find((value) => value === params.get("sort")) ?? "Most relevant";
+    reviewSorts.find((value) => value === params.get("sort")) ??
+    "Most relevant";
   const feedback = useReviewFeedback(`product:${productId}`);
   const { helpful, reported, expanded } = feedback;
   const searchRef = useRef<HTMLInputElement>(null);
