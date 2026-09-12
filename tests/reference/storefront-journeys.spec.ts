@@ -113,7 +113,9 @@ test("nested Price Back and Forward preserve drafts, then Done consumes only the
   ).toBeAttached();
   const { trigger, scroll } = await prepareStoreFilter(page);
   await button(page, "On sale").click();
-  await button(page, "Price").click();
+  await dialog(page, "Filter")
+    .getByRole("button", { name: "Price", exact: true })
+    .click();
   await expect(dialog(page, "Price")).toBeVisible();
   await maximumPrice(page, 380);
   expect((await criteria(page)).max).toBeNull();
@@ -269,13 +271,23 @@ test("Follow persists through a real information-page visit without altering the
   await button(page, "Follow").click();
   await expect(button(page, "Following")).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("link", { name: "Store information", exact: true }).click();
+  // Following exists on both pages; it cannot establish that navigation ended.
+  await expect(page).toHaveURL(/\/stores\/kitsch\/info$/);
+  await expect(
+    page.getByRole("link", { name: "Close store information", exact: true }),
+  ).toBeVisible();
   await expect(button(page, "Following")).toHaveAttribute("aria-pressed", "true");
   await page.goBack();
+  await expect(page).toHaveURL(/\/stores\/kitsch$/);
+  await expect(page.locator(".store-page")).toBeVisible();
   await expect(button(page, "Following")).toHaveAttribute("aria-pressed", "true");
   expect(await page.locator(".dock-cart-count").allTextContents()).toEqual(before);
+  await page.goForward();
+  await expect(page).toHaveURL(/\/stores\/kitsch\/info$/);
+  await expect(button(page, "Following")).toHaveAttribute("aria-pressed", "true");
 });
 
-test("store collection, search and filter controls remain contained at 320, 393 and 430 pixels", async ({
+test("store collection and filter controls remain contained at 320, 393 and 430 pixels", async ({
   page,
   baseURL,
 }) => {
@@ -290,7 +302,9 @@ test("store collection, search and filter controls remain contained at 320, 393 
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
     ).toBe(true);
-    await button(page, "Price").click();
+    await dialog(page, "Filter")
+      .getByRole("button", { name: "Price", exact: true })
+      .click();
     await expect(page.getByRole("slider", { name: "Maximum price" })).toBeVisible();
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
