@@ -12,11 +12,15 @@ type Preview = {
 
 export function ProductReviewPreview({
   productId,
+  rating,
   ratingCount,
+  distribution,
   reviews,
 }: {
   productId: string;
+  rating: number;
   ratingCount: string;
+  distribution: readonly number[];
   reviews: readonly Preview[];
 }) {
   return (
@@ -24,16 +28,23 @@ export function ProductReviewPreview({
       <h2>Reviews</h2>
       <div className="review-summary">
         <div>
-          <strong>4.6</strong>
-          <ReviewStars rating={4.5} label="4.6 out of 5 stars" />
+          <strong>{rating}</strong>
+          <ReviewStars
+            rating={Math.round(rating * 2) / 2}
+            label={`${rating} out of 5 stars`}
+          />
           <p>{ratingCount} ratings</p>
         </div>
-        <div className="rating-bars" aria-label="Captured rating distribution">
+        <div className="rating-bars" aria-label="Rating distribution">
           {[5, 4, 3, 2, 1].map((value, index) => (
             <div key={value}>
               <span>{value}</span>
               <i>
-                <b style={{ width: `${[80, 9, 5, 2, 1][index]}%` }} />
+                <b
+                  style={{
+                    width: `${Math.max(0, Math.min(100, distribution[index] ?? 0))}%`,
+                  }}
+                />
               </i>
             </div>
           ))}
@@ -59,7 +70,7 @@ export function ProductReviewPreview({
                 {review.author}
                 {review.date && <> · {review.date}</>}
                 {review.partial && (
-                  <span className="sr-only">Partially captured review</span>
+                  <small className="sr-only">Partially captured review</small>
                 )}
               </footer>
             )}
