@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import "./saved.css";
 import { KitschWordmark } from "./kitsch-wordmark";
 import { SavedCard } from "./saved-card";
+import { CollectionEditor } from "./collection-editor";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Catalog, SavedListing } from "../catalog/types";
 import {
@@ -451,9 +452,16 @@ export function Saved({ catalog }: { catalog: Catalog }) {
         onClose={() => setPanel("")}
       >
         {editing ? (
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
+          <CollectionEditor
+            name={name}
+            visibility={visibility}
+            editing={panel === "Edit name"}
+            thumbnails={products}
+            inputRef={editorRef}
+            onNameChange={setName}
+            onVisibilityChange={setVisibility}
+            onCancel={() => setPanel("")}
+            onSave={() => {
               if (!name.trim() || submitting.current) return;
               submitting.current = true;
               if (panel === "Edit name" && collection) {
@@ -466,66 +474,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
                 navigate(id, "add", true);
               }
             }}
-          >
-            <div className="editor-toolbar">
-              <button type="button" onClick={() => setPanel("")}>
-                Cancel
-              </button>
-              <button disabled={!name.trim()} type="submit">
-                Save
-              </button>
-            </div>
-            {panel === "Edit name" && (
-              <>
-                <div className="collection-edit-thumbnails">
-                  {products.map((product) => (
-                    <img key={product.id} src={product.images[0]} alt="" />
-                  ))}
-                </div>
-                <p className="collection-input-label">Collection name</p>
-              </>
-            )}
-            <input
-              ref={editorRef}
-              className="collection-name-input"
-              aria-label="Collection name"
-              placeholder="Collection name"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              autoComplete="off"
-              enterKeyHint="done"
-              required
-            />
-            {panel === "Create collection" && (
-              <div className="collection-privacy-row">
-                <div
-                  className="visibility-options"
-                  role="group"
-                  aria-label="Collection visibility"
-                >
-                  {(["Private", "Public"] as const).map((value) => (
-                    <button
-                      key={value}
-                      type="button"
-                      aria-label={value}
-                      aria-pressed={visibility === value}
-                      onClick={() => setVisibility(value)}
-                    >
-                      <Icon name={value === "Private" ? "lock" : "globe"} />
-                    </button>
-                  ))}
-                </div>
-                <div>
-                  <strong>{visibility}</strong>
-                  <p>
-                    {visibility === "Private"
-                      ? "Visible only to you and collaborators"
-                      : "Anyone on Shop can view"}
-                  </p>
-                </div>
-              </div>
-            )}
-          </form>
+          />
         ) : panel === "Collection options" && collection ? (
           <div className="collection-option-rows">
             <button
