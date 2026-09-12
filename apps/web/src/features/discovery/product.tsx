@@ -405,7 +405,10 @@ export function ProductDetail({
           <section className="pdp-description">
             <h2>Description</h2>
             {descriptionPreview.map((paragraph, index) => (
-              <p key={paragraph} className={bag && index > 0 ? "mt-4" : undefined}>
+              <p
+                key={paragraph}
+                style={bag && index > 0 ? { marginTop: 16 } : undefined}
+              >
                 {paragraph}
                 {index === descriptionPreview.length - 1 && (
                   <button onClick={() => setDetail("Description")}>
