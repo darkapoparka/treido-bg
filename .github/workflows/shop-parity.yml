@@ -17,7 +17,7 @@ on:
     inputs:
       flows:
         description: "Frozen flow numbers/ranges; capture is not acceptance"
-        default: "2-13,42,84"
+        default: "2-16,40-42,84,96-97"
         required: true
 permissions:
   contents: read
@@ -37,7 +37,7 @@ jobs:
       VERCEL_ENV: preview
       PLAYWRIGHT_CHANNEL: chromium
       SHOP_PARITY_BASE_URL: http://127.0.0.1:6412
-      PARITY_FLOWS: ${{ inputs.flows || '2-13,42,84' }}
+      PARITY_FLOWS: ${{ inputs.flows || '2-16,40-42,84,96-97' }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -49,12 +49,38 @@ jobs:
       - run: npm install --global pnpm@12.3.4
       - id: install
         run: pnpm install --frozen-lockfile
-      - name: Verify frozen reference bytes
-        id: references
+      - name: Inspect the installed Next.js navigation and component guides
         shell: bash
         run: |
           mkdir -p .qa/shop-parity
           printf '\n.qa/\n' >> .git/info/exclude
+          python3 - <<'PY'
+          import json, pathlib
+          root = pathlib.Path('apps/web/node_modules/next').resolve()
+          docs = root / 'dist/docs'
+          version = json.loads((root / 'package.json').read_text())['version']
+          text = ['Installed Next.js ' + version]
+          for topic in ['linking-and-navigating', 'server-and-client-components', 'use-search-params']:
+              matches = sorted(p for p in docs.rglob('*' + topic + '*') if p.is_file() and p.suffix in ['.md', '.mdx'])
+              if not matches:
+                  raise RuntimeError('Installed framework guide not found: ' + topic)
+              guide = matches[0]
+              text.extend(['\n## ' + str(guide.relative_to(root)), guide.read_text()])
+              print(version + ': ' + str(guide.relative_to(root)))
+          pathlib.Path('.qa/shop-parity/framework-guides.txt').write_text('\n'.join(text))
+          PY
+      - name: Retain installed framework guide evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: shop-framework-guides-${{ github.sha }}-${{ github.run_attempt }}
+          retention-days: 2
+          include-hidden-files: true
+          if-no-files-found: error
+          path: .qa/shop-parity/framework-guides.txt
+      - name: Verify frozen reference bytes
+        id: references
+        shell: bash
+        run: |
           python3 - <<'PY'
           import hashlib, json, pathlib, platform, os
           root = pathlib.Path('references/shop').resolve()
@@ -78,8 +104,8 @@ jobs:
                       verify(item)
           verify(manifest)
           counts = {'flows': len(manifest['flows']), 'frames': sum(len(f['screens']) for f in manifest['flows']), 'standalone': len(manifest['screens']), 'verifiedFiles': len(checked), 'commit': os.environ['GITHUB_SHA'], 'platform': platform.platform()}
-          if counts['verifiedFiles'] == 0:
-              raise RuntimeError('No reference media verified')
+          if (counts['flows'], counts['frames'], counts['standalone']) != (97, 424, 323):
+              raise RuntimeError('Frozen source inventory changed; reconcile the manifest explicitly')
           pathlib.Path('.qa/shop-parity/provenance.json').write_text(json.dumps(counts, indent=2))
           print(json.dumps(counts))
           PY
@@ -131,7 +157,13 @@ jobs:
           path: |
             .qa/shop-parity/provenance.json
             .qa/shop-parity/source/*.png
-      - name: Prepare the existing allowlisted product originals
+      - name: Restore only previously verified product originals
+        id: product-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: reference-assets/shop/products
+          key: shop-verified-media-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('references/shop/product-media-provenance.json', 'prepare-shop-reference.mjs', 'pnpm-lock.yaml') }}
+      - name: Prepare and reverify the existing allowlisted product originals
         id: products
         shell: bash
         run: |
@@ -139,6 +171,12 @@ jobs:
           set -o pipefail
           node prepare-shop-reference.mjs 2>&1 | tee .qa/shop-parity/product-preparation.log
           node prepare-shop-reference.mjs --verify
+      - name: Retain the verified product set without publishing originals
+        if: ${{ !cancelled() && steps.products.outcome == 'success' && steps.product-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v5
+        with:
+          path: reference-assets/shop/products
+          key: ${{ steps.product-cache.outputs.cache-primary-key }}
       - name: Install browser
         id: browser
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
@@ -194,7 +232,7 @@ jobs:
                           pass
               raise SystemExit(result.returncode)
           PY
-      - name: Focused Home, Following, collections and navigation interactions
+      - name: Focused Home, Following, Saved, storefront and navigation interactions
         if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.products.outcome == 'success' && steps.browser.outcome == 'success' }}
         env:
           REFERENCE_DEV: "1"
