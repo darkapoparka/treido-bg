@@ -20,14 +20,20 @@ export function SavedCard({
   const state = useDiscovery();
   const [detailsOpen, setDetailsOpen] = useState(false);
   const saved = state.saved.includes(product.id);
-  const photo = <img src={product.images[0]} alt={onSelect ? "" : product.title} />;
+  const originalPhoto =
+    product.id.startsWith("idea-") ||
+    product.id === "rice-bundle" ||
+    product.id === "argan-liquid-combo";
+  const photo = (
+    <img src={product.images[0]} alt={onSelect ? "" : product.title} />
+  );
   const title = <strong>{product.title}</strong>;
   return (
     <article
       className={`saved-product ${onSelect ? "saved-choosing" : ""}`}
       data-product-id={product.id}
       data-photo-layout={product.photoLayout}
-      data-original-photo={product.id.startsWith("idea-") ? "true" : undefined}
+      data-original-photo={originalPhoto ? "true" : undefined}
     >
       <div className="product-media">
         {onSelect ? (
@@ -91,7 +97,10 @@ export function SavedCard({
           onClose={() => setDetailsOpen(false)}
         >
           <p className="sheet-copy">{product.detailUnavailable}</p>
-          <button className="primary form-submit" onClick={() => setDetailsOpen(false)}>
+          <button
+            className="primary form-submit"
+            onClick={() => setDetailsOpen(false)}
+          >
             Back to Saved
           </button>
         </Sheet>
