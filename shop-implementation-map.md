@@ -4,16 +4,16 @@ Execution and evidence map for the frozen Shop corpus. `shop-frame-ledger.md` re
 
 ## Fixed source and comparison
 
-- Frozen corpus: 97 flows, 424 ordered flow frames, 323 standalone media entries. These are different inventory counts, not interchangeable completed-screen counts.
+- Verified corpus: **97 flows, 424 ordered flow frames, 323 standalone media entries**. These are different inventories, not interchangeable completed-screen counts. The newer Actions provenance verifies 755 referenced files.
 - Primary browser viewport: **393×793**.
 - For the documented 1179/1180×2676 flow rasters, normalize the source to 393×892, then crop `(0, 59, 393, 793)`.
-- Do not resize the live screenshot. Do not apply this normalization blindly to standalone media.
-- The fixed crop excludes native status chrome and the Mobbin footer. Additional keyboard/provider boundaries require frame-specific evidence. Never mask app-owned controls, incorrect imagery, typography, layout or missing content.
-- Videos and standalone entries not reconciled with a flow remain explicit obligations; still screenshots do not establish transition parity.
+- Never resize the live screenshot or blindly apply this normalization to differently sized standalone media.
+- The crop excludes native status chrome and the Mobbin footer. Additional keyboard/provider boundaries require frame-specific evidence. Never mask app-owned controls, incorrect imagery, typography, layout or missing content.
+- Videos and standalone entries not reconciled with a flow remain explicit obligations. Still screenshots do not establish transition parity.
 
 ## Mapping and canonical owners
 
-`node scripts/shop-parity/run.mjs enumerate` produces `.qa/shop-parity/frame-map.json` from the frozen manifest and committed recipes:
+`node scripts/shop-parity/run.mjs enumerate` produces `.qa/shop-parity/frame-map.json` from the frozen manifest and registered recipes:
 
 `source frame → family → route/query → scenario → setup/actions → scroll/focus/overlay → comparison/evidence`.
 
@@ -24,8 +24,8 @@ A route hint is not executable coverage. A reproducible definition is not visual
 | 1, 94 | onboarding/login: `/onboarding`, `/login` |
 | 2–6, 42 | Home/notifications/deals/following |
 | 7–13 | Saved/collections: `saved.tsx`, `saved-card.tsx`, `saved.css` |
-| 14–16, 40–41, 96–97 | storefront/collections/search/filter/info/video |
-| 17–20, 32, 37–38 | product/gallery/save/cart/contact/report |
+| 14–16, 40–41, 96–97 | storefront/collections/search/filter/info/video: `store.tsx`, `store-filter.tsx`, `store.module.css` |
+| 17–20, 32, 37–38 | product/gallery/save/cart/contact/report: `product.tsx`, `product.css`, `reviews.tsx` |
 | 21–31 | cart/checkout/review/pay/receipt |
 | 33–39 | product/store reviews and reports |
 | 43–49 | Search/assistant/result filters |
@@ -37,86 +37,119 @@ A route hint is not executable coverage. A reproducible definition is not visual
 | 85–93 | security/notifications/connections/privacy/support/logout |
 | 95 | widgets web adaptation |
 
-All families remain in scope. Preserve working canonical components and state rather than making disconnected screenshot pages. Captured history jumps belong in explicit named entries with source notes; do not invent a causal UI transition that the source does not show.
+All families remain in scope. Preserve working canonical components and state rather than building disconnected screenshot pages. Captured history jumps belong in explicit named entries with source notes; never invent a causal transition that the source does not show.
 
-## Current checkpoint: 2026-09-12
+## Current checkpoint: 2026-09-12 resumed execution
 
-### Source changes actually committed
+### Preserve the actual main history
 
-The implementation through **`77efe3e2730c0cd65349eb4f0c6b529b1b8cb8e4`** includes:
+The resumed session found **`1f9cc493a978f3aee8a70bddf93294b333283dce`**, 29 commits beyond the old `e4b90b7` handoff. The interrupted response did not erase those commits. Storefront implementation and 27 storefront replay frames, Saved corrections, product gallery changes and verified-media caching were already present. Never reset to the obsolete handoff or describe that newer work as uncommitted.
 
-- A canonical Saved card rendering the captured multi-brand library, size variant, price, offer chip and photograph layouts. A genuinely obscured pink listing retains an honest details boundary and no invented purchase price.
-- Six real, selectable More ideas products, including Jojoba at the visible captured $14 price, with real product navigation and collection/Saved membership transitions.
-- Persistent collaboration-suggestion dismissal, captured public/private confirmation states, and explicit disconnected sharing/invitation boundaries.
-- Separate Saved-library, two-item, expanded, renamed and deletion scenarios where the frozen sequence switches histories.
-- `recipes-saved.mjs` replaying all **27 frames in flows 7–13**, including focused editors and explicitly excluded native-keyboard regions.
-- Ten focused Saved journey tests covering creation, all recommendations, partial-listing boundaries, membership, navigation, visibility, edit/cancel and deletion invariants.
+Latest application-source checkpoint: **`a1bbc4682245cc2cfb672a406525cf399b9ec996`**. The latest subsequent test correction is **`87a165218ce210587cedcf7bf5bf01db10a56078`**. Read current main and preserve any newer commits; these pointers are not reset targets.
 
-**`b12796d8a7fad047b306ed4a60e4c359317d31b4`** additionally applies the measured brightness treatment to acquired Rice/Argan originals in the Saved card. It has lint/typecheck evidence but no rendered evidence yet: its subsequent run failed product acquisition.
+### What changed in this resumed batch
 
-No proposed shared-dialog history fix was committed. The `GitHub.update_file` attempt for `components.tsx` was blocked before writing. Do not treat the proposal or a conversation description as code on main. An unrelated later Saved-card write succeeded; do not describe all GitHub writes as unavailable.
+- `ad09fc0`: shared Sheets synchronously register/adopt their history entry **before** exposing the dialog with `showModal()`. This fixes the immediate-Back race to `about:blank` while retaining nested history, committed query restoration, body locks, retiring-entry cleanup and focus return without scrolling.
+- `9c63cf9` / `dadc9b7`: regression instrumentation observes the marker at the exact `showModal()` call, not after a timer. Repeated open/Back and nested Back preserve entries, focus and body locks. The corrected test reads its parent marker before the child makes the parent inert; all original assertions remain.
+- `62bccf5` / `a1bbc46`: storefront action spacing; Filter header/row/chevron geometry and equal-width footer buttons; search suggestion price/cancel typography; information-category row rhythm. The initial white-canvas change regressed result grids, so it is now restricted to the editing/suggestion state.
+- `ad5c9c5` / `701e4d8`: separate Shea and Bag description-preview paragraphs and captured excerpts, one real Read more control, unchanged complete descriptions and ingredients. The Bag's 16px separation is owned at the component instead of being defeated by the global unlayered paragraph reset.
+- `57ca1fe`: both product-description journeys cover 320/393/430 containment, complete product-specific descriptions, genuine nonzero scroll, exact focus/scroll restoration and Back/Escape dismissal.
+- `87a1652`: the storefront criteria test reads the committed main-frame URL outside the browser execution context, avoiding evaluation inside a document being replaced during Forward navigation. It retains the exact criteria checks and adds explicit returned-route, interactive-surface, product-grid and closed-dialog assertions.
+- `c4584c8`: twenty proposed product replay checkpoints are committed in `recipes-product.mjs`, but **their registry update was denied and they are not active coverage**. See the precise limitation below.
 
-### Coverage and actual Actions results
+### Completed verification snapshots
 
-The `frame-map.json` from run **34677545900** records **148 reproducible definitions / 424 frames**, with **276 still route hints**. It does not mean 148 screens are visually complete. The checked-in frame ledger still needs regeneration from this newer Actions evidence rather than its older PC-only baseline.
+| Actions run | Evaluated commit | Captures | Interactions | Main finding | Evidence artifact |
+| --- | --- | --- | --- | --- | --- |
+| 34706244853 | `1f9cc493` | 79 scored | 60 passed / 1 failed | Original Filter immediate Back reached `about:blank` | 10302485378 |
+| 34707281518 | `c4584c88` | 79 scored | 61 passed / 1 failed | Original race fixed; new test queried an inert parent | 10302735629 |
+| 34708071703 | `57ca1fe5` | 79 scored | 63 passed / 1 failed | Bag paragraph margin was 0px rather than 16px | 10302677503 |
+| 34708556877 | `a1bbc468` | 79 scored | 63 passed / 1 failed | Both product tests passed; storefront Forward test evaluated a replacing document | 10301894629 |
 
-Run **34677545900** evaluated `77efe3e2730c0cd65349eb4f0c6b529b1b8cb8e4`:
+All four completed snapshots passed frozen-reference verification, exact cached-product re-verification, web lint/typecheck and the **non-deploying production web build**. No skipped or flaky interaction tests were reported in their inspected JSON. They are separate runs, not results that can be combined into a fictitious all-green run.
 
-- Installation, frozen-reference verification, product preparation, web lint and typecheck passed.
-- **52/52 selected frames captured and scored**, across flows 2–13, 42 and 84. This includes all 27 Saved frames.
-- **46 interaction tests passed; 4 failed**. Saved-specific tests: 8 passed, 2 failed.
-- Only **`f005-004` and `f006-002`** cleared both numerical diagnostic thresholds in this run. Neither receives automatic visual/owner acceptance.
-- Artifact **10292614218** contains the exact-commit reports, interaction results and reference/live/overlay/heatmap images.
+The latest application-source run **34708556877** passed the immediate-Back and nested regression tests, both product-description tests, the existing Saved tests and the existing nested Billing test. Its sole interaction failure was `nested Price Back and Forward preserve drafts, then Done consumes only the filter entries`, at `criteria(page)` after returning from `/following`. The captured failure state shows the intended storefront with its filtered result; the assertion crashed because `page.evaluate` lost its execution context during document replacement. `87a1652` corrects that observation and explicitly checks the restored UI. Its exact verification is **run 34709126328**; no pass is claimed until that run's results are inspected.
 
-Run **34678202940** evaluated `b12796d8a7fad047b306ed4a60e4c359317d31b4`:
+### Active coverage, not a completion percentage
 
-- Frozen source hashes, web lint/typecheck and browser install passed.
-- Product preparation failed checksums for `rice-bundle`, `shower-caddy`, `home-air-dry-cream`, and `rice-shampoo`.
-- Captures/interactions were skipped. Artifact **10292814536** retains the rejected candidates and log for inspection, not as verified served assets.
+The inspected Actions `frame-map.json` contains **175 reproducible definitions / 424 frames**, with **249 route hints**. The unregistered twenty product entries are excluded; do not report 195 definitions or twenty product captures.
 
-The earlier acquisition repair at `19ed8235a9ba1a95a090fc76518fabe39400f43f` enabled actual browser evidence in run **34676399228**. Later changing downloads show that acquisition is still unstable. Do not repeatedly replace hashes without justified inspection or weaken the gate.
+The current selected scope is **flows 2–16, 40–42, 84, 96–97: 79 frames**, including all 27 Saved frames and all 27 storefront-family frames. Every selected frame was captured/scored in the completed snapshots above. Only **`f005-004` and `f006-002`** cleared both numerical thresholds. No frame or flow received new owner acceptance.
 
-Foundation run **34677545892** failed the formatting stage of `pnpm check`; build/smoke steps were not executed. The passing web lint/typecheck is separate from a passing foundation/build workflow. Older local reports and the historical 94/94 test claim do not establish current-main results.
+The existing Actions ledger generator emits all 424 rows into the artifact's `frame-ledger.md`. The checked-in ledger still predates this newer evidence. Preserve all IDs and historical/unmeasured rows when incorporating it; do not treat its stale count as deleted work or replace unchecked rows with invented passes.
 
-### Exact unresolved frames and behavior
+### Measured storefront changes and inspected residuals
 
-All Saved frames **`f007-001`–`f007-004`, `f008-001`–`f008-007`, `f009-001`–`f009-003`, `f010-001`–`f010-002`, `f011-001`–`f011-005`, `f012-001`–`f012-003`, `f013-001`–`f013-003`** remain visually unresolved. Actual pairs expose typography, compact collection spacing, featured-brand size, photo treatment, translucent dock/scroll fade and rich-library residuals. The obscured lower pink photograph is not reconstructed or masked away.
+Source/live/before/after pairs were inspected for the Filter, search suggestions/results and information categories. Against run 34707281518, the application-source checkpoint `a1bbc468` measured:
 
-Open interaction failures, with the original assertions retained:
+| Frame | Before MAE % | After MAE % | Status |
+| --- | ---: | ---: | --- |
+| `f016-001` | 3.572 | 3.377 | Improved; unresolved |
+| `f016-002` | 3.613 | 3.421 | Improved; unresolved |
+| `f016-003` | 3.094 | 2.995 | Improved; unresolved |
+| `f016-004` | 3.340 | 3.241 | Improved; unresolved |
+| `f040-002` | 2.433 | 2.072 | Improved; unresolved |
+| `f040-003` | 2.586 | 2.193 | Improved; unresolved |
+| `f097-002` | 6.344 | 5.679 | Improved; unresolved |
 
-1. Nested Billing Back closes the Payment methods editor as well as the child sheet.
-2. A filter-history test navigates to `about:blank` after an overlay Back.
-3. The compact Invite collaborators action's fallback avatar initial participates in its accessible name; correct that name rather than dropping the exact assertion.
-4. The More ideas scroll test measures before the click is repositioned clear of the dock. Establish a scrolled, unobscured starting click and retain exact return-scroll/focus and Back/Forward assertions.
+The earlier `57ca1fe5` result regressed `f040-004` by 0.341 MAE points because the white editing canvas also reached results. `a1bbc468` restricts that rule and returns the result-grid score to approximately 6.49%. No compared frame in that application-source batch increased by more than the 0.15-point investigation threshold against `c4584c88`. Several storefront-header frames increased by approximately 0.053 points despite the source-matched action gap; the larger improvements do not erase those smaller residuals.
 
-Other selected frames also remain open except for the two numerical candidates named above. Some Home scores changed sharply between runs even though the latest changes were Saved-scoped. Inspect the actual artifacts, image availability, stylesheet loading and replay entry state before attributing that change to a CSS improvement or regression.
+Remaining storefront differences include about 8px of Filter-underlay scroll alignment, photo scale/treatment, typography and icon metrics, incomplete search-result rows, the returning Kitsch hero, Chemical Guys catalog/artwork and genuine video playback. The four identified search-result products do not constitute the complete source list. On-sale source frames show regular-price items for which discount facts are not established; do not fabricate compare-at prices or disable filtering to mimic them.
+
+All Saved frames **`f007-001`–`f007-004`, `f008-001`–`f008-007`, `f009-001`–`f009-003`, `f010-001`–`f010-002`, `f011-001`–`f011-005`, `f012-001`–`f012-003`, `f013-001`–`f013-003`** remain visually unresolved. Typography, collection/card spacing, photography and translucent dock/fade differences remain explicit. Never reconstruct the obscured pink product price or mask its unknown lower photograph.
+
+### Acquisition and foundation checks
+
+The verified-media cache restores an already approved set and rechecks exact bytes on every run. `rice-bundle`, `shower-caddy`, `home-air-dry-cream` and `rice-shampoo`, previously rejected at `b12796d`, passed the newer preparation/verification steps. This proves those cache-backed runs, not stable fresh upstream downloads. Preserve provenance and checksum rejection; never repin changing bytes or serve rejected candidates automatically.
+
+Foundation **run 34708556933**, application commit `a1bbc468`, passed workspace/root lint but failed `pnpm check` at **Prettier on 28 files**. This includes older work and this batch's CSS/recipe/test files; it is not solely pre-existing debt. Subsequent foundation typecheck/unit/build/smoke/native stages were skipped. The separate Shop workflow's web lint/typecheck/build results remain valid, but do not call the whole foundation green. Formatting and full foundation verification remain open.
+
+### Specific denied registry mutation
+
+The ordinary `GitHub.update_file` operation for **`scripts/shop-parity/recipes.mjs`**, intended to import/register `productRecipes`, was rejected by the connector safety check before writing. The active registry is unchanged. Do not bypass that denied mutation through another interface, alternate import hub, workflow injection or the owner's PC.
+
+Normal writes to shared `components.tsx`, product/source CSS, tests and these handoff documents succeeded. The old assertion that the shared-history fix was not committed is obsolete; there is no general loss of GitHub write access.
+
+`recipes-product.mjs` describes flows 18–20, 32, 37–38 but is inactive and has no capture evidence. Flow 17's nine frames remain undefined in that module. A source draft and a syntax-valid file cannot count as active browser replay.
 
 ### Exact next execution point
 
-First restore stable, provenance-verified acquisition of the four rejected product photographs, without silently accepting candidates or serving mismatches. Correct the unblocked Saved accessibility and test-setup issues. Keep the blocked shared-dialog write explicit and do not bypass it through a different interface or the owner's computer.
+Inspect run **34709126328** on `87a165218ce210587cedcf7bf5bf01db10a56078` for the corrected cross-document Forward test; record actual results without merging successful assertions from different runs. Then continue the existing product/gallery/save/cart/description/contact/report family, preserving registered storefront and Saved work and the explicit denied registry mutation.
 
-Next complete coverage family: **14–16, 40–41, 96–97**, using existing storefront owners. Flow 14's ordered montage was inspected; no new storefront code or replay was committed in this batch. Inspect the remaining source sequences before editing. Continue through the other product/review, search/Minis, checkout/orders, onboarding and widget families; do not stop at this next family or polish one card indefinitely while most of the corpus remains unmapped.
+Product sources 17–20, 32, 37–38 and flow 20's approximately 11.0167-second recording were inspected. Specific obligations:
 
-Regenerate `shop-frame-ledger.md` with the existing generator in Actions when recording the next measured batch. Keep implemented, interaction-tested, compared, numerically passing, visually unresolved and owner-accepted distinct. **No new owner acceptance has been recorded.**
+- Flow 17 includes a distinct **Midi Shirtdress in Ultrasoft Cotton | Estate Blue/Open Air/White** state, price/compare-at, stock and size availability. Do not replace it with Shea or invent a seller identity from an unrelated product.
+- Flow 19 changes promotion history between source frames. Saving a product must not fabricate that promotion change.
+- Flow 20 shows product-flight/added-item feedback and a stable added-cart state before the offer. The current immediate-offer behavior does not reproduce that motion/ordering. The recording does not justify assuming a new network delay or an automatic offer timer.
+- Flow 32 jumps from the Bag preview to Shea's full ingredients. The committed preview/full-description behavior now keeps the two products distinct; retain the explicit separate source history.
+- Contact/report previews must remain local and honest; captures must not execute real email, phone, external social, account or report operations.
+
+Continue through the remaining product/review, search/assistant, Explore/Minis, commerce, orders, onboarding and widget obligations. Do not restart the architecture, narrow the assignment to one family, endlessly tune a single photograph or create another planning/scoring framework. Keep implemented, replayable, interaction-tested, visually compared, numerical-candidate, unresolved and owner-accepted separate.
+
+## Historical checkpoints retained
+
+- `77efe3e` / run 34677545900 / artifact 10292614218: Saved implementation, 52 captures, 46 passed/4 failed at that historical commit.
+- `b12796d` / run 34678202940 / artifact 10292814536: four checksum failures; browser work skipped. The older unrendered-photo note is historical, not the status of newer cache-backed comparisons.
+- `19ed823` / run 34676399228: earlier media repair and browser evidence; later fresh-download instability remained.
+- Foundation run 34677545892: historical formatting failure before build/smoke.
+- `0f92453`, `f78ef18`, `4c9e902`, `782d507`: prior commerce, Account/Profile, Home/Following and quantitative checkpoints. Preserve their work; never reset main to them.
 
 ## Measurement and regression guard
 
 `MAE% = 100 × sum(abs(referenceRGB − liveRGB)) / (255 × 3 × unmaskedPixels)`.
 
-Secondary diagnostics are normalized RMSE, the percentage of pixels whose mean channel error exceeds 12/255, 50:50 overlays and difference heatmaps. Default diagnostic gates remain **MAE ≤ 1.5% and bad-pixel-12 ≤ 8%**; inspect meaningful visual and behavioral mismatches even below those gates.
+Secondary diagnostics are normalized RMSE, the fraction of pixels whose mean channel error exceeds 12/255, 50:50 overlays and difference heatmaps. Gates remain **MAE ≤ 1.5% and bad-pixel-12 ≤ 8%**. Meaningful visual or behavioral differences remain unresolved even below a threshold.
 
-Keep a shared change only when affected states improve without an important sibling regression. An unexplained increase over **0.15 MAE points** requires investigation, not a lowered threshold or silent baseline approval. Thresholds may be tightened, never loosened merely to increase completion counts.
+Keep shared changes only after inspecting affected states and important siblings. An unexplained increase over **0.15 MAE points** requires investigation, not a lowered threshold or silent baseline approval. Thresholds may be tightened, never loosened merely to inflate counts.
 
 ## Existing execution loop
 
-Run `.github/workflows/shop-parity.yml` on an exact main commit. The ephemeral Actions preview may use `127.0.0.1:6412`; this is not permission to use the owner's computer or a local development checkout.
+Run `.github/workflows/shop-parity.yml` on an exact main commit. The ephemeral Actions preview may use `127.0.0.1:6412`; this does not authorize the owner's computer or a separate local development checkout.
 
 ```sh
 node scripts/shop-parity/run.mjs enumerate
-node scripts/shop-parity/run.mjs baseline --all --flows 2-13,42,84 --run ci-COMMIT_SHA
+node scripts/shop-parity/run.mjs baseline --all --flows 2-16,40-42,84,96-97 --run ci-COMMIT_SHA
 node scripts/shop-parity/run.mjs compare-runs --before BEFORE_RUN --after AFTER_RUN
 ```
 
-Use the declared Node/package-manager versions and lockfile. Wait for target UI state, `data-shop-interactive=true`, fonts, image decoding and stable frames. Capture each independent checkpoint in a fresh browser context; drive actual buttons/navigation inside each replay. Inspect reference/live pairs, check relevant 320/430 containment, run focused family tests, commit coherent source batches directly to main and retain exact-commit evidence.
-
-Do not count routes, test passes, screenshot files, numerical candidates or owner acceptance as the same thing. Do not restart the implementation, invent missing facts, use screenshot-painted controls, hide failures or create another scoring framework.
+Use the declared versions and lockfile; the inspected installed framework artifact contains Next.js 16.3.4 navigation/component guidance. Wait for the intended state, `data-shop-interactive=true`, fonts, decoded images and stable frames. Capture independent checkpoints in fresh contexts, drive real controls, inspect reference/live pairs and check relevant 320/430 containment. Commit coherent improvements directly to main and preserve exact-commit evidence. An HTTP 200, screenshot, route, passing test or numerical candidate is not completed 1:1 parity.
