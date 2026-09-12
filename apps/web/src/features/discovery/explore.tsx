@@ -1,4 +1,5 @@
 "use client";
+import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import type { Catalog } from "../catalog/types";
@@ -42,7 +43,7 @@ export function Explore({
 }) {
   const beauty = category === "Beauty";
   return (
-    <main className="shop-page explore-page">
+    <ShopSurface className="shop-page explore-page">
       <h1>{category ?? "Explore"}</h1>
       {category && (
         <div className="category-rail">
@@ -179,6 +180,6 @@ export function Explore({
         </section>
       )}
       <FloatingNav back={!!category} />
-    </main>
+    </ShopSurface>
   );
 }

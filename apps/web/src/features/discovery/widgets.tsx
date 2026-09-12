@@ -1,4 +1,5 @@
 "use client";
+import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import { useState } from "react";
 import Link from "next/link";
@@ -44,7 +45,7 @@ function OrderWidget({ size }: { size: "large" | "medium" | "small" }) {
 export function Widgets() {
   const [instructions, setInstructions] = useState(false);
   return (
-    <main className="widget-page">
+    <ShopSurface className="widget-page">
       <OrderWidget size="large" />
       <OrderWidget size="medium" />
       <OrderWidget size="small" />
@@ -63,6 +64,6 @@ export function Widgets() {
           examples are local reference fixtures.
         </p>
       </Sheet>
-    </main>
+    </ShopSurface>
   );
 }

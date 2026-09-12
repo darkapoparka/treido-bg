@@ -1,4 +1,5 @@
 "use client";
+import { ShopSurface } from "../discovery/hydration-boundary";
 import Link from "next/link";
 import { AccountIcon } from "./icons";
 import { useState, type ReactNode } from "react";
@@ -22,14 +23,14 @@ export function AccountPage({
   onBack?: () => void;
 }) {
   return (
-    <main className={`shop-page account-page ${className}`}>
+    <ShopSurface className={`shop-page account-page ${className}`}>
       <header className="account-heading">
         {title && <h1>{title}</h1>}
         {action}
       </header>
       {children}
       {dock && <FloatingNav back={back} onBack={onBack} />}
-    </main>
+    </ShopSurface>
   );
 }
 export function Row({

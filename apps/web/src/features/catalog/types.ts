@@ -30,6 +30,7 @@ export type Store = Readonly<{
   id: string;
   name: string;
   logo: string;
+  coverImage?: string;
   rating?: number;
   ratingCount: string;
   description: string;

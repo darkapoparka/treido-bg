@@ -14,9 +14,13 @@ export type CartLine = {
   variantId: string;
   quantity: number;
 };
-type ViewedItem = { kind: "product" | "store"; id: string };
+export type ViewedItem = {
+  kind: "product" | "store";
+  id: string;
+  promotion?: string;
+};
 type State = {
-  recentActivity: "products" | "stores" | null;
+  recentActivity: "products" | "stores" | "minis" | null;
   viewedItems: ViewedItem[];
   viewStore: (id: string) => void;
   removeViewed: (kind: ViewedItem["kind"], id: string) => void;
@@ -43,22 +47,43 @@ type State = {
   updateCollection: (id: string, value: Partial<Collection>) => void;
   deleteCollection: (id: string) => void;
 };
+export type DiscoverySeed = Partial<
+  Pick<
+    State,
+    | "recentActivity"
+    | "viewedItems"
+    | "viewedProducts"
+    | "visitedMinis"
+    | "reportedProducts"
+    | "saved"
+    | "collections"
+    | "followed"
+    | "cart"
+    | "later"
+  >
+>;
 const Context = createContext<State | null>(null);
-export function DiscoveryProvider({ children }: { children: ReactNode }) {
+export function DiscoveryProvider({
+  children,
+  initial,
+}: {
+  children: ReactNode;
+  initial?: DiscoverySeed;
+}) {
   const [recentActivity, setRecentActivity] = useState<
-    "products" | "stores" | null
-  >(null);
+    "products" | "stores" | "minis" | null
+  >(initial?.recentActivity ?? null);
   // Frozen Home017 already contains these prior visits; subsequent visits use the same state.
-  const [viewedProducts, setViewedProducts] = useState<string[]>([
-    "cleo",
-    "round-sunglasses",
-    "u-see-me",
-  ]);
+  const [viewedProducts, setViewedProducts] = useState<string[]>(
+    () => initial?.viewedProducts ?? ["cleo", "round-sunglasses", "u-see-me"],
+  );
   const [viewedItems, setViewedItems] = useState<ViewedItem[]>(
-    ["cleo", "round-sunglasses", "u-see-me"].map((id) => ({
-      kind: "product" as const,
-      id,
-    })),
+    () =>
+      initial?.viewedItems ??
+      ["cleo", "round-sunglasses", "u-see-me"].map((id) => ({
+        kind: "product" as const,
+        id,
+      })),
   );
   const viewStore = useCallback((id: string) => {
     setRecentActivity("stores");
@@ -79,15 +104,24 @@ export function DiscoveryProvider({ children }: { children: ReactNode }) {
       ].slice(0, 24),
     );
   }, []);
-  const [visitedMinis, setVisitedMinis] = useState<string[]>([]);
-  const [reportedProducts, setReportedProducts] = useState<string[]>([]);
+  const [visitedMinis, setVisitedMinis] = useState<string[]>(
+    () => initial?.visitedMinis ?? [],
+  );
+  const [reportedProducts, setReportedProducts] = useState<string[]>(
+    () => initial?.reportedProducts ?? [],
+  );
   const [{ saved, collections }, dispatchSaved] = useReducer(
     savedCollectionsReducer,
-    { saved: ["shea-butter", "rice-bundle"], collections: [] },
+    {
+      saved: initial?.saved ?? ["shea-butter", "rice-bundle"],
+      collections: initial?.collections ?? [],
+    },
   );
-  const [followed, setFollowed] = useState<string[]>([]);
-  const [cart, setCart] = useState<CartLine[]>([]);
-  const [later, setLater] = useState<CartLine[]>([]);
+  const [followed, setFollowed] = useState<string[]>(
+    () => initial?.followed ?? [],
+  );
+  const [cart, setCart] = useState<CartLine[]>(() => initial?.cart ?? []);
+  const [later, setLater] = useState<CartLine[]>(() => initial?.later ?? []);
   const toggle = (values: string[], id: string) =>
     values.includes(id) ? values.filter((v) => v !== id) : [...values, id];
   return (
@@ -110,8 +144,10 @@ export function DiscoveryProvider({ children }: { children: ReactNode }) {
         },
         viewProduct,
         visitedMinis,
-        visitMini: (id) =>
-          setVisitedMinis((v) => [id, ...v.filter((x) => x !== id)]),
+        visitMini: (id) => {
+          setRecentActivity("minis");
+          setVisitedMinis((v) => [id, ...v.filter((x) => x !== id)]);
+        },
         followed,
         cart,
         later,

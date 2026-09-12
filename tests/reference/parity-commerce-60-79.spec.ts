@@ -46,7 +46,9 @@ test("flows 64-65 show source tracking activity and editable tracking details", 
     page.getByText("TBA333200762603", { exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByText("Jurupa Valley, CA, US · Jul 29, 4:26pm", { exact: true }),
+    page
+      .locator(".delivery-preview")
+      .getByText("Jurupa Valley, CA, US · Jul 29, 4:26pm", { exact: true }),
   ).toBeVisible();
   await page.getByRole("button", { name: "View all activity" }).click();
   const activity = page.getByRole("dialog", { name: "Delivery progress" });
@@ -74,15 +76,21 @@ test("flows 62, 66, and 67 preserve order actions, archive, and local review edi
 }) => {
   await page.goto("/orders?view=waiting");
   await page.getByRole("link", { name: /KITSCH Expected by Aug 3/ }).click();
-  await page.getByRole("button", { name: "Order options" }).click();
+  await page
+    .getByRole("button", { name: "Order options", exact: true })
+    .click();
   await page.getByRole("button", { name: "Copy order number" }).click();
   await expect(page.getByRole("status")).toContainText("Order number copied");
-  await page.getByRole("button", { name: "Order options" }).click();
+  await page
+    .getByRole("button", { name: "Order options", exact: true })
+    .click();
   await page.getByRole("button", { name: "Archive order" }).click();
   await page.goBack();
   await page.getByRole("button", { name: "More order options" }).click();
   await page.getByRole("link", { name: "View order archive" }).click();
-  await expect(page.getByText("Ordered Jul 27", { exact: true })).toBeVisible();
+  await expect(
+    page.locator(".archive-order-row").filter({ hasText: "$10.82" }),
+  ).toContainText("Ordered Jul 27");
 
   await page.goto("/orders/REF-1001?state=delivered");
   await page.getByRole("link", { name: /Review your order/ }).click();
@@ -161,7 +169,9 @@ test("flow 63 marks a manually tracked DHL package delivered without a carrier s
   await page
     .getByRole("link", { name: /Loose Fit Printed T-Shirt Label created/ })
     .click();
-  await page.getByRole("button", { name: /Label created/ }).click();
+  await expect(
+    page.getByRole("heading", { name: "Label created", exact: true }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Mark as delivered" }).click();
   await expect(page.getByRole("status")).toContainText("Marked as delivered");
   await expect(

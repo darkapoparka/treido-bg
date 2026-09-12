@@ -1,4 +1,5 @@
 "use client";
+import { ShopSurface } from "../discovery/hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useState } from "react";
@@ -217,7 +218,7 @@ export function Checkout({
   };
 
   return (
-    <main
+    <ShopSurface
       className={`shop-page checkout-page source-checkout ${processing ? "is-processing" : ""}`}
       aria-busy={processing}
     >
@@ -493,7 +494,10 @@ export function Checkout({
               {expanded === "plan" && (
                 <div className="checkout-section-body checkout-plan-body">
                   <div className="installment-unavailable">
-                    <strong>ⓘ Installments unavailable</strong>
+                    <strong>
+                      <span aria-hidden="true">ⓘ </span>
+                      <span>Installments unavailable</span>
+                    </strong>
                     <p>
                       Installments can only be used for orders between $35.00
                       and $30,000.00.
@@ -956,7 +960,7 @@ export function Checkout({
           Back to checkout
         </button>
       </Sheet>
-    </main>
+    </ShopSurface>
   );
 }
 
@@ -1021,11 +1025,11 @@ function SourcePhoneSetup({
                   }
                   placeholder="Enter your phone number"
                 />
-                <span aria-hidden="true">ðŸ‡ºðŸ‡¸âŒ„</span>
+                <span aria-hidden="true">🇺🇸⌄</span>
               </div>
             </label>
             <p className="source-phone-note">
-              Weâ€™ll send you a security code to confirm itâ€™s you.
+              We’ll send you a security code to confirm it’s you.
             </p>
             <button
               className="primary source-phone-next"
@@ -1297,175 +1301,207 @@ function SourcePaymentEditor({
   const [nickname, setNickname] = useState("");
   const [billing, setBilling] = useState(selectedAddressId);
   const [billOpen, setBillOpen] = useState(false);
+  const [billingEditor, setBillingEditor] = useState(false);
+  const [addedBillingAddresses, setAddedBillingAddresses] = useState<Address[]>(
+    [],
+  );
+  const billingAddresses = [...addresses, ...addedBillingAddresses];
   const [boundary, setBoundary] = useState(false);
   const validCard =
     /^\d{12,19}$/.test(number.replace(/\D/g, "")) &&
     /^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry) &&
     /^\d{3,4}$/.test(cvc);
-  const selectedBilling = addresses.find((entry) => entry.id === billing);
+  const selectedBilling = billingAddresses.find(
+    (entry) => entry.id === billing,
+  );
   return (
-    <form
-      className="source-payment-editor"
-      onSubmit={(event) => {
-        event.preventDefault();
-        setBoundary(true);
-      }}
-    >
-      <label className="shipping-option selected source-payment-method-choice">
-        <input
-          type="radio"
-          name="new-payment"
-          checked={method === "card"}
-          onChange={() => setMethod("card")}
-        />
-        <span>
-          <strong>Credit card</strong>
-          <small>VISA Mastercard AMEX +5</small>
-        </span>
-      </label>
-      <div className="source-card-fields">
-        <label className="form-field">
-          Card number
+    <>
+      <form
+        className="source-payment-editor"
+        onSubmit={(event) => {
+          event.preventDefault();
+          setBoundary(true);
+        }}
+      >
+        <label className="shipping-option selected source-payment-method-choice">
           <input
-            aria-label="Card number"
-            inputMode="numeric"
-            autoComplete="off"
+            type="radio"
+            name="new-payment"
+            checked={method === "card"}
+            onChange={() => setMethod("card")}
+          />
+          <span>
+            <strong>Credit card</strong>
+            <small>VISA Mastercard AMEX +5</small>
+          </span>
+        </label>
+        <div className="source-card-fields">
+          <label className="form-field">
+            Card number
+            <input
+              aria-label="Card number"
+              inputMode="numeric"
+              autoComplete="off"
+              disabled={method !== "card"}
+              value={number}
+              onChange={(event) =>
+                setNumber(event.target.value.replace(/[^0-9 ]/g, ""))
+              }
+              placeholder="Card number"
+            />
+          </label>
+          <div>
+            <label className="form-field">
+              Expiration
+              <input
+                aria-label="Expiration"
+                disabled={method !== "card"}
+                value={expiry}
+                onChange={(event) => setExpiry(event.target.value)}
+                placeholder="MM/YY"
+              />
+            </label>
+            <label className="form-field">
+              Security code
+              <input
+                aria-label="Security code"
+                inputMode="numeric"
+                disabled={method !== "card"}
+                value={cvc}
+                onChange={(event) =>
+                  setCvc(event.target.value.replace(/\D/g, ""))
+                }
+                placeholder="CVC"
+              />
+            </label>
+          </div>
+        </div>
+        <label className="form-field">
+          Name on card
+          <input
+            value={name}
             disabled={method !== "card"}
-            value={number}
-            onChange={(event) =>
-              setNumber(event.target.value.replace(/[^0-9 ]/g, ""))
-            }
-            placeholder="Card number"
+            onChange={(event) => setName(event.target.value)}
           />
         </label>
-        <div>
-          <label className="form-field">
-            Expiration
-            <input
-              aria-label="Expiration"
-              disabled={method !== "card"}
-              value={expiry}
-              onChange={(event) => setExpiry(event.target.value)}
-              placeholder="MM/YY"
-            />
-          </label>
-          <label className="form-field">
-            Security code
-            <input
-              aria-label="Security code"
-              inputMode="numeric"
-              disabled={method !== "card"}
-              value={cvc}
-              onChange={(event) =>
-                setCvc(event.target.value.replace(/\D/g, ""))
-              }
-              placeholder="CVC"
-            />
-          </label>
-        </div>
-      </div>
-      <label className="form-field">
-        Name on card
-        <input
-          value={name}
-          disabled={method !== "card"}
-          onChange={(event) => setName(event.target.value)}
-        />
-      </label>
-      <label className="form-field">
-        Nickname (optional)
-        <input
-          value={nickname}
-          onChange={(event) => setNickname(event.target.value)}
-        />
-      </label>
-      <label className="shipping-option source-payment-method-choice">
-        <input
-          type="radio"
-          name="new-payment"
-          checked={method === "apple"}
-          onChange={() => setMethod("apple")}
-        />
-        <strong>Apple Pay</strong>
-      </label>
-      <button
-        type="button"
-        className="source-bill-to"
-        aria-expanded={billOpen}
-        onClick={() => setBillOpen((current) => !current)}
-      >
-        <span>Bill to</span>
-        {!billOpen && selectedBilling && (
-          <span>
-            {selectedBilling.firstName} {selectedBilling.lastName},{" "}
-            {selectedBilling.street}
-          </span>
-        )}
-        <b>{billOpen ? "⌃" : "⌄"}</b>
-      </button>
-      {billOpen && (
-        <div className="source-billing-options">
-          {addresses.map((entry) => (
-            <label
-              className={`shipping-option ${billing === entry.id ? "selected" : ""}`}
-              key={entry.id}
-            >
-              <input
-                type="radio"
-                name="billing"
-                checked={billing === entry.id}
-                onChange={() => setBilling(entry.id)}
-              />
-              <span>
-                <strong>
-                  {entry.firstName} {entry.lastName}
-                </strong>
-                <span>{entry.street}</span>
+        <label className="form-field">
+          Nickname (optional)
+          <input
+            value={nickname}
+            onChange={(event) => setNickname(event.target.value)}
+          />
+        </label>
+        <label className="shipping-option source-payment-method-choice">
+          <input
+            type="radio"
+            name="new-payment"
+            checked={method === "apple"}
+            onChange={() => setMethod("apple")}
+          />
+          <strong>Apple Pay</strong>
+        </label>
+        <button
+          type="button"
+          className="source-bill-to"
+          aria-expanded={billOpen}
+          onClick={() => setBillOpen((current) => !current)}
+        >
+          <span>Bill to</span>
+          {!billOpen && selectedBilling && (
+            <span>
+              {selectedBilling.firstName} {selectedBilling.lastName},{" "}
+              {selectedBilling.street}
+            </span>
+          )}
+          <b>{billOpen ? "⌃" : "⌄"}</b>
+        </button>
+        {billOpen && (
+          <div className="source-billing-options">
+            {billingAddresses.map((entry) => (
+              <label
+                className={`shipping-option ${billing === entry.id ? "selected" : ""}`}
+                key={entry.id}
+              >
+                <input
+                  type="radio"
+                  name="billing"
+                  checked={billing === entry.id}
+                  onChange={() => setBilling(entry.id)}
+                />
                 <span>
-                  {entry.city}, {entry.region} {entry.postalCode}
+                  <strong>
+                    {entry.firstName} {entry.lastName}
+                  </strong>
+                  <span>{entry.street}</span>
+                  <span>
+                    {entry.city}, {entry.region} {entry.postalCode}
+                  </span>
                 </span>
-              </span>
-            </label>
-          ))}
-          <button type="button" className="checkout-link">
-            ＋ Use a different address
-          </button>
-        </div>
-      )}
-      {boundary && (
-        <div className="payment-preview-boundary" role="status">
-          <strong>Payment service is not connected.</strong>
-          <p>No payment method was added and no card data was sent.</p>
-          {method === "card" && validCard && (
+              </label>
+            ))}
             <button
               type="button"
-              className="primary form-submit"
-              onClick={onPreviewSaved}
+              className="checkout-link"
+              onClick={() => setBillingEditor(true)}
             >
-              Preview captured post-save state
+              ＋ Use a different address
             </button>
-          )}
-          {method === "card" && !validCard && (
-            <p className="form-error">
-              Check the card fields before previewing the captured state.
-            </p>
-          )}
-          {method === "apple" && (
-            <p className="form-error">
-              Apple Pay is not connected in this reference preview.
-            </p>
-          )}
+          </div>
+        )}
+        {boundary && (
+          <div className="payment-preview-boundary" role="status">
+            <strong>Payment service is not connected.</strong>
+            <p>No payment method was added and no card data was sent.</p>
+            {method === "card" && validCard && (
+              <button
+                type="button"
+                className="primary form-submit"
+                onClick={onPreviewSaved}
+              >
+                Preview captured post-save state
+              </button>
+            )}
+            {method === "card" && !validCard && (
+              <p className="form-error">
+                Check the card fields before previewing the captured state.
+              </p>
+            )}
+            {method === "apple" && (
+              <p className="form-error">
+                Apple Pay is not connected in this reference preview.
+              </p>
+            )}
+          </div>
+        )}
+        <div className="editor-actions">
+          <button type="button" className="form-cancel" onClick={onCancel}>
+            Cancel
+          </button>
+          <button className="primary form-submit" type="submit">
+            Save
+          </button>
         </div>
-      )}
-      <div className="editor-actions">
-        <button type="button" className="form-cancel" onClick={onCancel}>
-          Cancel
-        </button>
-        <button className="primary form-submit" type="submit">
-          Save
-        </button>
-      </div>
-    </form>
+      </form>
+      <Sheet
+        open={billingEditor}
+        title="Billing address"
+        className="source-address-sheet"
+        onClose={() => setBillingEditor(false)}
+      >
+        <SourceAddressEditor
+          key={String(billingEditor)}
+          variant="sheet"
+          initialValue={blankCheckoutAddress()}
+          onCancel={() => setBillingEditor(false)}
+          onSave={(address) => {
+            const added = { ...address, id: crypto.randomUUID() };
+            setAddedBillingAddresses((current) => [...current, added]);
+            setBilling(added.id);
+            setBillingEditor(false);
+          }}
+        />
+      </Sheet>
+    </>
   );
 }
 

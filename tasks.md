@@ -18,6 +18,10 @@ Execute the requested task, not the entire roadmap. Report a missing prerequisit
 
 Task 1 is implemented and locally verified. The complete frozen Shop archive is available: 323 standalone media entries, 97 named flows and 424 ordered flow frames. `apps/web` now contains 49 buyer page routes and connected local reference states spanning discovery, purchase, orders, account, support and Minis. Broad implementation is substantially ahead of formal acceptance: the parity ledger intentionally remains 0/97 owner-accepted until each flow's source, implementation, UX, 393×793 comparison, widths and focused tests are evidenced. Work stays directly on the single `J:\treido-bg` `main` under the one-session loop in `single-session-execution.md`; the prior parallel-lane experiment is retired. For the active Shop 1:1 push, **do not derive the next visual action from the long historical records below**: `shop-implementation-map.md` owns the current quantitative scores/resume experiment and `shop-parity-checklist.md` owns acceptance. Real providers/backend and Expo product implementation have not started. This numbered list remains the only product task queue; the parity files are Tasks 3/5/6 execution/evidence controls.
 
+### 2026-09-12 Account/Profile and behavior checkpoint
+
+The versioned replay now covers 100/424 frames (69–78 and 80–94); 324 remain unmapped. The full reference suite passed 94/94 against the live J:\treido-bg preview on port 6412. Person-sheet keyboard geometry, public-profile composition, preference alignment, per-card receipt state, nested billing, saved-for-later stock behavior, tracking edits and pickup/account payment consistency were corrected. The frame ledger records current measured errors; 10 numerical candidates do not imply owner acceptance. Source-state corrections and remaining visual residuals are recorded in shop-implementation-map.md. No deployment or provider operation was performed.
+
 | Task | Work package | Deliverable | Status |
 | --- | --- | --- | --- |
 | 1 | Initialize the stack | Runnable Next.js/Expo workspace and basic checks | Done |

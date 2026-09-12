@@ -10,6 +10,9 @@ test("discovery images, navigation and mobile width remain usable", async ({
   await expect(
     page.getByRole("navigation", { name: "Main navigation" }),
   ).toBeVisible();
+  // A new Home has no user-visit rail. Visit a product before asserting recent history.
+  await page.goto("/products/cleo");
+  await page.getByRole("link", { name: "Home", exact: true }).click();
   await expect(
     page.getByRole("link", { name: "Cleo - Black/Smoke", exact: true }).first(),
   ).toBeVisible();
@@ -40,7 +43,7 @@ test("discovery images, navigation and mobile width remain usable", async ({
   await page.getByRole("link", { name: "Profile", exact: true }).click();
   await expect(page).toHaveURL(/\/profile$/);
   await expect(
-    page.getByText("mira@example.test", { exact: true }),
+    page.getByText("alexsmith.mobbin+3@gmail.com", { exact: true }),
   ).toBeVisible();
   expect(errors).toEqual([]);
 });
@@ -84,8 +87,11 @@ test("cart keeps variant identity and checkout stops before a live payment", asy
   await expect(page).toHaveURL(/checkout\?store=fashion-nova/);
   await page.getByRole("button", { name: /^Pay now/ }).click();
   await expect(
-    page.getByRole("heading", { name: "Payment unavailable" }),
+    page.getByRole("heading", { name: "Payment service is not connected" }),
   ).toBeVisible();
+  await expect(page.getByRole("dialog")).toContainText(
+    "No card was charged and no order was created.",
+  );
 });
 
 test("unknown media keys do not expose source files", async ({ request }) => {

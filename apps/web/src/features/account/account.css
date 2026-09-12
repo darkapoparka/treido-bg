@@ -2135,20 +2135,6 @@
   margin: 8px 0;
 }
 
-.profile-recent-rail {
-  display: flex;
-  gap: 10px;
-  overflow: auto;
-}
-.profile-recent-rail a {
-  flex: 0 0 112px;
-}
-.profile-recent-rail img {
-  width: 112px;
-  height: 112px;
-  border-radius: 16px;
-  object-fit: cover;
-}
 .product-underlay {
   background: white;
   transform-origin: center top;

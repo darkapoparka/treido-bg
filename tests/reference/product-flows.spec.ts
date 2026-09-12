@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test("product gallery closes through browser history and restores its trigger", async ({
+test("product gallery closes through history and returns to the selected photo", async ({
   page,
 }) => {
   await page.goto("/products/shea-butter");
@@ -22,7 +22,9 @@ test("product gallery closes through browser history and restores its trigger", 
   );
   await page.goBack();
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  await expect(trigger).toBeFocused();
+  await expect(
+    page.getByRole("button", { name: "View product image 2", exact: true }),
+  ).toBeFocused();
 });
 
 test("product saving chooses a collection and retains its membership", async ({
@@ -62,7 +64,7 @@ test("review search and helpful selection affect the selected review", async ({
   page,
 }) => {
   await page.goto("/products/shea-butter/reviews");
-  await page.getByRole("textbox", { name: "Search reviews" }).fill("nice");
+  await page.getByRole("searchbox", { name: "Search reviews" }).fill("nice");
   await expect(page.locator(".review-card")).toHaveCount(4);
   const review = page.locator(".review-card").first();
   await expect(review).toContainText("This is truly one of the nicest soaps");

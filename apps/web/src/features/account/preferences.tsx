@@ -75,14 +75,16 @@ export function Preferences({ personId }: { personId?: string }) {
   ) {
     const selected = choices[choiceKey(key)] ?? [];
     return (
-      <div className="preference-section" key={key}>
+      <div className={`preference-section preference-${key}`} key={key}>
         <button
           className="profile-field"
+          aria-expanded={expanded === key}
+          aria-label={`${label}${selected.length ? ` ${selected.join(" ")}` : ""}`}
           onClick={() => setExpanded(expanded === key ? "" : key)}
         >
           <span>{label}</span>
           <span className="selected-preferences">
-            {selected.length
+            {expanded !== key && selected.length
               ? selected.map((value) => {
                   const swatch = colors?.[options.indexOf(value)];
                   return (
@@ -143,6 +145,8 @@ export function Preferences({ personId }: { personId?: string }) {
             <div key={key}>
               <button
                 className="profile-field"
+                aria-expanded={expanded === key}
+                aria-label={`${label} ${personId ? (choices[choiceKey(field)]?.[0] ?? "") : profile[field]}`.trim()}
                 onClick={() => {
                   const next = expanded === key ? "" : key;
                   setExpanded(next);
@@ -151,9 +155,10 @@ export function Preferences({ personId }: { personId?: string }) {
               >
                 <span>{label}</span>
                 <span className="selected-preferences">
-                  {(
-                    personId ? choices[choiceKey(field)]?.[0] : profile[field]
-                  ) ? (
+                  {expanded !== key &&
+                  (personId
+                    ? choices[choiceKey(field)]?.[0]
+                    : profile[field]) ? (
                     <b>
                       {personId
                         ? choices[choiceKey(field)]?.[0]

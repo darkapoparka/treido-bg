@@ -233,8 +233,19 @@ export function CartContents({
                   </button>
                   <button
                     className="move-to-cart"
-                    disabled
-                    title="Unavailable in the captured saved-for-later state"
+                    disabled={l.variant.availableQuantity <= 0}
+                    title={
+                      l.variant.availableQuantity <= 0
+                        ? "Currently unavailable"
+                        : undefined
+                    }
+                    onClick={() =>
+                      state.moveToCart(
+                        l.productId,
+                        l.variantId,
+                        l.variant.availableQuantity,
+                      )
+                    }
                   >
                     Move to cart
                   </button>

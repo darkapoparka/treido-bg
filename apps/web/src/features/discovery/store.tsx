@@ -1,4 +1,5 @@
 "use client";
+import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
@@ -461,7 +462,7 @@ export function Storefront({
       ])
     : all;
   return (
-    <main
+    <ShopSurface
       className={`shop-page store-page ${chemical ? "chemical-store" : ""}`}
     >
       {isKitsch && <StorePromotion />}
@@ -571,7 +572,7 @@ export function Storefront({
         )}
       <FloatingNav back cart={() => setCart(true)} />
       <Cart catalog={catalog} open={cart} onClose={() => setCart(false)} />
-    </main>
+    </ShopSurface>
   );
 }
 function StoreCriteria() {
@@ -660,7 +661,7 @@ export function StoreCollection({
             : [];
   const [notice, setNotice] = useState("");
   return (
-    <main className="shop-page store-collection-page">
+    <ShopSurface className="shop-page store-collection-page">
       <div className="collection-promotion">
         <b>Save $15</b> on orders over $50 <span aria-hidden="true">⌄</span>
       </div>
@@ -713,7 +714,7 @@ export function StoreCollection({
         </button>
       )}
       <FloatingNav back />
-    </main>
+    </ShopSurface>
   );
 }
 const storeCategories = [
@@ -744,7 +745,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
     ["Facebook", "https://facebook.com/mykitsch"],
   ];
   return (
-    <main className="shop-page store-info-page">
+    <ShopSurface className="shop-page store-info-page">
       <StoreActions store={store} close />
       <div className="store-info-brand">
         {store.logo && <img src={store.logo} alt="" />}
@@ -917,7 +918,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
         </p>
         <textarea aria-label="Report details" placeholder="Tell us more" />
       </Sheet>
-    </main>
+    </ShopSurface>
   );
 }
 export function StoreSearch({
@@ -946,7 +947,8 @@ export function StoreSearch({
   }, []);
   function submit(text: string) {
     const next = new URLSearchParams(params.toString());
-    text.trim() ? next.set("q", text.trim()) : next.delete("q");
+    if (text.trim()) next.set("q", text.trim());
+    else next.delete("q");
     const url = `${path}${next.size ? `?${next}` : ""}`;
     if (url !== `${window.location.pathname}${window.location.search}`)
       window.history.pushState(null, "", url);
@@ -1019,7 +1021,7 @@ export function StoreSearch({
     );
   }
   return (
-    <main
+    <ShopSurface
       className={`shop-page store-search-page ${editing ? "store-search-editing" : "store-search-results"}`}
     >
       <div className="store-search-toolbar">
@@ -1171,14 +1173,14 @@ export function StoreSearch({
           else router.push(`/stores/${store.id}`);
         }}
       />
-    </main>
+    </ShopSurface>
   );
 }
 
 export function StoreVideo() {
   const [notice, setNotice] = useState(false);
   return (
-    <main className="store-video-page">
+    <ShopSurface className="store-video-page">
       <img
         className="video-poster"
         src="/api/reference-media/chemical-poster"
@@ -1230,6 +1232,6 @@ export function StoreVideo() {
           asset is not available.
         </p>
       </Sheet>
-    </main>
+    </ShopSurface>
   );
 }

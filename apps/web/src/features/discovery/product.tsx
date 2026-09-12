@@ -1,4 +1,5 @@
 "use client";
+import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -174,7 +175,9 @@ export function ProductDetail({
         .filter((p) => p.storeId === product.storeId && p.id !== product.id)
         .slice(0, 4);
   return (
-    <main className={`shop-page product-page ${cart ? "cart-visible" : ""}`}>
+    <ShopSurface
+      className={`shop-page product-page ${cart ? "cart-visible" : ""}`}
+    >
       <div className="product-underlay">
         {store && <StoreRow store={store} onMore={() => setOptions(true)} />}
         <div className="product-gallery" ref={galleryRail}>
@@ -782,6 +785,6 @@ export function ProductDetail({
           )}
         </div>
       </Sheet>
-    </main>
+    </ShopSurface>
   );
 }

@@ -1,39 +1,26 @@
 "use client";
+import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { miniCatalog, featuredMiniIds, findMini } from "./mini-model";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Catalog } from "../catalog/types";
 import { FloatingNav, IconButton, ProductCard, Sheet } from "./components";
 import { Icon } from "./icons";
 import { useDiscovery } from "./state";
 import { useAccount } from "../account/state";
-const minis = [
-  {
-    id: "sol",
-    name: "Sol: Browse by Voice",
-    description: "Your AI shopping companion you can talk to.",
-  },
-  {
-    id: "skin",
-    name: "Skincare AI",
-    description: "Analyze your skin instantly with advanced AI.",
-  },
-  {
-    id: "look",
-    name: "Get the Look",
-    description: "Find every piece from any outfit",
-  },
-  {
-    id: "gift",
-    name: "Gift Sense",
-    description: "A new way to find the perfect gift",
-  },
-];
+const minis = featuredMiniIds.map((id) => ({ id, ...miniCatalog[id] }));
+
 export function Minis() {
   const state = useDiscovery();
+  const params = useSearchParams();
   const [search, setSearch] = useState("");
   const [searching, setSearching] = useState(false);
-  const [unavailable, setUnavailable] = useState("");
+  const [unavailable, setUnavailable] = useState(() => {
+    const mini = findMini(params.get("notice") ?? "");
+    return mini && !mini.available ? mini.name : "";
+  });
   const lists = [
     [
       {
@@ -84,13 +71,19 @@ export function Minis() {
         {content}
       </Link>
     ) : (
-      <button key={m.id} onClick={() => setUnavailable(m.name)}>
+      <button
+        key={m.id}
+        onClick={() => {
+          state.visitMini(m.id);
+          setUnavailable(m.name);
+        }}
+      >
         {content}
       </button>
     );
   };
   return (
-    <main className="shop-page minis-page">
+    <ShopSurface className="shop-page minis-page">
       <header className="section-heading">
         <h1>Minis</h1>
         <IconButton
@@ -148,7 +141,12 @@ export function Minis() {
           name: "Help Me Decor",
           description: "AI-powered interior styling Shop Mini that help…",
         })}
-        <button onClick={() => setUnavailable("Homescape AI")}>
+        <button
+          onClick={() => {
+            state.visitMini("homescape");
+            setUnavailable("Homescape AI");
+          }}
+        >
           <img src="/api/reference-media/mini-homescape-icon" alt="" />
           <span>
             <strong>Homescape AI</strong>
@@ -187,12 +185,12 @@ export function Minis() {
         </p>
       </Sheet>
       <FloatingNav back />
-    </main>
+    </ShopSurface>
   );
 }
 function MiniShell({ name, children }: { name: string; children: ReactNode }) {
   return (
-    <main className="mini-shell">
+    <ShopSurface className="mini-shell">
       <header>
         <Link href="/minis" aria-label="Back to Minis">
           <Icon name="back" />
@@ -203,7 +201,7 @@ function MiniShell({ name, children }: { name: string; children: ReactNode }) {
         </Link>
       </header>
       {children}
-    </main>
+    </ShopSurface>
   );
 }
 function MiniAccess({

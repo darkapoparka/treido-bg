@@ -171,6 +171,8 @@ function serializeFrame(frame) {
     overlayState: frame.recipeFrame?.overlay || "none",
     mappingStatus: frame.mappingStatus,
     scoreable: frame.mappingStatus === "reproducible",
+    masks: frame.recipeFrame?.masks ?? [],
+    entry: frame.recipeFrame?.entry ?? null,
     reference: path.relative(ROOT, frame.reference).replaceAll("\\", "/"),
     sourceWidth: frame.source.width,
     sourceHeight: frame.source.height,
@@ -255,6 +257,42 @@ async function perform(page, action) {
     await page.waitForURL(action.url);
   } else if (action.type === "wait") {
     await page.waitForTimeout(action.ms);
+  } else if (action.type === "goto") {
+    if (!action.url.startsWith("/") || action.url.startsWith("//"))
+      throw new Error("Replay navigation must remain local");
+    await page.goto(`${BASE_URL}${action.url}`, {
+      waitUntil: "domcontentloaded",
+    });
+    await page
+      .locator('[data-shop-interactive="true"]')
+      .first()
+      .waitFor({ state: "attached" });
+  } else if (action.type === "viewport") {
+    if (
+      action.width !== 393 ||
+      !Number.isInteger(action.height) ||
+      action.height < 200 ||
+      action.height > 793
+    )
+      throw new Error(
+        "Only source-width keyboard viewport reductions are allowed",
+      );
+    await page.setViewportSize({ width: action.width, height: action.height });
+  } else if (action.type === "anchorSelector") {
+    await page
+      .locator(action.selector)
+      .first()
+      .evaluate(
+        (node, y) => window.scrollBy(0, node.getBoundingClientRect().top - y),
+        action.y,
+      );
+  } else if (action.type === "scrollElement") {
+    await page
+      .locator(action.selector)
+      .evaluate((node, position) => node.scrollTo(position), {
+        top: action.y ?? 0,
+        left: action.x ?? 0,
+      });
   } else if (action.type === "key") {
     await page.keyboard.press(action.key);
   } else {
@@ -380,6 +418,14 @@ async function writeRgb(buffer, outputPath) {
 async function captureFrame(browser, frame, runDir) {
   if (!frame.recipeFrame) throw new Error(`No replay recipe for ${frame.id}`);
   const recipe = flowRecipes[frame.flowNo];
+  let replayStart = 0;
+  for (let i = 0; i < frame.frameNo; i += 1)
+    if (recipe.frames[i].entry) replayStart = i;
+  const entry = recipe.frames[replayStart].entry ?? {};
+  const startUrl = entry.startUrl ?? recipe.startUrl;
+  const scenario = entry.scenario ?? recipe.scenario;
+  if (!startUrl.startsWith("/") || startUrl.startsWith("//"))
+    throw new Error("Replay entry must be a local route");
   const frameDir = path.join(runDir, frame.id);
   ensureDir(frameDir);
   const referencePath = path.join(frameDir, "reference.png");
@@ -389,35 +435,73 @@ async function captureFrame(browser, frame, runDir) {
     deviceScaleFactor: 1,
     reducedMotion: "reduce",
   });
+  await context.route("**/*", (route) =>
+    new URL(route.request().url()).origin === new URL(BASE_URL).origin
+      ? route.continue()
+      : route.abort(),
+  );
+  if (scenario)
+    await context.addCookies([
+      {
+        name: "shop-reference-scenario",
+        value: scenario,
+        url: BASE_URL,
+        httpOnly: true,
+        sameSite: "Lax",
+      },
+    ]);
   const page = await context.newPage();
   const browserErrors = [];
   page.on("pageerror", (error) => browserErrors.push(error.message));
 
   try {
     page.setDefaultTimeout(10_000);
-    await page.goto(`${BASE_URL}${recipe.startUrl}`, {
+    await page.goto(`${BASE_URL}${startUrl}`, {
       waitUntil: "domcontentloaded",
     });
-    await page.waitForFunction(
-      () => document.documentElement.dataset.shopHydrated === "true",
-    );
+    await page
+      .locator('[data-shop-interactive="true"]')
+      .first()
+      .waitFor({ state: "attached" });
+    if (
+      scenario &&
+      (await page.locator("html").getAttribute("data-reference-scenario")) !==
+        scenario
+    )
+      throw new Error(
+        `Scenario not enabled by the reference server: ${scenario}`,
+      );
     await page.addStyleTag({
       content:
         "html{scroll-behavior:auto!important}*{caret-color:transparent!important}" +
         (process.env.SHOP_PARITY_INJECT_CSS || ""),
     });
-    for (let index = 0; index < frame.frameNo; index += 1) {
+    for (let index = replayStart; index < frame.frameNo; index += 1) {
       for (const action of recipe.frames[index].actions || []) {
         await perform(page, action);
       }
     }
     await settle(page);
     await normalizeReference(frame.reference, referencePath);
-    await page.screenshot({
-      path: livePath,
+    const viewport = page.viewportSize();
+    const screenshot = await page.screenshot({
       fullPage: false,
       animations: "disabled",
     });
+    if (viewport.height < HEIGHT) {
+      const masks = frame.recipeFrame.masks ?? [];
+      for (let y = viewport.height; y < HEIGHT; y += 1)
+        for (let x = 0; x < WIDTH; x += 1) {
+          if (!inMask(x, y, masks))
+            throw new Error(
+              "A reduced viewport may only pad explicitly masked system pixels",
+            );
+        }
+      await sharp(screenshot)
+        .extend({ bottom: HEIGHT - viewport.height, background: "white" })
+        .png()
+        .toFile(livePath);
+    } else fs.writeFileSync(livePath, screenshot);
     const comparison = await compareImages(
       referencePath,
       livePath,
@@ -432,6 +516,8 @@ async function captureFrame(browser, frame, runDir) {
       ...serializeFrame(frame),
       status: "scored",
       url: page.url(),
+      scenario: scenario ?? "default",
+      replayEntryFrame: replayStart + 1,
       browserErrors,
       ...comparison.metrics,
       artifacts: {

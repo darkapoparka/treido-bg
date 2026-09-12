@@ -7,6 +7,7 @@ import { useDiscovery } from "../discovery/state";
 import { Icon } from "../discovery/icons";
 import { AccountIcon } from "./icons";
 import { Preferences } from "./preferences";
+import { ProfileRecent } from "./profile-recent";
 import {
   ProfileAvatar,
   ProfileChoice,
@@ -37,8 +38,14 @@ import {
   type Person,
 } from "./state";
 export function ProfilePage({ catalog }: { catalog: Catalog }) {
-  const { profile, paymentAvailable, paymentCards, orders, reset } =
-    useAccount();
+  const {
+    profile,
+    paymentAvailable,
+    paymentCards,
+    hasPaymentProfile,
+    orders,
+    reset,
+  } = useAccount();
   const discovery = useDiscovery();
   const [logout, setLogout] = useState(false);
   const starterProfile =
@@ -57,9 +64,7 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
             <strong>{profile.email}</strong>
           ) : (
             <>
-              <strong>
-                {profile.firstName} {profile.lastName}
-              </strong>
+              <strong>{profile.firstName}</strong>
               <small>{profile.email}</small>
             </>
           )}
@@ -73,16 +78,20 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
             Enter and verify a phone number for faster checkout at millions of
             stores
           </p>
-          <span className="checkout-faster-art" aria-hidden="true">
-            <i />
-          </span>
+          <img
+            className="checkout-faster-art"
+            src="/api/reference-media/auth-phone"
+            alt=""
+          />
           <Link className="primary" href="/account?edit=phone">
             Add phone
           </Link>
         </div>
       ) : (
         <Link className="account-panel passkey-row" href="/account/security">
-          <span>◉</span>
+          <span className="profile-passkey-mark" aria-hidden="true">
+            <AccountIcon name="passkey" />
+          </span>
           <strong>
             Add a passkey for fast and secure sign-in on millions of stores
           </strong>
@@ -109,8 +118,8 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
           <div className="tile-images">
             {starterProfile ? (
               <span className="starter-following-logos" aria-hidden="true">
-                <i>/kit·sch/</i>
-                <i>pura.</i>
+                <img src="/api/reference-media/kitsch-logo" alt="" />
+                <img src="/api/reference-media/pura-logo" alt="" />
               </span>
             ) : (
               catalog.stores
@@ -140,7 +149,11 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
       <div className="account-panel profile-order-panel">
         {starterProfile ? (
           <div className="profile-empty-orders">
-            <span className="profile-empty-package" aria-hidden="true" />
+            <img
+              className="profile-empty-package"
+              src="/api/reference-media/profile-empty-package"
+              alt=""
+            />
             <span>
               <strong>No orders yet</strong>
               <small>
@@ -154,7 +167,7 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
           </div>
         ) : (
           <>
-            {orders.slice(0, 2).map((order, i) => {
+            {orders.slice(0, 2).map((order) => {
               const product = catalog.products.find(
                 (p) => p.id === order.productId,
               );
@@ -176,7 +189,7 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
                   </span>
                   <span>
                     <strong>
-                      {i === 0 ? order.name : (seller?.name ?? order.name)}
+                      {product ? (seller?.name ?? order.name) : order.name}
                     </strong>
                     <small>
                       {order.status === "In transit"
@@ -186,7 +199,7 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
                           : "Delivered"}
                     </small>
                   </span>
-                  {i === 0 ? (
+                  {!product ? (
                     <time>Jul 27</time>
                   ) : (
                     product && (
@@ -208,49 +221,39 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
         <h2 className="starter-family-heading">Family</h2>
       ) : (
         <>
-          {!!discovery.viewedProducts.length && (
+          <ProfileRecent catalog={catalog} />
+          {hasPaymentProfile && (
             <>
-              <h2>Recently viewed ›</h2>
-              <div className="profile-recent-rail">
-                {discovery.viewedProducts.map((id) => {
-                  const product = catalog.products.find((p) => p.id === id);
-                  return product ? (
-                    <Link key={id} href={`/products/${id}`}>
-                      <img src={product.images[0]} alt={product.title} />
-                    </Link>
-                  ) : null;
-                })}
-              </div>
-            </>
-          )}
-          <div className="profile-payment-heading">
-            <h2>Payment methods</h2>
-            <Link
-              className="pill"
-              href="/account/payments?view=add&return=profile"
-              scroll={false}
-            >
-              Add card
-            </Link>
-          </div>
-          {paymentAvailable && (
-            <div
-              className={`payment-card-stack ${paymentCards.length > 1 ? "multiple" : ""}`}
-            >
-              {paymentCards.map((card) => (
+              <div className="profile-payment-heading">
+                <h2>Payment methods</h2>
                 <Link
-                  className="payment-card-button"
-                  key={card.id}
-                  href={`/account/payments?view=detail&id=${card.id}&return=profile`}
+                  className="pill"
+                  href="/account/payments?view=add&return=profile"
                   scroll={false}
                 >
-                  <PaymentCard last4={card.last4} />
+                  Add card
                 </Link>
-              ))}
-            </div>
+              </div>
+              {paymentAvailable && (
+                <div
+                  className={`payment-card-stack ${paymentCards.length > 1 ? "multiple" : ""}`}
+                >
+                  {paymentCards.map((card) => (
+                    <Link
+                      className="payment-card-button"
+                      key={card.id}
+                      href={`/account/payments?view=detail&id=${card.id}&return=profile`}
+                      scroll={false}
+                    >
+                      <PaymentCard last4={card.last4} />
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </>
           )}
           <div className="account-panel profile-settings-panel">
-            {paymentAvailable && (
+            {hasPaymentProfile && (
               <Row label="Addresses" href="/account/addresses" />
             )}
             <Row label="Sign in & security" href="/account/security" />
@@ -540,15 +543,21 @@ export function PublicProfile({ catalog }: { catalog: Catalog }) {
   );
   const [name, setName] = useState("");
   const [creating, setCreating] = useState(false);
+  const [sharing, setSharing] = useState(false);
   return (
-    <AccountPage>
+    <AccountPage className="public-profile-page">
+      {!!publicCollections.length && (
+        <button
+          className="icon-button public-profile-share"
+          aria-label="Share profile"
+          onClick={() => setSharing(true)}
+        >
+          <Icon name="share" />
+        </button>
+      )}
       <div className="public-profile">
         <ProfileAvatar src={profile.avatar} name={profile.firstName} large />
-        {!!publicCollections.length && (
-          <h1>
-            {profile.firstName} {profile.lastName}
-          </h1>
-        )}
+        {!!publicCollections.length && <h1>{profile.firstName}</h1>}
         <Link className="pill" href="/account">
           Edit profile
         </Link>
@@ -591,10 +600,14 @@ export function PublicProfile({ catalog }: { catalog: Catalog }) {
               })}
             </div>
             <strong>{c.name}</strong>
-            <small>{c.productIds.length} items</small>
           </Link>
         ))}
       </div>
+      <Boundary
+        open={sharing}
+        onClose={() => setSharing(false)}
+        kind="Public profile sharing"
+      />
       <Sheet
         open={creating}
         title="Create collection"
@@ -852,7 +865,7 @@ export function PeoplePage() {
         open={editingPerson}
         manageHistory={false}
         headerless={stage === "nickname"}
-        className="person-editor-sheet"
+        className={`person-editor-sheet person-editor-${stage}`}
         initialFocus={
           stage === "nickname" ? ".nickname-input" : '[aria-label="Month"]'
         }
@@ -927,7 +940,11 @@ export function PeoplePage() {
               </button>
               <button
                 className="primary form-submit"
-                disabled={!person.name.trim()}
+                disabled={
+                  !person.name.trim() ||
+                  (stage === "birthday" &&
+                    (!person.birthday || !validBirthday(person.birthday)))
+                }
               >
                 Save
               </button>
@@ -1051,8 +1068,14 @@ export function PaymentsPage() {
   const route = useAccountStage();
   const router = useRouter();
   const returnToProfile = useSearchParams().get("return") === "profile";
-  const { paymentAvailable, removePayment, addresses, paymentCards } =
-    useAccount();
+  const {
+    paymentAvailable,
+    removePayment,
+    addresses,
+    paymentCards,
+    receiptPreferences: receipts,
+    setReceiptPreference,
+  } = useAccount();
   const [cardId, setCardId] = useState(() => paymentCards[0]?.id ?? "");
   const card = paymentCards.find((c) => c.id === (route.id ?? cardId));
   const billing = addresses.find((a) => a.isDefault) ?? addresses[0];
@@ -1069,7 +1092,6 @@ export function PaymentsPage() {
   const setView = (next: "list" | "detail" | "add") =>
     next === "list" ? backFromSubpage() : route.go(next, cardId);
   const [remove, setRemove] = useState(false);
-  const [receipts, setReceipts] = useState<Record<string, boolean>>({});
   return (
     <AccountPage
       className={
@@ -1162,10 +1184,7 @@ export function PaymentsPage() {
                   role="switch"
                   checked={receipts[card?.id ?? ""] ?? true}
                   onChange={(e) =>
-                    setReceipts({
-                      ...receipts,
-                      [card?.id ?? ""]: e.target.checked,
-                    })
+                    setReceiptPreference(card.id, e.target.checked)
                   }
                 />
               </label>

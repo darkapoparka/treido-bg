@@ -1,13 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-async function addShampooBag(page: import("@playwright/test").Page) {
-  await page.goto("/products/shampoo-bag");
-  const add = page.getByRole("button", { name: "Add to cart", exact: true });
-  await add.scrollIntoViewIfNeeded();
-  // Lane C owns the floating nav; its current hitbox overlaps this source CTA.
-  await add.evaluate((node) => (node as HTMLButtonElement).click());
-  await expect(page.getByRole("button", { name: "Open cart" })).toBeVisible();
-}
+import { addShampooBag, useReferenceScenario } from "./helpers";
 
 test("flows 21-23 preserve captured cart, remove, and save-later states", async ({
   page,
@@ -27,7 +20,27 @@ test("flows 21-23 preserve captured cart, remove, and save-later states", async 
   ).toBeVisible();
   await expect(
     cart.getByRole("button", { name: "Move to cart" }),
+  ).toBeEnabled();
+});
+
+test("flow 23 captured unavailable variant stays saved and cannot move to cart", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "cart-later");
+  await page.goto("/cart");
+  await expect(
+    page.getByRole("heading", { name: "Your cart is empty" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Saved for later" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Move to cart" }),
   ).toBeDisabled();
+  await page
+    .getByRole("button", { name: "Remove saved Shampoo Bar Bag" })
+    .click();
+  await expect(page.locator(".cart-later")).toHaveCount(0);
 });
 test("flow 21 checkout stops at payment boundary before captured confirmation", async ({
   page,

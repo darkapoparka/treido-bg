@@ -65,22 +65,11 @@ test("review product composition transitions to local edit review", async ({
   ).toHaveCount(0);
 });
 
-test("recorded confirmation is reached from an existing order and opens its full receipt", async ({
+test("existing order opens the complete captured receipt without a new purchase", async ({
   page,
 }) => {
   await page.goto("/orders/REF-1001");
-  await page
-    .getByRole("button", { name: "Order options", exact: true })
-    .click();
-  await page
-    .getByRole("link", { name: "View order confirmation", exact: true })
-    .click();
-  await expect(
-    page.getByRole("heading", { name: "Order confirmed", exact: true }),
-  ).toBeVisible();
-  await page
-    .getByRole("link", { name: "View order receipt", exact: true })
-    .click();
+  await page.getByRole("link", { name: "View receipt", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Receipt", exact: true }),
   ).toBeVisible();

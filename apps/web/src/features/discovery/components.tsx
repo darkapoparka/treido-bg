@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useId, type ReactNode } from "react";
 import { Icon, type IconName } from "./icons";
 import { useDiscovery } from "./state";
+import { useSurfaceReady } from "./hydration-boundary";
 import { formatMoney, type Product, type Store } from "../catalog/types";
 export function IconButton({
   icon,
@@ -286,6 +287,7 @@ export function Sheet({
   // URL-owned stages already have an entry; only local overlays add one.
   manageHistory?: boolean;
 }) {
+  const ready = useSurfaceReady();
   const ref = useRef<HTMLDialogElement>(null);
   const router = useRouter();
   const navigating = useRef(false);
@@ -299,7 +301,7 @@ export function Sheet({
   }, [onClose]);
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || !ready) return;
     if (!open) {
       if (el.open) el.close();
       el.style.transform = "";
@@ -393,7 +395,7 @@ export function Sheet({
         fallback?.focus({ preventScroll: true });
       }
     };
-  }, [open, initialFocus, manageHistory]);
+  }, [open, initialFocus, manageHistory, ready]);
   return (
     <dialog
       ref={ref}

@@ -99,36 +99,40 @@ Fix the highest-leverage shared primitive only when the ranked heatmaps show the
 
 ## Current quantitative baseline and exact resume point
 
-Local evidence run **checkpoint-account-home**: **59 / 424 ordered frames mapped and scored**, covering flows 80–94. Nine frames meet the numerical MAE/bad-pixel gate; none of this grants owner acceptance. Use `shop-frame-ledger.md` for all 424 frame IDs and current measured results. Generate it with `node scripts/shop-parity/ledger.mjs checkpoint-account-home`.
+Checkpoint date: 2026-09-12. The tracked runner now replays **100/424 ordered frames**: all 41 Account/Profile/People frames (69–78) plus the 59 payment/address/settings/support/sign-in frames (80–94). **10 frames are numerical candidates; 0/97 flows are owner accepted.**
+
+Current evidence: `resume-account-candidate`, followed by `resume-profile-content-corrected` for 69 and 72. Original comparison: `resume-profile-before`. These are local reports under `.qa/shop-parity/runs/`; the public frame ledger records their numerical outcomes.
 
 | Family | Frames | Mean MAE % | Worst MAE % |
 | --- | ---: | ---: | ---: |
-| Payments | 13 | 3.437 | 4.621 |
-| Settings | 11 | 3.131 | 5.143 |
-| Privacy | 7 | 2.580 | 3.933 |
-| Addresses | 6 | 2.479 | 3.933 |
-| Support/sign-out | 13 | 2.332 | 3.933 |
-| Returning sign-in | 9 | 2.166 | 6.426 |
+| account-profile | 24 | 2.978 | 8.888 |
+| account-authentication | 9 | 2.167 | 6.426 |
+| account-addresses | 6 | 3.253 | 6.179 |
+| account-preferences | 9 | 3.411 | 5.706 |
+| account-settings | 11 | 3.128 | 5.143 |
+| account-payments | 13 | 3.434 | 4.621 |
+| account-people | 8 | 3.414 | 4.456 |
+| account-privacy | 7 | 2.579 | 3.922 |
+| account-support | 13 | 2.330 | 3.922 |
 
-Implemented canonical owners now include the pinned add-card header, settings rows, centered sign-out confirmation and footer, support conversation/search/reset/stop states, captured-only deletion/sign-in outcomes, and returning Home's six-product grid. Authentication/provider outcomes require explicit captured-preview opt-in and do not call a service.
+The full reference suite passed **94/94** against the owned development preview. Genuine fixes include per-card receipt preference persistence, working nested billing-address editing with retained drafts, stock-aware saved-for-later moves, tracking edits no longer overwritten by display constants, and pickup payment state following account changes. Stale test routes/labels were corrected against inspected source frames while keeping validation, history, identity and provider-boundary assertions.
 
-**Validation on 2026-09-12:** web TypeScript check passed; the account/authentication subset passed **19/19** after fixing a deferred captured-replay state reset. The broad reference run completed **67/92**, with 25 failures: stale fixture selectors and genuine cart/order/history/review issues still need triage. Do not describe that run as green. New account fixes retain validation, per-card identity and unsaved-draft assertions.
+The source viewport had keyboard space reserved twice in person editing. Fixing the sheet owner improves 78/002 from **23.399 to 3.092%**, 78/003 from **26.007 to 3.239%**, and birthday 78/005 from **15.943 to 2.883%**. Public-profile layout improves 72/002 **5.333 to 1.990%** and 72/003 **4.581 to 1.147%**. These remain review evidence, not acceptance.
 
-**Largest current visual residuals:** returning Home 6.426%; notification rows about 5.142%; payment save state 4.621%; repeated Profile/payment card 3.933%. Fix shared owners only with before/after sibling checks. No numerical thresholds were relaxed.
+Replay corrections are separate from visual improvements: scenarios select the observed buyer/profile state, Skincare AI replaces the wrongly identified Homescape item, and previous product/store history remains after recently viewed Minis. Named synthetic scenarios are selected only behind the existing server preview gate; they never authorize or perform real authentication, payments, account connections or deletion.
+
+### Resume without replanning
+
+1. Finish the shared payment-card decorative vector texture and the remaining Profile/field geometry. An experimental vector-only texture is local at `.qa/shop-parity/traced-payment-texture.svg`; it is **not** product code or accepted evidence. Keep dynamic labels, card details and controls in DOM. Validate 69 and 80–94 siblings after changing this shared art.
+2. Expand deterministic coverage to Home 2–6/42 and Saved 7–13 using the existing scenario loader and canonical components. Do not rebuild working families or make a second scorer.
+3. Continue the store/product/review/search/Minis and commerce families. All 324 unmapped ordered frames remain explicitly open.
+
+Scorer invariants: fresh named scenario context for each checkpoint; wait for `data-shop-interactive=true`; reduced native-keyboard viewports may be padded only inside the explicitly excluded keyboard rectangle. App-owned pixels are never resized, and provider outcomes remain explicit captured-state previews.
 
 ## Priority order
 
-1. Finish account payment shared residuals in 80–82, starting with the exact sticky-header experiment above, then card detail/delete-card dialog and remaining add-card states.
-2. Finish account address residuals and lock flows 83–84 after sibling regression comparison.
-3. Map/score 85–94, then rank the complete mapped Account/Profile family by error + shared owner.
-4. Return to 69–78 with quantitative scoring; their behavior/source evidence exists but visual acceptance is reopened.
-5. Map 2–6 + 42 and fix Home canvas/dock/campaign shared owners.
-6. Map 7–13, then 14–20 + 32 + 37–41 + 96–97; prioritize ProductCard/StoreRow/product shell by family-average error.
-7. Map 33–39, Search 43–51, Minis 52–59, then widget adaptation 95.
-8. Map commerce 21–31 + 60–68 + 79 and run one commerce-wide visual pass, preserving its existing functional checkpoint.
-9. Once every reproducible frame is mapped, run a whole-corpus ranked baseline and iterate worst -> best by shared DOM/CSS owner.
+Work by shared owner and measured error using the current resume actions above. Map the next complete family while retaining already verified behavior. No flow is accepted on the basis of route existence, a test pass or a low average alone.
 
-Do not follow catalogue number merely because it is next. After mapping, ranking error + shared leverage decides implementation order.
 ## Acceptance thresholds
 
 These are strict visual gates, not substitutes for direct inspection:

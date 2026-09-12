@@ -7,6 +7,7 @@ import "@/features/account/settings.css";
 import "@/features/commerce/continuation.css";
 import { AccountProvider } from "@/features/account/state";
 import { DiscoveryProvider } from "@/features/discovery/state";
+import { readReferenceScenario } from "@/features/catalog/reference/scenario.server";
 export const metadata: Metadata = {
   title: "Shop reference preview",
   description:
@@ -14,12 +15,18 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
   icons: { icon: "data:," },
 };
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const scenario = await readReferenceScenario();
   return (
-    <html lang={localeSchema.parse("en")}>
+    <html
+      lang={localeSchema.parse("en")}
+      data-reference-scenario={scenario?.name}
+    >
       <body>
-        <DiscoveryProvider>
-          <AccountProvider>{children}</AccountProvider>
+        <DiscoveryProvider initial={scenario?.discovery}>
+          <AccountProvider initial={scenario?.account}>
+            {children}
+          </AccountProvider>
         </DiscoveryProvider>
       </body>
     </html>

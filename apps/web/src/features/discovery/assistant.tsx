@@ -1,4 +1,5 @@
 "use client";
+import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -28,7 +29,7 @@ function JeansAssistant({ catalog }: { catalog: Catalog }) {
     return p ? [p] : [];
   });
   return (
-    <main className="shop-page assistant-page">
+    <ShopSurface className="shop-page assistant-page">
       <Link
         href="/search?q=jeans"
         className="assistant-edit"
@@ -219,7 +220,7 @@ function JeansAssistant({ catalog }: { catalog: Catalog }) {
           Thanks for your feedback · saved locally
         </button>
       )}
-    </main>
+    </ShopSurface>
   );
 }
 
@@ -253,7 +254,7 @@ function PhotoAssistant() {
     },
   ];
   return (
-    <main className="shop-page assistant-page photo-assistant">
+    <ShopSurface className="shop-page assistant-page photo-assistant">
       <Link href="/search" className="assistant-edit" aria-label="Edit search">
         <Icon name="edit" />
       </Link>
@@ -381,6 +382,6 @@ function PhotoAssistant() {
           captured example answer.
         </p>
       </Sheet>
-    </main>
+    </ShopSurface>
   );
 }

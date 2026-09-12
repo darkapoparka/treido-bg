@@ -42,12 +42,8 @@ Run the broad reference suite only after several families, before a major handof
 
 ## Immediate queue
 
-1. **Close the known regression failures, then reduce the highest measured shared residuals.** Current completed capture covers 59 frames (80–94). `shop-implementation-map.md` records the exact test and visual status; do not repeat the completed sticky-header implementation.
-2. **Extend mapping beyond 80–94**, beginning with the remaining Account/Profile and Home journeys. Use the versioned `scripts/shop-parity/` runner, not another machine-local scorer.
-3. **Return to 69–78 with the scorer**. Functional/source evidence exists, but owner visual acceptance is explicitly reopened; do not call them accepted until their scoreable frames pass the visual gates.
-4. **Then audit/fix 2–6 + 42**, preserving `4c9e902` and avoiding a rewrite if the new states already match.
-5. **Then 7–13**, then **14–20 + 32 + 37–41 + 96–97**.
-6. **Then 33–36 + 38–39**, **43–51**, **52–59**, then **95**.
-7. Commerce **21–31 + 60–68 + 79** already has the `0f92453` implementation checkpoint; validate/fix it as one commerce acceptance pass rather than rebuilding it from scratch.
+The shared behavior pass is green: 94/94 reference tests. Deterministic coverage is now 100/424 frames (69–78 and 80–94). Read the **current quantitative baseline and exact resume point** in `shop-implementation-map.md`; do not repeat the completed sticky-header, hydration-readiness or person-keyboard fixes.
 
-Do not start Task 7 / Treido branding until the Shop parity ledger is complete or the owner explicitly approves named exceptions.
+Finish the current shared decorative-card/Profile residuals, then extend Home 2–6/42 and Saved 7–13, then store/product/review, search/Minis and commerce coverage. Reuse the tracked runner, named gated scenarios, and canonical UI; preserve the existing functional implementations.
+
+Do not start Task 7 / Treido branding until Shop parity is complete or the owner approves named exceptions.

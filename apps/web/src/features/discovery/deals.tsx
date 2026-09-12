@@ -1,4 +1,5 @@
 "use client";
+import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element -- frozen reference-media crops */
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -158,7 +159,7 @@ export function Deals() {
         : [...current, id],
     );
   return (
-    <main className="shop-page deals-page">
+    <ShopSurface className="shop-page deals-page">
       <h1>Deals</h1>
       <div className="deals-filter-rail" aria-label="Deal categories">
         <Link className="deals-search" href="/search" aria-label="Search">
@@ -187,7 +188,10 @@ export function Deals() {
                   </small>
                 </span>
               </Link>
-              <IconButton icon="more" label={`More options for ${store.name}`} />
+              <IconButton
+                icon="more"
+                label={`More options for ${store.name}`}
+              />
             </header>
             <div className="deal-product-rail">
               {store.products.map((product) => (
@@ -215,10 +219,7 @@ export function Deals() {
           </section>
         ))}
       </div>
-      <FloatingNav
-        back
-        cart={() => router.push("/cart")}
-      />
-    </main>
+      <FloatingNav back cart={() => router.push("/cart")} />
+    </ShopSurface>
   );
 }

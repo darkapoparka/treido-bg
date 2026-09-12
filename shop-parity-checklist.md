@@ -132,19 +132,14 @@ All 19 ordered frozen frames were opened and mapped to deterministic profile/pay
 
 ## Current active queue
 
-Parallel lanes are retired. Follow `single-session-execution.md`. Immediate order:
-
-1. Finish the quantified residuals in **80–84** from `shop-implementation-map.md`; do not mark them accepted until the visual thresholds are met.
-2. Map/score and refine **85–94** as the next Account family.
-3. Return to **69–78** with the scorer; behavior/source evidence exists, but owner visual acceptance is reopened.
-4. Revisit/fix **2–6 + 42**, then **7–13**, then **14–20 + 32 + 37–41 + 96–97**.
-5. Continue **33–36 + 38–39**, **43–51**, **52–59**, then **95**.
-6. Validate/fix commerce **21–31 + 60–68 + 79** as one acceptance pass; preserve `0f92453` rather than rebuilding it.
-
-Work family-by-family: inspect source once, implement in one pass, QA at 393x793, run one focused family test batch, update this ledger, commit/push, then continue.
+Use the current ranked checkpoint in `shop-implementation-map.md` and the single-session loop. 69–78 and 80–94 have 100 deterministic frame replays; they are not automatically accepted. The next measured work is shared card/Profile refinement, then Home 2–6/42 and Saved 7–13, followed by store/product/review, search/Minis and commerce coverage. Preserve the now-green 94-test behavior suite.
 
 **Owner visual review (2026-09-11): rejected 1:1 acceptance.** Functional/source/test evidence remains recorded, but 393px visual parity and cross-width visual acceptance are reopened for flows 69-78. These flows are REVIEW, not accepted.
 
 ### 2026-09-12 account/support/returning-Home checkpoint
 
 59 ordered frames (80–94) now have deterministic replays and a completed score run: `.qa/shop-parity/runs/checkpoint-account-home/`. The public frame ledger lists all 424 frames and makes the 365 unmapped frames explicit. Nine current frames are numerical candidates; these do not count as accepted flows. The account/authentication subset passed 19/19. Broad regression remains 67/92 and is not waived; current follow-up is recorded in shop-implementation-map.md.
+
+### 2026-09-12 Account/Profile and behavior checkpoint
+
+The versioned replay now covers 100/424 frames (69–78 and 80–94); 324 remain unmapped. The full reference suite passed 94/94 against the live J:\treido-bg preview on port 6412. Person-sheet keyboard geometry, public-profile composition, preference alignment, per-card receipt state, nested billing, saved-for-later stock behavior, tracking edits and pickup/account payment consistency were corrected. The frame ledger records current measured errors; 10 numerical candidates do not imply owner acceptance. Source-state corrections and remaining visual residuals are recorded in shop-implementation-map.md. No deployment or provider operation was performed.

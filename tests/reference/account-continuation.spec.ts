@@ -1,9 +1,8 @@
+import { openBagCart, useReferenceScenario } from "./helpers";
 import { test, expect, type Page } from "@playwright/test";
 import { capturedLineAmount } from "../../apps/web/src/features/commerce/pricing";
 async function checkout(page: Page) {
-  await page.goto("/products/shampoo-bag");
-  await page.getByRole("button", { name: "Add to cart", exact: true }).click();
-  await page.getByRole("button", { name: "Open cart", exact: true }).click();
+  await openBagCart(page);
   await page.getByRole("link", { name: "Continue to checkout" }).click();
 }
 test("captured discount is limited to its exact product variant", () => {
@@ -29,9 +28,7 @@ test("captured discount is limited to its exact product variant", () => {
 test("cart later preserves quantity and captured subtotal without double discount", async ({
   page,
 }) => {
-  await page.goto("/products/shampoo-bag");
-  await page.getByRole("button", { name: "Add to cart", exact: true }).click();
-  await page.getByRole("button", { name: "Open cart", exact: true }).click();
+  await openBagCart(page);
   await page.getByRole("button", { name: "Increase Shampoo Bar Bag" }).click();
   await expect(page.locator(".cart-subtotal")).toContainText("$7.30");
   await expect(page.locator(".cart-discount")).toContainText("-$2.70");
@@ -118,6 +115,9 @@ test("delivery activity supports full history, local status and tracking edit", 
     page.getByRole("button", { name: "Unmark as delivered", exact: true }),
   ).toBeVisible();
   await page
+    .getByRole("button", { name: "Unmark as delivered", exact: true })
+    .click();
+  await page
     .getByRole("button", { name: "Edit tracking details", exact: true })
     .click();
   const editor = page.getByRole("dialog", { name: "Edit tracking details" });
@@ -125,6 +125,17 @@ test("delivery activity supports full history, local status and tracking edit", 
     .getByRole("textbox", { name: "Package name" })
     .fill("Synthetic tracked parcel");
   await editor.getByRole("button", { name: "Update tracking details" }).click();
+  await expect(editor).not.toBeVisible();
+  await page
+    .getByRole("button", { name: "Edit tracking details", exact: true })
+    .click();
+  await expect(
+    editor.getByRole("textbox", { name: "Package name" }),
+  ).toHaveValue("Synthetic tracked parcel");
+  await page.goBack();
+  await page
+    .getByRole("button", { name: "Mark as delivered", exact: true })
+    .click();
   await expect(page.getByText("Synthetic tracked parcel KITSCH")).toBeVisible();
 });
 test("White Rock pickup is separate from KITSCH and retains ready time and selected location", async ({
@@ -152,22 +163,25 @@ test("White Rock pickup is separate from KITSCH and retains ready time and selec
 test("initial checkout card validates numeric input and retains an independent billing address", async ({
   page,
 }) => {
-  await checkout(page);
-  await page
-    .getByRole("button", { name: "+ Add phone number", exact: true })
-    .click();
+  await useReferenceScenario(page, "cart-bag");
+  await page.goto("/checkout?store=kitsch&stage=phone");
   await page
     .getByRole("textbox", { name: "Phone number", exact: true })
     .fill("2025550100");
-  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByRole("button", { name: "Next", exact: true }).click();
   await page
     .getByRole("textbox", { name: "Security code", exact: true })
     .fill("123456");
+  await expect(
+    page.getByRole("dialog", { name: "Phone verification is not connected" }),
+  ).toBeVisible();
   await page
-    .getByRole("button", { name: "Use as unverified reference number" })
+    .getByRole("button", { name: "Continue to captured shipping address" })
     .click();
-  await page.getByRole("textbox", { name: "Search address" }).fill("Reference");
-  await page.getByRole("button", { name: /100 Reference Lane/ }).click();
+  await page
+    .getByRole("textbox", { name: "Search address" })
+    .fill("1226 University");
+  await page.getByRole("button", { name: /1226 University Dr/ }).click();
   await page
     .getByRole("button", { name: "Continue to payment details", exact: true })
     .click();

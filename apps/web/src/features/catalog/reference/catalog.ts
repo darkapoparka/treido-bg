@@ -175,6 +175,7 @@ export const referenceCatalog: Catalog = {
       id: "kitsch",
       name: "KITSCH",
       logo: image("kitsch-logo"),
+      coverImage: image("rice-bundle"),
       rating: 4.5,
       ratingCount: "194.9K",
       categories: ["Shop all", "Cleanse", "Heatless Hair", "What's New"],

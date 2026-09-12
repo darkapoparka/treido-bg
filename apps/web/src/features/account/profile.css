@@ -73,7 +73,7 @@
 .account-avatar > .pill {
   height: 40px;
   min-height: 40px;
-  padding: 8px 20px;
+  padding: 8px 15px;
   border: 1px solid #e4e4e4;
   font-size: 14px;
   line-height: 20px;
@@ -184,6 +184,7 @@
 }
 .profile-editor .profile-field > button:disabled {
   color: #777;
+  opacity: 1;
 }
 .selected-preferences {
   display: flex;
@@ -336,11 +337,22 @@
 .person-editor-sheet {
   width: calc(100% - 32px);
   max-width: 380px;
-  bottom: 132px;
-  border-radius: 28px;
+  bottom: 34px;
+  padding: 20px;
+  border-radius: 40px;
+}
+.person-editor-sheet .account-form {
+  gap: 16px;
+}
+.person-editor-sheet .form-note {
+  margin: 0;
+  font-size: 14px;
+  line-height: 18px;
+  color: #444;
 }
 .person-editor-sheet .sheet-header {
-  margin-bottom: 6px;
+  min-height: 36px;
+  margin: 0 0 32px;
 }
 .person-editor-sheet .sheet-header .icon-button {
   display: none;
@@ -353,13 +365,21 @@
   width: 100%;
   border: 0;
   outline: 0;
+  height: 38px;
+  min-height: 38px;
+  padding: 0;
   font-size: 32px;
+  line-height: 38px;
+  letter-spacing: -1.1px;
   font-weight: 600;
 }
 .person-editor-sheet .relationship-chips {
   display: flex;
   gap: 6px;
+  height: 40px;
+  margin: 0 -20px 0 0;
   overflow-x: auto;
+  scrollbar-width: none;
 }
 .person-editor-sheet .relationship-chips button {
   flex: none;
@@ -370,11 +390,21 @@
   font-weight: 600;
 }
 .person-editor-sheet .editor-actions {
-  gap: 8px;
+  gap: 12px;
+  height: 46px;
 }
 .person-editor-sheet .editor-actions > * {
-  min-height: 44px;
-  margin-top: 0;
+  height: 46px;
+  min-height: 46px;
+  margin: 0;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 500;
+}
+.person-editor-sheet .primary:disabled {
+  background: #eff0f1;
+  color: #929596;
+  opacity: 1;
 }
 .person-editor-sheet .form-cancel {
   border: 1px solid #dedede;
@@ -394,49 +424,109 @@
   color: #fff;
   border-color: #111;
 }
+.public-profile-page {
+  padding-top: 20px;
+}
 .public-profile {
-  padding-top: 42px;
+  padding: 0;
+  gap: 0;
+}
+.public-profile > .source-profile-avatar {
+  width: 100px;
+  height: 100px;
+}
+.public-profile > h1 {
+  margin-top: 6px;
+  font-size: 24px;
+  line-height: 29px;
+}
+.public-profile > h1 + .pill {
+  margin-top: 15px;
+}
+.public-profile-share {
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  box-shadow: 0 5px 20px #00000004;
 }
 .public-profile > .pill {
+  margin-top: 38px;
+  height: 40px;
+  font-size: 14px;
   background: #f4f5f6;
   border: 0;
   padding-inline: 18px;
 }
 .public-hidden {
-  margin-top: 56px;
-  max-width: 310px;
-  gap: 18px;
+  margin-top: 70px;
+  width: 320px;
+  max-width: 100%;
+  gap: 0;
 }
 .public-hidden > svg {
+  width: 20px;
+  height: 18px;
   margin: 0 auto;
 }
 .public-hidden > p {
-  font-size: 18px;
-  line-height: 1.45;
+  margin: 24px 0 28px;
+  font-size: 16px;
+  line-height: 22px;
 }
 .public-hidden > .primary {
-  width: 100%;
-  min-height: 48px;
+  width: min(268px, 100%);
+  margin: 0 auto;
+  padding: 12px 0;
+  height: 44px;
+  min-height: 44px;
   background: #5433eb;
   font-size: 16px;
 }
 .public-hidden > a {
+  margin-top: 18px;
   color: #111;
   font-size: 16px;
   font-weight: 600;
 }
 .public-collections {
-  margin-top: 8px;
+  margin-top: 20px;
+  gap: 8px;
 }
 .public-collections > .account-panel {
   padding: 0;
+  height: 200px;
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: 12px;
+  background: #f3f4f5;
 }
 .public-collections .collection-cover {
-  height: 170px;
+  position: relative;
+  height: 146px;
   border-radius: 0;
   margin: 0;
+  overflow: hidden;
+}
+.public-collections .collection-cover img {
+  position: absolute;
+  width: 64px;
+  height: 72px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+.public-collections .collection-cover img:nth-child(1) {
+  left: 14px;
+  top: 40px;
+  transform: rotate(8deg);
+}
+.public-collections .collection-cover img:nth-child(2) {
+  right: 12px;
+  top: 50px;
+  transform: rotate(-8deg);
+}
+.public-collections .collection-cover img:nth-child(3) {
+  left: 54px;
+  top: -60px;
+  transform: rotate(-8deg);
 }
 .public-collections > .account-panel > strong,
 .public-collections > .account-panel > small {
@@ -444,7 +534,7 @@
   padding-inline: 12px;
 }
 .public-collections > .account-panel > strong {
-  padding-top: 10px;
+  padding-top: 16px;
   font-size: 18px;
 }
 .public-collections > .account-panel > small {
@@ -484,6 +574,8 @@
   place-items: center;
   border-radius: 24px;
   font-size: 16px;
+  font-weight: 500;
+  background: #5433eb;
 }
 .checkout-faster-art {
   position: absolute;
@@ -613,4 +705,229 @@
 }
 .profile-settings-panel .account-row + .account-row {
   border-top: 1px solid #f0f0f0;
+}
+
+/* One recent-activity rail for products, stores and Minis (flow 69). */
+.profile-recent-heading > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.profile-recent-heading > a > span {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #f3f4f4;
+}
+.profile-recent-heading svg {
+  width: 12px;
+  height: 12px;
+  transform: rotate(180deg);
+}
+.profile-recent-rail {
+  display: flex;
+  gap: 8px;
+  height: 112px;
+  margin-right: -16px;
+  padding-right: 16px;
+  overflow: auto hidden;
+  scrollbar-width: none;
+}
+.profile-recent-rail > * {
+  position: relative;
+  flex: 0 0 112px;
+  width: 112px;
+  height: 112px;
+  border-radius: 24px;
+  overflow: hidden;
+}
+.profile-recent-rail img {
+  width: 112px;
+  height: 112px;
+  object-fit: cover;
+}
+.profile-recent-rail .product-media {
+  width: 112px;
+  height: 112px;
+  border-radius: 24px;
+  background: #e3e4e4;
+}
+.profile-recent-rail .price-badge {
+  top: 12px;
+  left: 10px;
+  padding: 2px 6px;
+  font-size: 10px;
+  line-height: 13px;
+}
+.profile-recent-rail .save-button {
+  width: 40px;
+  height: 40px;
+  bottom: 8px;
+  right: 8px;
+  background: #999a96b8;
+  color: white;
+}
+.profile-recent-rail .save-button svg {
+  width: 22px;
+  height: 22px;
+}
+.profile-recent-store::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #0005;
+}
+.profile-recent-store > span {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-size: 18px;
+}
+.profile-recent-store .kitsch-wordmark {
+  width: 94px;
+  height: 28px;
+}
+.profile-recent-mini {
+  background: #f2f2f2;
+}
+
+/* Birthday entry owns its field geometry; shared date inputs stay unchanged. */
+.person-editor-birthday .account-form {
+  gap: 24px;
+}
+.person-birthday-editor .date-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+.person-birthday-editor .date-fields input {
+  width: 100%;
+  min-width: 0;
+  height: 58px;
+  padding: 0 12px;
+  border: 1px solid #d6d6d6;
+  border-radius: 12px;
+  background: white;
+  font-size: 24px;
+  line-height: 30px;
+  text-align: right;
+}
+.person-birthday-editor .date-fields input:focus-visible {
+  outline: 1px solid #111;
+  outline-offset: -1px;
+}
+@media (max-height: 600px) {
+  body:has(.person-editor-sheet[open]) .floating-dock {
+    visibility: hidden;
+  }
+}
+
+/* Profile composition shared by starter and established accounts. */
+.profile-overview {
+  padding-top: 20px;
+}
+.profile-overview .account-panel {
+  border-radius: 24px;
+  box-shadow: 0 4px 18px #00000006;
+}
+.profile-overview .identity-row {
+  height: 76px;
+  min-height: 76px;
+  gap: 8px;
+}
+.profile-overview .identity-row .source-profile-avatar {
+  width: 44px;
+  height: 44px;
+}
+.profile-overview .identity-row strong {
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 600;
+}
+.profile-overview .identity-row small {
+  font-size: 12px;
+  line-height: 16px;
+}
+.profile-overview .identity-row > b,
+.profile-overview .passkey-row > b {
+  font-size: 24px;
+  font-weight: 400;
+  color: #777;
+}
+.profile-overview .passkey-row {
+  min-height: 60px;
+  padding: 12px;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 18px;
+}
+.profile-passkey-mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #111;
+  color: white;
+}
+.profile-passkey-mark svg {
+  width: 20px;
+  height: 20px;
+}
+.profile-overview .checkout-faster-art {
+  right: 38px;
+  top: 22px;
+  width: 28px;
+  height: 60px;
+  object-fit: contain;
+  border: 0;
+  background: transparent;
+}
+.starter-following-logos img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  border-radius: 50%;
+  margin-right: -10px;
+}
+.profile-overview .profile-empty-package {
+  width: 64px;
+  height: 62px;
+  object-fit: contain;
+  background: transparent;
+  clip-path: none;
+}
+.profile-overview > h2 {
+  margin-bottom: 8px;
+  font-size: 20px;
+  line-height: 26px;
+  font-weight: 600;
+}
+.profile-starter .profile-empty-orders {
+  row-gap: 52px;
+}
+.profile-overview .profile-order-panel .email-connect {
+  border-radius: 12px;
+}
+.profile-overview .profile-order-panel .email-connect p {
+  margin: 3px 0 12px;
+}
+.profile-overview .profile-order-panel .email-connect .pill {
+  border: 1px solid #e2e2e2;
+}
+
+.profile-editor .profile-field > .selected-preferences,
+.person-profile-page .profile-field > .selected-preferences {
+  align-items: flex-start;
+  color: #999;
+}
+
+.profile-overview .profile-recent-rail + .profile-payment-heading {
+  margin-top: 38px;
 }

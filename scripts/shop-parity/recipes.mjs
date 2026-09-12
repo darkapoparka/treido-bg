@@ -524,3 +524,6 @@ flowRecipes[94] = {
     },
   ],
 };
+
+import { accountRecipes } from "./recipes-account.mjs";
+Object.assign(flowRecipes, accountRecipes);

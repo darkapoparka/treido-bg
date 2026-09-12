@@ -1,4 +1,5 @@
 "use client";
+import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useState } from "react";
@@ -45,7 +46,7 @@ export function Home({ catalog }: { catalog: Catalog }) {
     })
     .slice(0, 3);
   return (
-    <main
+    <ShopSurface
       className={`shop-page home-page ${returning ? "home-returning" : ""}`}
       data-feed={
         returning
@@ -292,6 +293,6 @@ export function Home({ catalog }: { catalog: Catalog }) {
         productLayout={returning ? "grid" : "rail"}
       />
       <FloatingNav showExplore={!returning} />
-    </main>
+    </ShopSurface>
   );
 }

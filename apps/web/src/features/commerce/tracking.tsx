@@ -45,10 +45,8 @@ export function TrackingDetail({
     map = params.get("map") === "1";
   const sourceReceipt = capturedReceipts[order.id];
   const displayOrderNumber = sourceReceipt?.displayOrderNumber ?? order.id;
-  const sourceCarrier =
-    order.id === "REF-1001" ? "Amazon Logistics" : order.carrier;
-  const sourceTracking =
-    order.id === "REF-1001" ? "TBA333200762603" : order.tracking;
+  const sourceCarrier = order.carrier;
+  const sourceTracking = order.tracking;
   const visible = waiting
     ? []
     : manualLabel
@@ -56,13 +54,7 @@ export function TrackingDetail({
       : delivered
         ? [events[0], events[1], events.at(-1)!]
         : [events[6], events.at(-1)!];
-  const all = waiting
-    ? []
-    : manualLabel
-      ? [events.at(-1)!]
-      : delivered
-        ? events
-        : events.slice(6);
+  const all = waiting ? [] : manualLabel ? [events.at(-1)!] : events;
   const mark = () => {
     const next = delivered ? "In transit" : "Delivered";
     saveOrder({ ...order, status: next });

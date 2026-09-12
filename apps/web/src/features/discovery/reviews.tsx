@@ -1,4 +1,5 @@
 "use client";
+import { ShopSurface } from "./hydration-boundary";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -110,7 +111,7 @@ export function Reviews({
   if (store && available) return <StoreReviews />;
   if (!available)
     return (
-      <main className="shop-page reviews-page">
+      <ShopSurface className="shop-page reviews-page">
         <header className="section-heading">
           <h1>Reviews</h1>
         </header>
@@ -119,10 +120,10 @@ export function Reviews({
           preview.
         </p>
         <Link href="/">Back to Shop</Link>
-      </main>
+      </ShopSurface>
     );
   return (
-    <main className="shop-page reviews-page">
+    <ShopSurface className="shop-page reviews-page">
       <header className="section-heading">
         <h1>Reviews</h1>
         <Link
@@ -286,7 +287,7 @@ export function Reviews({
           be ordered against calendar dates.
         </p>
       </Sheet>
-    </main>
+    </ShopSurface>
   );
 }
 export function ProductOptions({

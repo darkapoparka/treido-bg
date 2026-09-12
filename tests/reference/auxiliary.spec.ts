@@ -132,7 +132,7 @@ test("people draft follows nickname and birthday browser stages", async ({
     .fill("Taylor");
   await page.getByRole("button", { name: "Save", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "Add Taylor’s birthday" }),
+    page.getByRole("heading", { name: "Add Taylor's birthday" }),
   ).toBeVisible();
   await page.goBack();
   await expect(
@@ -262,19 +262,16 @@ test("pickup payment follows card deletion when returning from account", async (
 }) => {
   await page.goto("/checkout?store=white-rock");
   await expect(
-    page.getByText("Visa •••• 4242", { exact: false }),
+    page.getByText("Visa •••• 4263", { exact: false }),
   ).toBeVisible();
   await page.getByRole("link", { name: "Edit payment method" }).click();
-  for (let i = 0; i < 2; i++) {
-    await page.locator(".payment-card-button").first().click();
-    await page
-      .getByRole("button", { name: "Delete card", exact: true })
-      .click();
-    await page
-      .getByRole("dialog")
-      .getByRole("button", { name: "Delete", exact: true })
-      .click();
-  }
+  await expect(page.locator(".payment-card-button")).toHaveCount(1);
+  await page.locator(".payment-card-button").first().click();
+  await page.getByRole("button", { name: "Delete", exact: true }).click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Delete", exact: true })
+    .click();
   await expect(page.locator(".payment-card-button")).toHaveCount(0);
   for (let i = 0; i < 6 && !page.url().includes("/checkout"); i++) {
     await page.goBack();

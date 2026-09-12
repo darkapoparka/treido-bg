@@ -1,8 +1,9 @@
+import { ShopSurface } from "./hydration-boundary";
 import { FloatingNav } from "./components";
 
 export function HomeLoading() {
   return (
-    <main
+    <ShopSurface
       className="shop-page home-page home-loading"
       aria-busy="true"
       aria-label="Loading home"
@@ -20,6 +21,6 @@ export function HomeLoading() {
       </div>
       <div className="home-loading-campaign" aria-hidden="true" />
       <FloatingNav />
-    </main>
+    </ShopSurface>
   );
 }

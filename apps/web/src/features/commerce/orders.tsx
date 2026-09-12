@@ -34,8 +34,7 @@ export function OrdersPage({
       ? []
       : orders.filter(
           (o) =>
-            (history ||
-              (archive ? o.archived && o.id === "REF-1001" : !o.archived)) &&
+            (history || (archive ? o.archived : !o.archived)) &&
             `${o.name} ${o.id}`.toLowerCase().includes(query.toLowerCase()),
         )
   ).sort((a, b) => {
@@ -95,7 +94,7 @@ export function OrdersPage({
             aria-label="Dismiss email connection"
             onClick={() => setHistoryConnect(false)}
           >
-            Ã—
+            ×
           </button>
         </div>
       )}
@@ -105,9 +104,11 @@ export function OrdersPage({
           (forcedView === "waiting" || forcedView === "manual") &&
           o.id === "REF-1001";
         if (archive) {
-          const sourceProduct =
-            catalog.products.find((product) => product.id === "shampoo-bag") ??
-            p;
+          const sourceProduct = p;
+          const receipt = capturedReceipts[o.id];
+          const seller = catalog.stores.find(
+            (store) => store.id === p?.storeId,
+          );
           return (
             <Link
               key={o.id}
@@ -116,8 +117,13 @@ export function OrdersPage({
             >
               {sourceProduct && <img src={sourceProduct.images[0]} alt="" />}
               <span>
-                <strong>Ordered Jul 27</strong>
-                <small>KITSCH Â· 1 item Â· $10.82</small>
+                <strong>{receipt ? "Ordered Jul 27" : o.name}</strong>
+                <small>
+                  {seller?.name ?? o.carrier}
+                  {receipt
+                    ? ` · 1 item · ${formatMoney({ amount: receipt.total, currency: "USD" })}`
+                    : ""}
+                </small>
               </span>
             </Link>
           );
@@ -142,7 +148,7 @@ export function OrdersPage({
                   {kitsch ? "KITSCH" : "Loose Fit Printed T-Shirt"}
                 </strong>
                 <small>{kitsch ? "Order placed" : "On the way"}</small>
-                {kitsch && <b>1 item Â· $10.82</b>}
+                {kitsch && <b>1 item · $10.82</b>}
               </span>
               {kitsch && p && (
                 <img
@@ -179,7 +185,7 @@ export function OrdersPage({
                       ? p
                         ? "Order placed"
                         : "Label created"
-                      : "Arrives Jul 31â€“Aug 1"}
+                      : "Arrives Jul 31–Aug 1"}
               </h2>
               {o.status === "Delivered" ? (
                 <span className="review-stars">★★★★★</span>
@@ -309,7 +315,7 @@ export function OrdersPage({
           <>
             {forcedView === "manual" && (
               <section className="orders-buy-again">
-                <h2>Buy again â€º</h2>
+                <h2>Buy again ›</h2>
                 {(() => {
                   const product = catalog.products.find(
                     (entry) => entry.id === "shampoo-bag",
@@ -368,15 +374,7 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
   const data = capturedReceipts[id];
   const displayOrderNumber = data?.displayOrderNumber ?? order.id;
   const itemAmount = data?.itemAmount ?? product?.price.amount ?? 0;
-  const editOrder: ReferenceOrder =
-    id === "REF-1001"
-      ? {
-          ...order,
-          name: "Shampoo Bar Bag",
-          carrier: "Amazon Logistics",
-          tracking: "TBA333200762603",
-        }
-      : order;
+  const editOrder = order;
   const displayOrder: ReferenceOrder =
     sourceState === "waiting"
       ? { ...order, status: "Ordered" }
@@ -385,7 +383,7 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
         : sourceState === "in-transit"
           ? { ...order, status: "In transit" }
           : order;
-  if (progress)
+  if (progress || !product)
     return (
       <>
         <TrackingDetail
@@ -460,7 +458,7 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
             {displayOrder.status === "Delivered"
               ? "Delivered Aug 1"
               : sourceState === "in-transit"
-                ? "Arrives Jul 31â€“Aug 1"
+                ? "Arrives Jul 31–Aug 1"
                 : "Expected by Aug 3"}
           </strong>
           <small>
@@ -697,7 +695,10 @@ function ManualOrderForm({
                 }}
               >
                 {c}
-                <span className={c.startsWith("DHL") ? "dhl-mark" : ""}>
+                <span
+                  aria-hidden="true"
+                  className={c.startsWith("DHL") ? "dhl-mark" : ""}
+                >
                   {c.startsWith("DHL") ? "DHL" : "›"}
                 </span>
               </button>

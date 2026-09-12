@@ -1,4 +1,5 @@
 "use client";
+import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element -- Existing allowlisted reference crops. */
 import Link from "next/link";
 import { useState } from "react";
@@ -79,7 +80,7 @@ export function StoreReviews() {
   const [reported, setReported] = useState<Record<string, string>>({});
   const visible = selectReviews(records, { query: q, sort, rating, helpful });
   return (
-    <main className="shop-page store-reviews">
+    <ShopSurface className="shop-page store-reviews">
       <header className="section-heading">
         <h1>Reviews</h1>
         <Link
@@ -257,6 +258,6 @@ export function StoreReviews() {
           </div>
         ) : null}
       </Sheet>
-    </main>
+    </ShopSurface>
   );
 }

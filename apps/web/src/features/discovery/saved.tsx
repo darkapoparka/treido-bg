@@ -1,4 +1,5 @@
 "use client";
+import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -215,7 +216,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
     if (editing) editorRef.current?.focus({ preventScroll: true });
   }, [editing]);
   return (
-    <main
+    <ShopSurface
       className={`shop-page saved-page saved-library ${collection ? "saved-collection" : ""} ${addMode ? "saved-selection" : ""}`}
     >
       <header className="section-heading saved-heading">
@@ -733,7 +734,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
           {notice}
         </button>
       )}
-    </main>
+    </ShopSurface>
   );
 }
 
@@ -758,7 +759,7 @@ export function Following({ catalog }: { catalog: Catalog }) {
     ["pura-charcoal", "Charcoal", "$18.99"],
   ];
   return (
-    <main className="shop-page saved-page">
+    <ShopSurface className="shop-page saved-page">
       <header className="section-heading">
         <h1>{manage ? "Following list" : "Following"}</h1>
         {!manage && stores.length > 0 && (
@@ -928,10 +929,12 @@ export function Following({ catalog }: { catalog: Catalog }) {
       )}
       <FloatingNav
         back
-        cart={!manage && !stores.length ? () => router.push("/cart") : undefined}
+        cart={
+          !manage && !stores.length ? () => router.push("/cart") : undefined
+        }
         showCartWhenEmpty={!manage && !stores.length}
         onBack={manage ? () => router.back() : undefined}
       />
-    </main>
+    </ShopSurface>
   );
 }

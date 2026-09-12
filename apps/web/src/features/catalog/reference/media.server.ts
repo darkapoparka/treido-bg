@@ -15,6 +15,10 @@ const media: Record<
     occlusions?: readonly (readonly [number, number, number, number])[];
   }
 > = {
+  "profile-empty-package": {
+    file: "flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/002.webp",
+    rect: [32, 570, 66, 62],
+  },
   "beauty-pill-skin": {
     file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/002.webp",
     rect: [20, 124, 32, 32],

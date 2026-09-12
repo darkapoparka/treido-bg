@@ -1,20 +1,23 @@
 "use client";
+import { ShopSurface } from "../discovery/hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { Icon } from "../discovery/icons";
 import { AccountIcon } from "../account/icons";
 import { useState } from "react";
+import { useAccount } from "../account/state";
 import { Boundary } from "../account/forms";
 import {
   shopSourceAddress,
   shopSourceBuyer,
-  shopSourcePayment,
   shopSourcePickup,
 } from "./source-fixtures";
 
 // Flow21/006–007 captures this seller checkout, but does not reveal the item name.
 // The item is intentionally checkout-only and is not linked to an invented PDP.
 export function PickupCheckout() {
+  const { paymentCards } = useAccount();
+  const payment = paymentCards[0];
   const [pickup, setPickup] = useState(false),
     [offers, setOffers] = useState(true),
     [discount, setDiscount] = useState(false),
@@ -22,7 +25,7 @@ export function PickupCheckout() {
     [summary, setSummary] = useState(false);
   const total = pickup ? "3.80" : "10.83";
   return (
-    <main className="shop-page checkout-page pickup-checkout">
+    <ShopSurface className="shop-page checkout-page pickup-checkout">
       <header className="checkout-header">
         <Link href="/cart" aria-label="Close checkout">
           ×
@@ -122,16 +125,18 @@ export function PickupCheckout() {
         <div>
           <small>Payment</small>
           <strong>
-            Visa •••• {shopSourcePayment.last4}{" "}
-            <span className="visa-mark">VISA</span>
+            {payment ? (
+              <>
+                Visa •••• {payment.last4}{" "}
+                <span className="visa-mark">VISA</span>
+              </>
+            ) : (
+              "Add payment method"
+            )}
           </strong>
-          <button
-            type="button"
-            aria-label="Payment method is a captured source value"
-            onClick={() => setBoundary("Payment method")}
-          >
+          <Link href="/account/payments" aria-label="Edit payment method">
             ⌄
-          </button>
+          </Link>
         </div>
       </section>
       <label className="pickup-offers">
@@ -183,7 +188,11 @@ export function PickupCheckout() {
         </div>
       )}
       <div className="checkout-pay">
-        <button className="primary" onClick={() => setBoundary("Payment")}>
+        <button
+          className="primary"
+          disabled={!payment}
+          onClick={() => setBoundary("Payment")}
+        >
           <span>Pay now</span>
           <b>${total}</b>
         </button>
@@ -193,6 +202,6 @@ export function PickupCheckout() {
         kind={boundary}
         onClose={() => setBoundary("")}
       />
-    </main>
+    </ShopSurface>
   );
 }

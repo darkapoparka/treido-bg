@@ -1,4 +1,5 @@
 "use client";
+import { ShopSurface } from "../discovery/hydration-boundary";
 /* eslint-disable @next/next/no-img-element -- Allowlisted reference branding. */
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -17,7 +18,7 @@ export function ShopSplash({ newJourney = false }: { newJourney?: boolean }) {
     return () => window.clearTimeout(timer);
   }, [router, newJourney]);
   return (
-    <main
+    <ShopSurface
       className={"shop-splash" + (newJourney ? " purple" : "")}
       aria-label="Shop loading"
     >
@@ -45,7 +46,7 @@ export function ShopSplash({ newJourney = false }: { newJourney?: boolean }) {
           </b>
         </div>
       )}
-    </main>
+    </ShopSurface>
   );
 }
 

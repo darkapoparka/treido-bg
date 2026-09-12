@@ -1,11 +1,5 @@
 "use client";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 export type Address = {
   id: string;
   firstName: string;
@@ -99,8 +93,8 @@ const initialOrders: ReferenceOrder[] = [
     id: "REF-1001",
     productId: "shampoo-bag",
     name: "Shampoo Bar Bag",
-    carrier: "USPS",
-    tracking: "REFERENCE-0100",
+    carrier: "Amazon Logistics",
+    tracking: "TBA333200762603",
     status: "In transit",
     archived: false,
     rating: 0,
@@ -133,35 +127,66 @@ type AccountState = {
   setPreferences: (value: Record<string, string[]>) => void;
   paymentCards: { id: string; last4: string; expiry: string }[];
   paymentAvailable: boolean;
+  receiptPreferences: Record<string, boolean>;
+  setReceiptPreference: (id: string, enabled: boolean) => void;
+  hasPaymentProfile: boolean;
   savePayment: (value: { id: string; last4: string; expiry: string }) => void;
   removePayment: (id?: string) => void;
   notifications: Record<string, boolean>;
   toggleNotification: (name: string) => void;
   reset: () => void;
 };
+export type AccountSeed = {
+  hasPaymentProfile?: boolean;
+  profile?: Partial<Profile>;
+  addresses?: Address[];
+  orders?: ReferenceOrder[];
+  people?: Person[];
+  preferences?: Record<string, string[]>;
+  paymentCards?: { id: string; last4: string; expiry: string }[];
+  notifications?: Record<string, boolean>;
+};
 const Context = createContext<AccountState | null>(null);
 // Memory-only fixture state: no personal entries or payment fields are persisted.
-export function AccountProvider({ children }: { children: ReactNode }) {
-  useEffect(() => {
-    document.documentElement.dataset.shopHydrated = "true";
-    return () => {
-      delete document.documentElement.dataset.shopHydrated;
-    };
-  }, []);
-  const [profile, setProfile] = useState(initialProfile);
-  const [addresses, setAddresses] = useState(initialAddresses);
-  const [orders, setOrders] = useState(initialOrders);
-  const [people, setPeople] = useState<Person[]>([]);
-  const [preferences, setPreferences] = useState<Record<string, string[]>>({});
-  const [paymentCards, setPaymentCards] = useState([
-    {
-      id: "card-source-4263",
-      last4: "4263",
-      expiry: "\u2022\u2022/\u2022\u2022",
-    },
-  ]);
+export function AccountProvider({
+  children,
+  initial,
+}: {
+  children: ReactNode;
+  initial?: AccountSeed;
+}) {
+  const [profile, setProfile] = useState<Profile>(() => ({
+    ...initialProfile,
+    ...initial?.profile,
+  }));
+  const [addresses, setAddresses] = useState<Address[]>(
+    () => initial?.addresses ?? initialAddresses,
+  );
+  const [orders, setOrders] = useState<ReferenceOrder[]>(
+    () => initial?.orders ?? initialOrders,
+  );
+  const [people, setPeople] = useState<Person[]>(() => initial?.people ?? []);
+  const [preferences, setPreferences] = useState<Record<string, string[]>>(
+    () => initial?.preferences ?? {},
+  );
+  const [paymentCards, setPaymentCards] = useState(
+    () =>
+      initial?.paymentCards ?? [
+        {
+          id: "card-source-4263",
+          last4: "4263",
+          expiry: "\u2022\u2022/\u2022\u2022",
+        },
+      ],
+  );
+  const [hasPaymentProfile, setHasPaymentProfile] = useState(
+    initial?.hasPaymentProfile ?? true,
+  );
+  const [receiptPreferences, setReceiptPreferences] = useState<
+    Record<string, boolean>
+  >({});
   const [notifications, setNotifications] = useState<Record<string, boolean>>(
-    {},
+    () => initial?.notifications ?? {},
   );
   return (
     <Context
@@ -194,11 +219,17 @@ export function AccountProvider({ children }: { children: ReactNode }) {
         setPreferences,
         paymentCards,
         paymentAvailable: paymentCards.length > 0,
-        savePayment: (value) =>
+        receiptPreferences,
+        setReceiptPreference: (id, enabled) =>
+          setReceiptPreferences((previous) => ({ ...previous, [id]: enabled })),
+        hasPaymentProfile,
+        savePayment: (value) => {
+          setHasPaymentProfile(true);
           setPaymentCards((cards) => [
             ...cards.filter((card) => card.id !== value.id),
             value,
-          ]),
+          ]);
+        },
         removePayment: (id) =>
           setPaymentCards((cards) =>
             cards.filter((card) => card.id !== (id ?? cards[0]?.id)),
@@ -207,6 +238,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
         toggleNotification: (name) =>
           setNotifications((n) => ({ ...n, [name]: !(n[name] ?? true) })),
         reset: () => {
+          setHasPaymentProfile(true);
           setProfile(initialProfile);
           setAddresses(initialAddresses);
           setOrders(initialOrders);
@@ -220,6 +252,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
             },
           ]);
           setNotifications({});
+          setReceiptPreferences({});
         },
       }}
     >

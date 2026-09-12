@@ -1,4 +1,5 @@
 "use client";
+import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -185,7 +186,7 @@ export function Search({
     </form>
   );
   return (
-    <main
+    <ShopSurface
       className={`shop-page search-page ${suggestions ? "search-has-suggestions" : ""} ${history ? "search-history" : ""}`}
     >
       {searchForm}
@@ -480,9 +481,9 @@ export function Search({
         onClose={() => setPhotoUnavailable(false)}
       >
         <p className="sheet-copy">
-          Photo search is not connected. Your photo stays on this device and
-          has not been analyzed. The captured cap example is a separate
-          reference answer, not a result for your photo.
+          Photo search is not connected. Your photo stays on this device and has
+          not been analyzed. The captured cap example is a separate reference
+          answer, not a result for your photo.
         </p>
         <div className="sheet-actions">
           <button
@@ -499,15 +500,13 @@ export function Search({
           </Link>
         </div>
       </Sheet>
-      {!suggestions && (
-        <FloatingNav back={showResults || history || pending} />
-      )}
+      {!suggestions && <FloatingNav back={showResults || history || pending} />}
       <Filters
         open={filter}
         onClose={() => setFilter(false)}
         value={filters}
         onChange={update}
       />
-    </main>
+    </ShopSurface>
   );
 }

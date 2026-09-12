@@ -1,6 +1,11 @@
 import "server-only";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
+import { cookies } from "next/headers";
+import {
+  referenceScenarioCookie,
+  resolveReferenceScenario,
+} from "./reference/scenarios";
 import type { Catalog } from "./types";
 export function referencePreviewEnabled() {
   return (
@@ -13,5 +18,20 @@ export async function readCatalog(): Promise<Catalog> {
   // No automatic mock fallback: until Task 4, the isolated preview is opt-in.
   if (!referencePreviewEnabled()) notFound();
   const { referenceCatalog } = await import("./reference/catalog");
-  return referenceCatalog;
+  const scenario = resolveReferenceScenario(
+    (await cookies()).get(referenceScenarioCookie)?.value,
+  );
+  const unavailable = new Set(scenario?.catalog?.unavailableVariants ?? []);
+  if (!unavailable.size) return referenceCatalog;
+  return {
+    ...referenceCatalog,
+    products: referenceCatalog.products.map((product) => ({
+      ...product,
+      variants: product.variants.map((variant) =>
+        unavailable.has(variant.id)
+          ? { ...variant, availableQuantity: 0 }
+          : variant,
+      ),
+    })),
+  };
 }

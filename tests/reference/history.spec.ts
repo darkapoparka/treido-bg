@@ -1,9 +1,8 @@
+import { openBagCart } from "./helpers";
 import { test, expect, type Page } from "@playwright/test";
 
 async function openCheckout(page: Page) {
-  await page.goto("/products/shampoo-bag");
-  await page.getByRole("button", { name: "Add to cart", exact: true }).click();
-  await page.getByRole("button", { name: "Open cart", exact: true }).click();
+  await openBagCart(page);
   await page.getByRole("link", { name: "Continue to checkout" }).click();
 }
 
@@ -34,6 +33,7 @@ test("nested billing Back and Cancel preserve the payment editor", async ({
   page,
 }) => {
   await openCheckout(page);
+  await page.getByRole("button", { name: /^Payment Visa/ }).click();
   await page.getByRole("button", { name: /Pay another way/ }).click();
   const payment = page.getByRole("dialog", {
     name: "Payment methods",
@@ -43,6 +43,7 @@ test("nested billing Back and Cancel preserve the payment editor", async ({
   await payment
     .getByRole("textbox", { name: "Nickname (optional)" })
     .fill("Reference billing draft");
+  await payment.getByRole("button", { name: /^Bill to/ }).click();
   await payment
     .getByRole("button", { name: /Use a different address/ })
     .click();
@@ -68,7 +69,7 @@ test("nested billing Back and Cancel preserve the payment editor", async ({
   ).toBeFocused();
 });
 
-test("replacement order confirmation remains open and updates only the selected order", async ({
+test("source order status action closes its sheet and preserves the selected order", async ({
   page,
 }) => {
   await page.goto("/orders/REF-1001");
@@ -81,21 +82,29 @@ test("replacement order confirmation remains open and updates only the selected 
   await page
     .getByRole("button", { name: "Mark order as delivered", exact: true })
     .click();
-  const confirmation = page.getByRole("dialog", {
-    name: "Mark as delivered?",
-    exact: true,
-  });
-  await expect(confirmation).toBeVisible();
-  await confirmation
-    .getByRole("button", { name: "Mark as delivered", exact: true })
-    .click();
-  await expect(confirmation).not.toBeVisible();
+  await expect(
+    page.getByRole("dialog", { name: "Your order", exact: true }),
+  ).not.toBeVisible();
+  await expect(page.getByRole("status")).toContainText("Marked as delivered");
   await expect(
     page.getByText("Review your order", { exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Buy again", exact: true }),
   ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Order options", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Unmark as delivered", exact: true })
+    .click();
+  await expect(
+    page.getByText("Review your order", { exact: true }),
+  ).toHaveCount(0);
+  await page.getByRole("link", { name: "Orders", exact: true }).click();
+  await page.getByRole("button", { name: "More order options" }).click();
+  await page.getByRole("link", { name: "View order archive" }).click();
+  await expect(page.locator("a[href='/orders/REF-1002']")).toBeVisible();
 });
 
 test("filter Back visits the parent sheet before dismissing", async ({
