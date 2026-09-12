@@ -419,7 +419,7 @@ export function Storefront({
       <FloatingNav
         back
         cart={() => setCart(true)}
-        showCartWhenEmpty={store.promotionSavings !== 15}
+        showCartWhenEmpty={isKitsch && store.promotionSavings !== 15}
       />
       <Cart catalog={catalog} open={cart} onClose={() => setCart(false)} />
     </ShopSurface>

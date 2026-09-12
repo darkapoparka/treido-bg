@@ -3,7 +3,7 @@
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
 }
 .filter::backdrop {
-  background: rgb(0 0 0 / 50%);
+  background: rgb(0 0 0 / 40%);
 }
 
 .store {
