@@ -2,7 +2,7 @@
 import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatMoney } from "../catalog/types";
 import type { Catalog, Store, Product } from "../catalog/types";
@@ -13,6 +13,7 @@ import {
   Sheet,
   commitSheetQuery,
 } from "./components";
+import { StoreFilter, openStoreFilter } from "./store-filter";
 import { Icon } from "./icons";
 import { Cart } from "./product";
 import { useDiscovery } from "./state";
@@ -22,8 +23,6 @@ import {
   matchStoreProducts,
   normalizeStoreQuery,
   hasStoreFilters,
-  STORE_SORTS,
-  STORE_PRICE_CEILING,
 } from "./store-model";
 const collectionMedia = [
   { slug: "whats-new", name: "What's New", media: "collection-new" },
@@ -176,7 +175,7 @@ function StoreNavigation({ store }: { store: Store }) {
   );
 }
 
-function StorePromotion() {
+function StorePromotion({ savings = 20 }: { savings?: number }) {
   const [expanded, setExpanded] = useState(false);
   return (
     <div className={`promotion-owner ${expanded ? "expanded" : ""}`}>
@@ -186,7 +185,7 @@ function StorePromotion() {
         onClick={() => setExpanded(!expanded)}
       >
         <span>
-          <b>{expanded ? "Save $15" : "Save $20"}</b> on orders over $50 ⌄
+          <b>Save ${expanded ? 15 : savings}</b> on orders over $50 ⌄
         </span>
         {!expanded && <small>+ 1 more promotion</small>}
       </button>
@@ -198,7 +197,7 @@ function StorePromotion() {
           </div>
           <div>
             <b>20% off your order</b>
-            <span> spring20offall…</span>
+            <span> spring20orderdis…</span>
             <p>Automatically applied at checkout</p>
           </div>
         </div>
@@ -212,177 +211,6 @@ function ordered(catalog: Catalog, ids: string[]) {
     return p ? [p] : [];
   });
 }
-function StoreFilter({
-  open,
-  onClose,
-  initialSection = "",
-}: {
-  open: boolean;
-  onClose: () => void;
-  initialSection?: "" | "Sort by" | "Price";
-}) {
-  const params = useSearchParams();
-  const [section, setSection] = useState(initialSection);
-  const { min, max, sale, stock, sort } = readStoreFilters(params);
-  const closeSection = () => (initialSection ? onClose() : setSection(""));
-  function update(values: Record<string, string>) {
-    const next = new URLSearchParams(params.toString());
-    Object.entries(values).forEach(([key, value]) =>
-      value ? next.set(key, value) : next.delete(key),
-    );
-    commitSheetQuery(next);
-  }
-  return (
-    <>
-      <Sheet
-        open={open && !initialSection}
-        title="Filter"
-        className={`store-filter-sheet ${section ? "filter-covered" : ""}`}
-        onClose={onClose}
-      >
-        <div className="store-filter-options">
-          <button onClick={() => setSection("Sort by")}>
-            Sort by
-            <span>
-              {sort}
-              <Icon name="back" />
-            </span>
-          </button>
-          <button
-            aria-pressed={sale}
-            onClick={() => update({ sale: sale ? "" : "1" })}
-          >
-            On sale
-            <span
-              aria-hidden="true"
-              className={`store-checkbox ${sale ? "checked" : ""}`}
-            >
-              {sale && <Icon name="check" />}
-            </span>
-          </button>
-          <button
-            aria-pressed={stock}
-            onClick={() => update({ stock: stock ? "0" : "" })}
-          >
-            In-stock
-            <span
-              aria-hidden="true"
-              className={`store-checkbox ${stock ? "checked" : ""}`}
-            >
-              {stock && <Icon name="check" />}
-            </span>
-          </button>
-          <button onClick={() => setSection("Price")}>
-            Price
-            <span>
-              <Icon name="back" />
-            </span>
-          </button>
-        </div>
-        <div className="sheet-actions">
-          <button
-            className="pill"
-            onClick={() =>
-              update({ min: "", max: "", sale: "", stock: "", sort: "" })
-            }
-          >
-            Clear all
-          </button>
-          <button className="primary" onClick={onClose}>
-            Done
-          </button>
-        </div>
-      </Sheet>
-      <Sheet
-        open={open && !!section}
-        title={section || "Filter"}
-        className={
-          section === "Price" ? "store-price-sheet" : "store-filter-sheet"
-        }
-        onClose={closeSection}
-      >
-        {section === "Price" ? (
-          <div className="dual-price">
-            <strong aria-live="polite">
-              ${min.toLocaleString("en-US")} - ${max.toLocaleString("en-US")}
-              {max === STORE_PRICE_CEILING ? "+" : ""}
-            </strong>
-            <div
-              style={
-                {
-                  "--range-start": `${(min / STORE_PRICE_CEILING) * 100}%`,
-                  "--range-end": `${(max / STORE_PRICE_CEILING) * 100}%`,
-                } as CSSProperties
-              }
-            >
-              <span className="store-price-track" aria-hidden="true" />
-              <input
-                aria-label="Minimum price"
-                aria-valuetext={`$${min}`}
-                type="range"
-                min="0"
-                max={STORE_PRICE_CEILING}
-                step="10"
-                value={min}
-                onChange={(event) =>
-                  update({
-                    min: String(Math.min(Number(event.target.value), max)),
-                  })
-                }
-              />
-              <input
-                aria-label="Maximum price"
-                aria-valuetext={`$${max}${max === STORE_PRICE_CEILING ? " or more" : ""}`}
-                type="range"
-                min="0"
-                max={STORE_PRICE_CEILING}
-                step="10"
-                value={max}
-                onChange={(event) =>
-                  update({
-                    max: String(Math.max(Number(event.target.value), min)),
-                  })
-                }
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="store-filter-options store-sort-options">
-            {STORE_SORTS.map((value) => (
-              <button
-                key={value}
-                aria-pressed={sort === value}
-                onClick={() => {
-                  update({ sort: value === "Best selling" ? "" : value });
-                  closeSection();
-                }}
-              >
-                {value}
-                <span
-                  className={`radio-outline ${sort === value ? "selected" : ""}`}
-                />
-              </button>
-            ))}
-          </div>
-        )}
-        <div className="sheet-actions">
-          <button
-            className="pill"
-            onClick={() =>
-              update(section === "Price" ? { min: "", max: "" } : { sort: "" })
-            }
-          >
-            Reset
-          </button>
-          <button className="primary" onClick={closeSection}>
-            Done
-          </button>
-        </div>
-      </Sheet>
-    </>
-  );
-}
-
 function StoreGrid({
   products,
   heading = true,
@@ -393,7 +221,6 @@ function StoreGrid({
   promotions?: boolean;
 }) {
   const params = useSearchParams();
-  const [filter, setFilter] = useState(false);
   const filters = readStoreFilters(params);
   const filtered = selectStoreProducts(products, filters);
   return (
@@ -404,7 +231,7 @@ function StoreGrid({
           <IconButton
             icon="filter-circles"
             label="Filter store products"
-            onClick={() => setFilter(true)}
+            onClick={() => openStoreFilter()}
           />
         </div>
       )}
@@ -431,7 +258,7 @@ function StoreGrid({
           )}
         </div>
       )}
-      {filter && <StoreFilter open onClose={() => setFilter(false)} />}
+      <StoreFilter />
     </>
   );
 }
@@ -453,19 +280,35 @@ export function Storefront({
   const isKitsch = store.id === "kitsch",
     chemical = store.id === "chemical-guys";
   const all = catalog.products.filter((p) => p.storeId === store.id);
-  const products = isKitsch
-    ? ordered(catalog, [
-        "shampoo-bag",
-        "shea-butter",
-        "terracotta",
-        "rice-shampoo",
-      ])
-    : all;
+  const recommendations =
+    store.recommendations ??
+    (isKitsch
+      ? [
+          { productId: "shampoo-bag" },
+          { productId: "shea-butter", ratingCount: "2.1K" },
+          { productId: "terracotta" },
+          { productId: "rice-shampoo" },
+        ]
+      : all.map((product) => ({ productId: product.id })));
+  const products = recommendations.flatMap((item) => {
+    const product = all.find((product) => product.id === item.productId);
+    return product
+      ? [
+          {
+            ...product,
+            ratingCount:
+              "ratingCount" in item && item.ratingCount !== undefined
+                ? item.ratingCount
+                : product.ratingCount,
+          },
+        ]
+      : [];
+  });
   return (
     <ShopSurface
       className={`shop-page store-page ${chemical ? "chemical-store" : ""}`}
     >
-      {isKitsch && <StorePromotion />}
+      {isKitsch && <StorePromotion savings={store.promotionSavings} />}
       <section className={`store-hero${isKitsch ? " store-hero-kitsch" : ""}`}>
         <StoreActions store={store} />
         <div className="store-brand">
@@ -498,15 +341,8 @@ export function Storefront({
         <section className="store-recommendations">
           <h1>For you</h1>
           <div className="product-rail">
-            {products.map((p) => (
-              <ProductCard
-                key={p.id}
-                product={
-                  isKitsch && p.id === "shea-butter"
-                    ? { ...p, ratingCount: "2.1K" }
-                    : p
-                }
-              />
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </section>
@@ -577,58 +413,40 @@ export function Storefront({
 }
 function StoreCriteria() {
   const params = useSearchParams();
-  const [filter, setFilter] = useState<"" | "Sort by" | "Price" | null>(null);
+  const filters = readStoreFilters(params);
   function toggle(key: "sale" | "stock") {
     const next = new URLSearchParams(params.toString());
-    next.set(
-      key,
-      key === "sale"
-        ? params.get(key) === "1"
-          ? "0"
-          : "1"
-        : params.get(key) === "0"
-          ? "1"
-          : "0",
-    );
+    next.set(key, filters[key] ? "0" : "1");
     commitSheetQuery(next);
   }
   return (
-    <>
-      <div className="category-rail store-criteria">
-        <IconButton
-          icon="filter-circles"
-          label="Filter collection"
-          onClick={() => setFilter("")}
-        />
-        <button className="pill" onClick={() => setFilter("Sort by")}>
-          Sort by <span aria-hidden="true">⌄</span>
-        </button>
-        <button
-          className={`pill ${params.get("sale") === "1" ? "selected" : ""}`}
-          aria-pressed={params.get("sale") === "1"}
-          onClick={() => toggle("sale")}
-        >
-          On sale
-        </button>
-        <button
-          className={`pill ${params.get("stock") !== "0" ? "selected" : ""}`}
-          aria-pressed={params.get("stock") !== "0"}
-          onClick={() => toggle("stock")}
-        >
-          In-stock
-        </button>
-        <button className="pill" onClick={() => setFilter("Price")}>
-          Price <span aria-hidden="true">⌄</span>
-        </button>
-      </div>
-      {filter !== null && (
-        <StoreFilter
-          open
-          initialSection={filter}
-          onClose={() => setFilter(null)}
-        />
-      )}
-    </>
+    <div className="category-rail store-criteria">
+      <IconButton
+        icon="filter-circles"
+        label="Filter collection"
+        onClick={() => openStoreFilter()}
+      />
+      <button className="pill" onClick={() => openStoreFilter("sort")}>
+        Sort by <span aria-hidden="true">⌄</span>
+      </button>
+      <button
+        className={`pill ${filters.sale ? "selected" : ""}`}
+        aria-pressed={filters.sale}
+        onClick={() => toggle("sale")}
+      >
+        On sale
+      </button>
+      <button
+        className={`pill ${filters.stock ? "selected" : ""}`}
+        aria-pressed={filters.stock}
+        onClick={() => toggle("stock")}
+      >
+        In-stock
+      </button>
+      <button className="pill" onClick={() => openStoreFilter("price")}>
+        Price <span aria-hidden="true">⌄</span>
+      </button>
+    </div>
   );
 }
 export function StoreCollection({
