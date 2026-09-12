@@ -63,8 +63,7 @@ export function ReviewBody({
     if (!element || expanded) return;
     let active = true;
     const measure = () => {
-      if (active)
-        setOverflows(element.scrollHeight > element.clientHeight + 1);
+      if (active) setOverflows(element.scrollHeight > element.clientHeight + 1);
     };
     const frame = requestAnimationFrame(measure);
     // A clamped paragraph can keep the same box height while font metrics alter
