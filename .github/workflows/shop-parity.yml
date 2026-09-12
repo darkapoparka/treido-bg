@@ -26,7 +26,8 @@ concurrency:
 jobs:
   reference:
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    # Standard hosted runner; use the OS system font without copying font files.
+    runs-on: macos-26
     timeout-minutes: 25
     env:
       CI: "true"
@@ -55,7 +56,7 @@ jobs:
           mkdir -p .qa/shop-parity
           printf '\n.qa/\n' >> .git/info/exclude
           python3 - <<'PY'
-          import hashlib, json, pathlib
+          import hashlib, json, pathlib, platform, os
           root = pathlib.Path('references/shop').resolve()
           manifest = json.loads((root / 'manifest.json').read_text())
           checked = {}
@@ -76,7 +77,7 @@ jobs:
                   for item in value:
                       verify(item)
           verify(manifest)
-          counts = {'flows': len(manifest['flows']), 'frames': sum(len(f['screens']) for f in manifest['flows']), 'standalone': len(manifest['screens']), 'verifiedFiles': len(checked)}
+          counts = {'flows': len(manifest['flows']), 'frames': sum(len(f['screens']) for f in manifest['flows']), 'standalone': len(manifest['screens']), 'verifiedFiles': len(checked), 'commit': os.environ['GITHUB_SHA'], 'platform': platform.platform()}
           if counts['verifiedFiles'] == 0:
               raise RuntimeError('No reference media verified')
           pathlib.Path('.qa/shop-parity/provenance.json').write_text(json.dumps(counts, indent=2))
@@ -132,23 +133,55 @@ jobs:
         if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.browser.outcome == 'success' }}
         shell: bash
         run: |
-          pnpm --filter @treido/web exec next dev --hostname 127.0.0.1 --port 6412 > "$RUNNER_TEMP/shop-preview.log" 2>&1 &
-          server=$!
-          trap 'kill "$server" 2>/dev/null || true' EXIT
-          ready=0
-          for attempt in $(seq 1 90); do
-            if curl --fail --silent http://127.0.0.1:6412/ > /dev/null; then ready=1; break; fi
-            if ! kill -0 "$server" 2>/dev/null; then cat "$RUNNER_TEMP/shop-preview.log"; exit 1; fi
-            sleep 1
-          done
-          if [ "$ready" -ne 1 ]; then cat "$RUNNER_TEMP/shop-preview.log"; exit 1; fi
-          node scripts/shop-parity/run.mjs baseline --all --flows "$PARITY_FLOWS" --run "ci-$GITHUB_SHA"
-      - name: Focused Home and navigation interactions
+          python3 - <<'PY'
+          import os, pathlib, signal, subprocess, time, urllib.request
+          log_path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'shop-preview.log'
+          with log_path.open('w') as log:
+              server = subprocess.Popen(['pnpm', '--filter', '@treido/web', 'exec', 'next', 'dev', '--hostname', '127.0.0.1', '--port', '6412'], stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+              try:
+                  for attempt in range(90):
+                      if server.poll() is not None:
+                          raise RuntimeError('Reference preview exited: ' + log_path.read_text())
+                      try:
+                          with urllib.request.urlopen(os.environ['SHOP_PARITY_BASE_URL'], timeout=2) as response:
+                              if response.status == 200:
+                                  break
+                      except (OSError, TimeoutError):
+                          time.sleep(1)
+                  else:
+                      raise RuntimeError('Reference preview did not become ready: ' + log_path.read_text())
+                  result = subprocess.run(['node', 'scripts/shop-parity/run.mjs', 'baseline', '--all', '--flows', os.environ['PARITY_FLOWS'], '--run', 'ci-' + os.environ['GITHUB_SHA']])
+              finally:
+                  # pnpm spawns Next children. Stop this owned process group, not
+                  # only its parent, before Playwright starts its own server.
+                  try:
+                      os.killpg(server.pid, signal.SIGTERM)
+                  except ProcessLookupError:
+                      pass
+                  try:
+                      server.wait(timeout=15)
+                  except subprocess.TimeoutExpired:
+                      os.killpg(server.pid, signal.SIGKILL)
+                      server.wait()
+                  for attempt in range(50):
+                      try:
+                          os.killpg(server.pid, 0)
+                      except ProcessLookupError:
+                          break
+                      time.sleep(0.1)
+                  else:
+                      try:
+                          os.killpg(server.pid, signal.SIGKILL)
+                      except ProcessLookupError:
+                          pass
+              raise SystemExit(result.returncode)
+          PY
+      - name: Focused Home, Following and navigation interactions
         if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.browser.outcome == 'success' }}
         env:
           REFERENCE_DEV: "1"
           PLAYWRIGHT_JSON_OUTPUT_NAME: .qa/shop-parity/interactions.json
-        run: pnpm exec playwright test --config playwright.reference.config.ts home-overlays.spec.ts history.spec.ts --reporter=line,json
+        run: pnpm exec playwright test --config playwright.reference.config.ts home-overlays.spec.ts following.spec.ts history.spec.ts --reporter=line,json
       - name: Publish capture summary
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         shell: bash

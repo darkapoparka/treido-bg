@@ -26,13 +26,15 @@ export const homeRecipes = {
       {
         state: "recently-viewed-shops",
         entry: { startUrl: "/?feed=recent-stores", scenario: "home-welcome" },
-        notes: "Separate recorded browsing history; no captured transition from the welcome feed.",
+        notes:
+          "Separate recorded browsing history; no captured transition from the welcome feed.",
         actions: [top],
       },
       {
         state: "recently-viewed-products-with-order",
         entry: { startUrl: "/products/u-see-me", scenario: "returning-home" },
-        notes: "Reconstruct prior visits through product routes, not injected DOM or painted screenshots.",
+        notes:
+          "Reconstruct prior visits through product routes, not injected DOM or painted screenshots.",
         actions: [
           { type: "goto", url: "/products/round-sunglasses" },
           { type: "goto", url: "/products/cleo" },
@@ -68,7 +70,11 @@ export const homeRecipes = {
       welcome(),
       {
         state: "notifications-empty",
-        actions: [click("button", "Notifications"), heading("Notifications"), top],
+        actions: [
+          click("button", "Notifications"),
+          heading("Notifications"),
+          top,
+        ],
       },
     ],
   },
@@ -85,36 +91,41 @@ export const homeRecipes = {
       },
       {
         state: "deals-francesco-solid-hair",
-        actions: [anchor('.deals-feed > section:nth-child(3)', 56)],
+        actions: [anchor(".deals-feed > section:nth-child(3)", 56)],
       },
     ],
   },
   5: {
     family: "following",
-    owner: "apps/web/src/features/discovery/saved.tsx#Following",
+    owner: "apps/web/src/features/discovery/following.tsx",
     startUrl: "/",
     scenario: "following-empty",
     frames: [
       welcome(),
       {
         state: "following-empty-recommendation",
+        notes:
+          "The quilt record is incomplete; its existing page-local bookmark is not shared Saved acceptance.",
         actions: [click("link", "Following"), heading("Following"), top],
       },
       {
         state: "following-pura-products",
         entry: { startUrl: "/following", scenario: "following-pair" },
-        notes: "The capture jumps from no followed stores to KITSCH/Pura; the seed is isolated by the reference-preview boundary.",
+        notes:
+          "Captured browsing-history change uses the isolated seed. Lemon Leaf/Santa Fe photography is partial; removed photographic control occlusions remain visual obligations, not comparison masks.",
         actions: [heading("Following"), top],
       },
       {
         state: "following-kitsch-and-older-pura",
-        actions: [anchor('.following-feed:has(img[alt="Black Bow Hair Clip"])', 54)],
+        notes:
+          "Earlier Pura photograph is partial and its title/price were not captured. No destination or service result is invented.",
+        actions: [anchor('[data-following-post="kitsch"]', 54)],
       },
     ],
   },
   6: {
     family: "following",
-    owner: "apps/web/src/features/discovery/saved.tsx#Following",
+    owner: "apps/web/src/features/discovery/following.tsx",
     startUrl: "/following",
     scenario: "following-pair",
     frames: [
@@ -135,7 +146,8 @@ export const homeRecipes = {
       {
         state: "pura-shop-options",
         overlay: "dialog",
-        notes: "The campaign video advances in the capture. Its still-image background remains a visual/transition review obligation, not a masked region.",
+        notes:
+          "The campaign video advances in the capture. Its still-image background remains a visual/transition review obligation, not a masked region.",
         actions: [
           anchor(".campaign-pura"),
           click("button", "More options for Pura"),
