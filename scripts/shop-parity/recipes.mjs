@@ -36,25 +36,13 @@ export const flowRecipes = {
         state: "add-card-empty",
         actions: [
           { type: "click", role: "link", name: "Add card", exact: true },
-          {
-            type: "waitVisible",
-            role: "heading",
-            name: "Add card",
-            exact: true,
-          },
+          { type: "waitVisible", role: "heading", name: "Add card", exact: true },
           { type: "scroll", y: 0 },
         ],
       },
       {
         state: "add-card-number-valid",
-        actions: [
-          {
-            type: "fill",
-            role: "textbox",
-            name: "Card number",
-            value: "4242424242424263",
-          },
-        ],
+        actions: [{ type: "fill", role: "textbox", name: "Card number", value: "4242424242424263" }],
       },
       {
         state: "add-card-number-error",
@@ -68,12 +56,7 @@ export const flowRecipes = {
       {
         state: "add-card-details-complete",
         actions: [
-          {
-            type: "fill",
-            role: "textbox",
-            name: "Card number",
-            value: "4242424242424263",
-          },
+          { type: "fill", role: "textbox", name: "Card number", value: "4242424242424263" },
           { type: "fill", role: "textbox", name: "Expiry", value: "12/30" },
           { type: "fill", role: "textbox", name: "CVC", value: "123" },
         ],
@@ -81,12 +64,7 @@ export const flowRecipes = {
       {
         state: "add-card-name-and-billing",
         actions: [
-          {
-            type: "fill",
-            role: "textbox",
-            name: "Name on card",
-            value: "Sam Lee",
-          },
+          { type: "fill", role: "textbox", name: "Name on card", value: "Sam Lee" },
           { type: "blur", role: "textbox", name: "Name on card" },
           { type: "scroll", y: 0 },
         ],
@@ -116,12 +94,7 @@ export const flowRecipes = {
         state: "card-detail",
         actions: [
           { type: "clickSelector", selector: ".payment-card-button" },
-          {
-            type: "waitVisible",
-            role: "heading",
-            name: "Card details",
-            exact: true,
-          },
+          { type: "waitVisible", role: "heading", name: "Card details", exact: true },
           { type: "scroll", y: 0 },
         ],
       },
@@ -136,32 +109,19 @@ export const flowRecipes = {
         actions: [
           ...prepareProfile,
           { type: "clickSelector", selector: ".payment-card-button" },
-          {
-            type: "waitVisible",
-            role: "heading",
-            name: "Card details",
-            exact: true,
-          },
+          { type: "waitVisible", role: "heading", name: "Card details", exact: true },
           { type: "scroll", y: 0 },
         ],
       },
       {
         state: "delete-card-confirm",
         overlay: "dialog",
-        actions: [
-          { type: "click", role: "button", name: "Delete", exact: true },
-        ],
+        actions: [{ type: "click", role: "button", name: "Delete", exact: true }],
       },
       {
         state: "profile-payment-methods-after-delete-dialog",
         actions: [
-          {
-            type: "click",
-            role: "button",
-            name: "Cancel",
-            exact: true,
-            withinDialog: true,
-          },
+          { type: "click", role: "button", name: "Cancel", exact: true, withinDialog: true },
           { type: "click", role: "button", name: "Go back", exact: true },
           paymentTop,
         ],
@@ -177,12 +137,7 @@ export const flowRecipes = {
         state: "manage-addresses",
         actions: [
           { type: "click", role: "link", name: "Addresses", exact: true },
-          {
-            type: "waitVisible",
-            role: "heading",
-            name: "Manage addresses",
-            exact: true,
-          },
+          { type: "waitVisible", role: "heading", name: "Manage addresses", exact: true },
           { type: "scroll", y: 0 },
         ],
       },
@@ -208,13 +163,7 @@ export const flowRecipes = {
       {
         state: "manage-addresses-after-delete",
         actions: [
-          {
-            type: "click",
-            role: "button",
-            name: "Delete",
-            exact: true,
-            withinDialog: true,
-          },
+          { type: "click", role: "button", name: "Delete", exact: true, withinDialog: true },
           { type: "scroll", y: 0 },
         ],
       },
@@ -228,22 +177,10 @@ const click = (role, name) => ({
   name,
   exact: typeof name === "string",
 });
-const heading = (name) => ({
-  type: "waitVisible",
-  role: "heading",
-  name,
-  exact: true,
-});
+const heading = (name) => ({ type: "waitVisible", role: "heading", name, exact: true });
 const top = { type: "scroll", y: 0 };
-const profileFrame = () => ({
-  state: "profile-payment-methods",
-  actions: prepareProfile,
-});
-const settingsLink = (label, title = label) => [
-  click("link", label),
-  heading(title),
-  top,
-];
+const profileFrame = () => ({ state: "profile-payment-methods", actions: prepareProfile });
+const settingsLink = (label, title = label) => [click("link", label), heading(title), top];
 Object.assign(flowRecipes, {
   85: {
     family: "account-settings",
@@ -252,18 +189,10 @@ Object.assign(flowRecipes, {
       profileFrame(),
       {
         state: "account-and-login",
-        notes:
-          "The source skips the transition between the two settings variants; replay enters the existing account detail from security.",
-        actions: [
-          ...settingsLink("Sign in & security"),
-          click("button", /Text me a code/),
-          heading("Account & login"),
-        ],
+        notes: "The source skips the transition between the two settings variants; replay enters the existing account detail from security.",
+        actions: [...settingsLink("Sign in & security"), click("button", /Text me a code/), heading("Account & login")],
       },
-      {
-        state: "sign-in-security",
-        actions: [click("button", "Go back"), heading("Sign in & security")],
-      },
+      { state: "sign-in-security", actions: [click("button", "Go back"), heading("Sign in & security")] },
     ],
   },
   86: {
@@ -271,45 +200,27 @@ Object.assign(flowRecipes, {
     startUrl: "/profile",
     frames: [
       profileFrame(),
-      {
-        state: "notification-preferences-on",
-        actions: settingsLink("Notifications"),
-      },
+      { state: "notification-preferences-on", actions: settingsLink("Notifications") },
       {
         state: "notification-tracking-connections-off",
-        actions: [
-          click("switch", /Order tracking/),
-          click("switch", /Account connections/),
-          top,
-        ],
+        actions: [click("switch", /Order tracking/), click("switch", /Account connections/), top],
       },
     ],
   },
   87: {
     family: "account-settings",
     startUrl: "/profile",
-    frames: [
-      profileFrame(),
-      { state: "connections", actions: settingsLink("Connections") },
-    ],
+    frames: [profileFrame(), { state: "connections", actions: settingsLink("Connections") }],
   },
   88: {
     family: "account-settings",
     startUrl: "/account/connections",
     frames: [
       { state: "connections", actions: [heading("Connections")] },
-      {
-        state: "choose-connection-provider",
-        overlay: "dialog",
-        actions: [click("button", /Connect an account/)],
-      },
+      { state: "choose-connection-provider", overlay: "dialog", actions: [click("button", /Connect an account/)] },
       {
         state: "gmail-connection-introduction",
-        actions: [
-          click("button", /Gmail Connect account/),
-          heading("Connect Gmail account"),
-          top,
-        ],
+        actions: [click("button", /Gmail Connect account/), heading("Connect Gmail account"), top],
       },
     ],
   },
@@ -319,45 +230,24 @@ Object.assign(flowRecipes, {
     frames: [
       profileFrame(),
       { state: "privacy-options", actions: settingsLink("Data & privacy") },
-      {
-        state: "delete-account-information",
-        actions: settingsLink("Delete account", "Delete your Shop account"),
-      },
-      {
-        state: "delete-account-confirmation",
-        overlay: "dialog",
-        actions: [click("button", "Delete account")],
-      },
+      { state: "delete-account-information", actions: settingsLink("Delete account", "Delete your Shop account") },
+      { state: "delete-account-confirmation", overlay: "dialog", actions: [click("button", "Delete account")] },
       {
         state: "delete-account-verification",
-        actions: [
-          { ...click("button", "Delete account"), withinDialog: true },
-          heading("Enter the verification code sent to your email"),
-        ],
+        actions: [{ ...click("button", "Delete account"), withinDialog: true }, heading("Enter the verification code sent to your email")],
       },
       {
         state: "delete-account-captured-processing",
-        notes:
-          "Explicit provider-outcome preview: no code was sent and no deletion request is submitted.",
+        notes: "Explicit provider-outcome preview: no code was sent and no deletion request is submitted.",
         actions: [
-          {
-            type: "fill",
-            role: "textbox",
-            name: "Deletion verification code",
-            value: "123456",
-          },
+          { type: "fill", role: "textbox", name: "Deletion verification code", value: "123456" },
           click("button", "View captured deletion example"),
-          {
-            type: "waitVisible",
-            role: "status",
-            name: "Captured deletion processing",
-          },
+          { type: "waitVisible", role: "status", name: "Captured deletion processing" },
         ],
       },
       {
         state: "delete-account-captured-received",
-        notes:
-          "Captured provider outcome reached only through explicit preview selection, not real account deletion.",
+        notes: "Captured provider outcome reached only through explicit preview selection, not real account deletion.",
         actions: [heading("Your deletion request has been received")],
       },
     ],
@@ -365,46 +255,23 @@ Object.assign(flowRecipes, {
   90: {
     family: "account-support",
     startUrl: "/profile",
-    frames: [
-      profileFrame(),
-      { state: "support-options", actions: settingsLink("Support") },
-    ],
+    frames: [profileFrame(), { state: "support-options", actions: settingsLink("Support") }],
   },
   91: {
     family: "account-support",
     startUrl: "/support",
     frames: [
       { state: "support-options", actions: [heading("Support")] },
-      {
-        state: "support-chat-empty",
-        actions: [click("link", /Support Chat/), heading("Support"), top],
-      },
+      { state: "support-chat-empty", actions: [click("link", /Support Chat/), heading("Support"), top] },
       {
         state: "support-chat-draft",
-        actions: [
-          {
-            type: "fill",
-            role: "textbox",
-            name: "Message support",
-            value: "Is it possible to cancel an order and request a refund?",
-          },
-        ],
+        actions: [{ type: "fill", role: "textbox", name: "Message support", value: "Is it possible to cancel an order and request a refund?" }],
       },
       {
         state: "support-chat-captured-reply-pending",
-        actions: [
-          click("button", "Send message"),
-          {
-            type: "waitVisible",
-            role: "status",
-            name: "Preparing captured reply",
-          },
-        ],
+        actions: [click("button", "Send message"), { type: "waitVisible", role: "status", name: "Preparing captured reply" }],
       },
-      {
-        state: "support-chat-captured-answer",
-        actions: [{ type: "waitVisible", role: "link", name: /Go to orders/ }],
-      },
+      { state: "support-chat-captured-answer", actions: [{ type: "waitVisible", role: "link", name: /Go to orders/ }] },
     ],
   },
   92: {
@@ -414,11 +281,7 @@ Object.assign(flowRecipes, {
       { state: "support-options", actions: [heading("Support")] },
       {
         state: "about-shop",
-        actions: [
-          click("link", /About Learn more/),
-          { type: "waitVisible", role: "link", name: "shop.app", exact: true },
-          top,
-        ],
+        actions: [click("link", /About Learn more/), { type: "waitVisible", role: "link", name: "shop.app", exact: true }, top],
       },
     ],
   },
@@ -426,26 +289,13 @@ Object.assign(flowRecipes, {
     family: "account-support",
     startUrl: "/profile",
     frames: [
-      {
-        state: "profile-sign-out-footer",
-        actions: [...prepareProfile, { type: "scroll", y: 100000 }],
-      },
-      {
-        state: "sign-out-confirmation",
-        overlay: "dialog",
-        actions: [click("button", "Sign out")],
-      },
+      { state: "profile-sign-out-footer", actions: [...prepareProfile, { type: "scroll", y: 100000 }] },
+      { state: "sign-out-confirmation", overlay: "dialog", actions: [click("button", "Sign out")] },
       {
         state: "signed-out-splash",
-        actions: [
-          { ...click("link", "Sign out"), withinDialog: true },
-          { type: "waitVisible", role: "main", name: "Shop loading" },
-        ],
+        actions: [{ ...click("link", "Sign out"), withinDialog: true }, { type: "waitVisible", role: "main", name: "Shop loading" }],
       },
-      {
-        state: "signed-out-introduction",
-        actions: [{ type: "waitVisible", role: "link", name: "Get Started" }],
-      },
+      { state: "signed-out-introduction", actions: [{ type: "waitVisible", role: "link", name: "Get Started" }] },
     ],
   },
 });
@@ -459,72 +309,30 @@ flowRecipes[94] = {
   family: "account-authentication",
   startUrl: "/onboarding?reference=captured",
   frames: [
-    {
-      state: "returning-introduction",
-      actions: [{ type: "waitVisible", role: "link", name: "Get Started" }],
-    },
-    {
-      state: "track-recent-order",
-      actions: [
-        click("link", "Get Started"),
-        heading("Let’s track your recent order"),
-        top,
-      ],
-    },
-    {
-      state: "phone-code-empty",
-      masks: nativeProviderChrome,
-      actions: [
-        click("button", "Track my order"),
-        heading("Confirm it’s you"),
-        top,
-      ],
-    },
+    { state: "returning-introduction", actions: [{ type: "waitVisible", role: "link", name: "Get Started" }] },
+    { state: "track-recent-order", actions: [click("link", "Get Started"), heading("Let’s track your recent order"), top] },
+    { state: "phone-code-empty", masks: nativeProviderChrome, actions: [click("button", "Track my order"), heading("Confirm it’s you"), top] },
     {
       state: "captured-code-pending",
       masks: nativeProviderChrome,
-      notes:
-        "Captured test scenario only; no code is sent or verified by a provider.",
+      notes: "Captured test scenario only; no code is sent or verified by a provider.",
       actions: [
-        {
-          type: "fill",
-          role: "textbox",
-          name: "Verification code",
-          value: "840125",
-        },
+        { type: "fill", role: "textbox", name: "Verification code", value: "840125" },
         { type: "waitUrl", url: "**phase=pending" },
       ],
     },
-    {
-      state: "captured-code-complete",
-      masks: nativeProviderChrome,
-      actions: [{ type: "waitUrl", url: "**phase=verified" }],
-    },
-    {
-      state: "captured-passkey-introduction",
-      masks: nativeProviderChrome,
-      actions: [heading("Sign in faster with a passkey")],
-    },
-    {
-      state: "captured-sign-in-animation",
-      masks: nativeProviderChrome,
-      actions: [heading("Signing you in...")],
-    },
-    {
-      state: "returning-tracking-introduction",
-      actions: [heading("Track all of your orders in one place"), top],
-    },
+    { state: "captured-code-complete", masks: nativeProviderChrome, actions: [{ type: "waitUrl", url: "**phase=verified" }] },
+    { state: "captured-passkey-introduction", masks: nativeProviderChrome, actions: [heading("Sign in faster with a passkey")] },
+    { state: "captured-sign-in-animation", masks: nativeProviderChrome, actions: [heading("Signing you in...")] },
+    { state: "returning-tracking-introduction", actions: [heading("Track all of your orders in one place"), top] },
     {
       state: "returning-home",
-      actions: [
-        click("button", "Skip"),
-        { type: "waitVisible", role: "link", name: "Profile", exact: true },
-        top,
-      ],
+      actions: [click("button", "Skip"), { type: "waitVisible", role: "link", name: "Profile", exact: true }, top],
     },
   ],
 };
 
 import { accountRecipes } from "./recipes-account.mjs";
 import { homeRecipes } from "./recipes-home.mjs";
-Object.assign(flowRecipes, accountRecipes, homeRecipes);
+import { savedRecipes } from "./recipes-saved.mjs";
+Object.assign(flowRecipes, accountRecipes, homeRecipes, savedRecipes);
