@@ -82,6 +82,43 @@ jobs:
           pathlib.Path('.qa/shop-parity/provenance.json').write_text(json.dumps(counts, indent=2))
           print(json.dumps(counts))
           PY
+      - name: Prepare ordered sources for visual inspection
+        shell: bash
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs/promises';
+          import sharp from './apps/web/node_modules/sharp/dist/index.mjs';
+          const manifest = JSON.parse(await fs.readFile('references/shop/manifest.json', 'utf8'));
+          const selected = new Set(process.env.PARITY_FLOWS.split(',').flatMap(part => {
+            if (!/^\d+(?:-\d+)?$/.test(part)) throw new Error('Invalid flow scope');
+            const [from, to = from] = part.split('-').map(Number);
+            if (from < 1 || to > manifest.flows.length || to < from) throw new Error('Flow scope outside manifest');
+            return Array.from({length: to - from + 1}, (_, i) => from + i);
+          }));
+          const out = '.qa/shop-parity/source';
+          await fs.mkdir(out, {recursive: true});
+          for (const flowNo of selected) {
+            const flow = manifest.flows[flowNo - 1];
+            const images = [];
+            for (const [i, frame] of flow.screens.entries()) {
+              if (![1179, 1180].includes(frame.width) || frame.height !== 2676) throw new Error('Source needs frame-specific normalization: ' + frame.file);
+              const input = await sharp('references/shop/' + frame.file).resize(393, 892, {fit: 'fill', kernel: sharp.kernel.lanczos3}).png().toBuffer();
+              await fs.writeFile(`${out}/f${String(flowNo).padStart(3, '0')}-${String(i + 1).padStart(3, '0')}.png`, input);
+              images.push({input, left: (i % 4) * 393, top: Math.floor(i / 4) * 892});
+            }
+            await sharp({create: {width: Math.min(4, images.length) * 393, height: Math.ceil(images.length / 4) * 892, channels: 3, background: 'white'}}).composite(images).png().toFile(`${out}/flow-${String(flowNo).padStart(3, '0')}.png`);
+          }
+          JS
+      - name: Retain ordered sources before browser work
+        uses: actions/upload-artifact@v7
+        with:
+          name: shop-sources-${{ github.sha }}-${{ github.run_attempt }}
+          retention-days: 2
+          include-hidden-files: true
+          if-no-files-found: error
+          path: |
+            .qa/shop-parity/provenance.json
+            .qa/shop-parity/source/*.png
       - name: Install browser
         id: browser
         run: pnpm exec playwright install --with-deps chromium
