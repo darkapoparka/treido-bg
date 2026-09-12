@@ -40,8 +40,9 @@ test("reference media and hydration remain available through the canonical route
   await expect
     .soft(page.locator('[data-shop-interactive="true"]').first())
     .toBeAttached();
-  const images = await page.locator(".explore-categories img").evaluateAll(
-    async (elements) =>
+  const images = await page
+    .locator(".explore-categories img")
+    .evaluateAll(async (elements) =>
       Promise.all(
         elements.map(async (element) => {
           const image = element as HTMLImageElement;
@@ -52,7 +53,7 @@ test("reference media and hydration remain available through the canonical route
           };
         }),
       ),
-  );
+    );
   await mkdir(".qa/shop-parity/media-review", { recursive: true });
   await writeFile(
     ".qa/shop-parity/media-review/report.json",

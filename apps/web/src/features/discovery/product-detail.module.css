@@ -1,22 +1,28 @@
-.detailsOnly :global(.product-details) {
+/* These metadata-only states share ProductDetail. Explicit specificity keeps
+   their geometry stable when the canonical product stylesheet loads later. */
+.detailsOnly.detailsOnly :global(.product-details) {
   margin-top: 12px;
 }
-.detailsOnly :global(.product-heading h1) {
+.detailsOnly.detailsOnly :global(.product-heading h1) {
   font-size: 16px;
   font-weight: 600;
   line-height: 22px;
 }
-.detailsOnly :global(.product-heading > .icon-button) {
+.detailsOnly.detailsOnly :global(.product-heading > .icon-button) {
   top: -8px;
 }
-.detailsOnly :global(.review-link) {
+.detailsOnly.detailsOnly :global(.product-heading > .icon-button svg) {
+  width: 20px;
+  height: 20px;
+}
+.detailsOnly.detailsOnly :global(.review-link) {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   margin-top: 0;
   min-height: 20px;
 }
-.detailsOnly :global(.review-rating-stars) {
+.detailsOnly.detailsOnly :global(.review-rating-stars) {
   --review-star-size: 16px;
   color: #ddc04d;
 }
@@ -28,9 +34,10 @@
 .stockNotice strong {
   font-weight: 600;
 }
-.detailsOnly :global(.product-price) {
+.detailsOnly.detailsOnly :global(.product-price) {
   margin-top: 12px;
   line-height: 26px;
+  font-weight: 600;
 }
 .markdown {
   font-size: 12px;
@@ -41,43 +48,51 @@
   font-size: 12px;
   line-height: 16px;
 }
-.detailsOnly :global(.product-deal) {
+.detailsOnly.detailsOnly :global(.product-deal) {
   margin-top: 10px;
   box-shadow: 0 4px 16px #00000005;
 }
-.detailsOnly :global(.product-deal strong) {
+.detailsOnly.detailsOnly :global(.product-deal strong) {
   color: #090909;
 }
-.detailsOnly :global(.variants) {
+.detailsOnly.detailsOnly :global(.variants) {
   margin-top: 18px;
   gap: 8px;
 }
-.detailsOnly :global(.variants legend) {
+.detailsOnly.detailsOnly :global(.variants legend) {
   font-size: 12px;
+  font-weight: 400;
   line-height: 16px;
   margin-bottom: 6px;
 }
-.detailsOnly :global(.variants .pill) {
+.detailsOnly.detailsOnly :global(.variants .pill) {
   padding: 8px 16px;
   min-width: 44px;
 }
-.detailsOnly :global(.variants .pill[aria-pressed="true"]) {
+.detailsOnly.detailsOnly :global(.variants .pill[aria-pressed="true"]) {
   background: white;
   color: #090909;
   border: 1.5px solid #090909;
 }
-.detailsOnly :global(.variants .pill:disabled) {
+.detailsOnly.detailsOnly :global(.variants .pill:disabled) {
   opacity: 1;
   color: #96999b;
   background: #eef0f1;
   text-decoration: line-through;
   border-color: #d5d7d8;
 }
-.detailsOnly :global(.quantity) {
+.detailsOnly.detailsOnly :global(.quantity) {
   margin-top: 16px;
 }
-.detailsOnly :global(.pdp-purchase-buttons) {
+.detailsOnly.detailsOnly :global(.quantity label) {
+  font-size: 12px;
+  font-weight: 400;
+}
+.detailsOnly.detailsOnly :global(.pdp-purchase-buttons) {
   margin-top: 28px;
+}
+.detailsOnly.detailsOnly :global(.pdp-purchase-buttons button) {
+  font-weight: 500;
 }
 .unrecordedReviews {
   margin-top: 40px;

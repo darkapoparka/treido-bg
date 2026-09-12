@@ -106,6 +106,7 @@ export function FloatingNav({
           type="button"
           className={`icon-button dock-cart ${cartQuantity > 0 ? "cart-filled" : ""}`}
           aria-label="Open cart"
+          data-focus-return="cart"
           onClick={cart}
         >
           <Icon name="cart" />
@@ -325,6 +326,7 @@ export function Sheet({
       document.activeElement instanceof HTMLElement
         ? document.activeElement
         : null;
+    const returnKey = trigger?.dataset.focusReturn;
     if (sheetBodyLocks === 0) sheetBodyOverflow = document.body.style.overflow;
     sheetBodyLocks += 1;
     const marker = `sheet-${crypto.randomUUID()}`;
@@ -385,13 +387,19 @@ export function Sheet({
       if (el.open) el.close();
       if (trigger?.isConnected) trigger.focus({ preventScroll: true });
       else if (!navigating.current && window.location.pathname === returnPath) {
-        // Removing the last cart line also removes its floating trigger.
-        // Keep focus in a remaining parent Sheet, or return to the active
-        // navigation control instead of leaving it on document.body.
         const parent = [...liveSheets.values()]
           .reverse()
           .find((sheet) => sheet.open);
+        // Saving the final cart line for later removes its dock trigger;
+        // moving it back creates a new DOM node. Recover the same logical
+        // control, but never move focus outside a remaining modal dialog.
+        const replacement = returnKey
+          ? (parent ?? document).querySelector<HTMLElement>(
+              `[data-focus-return="${CSS.escape(returnKey)}"]:not([disabled])`,
+            )
+          : null;
         const fallback =
+          replacement ??
           parent?.querySelector<HTMLElement>(
             "button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])",
           ) ??

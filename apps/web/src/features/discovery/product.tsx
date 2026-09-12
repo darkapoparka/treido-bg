@@ -296,7 +296,12 @@ export function ProductDetail({
             {formatMoney(price)}{" "}
             {product.compareAt && <del>{formatMoney(product.compareAt)}</del>}
             {product.detail?.markdownLabel && (
-              <>{" "}<span className={styles.markdown}>{product.detail.markdownLabel}</span></>
+              <>
+                {" "}
+                <span className={styles.markdown}>
+                  {product.detail.markdownLabel}
+                </span>
+              </>
             )}
           </p>
           {product.detail?.arrivalLabel && (
@@ -314,7 +319,9 @@ export function ProductDetail({
                     ? "Save $20 when you spend $50"
                     : product.promotion}
                 </strong>
-                <span>{product.detail?.promotionTerms ?? "Exclusive to Shop"}</span>
+                <span>
+                  {product.detail?.promotionTerms ?? "Exclusive to Shop"}
+                </span>
               </span>
             </button>
           )}
@@ -524,8 +531,8 @@ export function ProductDetail({
             <section className={styles.unrecordedReviews}>
               <h2>Reviews</h2>
               <p>
-                This reference includes {product.ratingCount} ratings. Individual
-                review text was not captured for this product.
+                This reference includes {product.ratingCount} ratings.
+                Individual review text was not captured for this product.
               </p>
             </section>
           )}

@@ -81,13 +81,17 @@ test("dress sizes reset quantity and its real cart line retains the selected var
   await expect(cart).toBeVisible();
   await expect(cart.locator(".cart-variant")).toHaveText("S");
   await expect(cart.locator(".cart-subtotal")).toContainText("$118.00");
-  await expect(cart.getByRole("link", { name: "Continue to checkout" })).toHaveCount(
-    0,
-  );
+  await expect(
+    cart.getByRole("link", { name: "Continue to checkout" }),
+  ).toHaveCount(0);
   await cart.getByRole("button", { name: `Increase ${title}` }).click();
   await expect(cart.locator(".cart-subtotal")).toContainText("$236.00");
-  await cart.getByRole("button", { name: "Save for later", exact: true }).click();
-  await expect(cart.getByRole("heading", { name: "Saved for later" })).toBeVisible();
+  await cart
+    .getByRole("button", { name: "Save for later", exact: true })
+    .click();
+  await expect(
+    cart.getByRole("heading", { name: "Saved for later" }),
+  ).toBeVisible();
   await cart.getByRole("button", { name: "Move to cart", exact: true }).click();
   await expect(cart.locator(".seller-cart .cart-variant")).toHaveText("S");
   await expect(cart.locator(".seller-cart output")).toHaveText("2");
@@ -146,6 +150,8 @@ test("uncaptured checkout stays an explicit local preview and the dress layout w
   await expect(preview).toContainText("Nothing will be charged");
   await expect(page).toHaveURL(/\/products\/midi-shirtdress$/);
   await preview.getByRole("button", { name: "View cart", exact: true }).click();
-  await expect(page.getByRole("dialog", { name: "Your cart", exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("dialog", { name: "Your cart", exact: true }),
+  ).toBeVisible();
   expect(writes).toEqual([]);
 });
