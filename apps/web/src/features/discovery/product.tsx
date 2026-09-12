@@ -6,10 +6,8 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { ProductOptions } from "./reviews";
 import { moveProductPhoto, productPhotoSwipe } from "./product-gallery";
-import {
-  ProductAdditionFlight,
-  useProductAddition,
-} from "./product-addition";
+import { ProductAdditionFlight, useProductAddition } from "./product-addition";
+import { ProductReviewPreview } from "./product-review-preview";
 import {
   formatMoney,
   type Catalog,
@@ -107,10 +105,7 @@ export function ProductDetail({
     // The recording leaves the product interactive after its flight/confirmation.
     // Open the pending offer through a real cart action, not an invented network
     // timer that steals focus several seconds after the shopper moves elsewhere.
-    if (
-      offerPending &&
-      state.cart.some((line) => line.productId === product.id)
-    ) {
+    if (offerPending && state.cart.some((line) => line.productId === product.id)) {
       setOfferPending(false);
       setOffer(true);
     } else setCart(true);
@@ -458,58 +453,56 @@ export function ProductDetail({
             ))}
           </section>
           {(shea || bag) && (
-            <section className="pdp-review-preview">
-              <h2>Reviews</h2>
-              <div className="review-summary">
-                <div>
-                  <strong>4.6</strong>
-                  <div className="rating">
-                    <span>★★★★★</span>
-                  </div>
-                  <p>{shea ? "3.3K" : "3.8K"} ratings</p>
-                </div>
-                <div className="rating-bars">
-                  {[5, 4, 3, 2, 1].map((n, i) => (
-                    <div key={n}>
-                      <span>{n}</span>
-                      <i>
-                        <b style={{ width: `${[80, 9, 5, 2, 1][i]}%` }} />
-                      </i>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="pdp-review-rail">
-                <article>
-                  <span className="rating">★★★★★</span>
-                  <p>
-                    {shea
-                      ? "Girlfriend loves it and I can breathe."
-                      : "Curly Hair Shampoo Bar"}
-                  </p>
-                  {bag && (
-                    <footer className="pdp-preview-reviewer">
-                      <span aria-hidden="true">J</span>Jessica · Jun 22, 2026
-                    </footer>
-                  )}
-                </article>
-                <article>
-                  <span className="rating">★★★★★</span>
-                  <p>How much I love your product</p>
-                </article>
-              </div>
-              <Link href={`/products/${product.id}/reviews`}>
-                Read all reviews
-              </Link>
-            </section>
+            <ProductReviewPreview
+              productId={product.id}
+              rating={product.rating ?? 4.6}
+              ratingCount={shea ? "3.3K" : "3.8K"}
+              distribution={[80, 9, 5, 2, 1]}
+              reviews={
+                shea
+                  ? [
+                      {
+                        title: "Girlfriend loves it and I can breathe.",
+                        rating: 5,
+                      },
+                      { title: "How much I love your product", rating: 5 },
+                    ]
+                  : [
+                      {
+                        title: "Curly Hair Shampoo Bar",
+                        rating: 4,
+                        author: "Jessica",
+                        date: "Jun 22, 2026",
+                      },
+                      {
+                        title: "Great…",
+                        rating: 5,
+                        initial: "S",
+                        partial: true,
+                      },
+                    ]
+              }
+            />
           )}
           <section className="pdp-delivery">
             <h2>Delivery & Returns</h2>
             <button onClick={() => setDetail("Ship to")}>
-              ⌖ Ship to {postalCode} ›
+              <Icon name="location" />
+              <span>
+                Ship to <b>{postalCode}</b>
+              </span>
+              <Icon name="chevron" style={{ transform: "rotate(90deg)" }} />
             </button>
-            <p>Shipping calculated at checkout</p>
-            {(shea || bag) && <p>Arrives as soon as Sun, Aug 2</p>}
+            <p>
+              <Icon name="truck" />
+              Shipping calculated at checkout
+            </p>
+            {(shea || bag) && (
+              <p>
+                <Icon name="calendar" />
+                Arrives as soon as Sun, Aug 2
+              </p>
+            )}
             <div>
               <button onClick={() => setDetail("Return policy")}>
                 Return policy
@@ -519,7 +512,7 @@ export function ProductDetail({
               </button>
             </div>
             <Link href={`/stores/${product.storeId}`}>
-              ↗ Visit {store?.name}
+              <Icon name="link" /> Visit {store?.name}
             </Link>
           </section>
           {store && (
