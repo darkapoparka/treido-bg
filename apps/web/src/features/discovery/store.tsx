@@ -2,7 +2,7 @@
 import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatMoney } from "../catalog/types";
 import type { Catalog, Store, Product } from "../catalog/types";
@@ -15,8 +15,10 @@ import {
 } from "./components";
 import { StoreFilter, openStoreFilter } from "./store-filter";
 import { Icon } from "./icons";
+import { KitschWordmark } from "./kitsch-wordmark";
 import { Cart } from "./product";
 import { useDiscovery } from "./state";
+import styles from "./store.module.css";
 import {
   readStoreFilters,
   selectStoreProducts,
@@ -24,6 +26,7 @@ import {
   normalizeStoreQuery,
   hasStoreFilters,
 } from "./store-model";
+
 const collectionMedia = [
   { slug: "whats-new", name: "What's New", media: "collection-new" },
   { slug: "best-sellers", name: "Best Sellers", media: "collection-best" },
@@ -306,13 +309,15 @@ export function Storefront({
   });
   return (
     <ShopSurface
-      className={`shop-page store-page ${chemical ? "chemical-store" : ""}`}
+      className={`shop-page store-page ${styles.page} ${styles.store} ${chemical ? "chemical-store" : ""}`}
     >
       {isKitsch && <StorePromotion savings={store.promotionSavings} />}
       <section className={`store-hero${isKitsch ? " store-hero-kitsch" : ""}`}>
         <StoreActions store={store} />
         <div className="store-brand">
-          <span>{isKitsch ? "/kit·sch/" : store.name}</span>
+          <span aria-label={store.name}>
+            {isKitsch ? <KitschWordmark /> : store.name}
+          </span>
           {store.rating && (
             <Link href={`/stores/${store.id}/reviews`}>
               {store.rating} ★ ({store.ratingCount})
@@ -349,7 +354,7 @@ export function Storefront({
         {chemical && (
           <div className="store-video-rail">
             {[1, 2, 3].map((n) => (
-              <Link key={n} href={`/stores/chemical-guys/video`}>
+              <Link key={n} href="/stores/chemical-guys/video">
                 <img
                   src={`/api/reference-media/chemical-rail${n}`}
                   alt="Chemical Guys product video"
@@ -465,9 +470,10 @@ export function StoreCollection({
       ? ordered(catalog, ["summer-mystery-box", "beachy-gelato"])
       : slug === "best-sellers"
         ? ordered(catalog, [
+            "rice-bundle",
+            "idea-rosemary-bundle",
             "rice-shampoo",
             "rice-conditioner",
-            "rice-bundle",
             "shea-butter",
           ])
         : slug === "cleanse"
@@ -479,10 +485,15 @@ export function StoreCollection({
             : [];
   const [notice, setNotice] = useState("");
   return (
-    <ShopSurface className="shop-page store-collection-page">
-      <div className="collection-promotion">
-        <b>Save $15</b> on orders over $50 <span aria-hidden="true">⌄</span>
-      </div>
+    <ShopSurface
+      className={`shop-page store-collection-page ${styles.page} ${styles.collection}`}
+      data-collection={slug}
+    >
+      {slug !== "best-sellers" && (
+        <div className="collection-promotion">
+          <b>Save $15</b> on orders over $50 <span aria-hidden="true">⌄</span>
+        </div>
+      )}
       <div className="store-collection-hero">
         {collection && (
           <img
@@ -550,20 +561,22 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
   const [more, setMore] = useState(false);
   const kitsch = store.id === "kitsch";
   const policies = [
-    ["Refund policy", "https://www.mykitsch.com/policies/refund-policy"],
-    ["Shipping policy", "https://www.mykitsch.com/policies/shipping-policy"],
-    ["Privacy policy", "https://www.mykitsch.com/pages/privacy-policy"],
-    ["Terms and conditions", "https://www.mykitsch.com/pages/terms-of-service"],
-  ];
+    ["Refund policy", "https://www.mykitsch.com/policies/refund-policy", "return-package"],
+    ["Shipping policy", "https://www.mykitsch.com/policies/shipping-policy", "package"],
+    ["Privacy policy", "https://www.mykitsch.com/pages/privacy-policy", "shield-check"],
+    ["Terms and conditions", "https://www.mykitsch.com/pages/terms-of-service", "info"],
+  ] as const;
   const contacts = [
-    ["Website", "https://www.mykitsch.com"],
-    ["kitsch@mykitsch.com", "mailto:kitsch@mykitsch.com"],
-    ["4242405551", "tel:+14242405551"],
-    ["Instagram", "https://instagram.com/mykitsch"],
-    ["Facebook", "https://facebook.com/mykitsch"],
-  ];
+    ["Website", "https://www.mykitsch.com", "website"],
+    ["kitsch@mykitsch.com", "mailto:kitsch@mykitsch.com", "mail"],
+    ["4242405551", "tel:+14242405551", "phone"],
+    ["Instagram", "https://instagram.com/mykitsch", "instagram"],
+    ["Facebook", "https://facebook.com/mykitsch", "facebook-circle"],
+  ] as const;
   return (
-    <ShopSurface className="shop-page store-info-page">
+    <ShopSurface
+      className={`shop-page store-info-page ${styles.page} ${styles.information}`}
+    >
       <StoreActions store={store} close />
       <div className="store-info-brand">
         {store.logo && <img src={store.logo} alt="" />}
@@ -579,8 +592,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
       <p className="store-description">
         {kitsch
           ? "Evolving your everyday essentials, KITSCH is a US designed brand worn & loved by your favorite celebrities. Shop online for free shipping on orders"
-          : store.description ||
-            "No additional brand description was captured."}
+          : store.description || "No additional brand description was captured."}
         {more && (
           <span>
             {" "}
@@ -604,17 +616,12 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
         <>
           <div className="store-info-categories">
             {storeCategories.map((c) => (
-              <Link
-                href={`/stores/${store.id}/collections/${c.slug}`}
-                key={c.slug}
-              >
+              <Link href={`/stores/${store.id}/collections/${c.slug}`} key={c.slug}>
                 <img src={`/api/reference-media/${c.media}`} alt="" />
                 <span>{c.name}</span>
               </Link>
             ))}
-            <Link
-              href={`/stores/${store.id}/collections/shampoo-conditioner-combo-packs`}
-            >
+            <Link href={`/stores/${store.id}/collections/shampoo-conditioner-combo-packs`}>
               <img
                 src="/api/reference-media/category-combo-partial"
                 alt="Shampoo and conditioner combo packs, partially captured"
@@ -629,10 +636,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
               <span>Hair…</span>
             </div>
           </div>
-          <Link
-            className="store-shop-all"
-            href={`/stores/${store.id}#all-products`}
-          >
+          <Link className="store-shop-all" href={`/stores/${store.id}#all-products`}>
             <img src="/api/reference-media/store-shop-all" alt="" />
             <span>Shop all</span>
           </Link>
@@ -647,7 +651,13 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
           <>
             <div className="store-info-rating">
               <b>{store.rating}</b>
-              <span>★★★★★</span>
+              <span
+                role="img"
+                aria-label={`${store.rating} out of 5 stars`}
+                style={{ "--store-rating-fill": `${Math.min(100, Math.max(0, store.rating * 20))}%` } as CSSProperties}
+              >
+                ★★★★★
+              </span>
             </div>
             <p>{store.ratingCount} ratings</p>
           </>
@@ -655,7 +665,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
         {kitsch && (
           <div className="store-review-previews">
             {[
-              ["Best shampoo set ever", "Avery"],
+              ["Best shampoo set ever", "Anne"],
               ["Pleasant Surprise", "Jamie"],
               ["Love Everything Kitsch", "Morgan"],
             ].map(([title, name]) => (
@@ -678,16 +688,10 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
       <section className="store-info-panel">
         <h2>Policies</h2>
         {kitsch ? (
-          policies.map(([label, href]) => (
-            <a
-              className="detail-row"
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noreferrer"
-            >
+          policies.map(([label, href, icon]) => (
+            <a className="detail-row" key={label} href={href} target="_blank" rel="noreferrer">
               {label}
-              <Icon name="orders" />
+              <Icon name={icon} />
             </a>
           ))
         ) : (
@@ -697,7 +701,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
       <section className="store-info-panel">
         <h2>Contact</h2>
         {kitsch ? (
-          contacts.map(([label, href]) => (
+          contacts.map(([label, href, icon]) => (
             <a
               className="detail-row"
               key={label}
@@ -706,7 +710,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
               rel="noreferrer"
             >
               {label}
-              <Icon name="share" />
+              <Icon name={icon} />
             </a>
           ))
         ) : (
@@ -720,14 +724,11 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
           target="_blank"
           rel="noreferrer"
         >
-          Visit Online Store <Icon name="arrow" />
+          Visit Online Store <Icon name="external-link" />
         </a>
       )}
-      <button
-        className="store-info-panel detail-row"
-        onClick={() => setDetail("Report")}
-      >
-        Report <Icon name="more" />
+      <button className="store-info-panel detail-row" onClick={() => setDetail("Report")}>
+        Report <Icon name="alert" />
       </button>
       <Sheet open={!!detail} title={detail} onClose={() => setDetail("")}>
         <p className="sheet-copy">
@@ -816,7 +817,7 @@ export function StoreSearch({
     .filter((product) => product.storeId === store.id)
     .slice(0, 8);
   const best = kitsch
-    ? ordered(catalog, ["rice-shampoo", "rice-conditioner", "rice-bundle"])
+    ? ordered(catalog, ["rice-shampoo", "rice-conditioner", "rice-bundle", "shea-butter"])
     : catalog.products
         .filter((product) => product.storeId === store.id)
         .slice(0, 8);
@@ -840,7 +841,7 @@ export function StoreSearch({
   }
   return (
     <ShopSurface
-      className={`shop-page store-search-page ${editing ? "store-search-editing" : "store-search-results"}`}
+      className={`shop-page store-search-page ${styles.page} ${styles.search} ${editing ? "store-search-editing" : "store-search-results"}`}
     >
       <div className="store-search-toolbar">
         <form
@@ -869,22 +870,13 @@ export function StoreSearch({
             }}
           />
           {value && (
-            <button
-              type="button"
-              className="sr-only"
-              aria-label="Clear search"
-              onClick={clear}
-            >
+            <button type="button" className="sr-only" aria-label="Clear search" onClick={clear}>
               Clear search
             </button>
           )}
         </form>
         {editing && (
-          <button
-            type="button"
-            className="store-search-cancel"
-            onClick={cancel}
-          >
+          <button type="button" className="store-search-cancel" onClick={cancel}>
             Cancel
           </button>
         )}
@@ -909,16 +901,12 @@ export function StoreSearch({
               .filter(
                 (label) =>
                   label !== query &&
-                  query
-                    .split(" ")
-                    .every((word) => normalizeStoreQuery(label).includes(word)),
+                  query.split(" ").every((word) => normalizeStoreQuery(label).includes(word)),
               )
               .map((label) => (
                 <button type="button" key={label} onClick={() => submit(label)}>
                   <Icon name="search" />
-                  <span className="store-suggestion-phrase">
-                    {phrase(label)}
-                  </span>
+                  <span className="store-suggestion-phrase">{phrase(label)}</span>
                 </button>
               ))}
           </div>
@@ -1005,24 +993,12 @@ export function StoreVideo() {
         alt="Chemical Guys Tire and Trim Gel in front of a GMC tailgate"
       />
       <div className="video-top">
-        <Link
-          className="icon-button"
-          href="/stores/chemical-guys"
-          aria-label="Close video"
-        >
+        <Link className="icon-button" href="/stores/chemical-guys" aria-label="Close video">
           <Icon name="close" />
         </Link>
-        <IconButton
-          icon="more"
-          label="Video options"
-          onClick={() => setNotice(true)}
-        />
+        <IconButton icon="more" label="Video options" onClick={() => setNotice(true)} />
       </div>
-      <IconButton
-        icon="mic"
-        label="Video audio unavailable"
-        onClick={() => setNotice(true)}
-      />
+      <IconButton icon="mic" label="Video audio unavailable" onClick={() => setNotice(true)} />
       <div className="video-bottom">
         <Link href="/stores/chemical-guys">
           <b>Chemical Guys</b>
@@ -1032,19 +1008,11 @@ export function StoreVideo() {
           Tire+Trim Gel Plastic and Rubber High-Glo…<small>$24.99</small>
         </button>
         <div>
-          <IconButton
-            icon="arrow"
-            label="Play video"
-            onClick={() => setNotice(true)}
-          />
+          <IconButton icon="arrow" label="Play video" onClick={() => setNotice(true)} />
           <progress value="0" max="100" />
         </div>
       </div>
-      <Sheet
-        open={notice}
-        title="Video preview"
-        onClose={() => setNotice(false)}
-      >
+      <Sheet open={notice} title="Video preview" onClose={() => setNotice(false)}>
         <p className="sheet-copy">
           This captured video frame is available. The matching motion and audio
           asset is not available.
