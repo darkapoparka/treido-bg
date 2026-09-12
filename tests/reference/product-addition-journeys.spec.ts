@@ -53,18 +53,32 @@ test("reduced-motion keyboard additions announce the actual quantity without a f
   await page.emulateMedia({ reducedMotion: "reduce" });
   await useReferenceScenario(page, "home-welcome");
   await page.goto(product);
+  // Unlike click(), focus()/press() do not wait for an inert hydration boundary
+  // to become interactive. Establish a real keyboard starting position first.
+  await expect(
+    page.locator('[data-shop-interactive="true"]').first(),
+  ).toBeAttached();
   const add = page.locator(".pdp-purchase-buttons .primary");
+  await expect(add).toBeEnabled();
   await add.focus();
+  await expect(add).toBeFocused();
   await add.press("Enter");
   await expect(add).toHaveAttribute("data-addition", "confirmed");
   await expect(page.locator(".product-addition-flight")).toHaveCount(0);
   await expect(page.locator(".dock-cart-count")).toHaveText("1");
-  await expect(page.locator('.product-page > [aria-live="polite"]')).toHaveText(
-    "1 Shampoo Bar Bag added to cart",
+  const announcement = page.locator('.product-page > [aria-live="polite"]');
+  await expect(announcement).toHaveText("1 Shampoo Bar Bag added to cart");
+  await expect(announcement.locator("span")).toHaveAttribute(
+    "data-addition-announcement",
+    "1",
   );
   await expect(add).toHaveAttribute("data-addition", "idle");
   await add.press("Enter");
   await expect(page.locator(".dock-cart-count")).toHaveText("2");
+  await expect(announcement.locator("span")).toHaveAttribute(
+    "data-addition-announcement",
+    "2",
+  );
   await expect(page.getByRole("dialog")).not.toBeVisible();
   await expect(add).toBeFocused();
 });
@@ -82,7 +96,9 @@ test("leaving during a product flight removes its artwork and never opens a dela
   await expect(page.locator(".product-addition-flight")).toHaveCount(0);
   await expect(page.getByRole("dialog")).not.toBeVisible();
   await page.goBack();
-  await expect(page.getByRole("heading", { name: "Shampoo Bar Bag" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Shampoo Bar Bag" }),
+  ).toBeVisible();
   await expect(page.locator(".dock-cart-count")).toHaveText("1");
   await expect(page.locator(".product-addition-flight")).toHaveCount(0);
   await expect(page.getByRole("dialog")).not.toBeVisible();
