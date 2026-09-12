@@ -54,6 +54,9 @@ export function ProductReviewPreview({
         {reviews.map((review) => (
           <article
             key={review.title}
+            // Anchor the absolutely positioned accessible label to this card,
+            // not the document beyond the horizontal scroller's clipping box.
+            style={{ position: "relative" }}
             title={
               review.partial
                 ? "Only this part of the review was captured."
