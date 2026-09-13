@@ -802,8 +802,8 @@
 }
 .login-page .auth-close {
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: calc(16px + var(--account-safe-top));
+  left: calc(16px + var(--account-safe-left));
   width: 44px;
   height: 44px;
   display: grid;
@@ -955,7 +955,7 @@
 }
 .login-page .auth-language {
   position: absolute;
-  bottom: 100px;
+  bottom: calc(100px + var(--account-safe-bottom));
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -1035,7 +1035,7 @@
   margin: 0;
 }
 .returning-login > .primary {
-  bottom: 66px;
+  bottom: calc(66px + var(--account-safe-bottom));
   height: 44px;
   min-height: 44px;
   background: #5433eb;
@@ -1045,19 +1045,19 @@
 .onboarding-page.onboarding-step-2 {
   position: absolute;
   inset: 0;
-  min-height: 793px;
+  min-height: 100dvh;
   margin: 0;
   padding: 0 16px;
 }
 .onboarding-step-2 .onboarding-skip {
-  right: 25px;
+  right: calc(25px + var(--account-safe-right));
   font-size: 14px;
   font-weight: 600;
   line-height: 20px;
 }
 .onboarding-page.onboarding-step-2 > h1 {
   position: absolute;
-  top: 116px;
+  top: min(116px, 14.63dvh);
   left: 30px;
   right: 30px;
   width: auto;
@@ -1072,7 +1072,7 @@
   position: absolute;
   left: 16px;
   right: 16px;
-  top: 186px;
+  top: min(186px, 23.46dvh);
   margin: 0;
   max-width: none;
   font-size: 16px;
@@ -1081,7 +1081,7 @@
 .onboarding-step-2 .tracking-onboarding-art {
   position: absolute;
   left: calc(50% - 0.5px);
-  top: 304px;
+  top: min(304px, 38.34dvh);
   transform: translateX(-50%);
   grid-template-columns: repeat(3, 80px);
   grid-template-rows: repeat(3, 80px);
@@ -1108,9 +1108,9 @@
 .returning-onboarding .onboarding-actions,
 .onboarding-step-2 .onboarding-actions {
   position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 43px;
+  left: calc(16px + var(--account-safe-left));
+  right: calc(16px + var(--account-safe-right));
+  bottom: calc(43px + var(--account-safe-bottom));
   width: auto;
   margin: 0;
   padding: 0;
@@ -1135,7 +1135,7 @@
   line-height: 16px;
 }
 .onboarding-step-2 .onboarding-actions {
-  bottom: 42px;
+  bottom: calc(42px + var(--account-safe-bottom));
 }
 .onboarding-step-2 .onboarding-actions .primary {
   font-size: 16px;
@@ -1156,5 +1156,25 @@
   .onboarding-step-2 .tracking-onboarding-art {
     gap: 16px 14px;
     width: 268px;
+  }
+}
+
+@media (max-height: 720px) {
+  .onboarding-step-2 .tracking-onboarding-art {
+    grid-template-columns: repeat(3, 70px);
+    grid-template-rows: repeat(3, 70px);
+    gap: 12px 20px;
+    width: 250px;
+  }
+  .onboarding-step-2 .tracking-onboarding-art img {
+    width: 70px;
+    height: 70px;
+  }
+  .onboarding-step-2:not(.returning-onboarding)
+    .tracking-onboarding-art
+    img:not(:first-child) {
+    width: 62px;
+    height: 52px;
+    margin: 10px 0 0 2px;
   }
 }

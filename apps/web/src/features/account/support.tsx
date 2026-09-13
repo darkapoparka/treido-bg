@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import type { Catalog } from "../catalog/types";
+import { previewOnboardedCookie } from "../catalog/reference/session";
 import { AccountIcon } from "./icons";
 import { Sheet } from "../discovery/components";
 import { AccountPage, Boundary } from "./forms";
@@ -181,6 +182,10 @@ export function OnboardingPage({
     router.push(`/onboarding?${query}`, { scroll: false });
   };
   const router = useRouter();
+  const finishPreviewOnboarding = (href = "/") => {
+    document.cookie = `${previewOnboardedCookie}=1; Path=/; SameSite=Lax`;
+    router.push(href);
+  };
   const [choice, setChoice] = useState("");
   const [permission, setPermission] = useState(false);
   if (params.get("step") === "splash" || params.get("step") === "signout")
@@ -226,7 +231,7 @@ export function OnboardingPage({
               alt=""
               style={{
                 left: Number(x),
-                top: Number(y),
+                top: `${(Number(y) / 793) * 100}dvh`,
                 width: Number(w),
                 height: Number(h),
               }}
@@ -299,7 +304,7 @@ export function OnboardingPage({
               alt=""
               style={{
                 left: `${(Number(x) / 393) * 100}%`,
-                top: Number(y) - 59,
+                top: `${((Number(y) - 59) / 793) * 100}dvh`,
                 width: Number(w),
                 height: Number(h),
               }}
@@ -346,13 +351,14 @@ export function OnboardingPage({
       >
         <button
           className="onboarding-skip"
-          onClick={() =>
-            params.get("journey") === "returning"
-              ? router.push("/?journey=returning")
-              : step < 3
-                ? setStep(step + 1)
-                : router.push("/")
-          }
+          onClick={() => {
+            if (params.get("journey") === "returning") {
+              finishPreviewOnboarding("/?journey=returning");
+              return;
+            }
+            if (step < 3) setStep(step + 1);
+            else finishPreviewOnboarding();
+          }}
         >
           Skip
         </button>

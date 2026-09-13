@@ -1712,7 +1712,12 @@
 }
 
 .account-page {
+  --account-safe-top: env(safe-area-inset-top, 0px);
+  --account-safe-right: env(safe-area-inset-right, 0px);
+  --account-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --account-safe-left: env(safe-area-inset-left, 0px);
   position: relative;
+  min-height: 100dvh;
 }
 .collection-cover {
   display: grid;
@@ -1737,8 +1742,8 @@
 
 .onboarding-skip {
   position: absolute;
-  right: 16px;
-  top: 12px;
+  right: calc(16px + var(--account-safe-right));
+  top: calc(12px + var(--account-safe-top));
   font-size: 13px;
 }
 .onboarding-step-2 h1,
@@ -2011,13 +2016,13 @@
 
 .source-intro {
   height: 100dvh;
-  min-height: 793px;
+  min-height: 0;
   overflow: hidden;
   padding: 0;
 }
 .intro-powered {
   position: absolute;
-  top: 17px;
+  top: calc(17px + var(--account-safe-top));
   left: 0;
   width: 100%;
   text-align: center;
@@ -2038,7 +2043,7 @@
 }
 .source-intro > h1 {
   position: absolute;
-  top: 326px;
+  top: min(326px, 41.11dvh);
   left: 0;
   width: 100%;
   text-align: center;
@@ -2048,9 +2053,10 @@
 }
 .intro-actions {
   position: absolute;
-  left: 16px;
-  right: 16px;
-  top: 660px;
+  left: calc(16px + var(--account-safe-left));
+  right: calc(16px + var(--account-safe-right));
+  top: auto;
+  bottom: calc(37px + var(--account-safe-bottom));
   text-align: center;
 }
 .intro-actions .primary {
@@ -2665,7 +2671,7 @@
   color: #111;
   font-size: 28px;
   letter-spacing: -1px;
-  top: 326px;
+  top: min(326px, 41.11dvh);
   margin: 0;
   line-height: 1.2;
   font-weight: 400;
@@ -3001,7 +3007,7 @@
 }
 .onboarding-step-3 > h1 {
   position: absolute;
-  top: 116px;
+  top: min(116px, 14.63dvh);
   left: 16px;
   right: 16px;
   max-width: 310px;
@@ -3012,7 +3018,7 @@
 }
 .onboarding-step-3 .tracking-onboarding-card {
   position: absolute;
-  top: 326px;
+  top: min(326px, 41.11dvh);
   left: 16px;
   right: 16px;
   height: 105px;
@@ -3074,9 +3080,10 @@
 
 .onboarding-step-3 .onboarding-actions {
   position: absolute;
-  left: 16px;
-  right: 16px;
-  top: 651px;
+  left: calc(16px + var(--account-safe-left));
+  right: calc(16px + var(--account-safe-right));
+  top: auto;
+  bottom: calc(43px + var(--account-safe-bottom));
   width: auto;
   padding: 0;
   margin: 0;
