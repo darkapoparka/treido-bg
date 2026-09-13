@@ -159,7 +159,7 @@
   line-height: 20px;
 }
 .source-checkout .checkout-recommendations article {
-  gap: 16px;
+  gap: 14px;
   margin: 8px 0 16px;
 }
 .source-checkout .checkout-recommendations article > div {
@@ -170,6 +170,19 @@
 }
 .source-checkout .checkout-recommendations article em {
   white-space: nowrap;
+}
+.source-checkout .checkout-recommendation-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.source-checkout .checkout-recommendation-rating .review-rating-stars {
+  --review-star-size: 18.5px;
+  color: #111;
+}
+.source-checkout .checkout-recommendation-rating em {
+  margin-left: 0;
+  font-size: 14px;
 }
 .source-checkout .checkout-recommendations article > button {
   flex: none;

@@ -144,7 +144,7 @@ export function Reviews({
       </ShopSurface>
     );
   return (
-    <ShopSurface className="shop-page reviews-page">
+    <ShopSurface className="shop-page reviews-page" data-product-id={productId}>
       <header className="section-heading">
         <h1>Reviews</h1>
         <Link

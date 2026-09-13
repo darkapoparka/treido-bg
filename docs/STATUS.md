@@ -2,6 +2,8 @@
 
 Updated 2026-09-13. This is the session entry point, not a second backlog.
 
+**Paused at the owner's request on 2026-09-13.** Do not resume implementation until the owner says continue. Main and origin contain `8a07f7878293c512ced180f6a06435297513e832`; its complete local interaction suite passed **210/210**. Six subsequent fitting files remain preserved in the working tree. Their focused journeys passed **19/19**, but their final comparison was interrupted for the pause and the new `pnpm check` failed in web lint with a process out-of-memory error. The earlier committed-source checks remain distinct. The owned preview remains available; local capture work and the remaining subagent were stopped. Exact resume details are in ignored `.qa/shop-parity/PAUSED-20260913.md`. Existing GitHub verification may finish independently; inspect its result on resume.
+
 ## Working context
 
 Use the existing `J:\treido-bg` checkout of `darkapoparka/treido-bg`, canonical **main**, with one writer. This integration extends **`4d0539f2d0cd70f884941cc83f05ff075365542d`**. Subagents reviewed source pairs and supplied ignored patch proposals; the local writer reviewed, integrated and verified them. [AGENTS.md](../AGENTS.md) and [Codex setup](agents/codex.md) own branch policy, runtime ownership and synchronization.

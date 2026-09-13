@@ -1042,13 +1042,20 @@
   font-size: 16px;
   font-weight: 500;
 }
-.returning-onboarding.onboarding-step-2 {
+.onboarding-page.onboarding-step-2 {
   position: absolute;
   inset: 0;
+  min-height: 793px;
   margin: 0;
   padding: 0 16px;
 }
-.returning-onboarding.onboarding-step-2 h1 {
+.onboarding-step-2 .onboarding-skip {
+  right: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+.onboarding-page.onboarding-step-2 > h1 {
   position: absolute;
   top: 116px;
   left: 30px;
@@ -1061,31 +1068,45 @@
   font-weight: 400;
   letter-spacing: -0.4px;
 }
-.returning-onboarding.onboarding-step-2 > p {
+.onboarding-page.onboarding-step-2 > p {
   position: absolute;
   left: 16px;
   right: 16px;
-  top: 188px;
+  top: 186px;
   margin: 0;
   max-width: none;
   font-size: 16px;
   line-height: 21px;
 }
-.returning-onboarding .tracking-onboarding-art {
+.onboarding-step-2 .tracking-onboarding-art {
   position: absolute;
-  left: 50%;
+  left: calc(50% - 0.5px);
   top: 304px;
   transform: translateX(-50%);
   grid-template-columns: repeat(3, 80px);
+  grid-template-rows: repeat(3, 80px);
   gap: 16px 24px;
   width: 288px;
   margin: 0;
 }
-.returning-onboarding .tracking-onboarding-art img {
+.onboarding-step-2 .tracking-onboarding-art img {
   width: 80px;
   height: 80px;
 }
-.returning-onboarding .onboarding-actions {
+.onboarding-step-2:not(.returning-onboarding)
+  .tracking-onboarding-art
+  img:first-child {
+  margin: 2px 0 0 1px;
+}
+.onboarding-step-2:not(.returning-onboarding)
+  .tracking-onboarding-art
+  img:not(:first-child) {
+  width: 70px;
+  height: 60px;
+  margin: 11px 0 0 3px;
+}
+.returning-onboarding .onboarding-actions,
+.onboarding-step-2 .onboarding-actions {
   position: absolute;
   left: 16px;
   right: 16px;
@@ -1094,7 +1115,8 @@
   margin: 0;
   padding: 0;
 }
-.returning-onboarding .onboarding-actions .primary {
+.returning-onboarding .onboarding-actions .primary,
+.onboarding-step-2 .onboarding-actions .primary {
   height: 52px;
   min-height: 52px;
   display: flex;
@@ -1105,11 +1127,18 @@
   font-size: 18px;
   font-weight: 500;
 }
-.returning-onboarding .onboarding-actions small {
+.returning-onboarding .onboarding-actions small,
+.onboarding-step-2 .onboarding-actions small {
   max-width: 290px;
   margin: 16px auto 0;
   font-size: 12px;
   line-height: 16px;
+}
+.onboarding-step-2 .onboarding-actions {
+  bottom: 42px;
+}
+.onboarding-step-2 .onboarding-actions .primary {
+  font-size: 16px;
 }
 .onboarding-google-mark {
   display: inline-block;
@@ -1124,7 +1153,7 @@
   max-width: 248px;
 }
 @media (max-width: 350px) {
-  .returning-onboarding .tracking-onboarding-art {
+  .onboarding-step-2 .tracking-onboarding-art {
     gap: 16px 14px;
     width: 268px;
   }

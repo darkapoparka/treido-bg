@@ -44,3 +44,20 @@
   margin-right: 6px;
   font-size: 12.5px;
 }
+
+/* Product review cards have smaller footer gaps when their body needs no
+   expansion control. Keep other products and store reviews unchanged. */
+.reviews-page[data-product-id="shea-butter"] .review-card {
+  padding-bottom: 15px;
+  margin-bottom: 8px;
+}
+.reviews-page[data-product-id="shea-butter"]
+  .review-card:not(:has(> .read-more))
+  footer {
+  margin-top: 9px;
+}
+.reviews-page[data-product-id="shea-butter"]
+  .review-card:has(> h2):not(:has(> .read-more))
+  footer {
+  margin-top: 10px;
+}

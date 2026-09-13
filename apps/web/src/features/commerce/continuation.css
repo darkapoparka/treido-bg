@@ -1670,7 +1670,7 @@
 }
 .source-checkout .checkout-sms-terms {
   margin-top: 16px !important;
-  font-size: 12px !important;
+  font-size: 12.25px !important;
   line-height: 16px !important;
 }
 .source-checkout .checkout-sms-terms a {
@@ -1678,7 +1678,7 @@
   font-weight: 650;
 }
 .source-checkout .checkout-recommendations {
-  margin: 28px 0 30px;
+  margin: 48px 0 30px;
 }
 .source-checkout .checkout-recommendations header {
   margin-bottom: 8px;

@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Catalog } from "../catalog/types";
 import { formatMoney } from "../catalog/types";
 import { Icon } from "../discovery/icons";
+import { ReviewStars } from "../discovery/review-feedback";
 export const checkoutRecommendations = [
   {
     id: "checkout-shea",
@@ -67,8 +68,8 @@ export function CheckoutExtras({
           />
           <div>
             <strong>{p.name}</strong>
-            <p>
-              <span>★★★★★</span> <em>{p.reviews} reviews</em>
+            <p className="checkout-recommendation-rating">
+              <ReviewStars rating={5} /> <em>{p.reviews} reviews</em>
             </p>
             <span>{formatMoney({ amount: p.amount, currency: "USD" })}</span>
           </div>
