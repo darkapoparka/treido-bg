@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 for (const dismissal of ["Done", "Back"] as const) {
-  test(`store sort survives child dismissal, ${dismissal}, and reload`, async ({
+  test(`store sort stays a draft through ${dismissal}, then commits and survives reload`, async ({
     page,
   }) => {
     await page.goto("/stores/kitsch/collections/whats-new");
@@ -14,14 +14,26 @@ for (const dismissal of ["Done", "Back"] as const) {
     await sort
       .getByRole("button", { name: "Price: low to high", exact: true })
       .click();
+    await expect(sort).toBeVisible();
+    await expect(
+      sort.getByRole("button", { name: "Price: low to high", exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
+    expect(new URL(page.url()).searchParams.get("sort")).toBeNull();
+    if (dismissal === "Back") {
+      await page.goBack();
+      await expect(filter).toBeVisible();
+      await expect(
+        filter.getByRole("button", { name: /Sort by/ }),
+      ).toContainText("Best selling");
+      expect(new URL(page.url()).searchParams.get("sort")).toBeNull();
+      await page.goForward();
+      await expect(sort).toBeVisible();
+      await expect(
+        sort.getByRole("button", { name: "Price: low to high", exact: true }),
+      ).toHaveAttribute("aria-pressed", "true");
+    }
+    await sort.getByRole("button", { name: "Done", exact: true }).click();
     await expect(sort).not.toBeVisible();
-    await expect(filter).toBeVisible();
-    await expect(filter.getByRole("button", { name: /Sort by/ })).toContainText(
-      "Price: low to high",
-    );
-    if (dismissal === "Done")
-      await filter.getByRole("button", { name: "Done", exact: true }).click();
-    else await page.goBack();
     await expect(filter).not.toBeVisible();
     await expect(page).toHaveURL(/sort=Price%3A\+low\+to\+high/);
     await expect(

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { StoreReviews } from "./store-reviews";
+import "./review-parity.css";
 import { useDiscovery } from "./state";
 import {
   IconButton,
@@ -37,7 +38,7 @@ const reviews: (ReviewSearchRecord & { author: string; date: string })[] = [
     previewNewestOrder: 2,
     title: "Excellent product!",
     body: "I love this bar! It’s very moisturizing and smells heavenly. It’s great to use prior to applying a tanning product. It also makes a nice lather.",
-    author: "Avery",
+    author: "Hester",
     date: "May 19, 2026",
   },
   {
@@ -49,7 +50,7 @@ const reviews: (ReviewSearchRecord & { author: string; date: string })[] = [
     title: "",
     variant: "NC / OS",
     body: "This has a very lovely smell and exfoliates nicely",
-    author: "Morgan",
+    author: "Brittany",
     date: "Jun 16, 2026",
   },
   {
@@ -60,14 +61,14 @@ const reviews: (ReviewSearchRecord & { author: string; date: string })[] = [
     previewNewestOrder: 1,
     title: "",
     body: "Nice",
-    author: "Jamie",
+    author: "Denise",
     date: "Jun 7, 2026",
   },
   {
     id: "wes",
     stars: 5,
-    title: "Girlfriend loves it and I can breathe.",
-    body: "I think in the beauty industry the makers think all products need to have a fragrance. Being a man with allergies to perfumes. Thank god someone has finally brought a product to market that works and is fragrance free. I can finally go to bed and not have allergy issues. Thank you",
+    title: "Girlfriend loves it and I can breathe .",
+    body: "I think in the beauty industry the makers think all products need to have a fragrance . Being a man with allergies to perfumes . Thank god someone has finally brought a product to market that works and is fragrance free . I can finally go to bed and not have allergy issues . Thank you",
     author: "Wes",
     date: "13 days ago",
   },
@@ -85,7 +86,7 @@ const reviews: (ReviewSearchRecord & { author: string; date: string })[] = [
     searchOrder: 0,
     title: "",
     body: "This is truly one of the nicest soaps I have ever used. I have tried a few and I keep coming back to this one. Doesn’t dry out skin and rinses cleanly.",
-    author: "Tammy",
+    author: "Tygerr",
     date: "16 days ago",
   },
 ];
@@ -165,7 +166,7 @@ export function Reviews({
             <div key={n}>
               <span>{n}</span>
               <i>
-                <b style={{ width: `${[80, 9, 5, 2, 1][i]}%` }} />
+                <b style={{ width: `${[80, 9, 5, 3, 3][i]}%` }} />
               </i>
             </div>
           ))}

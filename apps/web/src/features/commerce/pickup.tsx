@@ -7,6 +7,7 @@ import { AccountIcon } from "../account/icons";
 import { useState } from "react";
 import { useAccount } from "../account/state";
 import { Boundary } from "../account/forms";
+import "./pickup-parity.css";
 import {
   shopSourceAddress,
   shopSourceBuyer,
@@ -25,10 +26,10 @@ export function PickupCheckout() {
     [summary, setSummary] = useState(false);
   const total = pickup ? "3.80" : "10.83";
   return (
-    <ShopSurface className="shop-page checkout-page pickup-checkout">
+    <ShopSurface className="shop-page checkout-page source-checkout pickup-checkout">
       <header className="checkout-header">
         <Link href="/cart" aria-label="Close checkout">
-          ×
+          <Icon name="close" />
         </Link>
         <h1>Review & Pay</h1>
       </header>
@@ -42,7 +43,18 @@ export function PickupCheckout() {
           aria-selected={!pickup}
           onClick={() => setPickup(false)}
         >
-          <Icon name="orders" /> Ship
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="m12 3 9 4.5v9L12 21l-9-4.5v-9L12 3Zm0 9 9-4.5M12 12 3 7.5m9 4.5v9M7.5 5.25l9 4.5V14M1 12h5m-4 4h4" />
+          </svg>{" "}
+          Ship
         </button>
         <button
           role="tab"
@@ -55,12 +67,30 @@ export function PickupCheckout() {
       {pickup && (
         <>
           <p className="pickup-warning">
-            <Icon name="alert" /> {shopSourcePickup.warning}
+            <Icon name="info" />
+            <span>
+              {shopSourcePickup.warning}{" "}
+              <button
+                type="button"
+                onClick={() => setBoundary("Location lookup")}
+              >
+                {shopSourcePickup.searchPostalCode}
+              </button>
+            </span>
           </p>
           <p className="pickup-count">
             1 location with your item{" "}
             <button onClick={() => setBoundary("Location lookup")}>
-              <AccountIcon name="location" />{" "}
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinejoin="round"
+              >
+                <path d="m3 11 18-8-8 18-2-8-8-2Z" />
+              </svg>
               {shopSourcePickup.searchPostalCode}
             </button>
           </p>
@@ -68,7 +98,7 @@ export function PickupCheckout() {
       )}
       <section className="pickup-details">
         {pickup ? (
-          <div>
+          <div className="pickup-location">
             <small>Location</small>
             <input
               type="radio"
@@ -83,11 +113,22 @@ export function PickupCheckout() {
                 {shopSourcePickup.price}
               </strong>
               <br />
-              {shopSourcePickup.street}
+              {shopSourcePickup.street}, {shopSourcePickup.cityRegion}
               <br />
-              {shopSourcePickup.cityRegionPostal}
-              <br />
-              <span>{shopSourcePickup.readiness}</span>
+              <span className="pickup-readiness">
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                >
+                  <circle cx="8" cy="8" r="6" />
+                  <path d="M8 4v4l3 2" />
+                </svg>
+                {shopSourcePickup.readiness}
+              </span>
             </p>
           </div>
         ) : (
@@ -99,7 +140,7 @@ export function PickupCheckout() {
                   {shopSourceBuyer.firstName} {shopSourceBuyer.lastName}
                 </strong>
                 <br />
-                {shopSourceAddress.street}, {shopSourceAddress.city},{" "}
+                {shopSourceAddress.street}, {shopSourceAddress.city}{" "}
                 {shopSourceAddress.region} {shopSourceAddress.postalCode}, US
               </p>
               <button
@@ -107,7 +148,7 @@ export function PickupCheckout() {
                 aria-label="Shipping address is a captured source value"
                 onClick={() => setBoundary("Address service")}
               >
-                ⌄
+                <span className="pickup-caret" aria-hidden="true" />
               </button>
             </div>
             <div>
@@ -115,10 +156,23 @@ export function PickupCheckout() {
               <p>
                 <strong>Ground Shipping · $7.00</strong>
                 <br />
-                <a>Fri, Jul 31 Promise</a>
+                <button
+                  className="pickup-promise"
+                  type="button"
+                  onClick={() => setBoundary("Shipping promise")}
+                >
+                  Fri, Jul 31 <span aria-hidden="true">◔</span> Promise
+                </button>
                 <br />
                 Tracking number provided
               </p>
+              <button
+                type="button"
+                aria-label="Shipping service details"
+                onClick={() => setBoundary("Shipping service")}
+              >
+                <span className="pickup-caret" aria-hidden="true" />
+              </button>
             </div>
           </>
         )}
@@ -127,7 +181,7 @@ export function PickupCheckout() {
           <strong>
             {payment ? (
               <>
-                Visa •••• {payment.last4}{" "}
+                Visa ···· {payment.last4}{" "}
                 <span className="visa-mark">VISA</span>
               </>
             ) : (
@@ -135,7 +189,7 @@ export function PickupCheckout() {
             )}
           </strong>
           <Link href="/account/payments" aria-label="Edit payment method">
-            ⌄
+            <span className="pickup-caret" aria-hidden="true" />
           </Link>
         </div>
       </section>
@@ -147,7 +201,11 @@ export function PickupCheckout() {
         />
         Sign me up for news and offers from this store
       </label>
-      <button className="pill" onClick={() => setDiscount(!discount)}>
+      <button
+        className="pill"
+        onClick={() => setDiscount(!discount)}
+        aria-expanded={discount}
+      >
         <Icon name="tag" /> Add discount
       </button>
       {discount && (
@@ -176,7 +234,9 @@ export function PickupCheckout() {
           <small>1 item</small>
         </span>
         <b>
-          <small>USD</small> ${total}⌄
+          <small>USD</small>
+          <span>${total}</span>
+          <span className="pickup-caret" aria-hidden="true" />
         </b>
       </button>
       {summary && (

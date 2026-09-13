@@ -1,16 +1,30 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TrackingDetail } from "./tracking";
 import type { Catalog } from "../catalog/types";
+import { orderGridDeals } from "../catalog/reference/order-fixtures";
 import { formatMoney } from "../catalog/types";
 import { Icon } from "../discovery/icons";
 import { capturedReceipts } from "./receipt-data";
 import { shopSourceBuyer } from "./source-fixtures";
-import { Sheet, ProductCard } from "../discovery/components";
-import { AccountPage, Row, Boundary } from "../account/forms";
+import {
+  consumeSheetHistory,
+  Sheet,
+  ProductCard,
+} from "../discovery/components";
+import {
+  ManageOrderIcon,
+  OrderAction,
+  OrderBrand,
+  OrderProgress,
+  OrderRecommendations,
+} from "./order-presentation";
+import styles from "./orders-parity.module.css";
+import "./confirmation-parity.css";
+import { AccountPage, Boundary } from "../account/forms";
 import { useAccount, type ReferenceOrder } from "../account/state";
 export function OrdersPage({
   catalog,
@@ -29,6 +43,7 @@ export function OrdersPage({
   const [deal, setDeal] = useState<number | null>(null);
   const [historyConnect, setHistoryConnect] = useState(true);
   const forcedView = !archive && !history ? params.get("view") : null;
+  const labelCreated = params.get("progress") === "label";
   const visible = (
     forcedView === "empty"
       ? []
@@ -46,11 +61,14 @@ export function OrdersPage({
     }
     return 0;
   });
+  const deals = visible.some((order) => order.status === "Delivered")
+    ? orderGridDeals.delivered
+    : orderGridDeals.transit;
   return (
     <AccountPage
       back={archive || history}
       title={history ? "Order history" : archive ? "Archived" : "Orders"}
-      className={archive ? "archive-page" : "source-orders-page"}
+      className={`${archive ? "archive-page" : "source-orders-page"} ${styles.list}`}
       action={
         !archive && (
           <div className="order-actions">
@@ -59,14 +77,14 @@ export function OrdersPage({
                 aria-label="Search orders"
                 onClick={() => setSearch(!search)}
               >
-                ⌕
+                <Icon name="search" />
               </button>
             )}
             <button
               aria-label="More order options"
               onClick={() => setMenu(true)}
             >
-              •••
+              <Icon name="more" />
             </button>
           </div>
         )
@@ -165,9 +183,11 @@ export function OrdersPage({
           <Link
             className="account-panel tracking-card"
             href={
-              o.id === "REF-1001"
-                ? `/orders/${o.id}?state=${sourceWaiting ? "waiting" : o.status === "Delivered" ? "delivered" : "in-transit"}`
-                : `/orders/${o.id}`
+              o.status === "Delivered" && p
+                ? `/orders/${o.id}/review`
+                : o.id === "REF-1001"
+                  ? `/orders/${o.id}?state=${sourceWaiting ? "waiting" : o.status === "Delivered" ? "delivered" : "in-transit"}`
+                  : `/orders/${o.id}`
             }
             key={o.id}
           >
@@ -190,16 +210,16 @@ export function OrdersPage({
               {o.status === "Delivered" ? (
                 <span className="review-stars">★★★★★</span>
               ) : (
-                <div className="tracking-line">
-                  <span
-                    style={{
-                      width:
-                        o.status === "Ordered" || sourceWaiting ? "10%" : "58%",
-                    }}
-                  >
-                    <img src="/api/reference-media/parcel" alt="" />
-                  </span>
-                </div>
+                <OrderProgress
+                  carrier={o.carrier}
+                  phase={
+                    sourceWaiting
+                      ? "waiting"
+                      : o.status === "Ordered" || labelCreated
+                        ? "label"
+                        : "transit"
+                  }
+                />
               )}
             </div>
             <img
@@ -260,14 +280,14 @@ export function OrdersPage({
             <section className="orders-deals">
               <h2>Deals based on your orders ›</h2>
               <div className="orders-deal-grid">
-                {[5, 30, 5, 25, 25, 35].map((amount, i) => (
+                {deals.map((entry, i) => (
                   <button
                     key={i}
                     aria-label={`View deal ${i + 1}`}
                     onClick={() => setDeal(i)}
                   >
-                    <img src={`/api/reference-media/order-deal-${i}`} alt="" />
-                    <span>Save ${amount}</span>
+                    <img src={`/api/reference-media/${entry.photo}`} alt="" />
+                    <span>{entry.promotion}</span>
                     <i>
                       <Icon name="cart" />
                     </i>
@@ -283,7 +303,10 @@ export function OrdersPage({
                   <Link href={`/orders/${o.id}`} key={o.id}>
                     <img src="/api/reference-media/parcel" alt="" />
                     <span>
-                      Delivered Jul 28<small>{o.name}</small>
+                      {labelCreated
+                        ? "Delivered yesterday"
+                        : "Delivered Jul 28"}
+                      <small>{o.name}</small>
                     </span>
                   </Link>
                 ))}
@@ -298,7 +321,7 @@ export function OrdersPage({
         {deal !== null && (
           <img
             className="deal-preview-image"
-            src={`/api/reference-media/order-deal-${deal}`}
+            src={`/api/reference-media/${deals[deal].photo}`}
             alt="Selected deal"
           />
         )}
@@ -339,10 +362,18 @@ export function OrdersPage({
             </Link>
           </>
         )}
-      <Sheet open={menu} title="More options" onClose={() => setMenu(false)}>
-        <Row label="View order archive" href="/orders/archived" />
-        <Row label="Connect email accounts" href="/account/connections" />
-        <Row label="Add order manually" href="/orders/new" />
+      <Sheet
+        open={menu}
+        title="More options"
+        className={styles.orderMenu}
+        onClose={() => setMenu(false)}
+      >
+        <OrderAction label="View order archive" href="/orders/archived" />
+        <OrderAction
+          label="Connect email accounts"
+          href="/account/connections"
+        />
+        <OrderAction label="Add order manually" href="/orders/new" />
       </Sheet>
     </AccountPage>
   );
@@ -399,10 +430,11 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
         <Sheet
           open={edit}
           title="Edit tracking details"
-          className="tracking-edit-sheet"
+          className={`tracking-edit-sheet ${styles.trackingEditor}`}
           onClose={() => setEdit(false)}
         >
           <ManualOrderForm
+            key={`${edit}-${editOrder.name}-${editOrder.tracking}-${editOrder.carrier}`}
             initial={editOrder}
             editing
             onSave={(v) => {
@@ -416,29 +448,21 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
       </>
     );
   return (
-    <AccountPage>
+    <AccountPage className={styles.detail}>
       {toast && (
         <p className="order-action-toast" role="status">
           {toast}
         </p>
       )}
-      <section
-        className="order-hero"
-        style={{
-          backgroundImage:
-            "linear-gradient(#ffffff88,#ffffffaa),url(/api/reference-media/order-hero)",
-        }}
-      >
+      <section className="order-hero">
         <button
           className="order-more"
           onClick={() => setMenu(true)}
           aria-label="Order options"
         >
-          •••
+          <Icon name="more" />
         </button>
-        <span className="order-store-mark">/kit·sch/</span>
-        <strong>Order #{displayOrderNumber}</strong>
-        <p>Jul 27, 2026</p>
+        <OrderBrand number={displayOrderNumber} />
       </section>
       {displayOrder.status === "Delivered" && (
         <Link
@@ -452,12 +476,16 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
           <span className="review-stars">★★★★★</span>
         </Link>
       )}
-      <button className="account-panel order-status" onClick={setProgress}>
+      <button
+        className="account-panel order-status"
+        data-status={displayOrder.status}
+        onClick={setProgress}
+      >
         <span>
           <strong>
             {displayOrder.status === "Delivered"
               ? "Delivered Aug 1"
-              : sourceState === "in-transit"
+              : displayOrder.status === "In transit"
                 ? "Arrives Jul 31–Aug 1"
                 : "Expected by Aug 3"}
           </strong>
@@ -472,15 +500,12 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
           </small>
         </span>
         {product && <img src={product.images[0]} alt="" />}
-        <span className="tracking-line status-tracking">
-          <span
-            style={{
-              width: displayOrder.status === "Delivered" ? "100%" : "35%",
-            }}
-          >
-            ▣
-          </span>
-        </span>
+        {displayOrder.status !== "Delivered" && (
+          <OrderProgress
+            carrier={displayOrder.carrier}
+            phase={displayOrder.status === "Ordered" ? "waiting" : "transit"}
+          />
+        )}
       </button>
       <div className="account-panel">
         <div className="order-item">
@@ -500,28 +525,20 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
           )}
         </div>
         <button className="muted-button" onClick={() => setBoundary(true)}>
-          ↗ Manage your order
+          <ManageOrderIcon /> Manage your order
         </button>
         <Link className="muted-button" href={`/orders/${id}/receipt`}>
           View receipt
         </Link>
       </div>
-      <h2>Popular at KITSCH ›</h2>
-      <div className="product-rail">
-        {catalog.products
-          .filter((p) => p.storeId === "kitsch")
-          .slice(0, 4)
-          .map((p) => (
-            <ProductCard product={p} key={p.id} />
-          ))}
-      </div>
+      <OrderRecommendations catalog={catalog} />
       <Sheet
         open={menu}
         title="Your order"
-        className="source-order-menu"
+        className={`source-order-menu ${styles.orderMenu}`}
         onClose={() => setMenu(false)}
       >
-        <Row
+        <OrderAction
           label={
             displayOrder.status === "Delivered"
               ? "Unmark as delivered"
@@ -531,6 +548,14 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
             const next =
               displayOrder.status === "Delivered" ? "In transit" : "Delivered";
             saveOrder({ ...order, status: next });
+            consumeSheetHistory();
+            const query = new URLSearchParams(params.toString());
+            query.delete("state");
+            window.history.replaceState(
+              {},
+              "",
+              `/orders/${id}${query.size ? `?${query}` : ""}`,
+            );
             setMenu(false);
             setToast(
               next === "Delivered"
@@ -540,14 +565,14 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
             window.setTimeout(() => setToast(""), 1800);
           }}
         />
-        <Row
+        <OrderAction
           label="Contact merchant"
           onClick={() => {
             setMenu(false);
             setBoundary(true);
           }}
         />
-        <Row
+        <OrderAction
           label="Copy order number"
           onClick={async () => {
             try {
@@ -560,28 +585,28 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
             window.setTimeout(() => setToast(""), 1800);
           }}
         />
-        <Row
+        <OrderAction
           label={order.archived ? "Unarchive order" : "Archive order"}
           onClick={() => {
             saveOrder({ ...order, archived: !order.archived });
             setMenu(false);
           }}
         />
-        <Row
+        <OrderAction
           label="Report an issue with this order"
           onClick={() => {
             setMenu(false);
             setBoundary(true);
           }}
         />
-        <Row
+        <OrderAction
           label="Report this order as fraudulent"
           onClick={() => {
             setMenu(false);
             setBoundary(true);
           }}
         />
-        <Row
+        <OrderAction
           label="Delete"
           onClick={() => {
             setMenu(false);
@@ -592,9 +617,11 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
       <Sheet
         open={edit}
         title="Edit tracking details"
+        className={`tracking-edit-sheet ${styles.trackingEditor}`}
         onClose={() => setEdit(false)}
       >
         <ManualOrderForm
+          key={`${edit}-${editOrder.name}-${editOrder.tracking}-${editOrder.carrier}`}
           initial={editOrder}
           editing
           onSave={(v) => {
@@ -625,130 +652,165 @@ function ManualOrderForm({
   const [value, setValue] = useState(initial);
   const [carrierQuery, setCarrierQuery] = useState("");
   const [carrierOpen, setCarrierOpen] = useState(false);
+  const [emailBoundary, setEmailBoundary] = useState(false);
+  const carrierInput = useRef<HTMLInputElement>(null);
   return (
-    <form
-      className="account-form"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSave(value);
-      }}
-    >
-      {!editing && <h2>Manually add order</h2>}
-      <label className="form-field">
-        Tracking number
-        <input
-          required
-          maxLength={80}
-          value={value.tracking}
-          onChange={(e) => setValue({ ...value, tracking: e.target.value })}
-        />
-      </label>
-      <label className="form-field">
-        Package name
-        <input
-          required
-          maxLength={100}
-          value={value.name}
-          onChange={(e) => setValue({ ...value, name: e.target.value })}
-        />
-      </label>
-      <label className="form-field carrier-selector">
-        Carrier
-        <input
-          aria-label="Carrier"
-          value={carrierOpen ? carrierQuery : value.carrier}
-          onFocus={() => {
-            setCarrierQuery(value.carrier);
-            setCarrierOpen(true);
-          }}
-          onChange={(e) => {
-            setCarrierQuery(e.target.value);
-            setCarrierOpen(true);
-          }}
-        />
-      </label>
-      {carrierOpen && (
-        <div className="carrier-search">
-          <h3>Recommended carriers</h3>
-          {[
-            "DHL Active Tracing",
-            "DHL Benelux",
-            "DHL 2_Mann_Handling",
-            "DHL eCommerce",
-            "DHL eCommerce Vietnam",
-            "DHL Spain Domestic",
-            "DHL Express",
-            "USPS",
-            "FedEx",
-            "UPS",
-            "Other",
-          ]
-            .filter((c) => c.toLowerCase().includes(carrierQuery.toLowerCase()))
-            .map((c) => (
-              <button
-                type="button"
-                className="account-row"
-                key={c}
-                onClick={() => {
-                  setValue({ ...value, carrier: c });
-                  setCarrierOpen(false);
-                }}
-              >
-                {c}
-                <span
-                  aria-hidden="true"
-                  className={c.startsWith("DHL") ? "dhl-mark" : ""}
-                >
-                  {c.startsWith("DHL") ? "DHL" : "›"}
-                </span>
-              </button>
-            ))}
-        </div>
-      )}
-      <button
-        className="primary form-submit"
-        disabled={
-          !value.tracking.trim() ||
-          !value.name.trim() ||
-          !value.carrier.trim() ||
-          (editing &&
-            value.tracking === initial.tracking &&
-            value.name === initial.name &&
-            value.carrier === initial.carrier)
-        }
+    <>
+      <form
+        className={`account-form ${styles.manualForm}`}
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (
+            carrierOpen ||
+            !value.tracking.trim() ||
+            !value.name.trim() ||
+            !value.carrier.trim()
+          )
+            return;
+          onSave(value);
+        }}
       >
-        {editing ? "Update tracking details" : "Add order"}
-      </button>
-      {!editing && (
-        <div className="forward-orders">
-          <p>or</p>
-          <h2>Forward shipping emails</h2>
-          <a href="mailto:track-q6uoeuhu57@my.shop.app">
-            track-q6uoeuhu57@my.shop.app
-          </a>
-          <p>
-            Copy your unique address to forward shipping emails and Shop will
-            track your orders. <Link href="/account/help">Learn more</Link>
-          </p>
-          <a
-            className="primary form-submit"
-            href="mailto:track-q6uoeuhu57@my.shop.app"
-          >
-            Open email app
-          </a>
-          <Link href="/account/connections">
-            Track orders automatically instead
-          </Link>
-        </div>
-      )}
-    </form>
+        {!editing && <h2>Manually add order</h2>}
+        <label className="form-field">
+          <span>Tracking number</span>
+          <input
+            placeholder="Tracking number"
+            aria-label="Tracking number"
+            required
+            maxLength={80}
+            value={value.tracking}
+            onChange={(e) => setValue({ ...value, tracking: e.target.value })}
+          />
+        </label>
+        <label className="form-field">
+          <span>Package name</span>
+          <input
+            placeholder="Package name"
+            aria-label="Package name"
+            required
+            maxLength={100}
+            value={value.name}
+            onChange={(e) => setValue({ ...value, name: e.target.value })}
+          />
+        </label>
+        <label className="form-field carrier-selector">
+          <span>Carrier</span>
+          <input
+            placeholder="Carrier"
+            ref={carrierInput}
+            aria-label="Carrier"
+            value={carrierOpen ? carrierQuery : value.carrier}
+            onFocus={() => {
+              setCarrierQuery(value.carrier);
+              setCarrierOpen(true);
+            }}
+            onChange={(e) => {
+              setCarrierQuery(e.target.value);
+              setCarrierOpen(true);
+            }}
+          />
+        </label>
+        {carrierOpen && (
+          <div className="carrier-search">
+            <h3>Recommended carriers</h3>
+            {[
+              "DHL Active Tracing",
+              "DHL Benelux",
+              "DHL 2_Mann_Handling",
+              "DHL eCommerce",
+              "DHL eCommerce Vietnam",
+              "DHL Spain Domestic",
+              "DHL Express",
+              "USPS",
+              "FedEx",
+              "UPS",
+              "Other",
+            ]
+              .filter((c) =>
+                c.toLowerCase().includes(carrierQuery.toLowerCase()),
+              )
+              .map((c) => (
+                <button
+                  type="button"
+                  className="account-row"
+                  key={c}
+                  onClick={() => {
+                    setValue({ ...value, carrier: c });
+                    setCarrierOpen(false);
+                    carrierInput.current?.blur();
+                  }}
+                >
+                  {c}
+                  <span
+                    aria-hidden="true"
+                    className={c.startsWith("DHL") ? "dhl-mark" : ""}
+                  >
+                    {c.startsWith("DHL") ? "DHL" : "›"}
+                  </span>
+                </button>
+              ))}
+          </div>
+        )}
+        <button
+          className="primary form-submit"
+          hidden={carrierOpen}
+          disabled={
+            !value.tracking.trim() ||
+            !value.name.trim() ||
+            !value.carrier.trim() ||
+            (editing &&
+              value.tracking === initial.tracking &&
+              value.name === initial.name &&
+              value.carrier === initial.carrier)
+          }
+        >
+          {editing ? "Update tracking details" : "Add order"}
+        </button>
+        {!editing && !carrierOpen && (
+          <div className="forward-orders">
+            <p>or</p>
+            <h2>Forward shipping emails</h2>
+            <button
+              type="button"
+              className={styles.forwardAddress}
+              onClick={() => setEmailBoundary(true)}
+            >
+              track-q6uoeuhu57@my.shop.app
+            </button>
+            <p>
+              Copy your unique address to forward shipping emails and Shop will
+              track your orders. <Link href="/account/help">Learn more</Link>
+            </p>
+            <button
+              type="button"
+              className="primary form-submit"
+              onClick={() => setEmailBoundary(true)}
+            >
+              Open email app
+            </button>
+            <Link href="/account/connections">
+              Track orders automatically instead
+            </Link>
+          </div>
+        )}
+      </form>
+      <Boundary
+        open={emailBoundary}
+        kind="Email forwarding"
+        onClose={() => setEmailBoundary(false)}
+      />
+    </>
   );
 }
 export function NewOrder() {
   const { saveOrder } = useAccount();
   const router = useRouter();
   return (
-    <AccountPage title="Add order manually">
+    <AccountPage
+      title="Add order manually"
+      dock={false}
+      className={styles.newOrder}
+    >
       <ManualOrderForm
         initial={{
           id: "",
@@ -780,8 +842,9 @@ export function OrderReview({ id, catalog }: { id: string; catalog: Catalog }) {
   const [review, setReview] = useState(order?.review ?? "");
   const [saved, setSaved] = useState(false);
   const editing = !!order?.rating;
+  const [reviewMenu, setReviewMenu] = useState(false);
   return (
-    <AccountPage dock={false} className="order-review-page">
+    <AccountPage dock={false} className={`order-review-page ${styles.review}`}>
       <Link
         className="review-close"
         href={`/orders/${id}`}
@@ -789,6 +852,15 @@ export function OrderReview({ id, catalog }: { id: string; catalog: Catalog }) {
       >
         <Icon name="close" />
       </Link>
+      {editing && (
+        <button
+          className={styles.reviewMore}
+          aria-label="Review options"
+          onClick={() => setReviewMenu(true)}
+        >
+          <Icon name="more" />
+        </button>
+      )}
       <h1>{editing ? "Edit your review" : "Review your order"}</h1>
       {!editing && <p className="review-count">1 of 1 products</p>}
       {order && product ? (
@@ -853,6 +925,22 @@ export function OrderReview({ id, catalog }: { id: string; catalog: Catalog }) {
       ) : (
         <p>Order not found.</p>
       )}
+      <Sheet
+        open={reviewMenu}
+        title="Your review"
+        onClose={() => setReviewMenu(false)}
+      >
+        <OrderAction
+          label="Delete"
+          onClick={() => {
+            if (order) saveOrder({ ...order, rating: 0, review: "" });
+            setRating(0);
+            setReview("");
+            setSaved(false);
+            setReviewMenu(false);
+          }}
+        />
+      </Sheet>
     </AccountPage>
   );
 }
@@ -985,7 +1073,7 @@ export function OrderConfirmation({
   const product = catalog.products.find((p) => p.id === order?.productId);
   const money = (amount: number) => formatMoney({ amount, currency: "USD" });
   return (
-    <AccountPage className="order-confirmation-page">
+    <AccountPage className="order-confirmation-page" back={false}>
       <Link
         className="review-close"
         href={`/orders/${id}`}
@@ -1006,7 +1094,7 @@ export function OrderConfirmation({
             <small>Ships to</small>
             <div>
               <strong>
-                {data.street}, {data.city}, CA, {data.postalCode}, US
+                {data.street} {data.city}, {data.region}, {data.postalCode}, US
               </strong>
               {product && <img src={product.images[0]} alt="" />}
             </div>
@@ -1021,22 +1109,40 @@ export function OrderConfirmation({
               <span>{money(data.total)}</span>
             </p>
             <p>
-              <span>Shop Pay — {data.cardLast4}</span>
+              <span>Shop Pay ···· {data.cardLast4}</span>
               <span>{money(data.total)}</span>
             </p>
           </div>
           <Link className="muted-button" href={`/orders/${id}/receipt`}>
             View order receipt
           </Link>
-          <h2>Popular at KITSCH ›</h2>
+          <h2>
+            <Link href="/stores/kitsch">
+              Popular at KITSCH <span aria-hidden="true">›</span>
+            </Link>
+          </h2>
           <div className="product-rail">
             {["black-conditioner-bag", "chocolate-body-bag", "shower-caddy"]
               .map((id) => catalog.products.find((p) => p.id === id))
               .filter((p) => !!p)
               .map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <ProductCard
+                  key={p.id}
+                  product={{
+                    ...p,
+                    ratingCount:
+                      p.id === "black-conditioner-bag"
+                        ? "2.8K"
+                        : p.id === "chocolate-body-bag"
+                          ? "749"
+                          : p.ratingCount,
+                  }}
+                />
               ))}
           </div>
+          <Link href="/deals" className="confirmation-deals">
+            Your deals <span aria-hidden="true">›</span>
+          </Link>
         </>
       ) : (
         <p>No confirmation is available for this tracked order.</p>

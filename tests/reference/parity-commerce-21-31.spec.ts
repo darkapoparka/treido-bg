@@ -52,10 +52,12 @@ test("flow 21 checkout stops at payment boundary before captured confirmation", 
   await expect(
     page.getByRole("heading", { name: "Review & Pay" }),
   ).toBeVisible();
-  await expect(page.getByText("Alex Smith", { exact: true })).toBeVisible();
-  await expect(
-    page.getByText("Visa ···· 4263", { exact: false }),
-  ).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Ship to/ })).toContainText(
+    "Alex Smith",
+  );
+  await expect(page.getByRole("button", { name: /^Payment/ })).toContainText(
+    "Visa ···· 4263",
+  );
   await page.getByRole("button", { name: /^Plan/ }).click();
   await expect(
     page.getByText("Installments unavailable", { exact: true }),

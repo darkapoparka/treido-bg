@@ -39,3 +39,26 @@ export const detailProducts: readonly Product[] = [
     ],
   },
 ];
+
+// Flow 19/002-003 is a later catalog snapshot, with no captured explanation for
+// its changed promotion and delivery label. These presentation fields do not
+// grant a discount or change the product price, stock or checkout calculation.
+export function productDetailProjection(
+  products: readonly Product[],
+  scenario: string | undefined,
+): readonly Product[] {
+  if (scenario !== "kitsch-product-saving-offer") return products;
+  return products.map((product) =>
+    product.id === "shea-butter"
+      ? {
+          ...product,
+          promotion: "20% off your order",
+          detail: {
+            ...product.detail,
+            arrivalLabel: "Arrives as soon as Sun, Aug 2",
+            promotionTerms: "Applied at checkout",
+          },
+        }
+      : product,
+  );
+}

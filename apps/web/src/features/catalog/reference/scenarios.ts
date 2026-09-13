@@ -60,6 +60,7 @@ const emptyDiscovery: DiscoverySeed = {
   collections: [],
   viewedProducts: [],
   viewedItems: [],
+  viewedAnswers: [],
   followed: [],
   visitedMinis: [],
   cart: [],
@@ -79,6 +80,18 @@ const expandedFavs = {
   collaborationPromptDismissed: true,
 };
 const editedFavs = { ...expandedFavs, name: "Favs💕" };
+// Flow 43/44 begins with captured mixed history. Flow 49 is a separate
+// recorded ordering; these fixtures never fabricate a browsing event.
+const searchEntryItems: NonNullable<DiscoverySeed["viewedItems"]> = [
+  { kind: "product", id: "shea-butter", promotion: "$15 off order" },
+  { kind: "store", id: "kitsch", promotion: "Save $15" },
+  { kind: "product", id: "shampoo-bag", promotion: "$15 off order" },
+  { kind: "product", id: "rice-shampoo", promotion: "Save $15" },
+  { kind: "product", id: "terracotta", promotion: "Save $15" },
+  { kind: "store", id: "pura" },
+  { kind: "store", id: "loaded-tea" },
+  { kind: "store", id: "drmtlgy" },
+];
 const libraryItems = [
   "rhode-glazing-milk",
   "home-drmtlgy-eye",
@@ -149,7 +162,102 @@ export const referenceScenarios = {
       visitedMinis: ["gift", "look", "skin"],
     },
   },
-  "home-welcome": { discovery: emptyDiscovery },
+  "home-welcome": { account: { orders: [] }, discovery: emptyDiscovery },
+  // Flow 17/001-002 records a cart-free $15 snapshot and a first Shea visit.
+  // Follow was not visible in this segment; do not borrow following-pair's seed.
+  "kitsch-product-arrival": {
+    discovery: { cart: [], saved: [], viewedProducts: [], viewedItems: [] },
+  },
+  // Frame 003 changes the offer and rating without a recorded action.
+  // A distinct source entry owns that snapshot; the tip timer changes no prices.
+  "kitsch-product-settled": {
+    discovery: {
+      cart: [],
+      saved: [],
+      viewedProducts: ["shea-butter"],
+      viewedItems: [{ kind: "product", id: "shea-butter" }],
+    },
+  },
+  // Flow 19/002 contains a different catalog snapshot with no recorded cause.
+  // Replay its real Save action within that snapshot, not as an offer change.
+  "kitsch-product-saving-offer": {
+    discovery: {
+      saved: [],
+      viewedProducts: ["shea-butter"],
+      viewedItems: [{ kind: "product", id: "shea-butter" }],
+    },
+  },
+  "home-pura-options": {
+    account: { orders: [] },
+    discovery: emptyDiscovery,
+  },
+  "home-recent-shops": {
+    discovery: {
+      ...emptyDiscovery,
+      recentActivity: "stores",
+      viewedProducts: ["shea-butter"],
+      viewedItems: [
+        { kind: "store", id: "kitsch", promotion: "Save $20" },
+        { kind: "product", id: "shea-butter", promotion: "$20 off order" },
+        { kind: "store", id: "loaded-tea", promotion: "Save $10" },
+        { kind: "store", id: "drmtlgy", promotion: "Save $30" },
+      ],
+    },
+  },
+  "home-recent-products": {
+    account: { profile: completeProfile, orders: [sourceOrder] },
+    discovery: {
+      ...emptyDiscovery,
+      recentActivity: "products",
+      viewedProducts: ["cleo", "round-sunglasses", "u-see-me"],
+      viewedItems: [
+        { kind: "product", id: "cleo" },
+        { kind: "product", id: "round-sunglasses", promotion: "Save $20" },
+        { kind: "product", id: "u-see-me" },
+      ],
+    },
+  },
+  "search-entry": {
+    discovery: {
+      ...emptyDiscovery,
+      viewedItems: searchEntryItems,
+      viewedProducts: [
+        "shea-butter",
+        "shampoo-bag",
+        "rice-shampoo",
+        "terracotta",
+      ],
+    },
+  },
+  "search-photo": {
+    discovery: {
+      ...emptyDiscovery,
+      viewedItems: [
+        { kind: "product", id: "cleo" },
+        { kind: "product", id: "round-sunglasses", promotion: "Save $20" },
+        { kind: "product", id: "u-see-me" },
+      ],
+      viewedProducts: ["cleo", "round-sunglasses", "u-see-me"],
+    },
+  },
+  "search-recent": {
+    discovery: {
+      ...emptyDiscovery,
+      viewedAnswers: ["jeans"],
+      viewedItems: [
+        searchEntryItems[1]!,
+        searchEntryItems[2]!,
+        searchEntryItems[0]!,
+        ...searchEntryItems.slice(3),
+      ],
+      viewedProducts: [
+        "shampoo-bag",
+        "shea-butter",
+        "rice-shampoo",
+        "terracotta",
+      ],
+    },
+  },
   "profile-named": { account: { profile: namedProfile } },
   "profile-complete": {
     account: { profile: completeProfile, orders: profileOrders },
@@ -261,7 +369,21 @@ export const referenceScenarios = {
     },
     discovery: { ...emptyDiscovery, cart: [bagLine] },
   },
+  "cart-unavailable": {
+    catalog: { unavailableVariants: ["shampoo-bag-default"] },
+    account: { profile: completeProfile },
+    discovery: { ...emptyDiscovery, cart: [bagLine] },
+  },
   "orders-empty": { account: { orders: [] }, discovery: emptyDiscovery },
+  "order-widgets": {
+    account: {
+      profile: completeProfile,
+      orders: [
+        { ...sourceOrder, status: "Ordered" },
+        { ...manualOrder, status: "Delivered" },
+      ],
+    },
+  },
   "orders-waiting": {
     account: {
       profile: completeProfile,
@@ -270,6 +392,24 @@ export const referenceScenarios = {
   },
   "orders-transit": {
     account: { profile: completeProfile, orders: [sourceOrder] },
+  },
+  "orders-transit-history": {
+    account: {
+      profile: completeProfile,
+      orders: [
+        sourceOrder,
+        { ...manualOrder, status: "Delivered", archived: true },
+      ],
+    },
+  },
+  "orders-delivered-history": {
+    account: {
+      profile: completeProfile,
+      orders: [
+        { ...sourceOrder, status: "Delivered" },
+        { ...manualOrder, status: "Delivered", archived: true },
+      ],
+    },
   },
   "orders-delivered": {
     account: {

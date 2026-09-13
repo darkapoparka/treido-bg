@@ -51,6 +51,8 @@ The active web reconstruction uses isolated reference data through the existing 
 
 Acceptance: source/live pairs, actual family interactions, Back/Forward/focus/scroll, relevant 320/430 containment and scoped types/lint/tests. Keep numeric candidates distinct from owner acceptance.
 
+2026-09-13 checkpoint: all 97 frozen flows / 424 ordered states now have executable recipes. The integrated discovery, store, product, assistant and Mini work is being verified against those existing states; the [current source checkpoint](shop-implementation-map.md#current-source-checkpoint) records completed comparisons and remaining media/catalog differences. Recipe coverage does not close this task's visual acceptance.
+
 ## Task 4 - Build data, identity and catalog
 
 Owner: [architecture.md](architecture.md), [detailed requirements](docs/product/requirements.md), [native.md](native.md). On an explicitly authorized fresh development target, implement the new product-led PostgreSQL/Prisma schema, Clerk identity mapping and business/resource permissions. Do not import legacy schema or data automatically.
@@ -63,6 +65,8 @@ Acceptance: real isolated database constraints/tenant/quantity tests, current/re
 
 Owner: [web.md](web.md), [architecture.md](architecture.md), DEC-002. Current reference work may complete cart/checkout/order UI before services, but must not claim real payment/stock behavior.
 
+2026-09-13 reference checkpoint: cart context, connected phone/address/card editors, confirmation/receipt, manual orders, delivery changes and tracking history now use the canonical components and local state. Focused history, normalization, validation and sibling-width checks belong to the [current evidence](docs/STATUS.md); the real commerce acceptance below remains open.
+
 Real acceptance requires merchant publish -> buyer discover -> guest cart/sign-in merge -> server quote -> reservation/idempotent payment operation -> verified sandbox outcome -> merchant fulfillment -> matching buyer timeline and allowed recovery. Support approved quantities and multi-seller allocations. Reuse one server implementation across web/native.
 
 Acceptance includes competing last stock, stale price/offer, repeated confirmation, challenge/decline, interrupted return, duplicate/out-of-order callbacks, expiry races and approved partial/full refunds with original fee allocations. Provider uncertainty is not success. Use real PostgreSQL and sandbox provider evidence.
@@ -74,6 +78,8 @@ Owner: [design.md](design.md), the existing [flow checklist](shop-parity-checkli
 Track **source approval** separately from **real-service verification**. The source gate needs complete scoped visual and UX evidence plus owner/design acceptance of named exceptions. Fixture-only service states remain visibly labeled and their real tasks remain open. Do not collapse those two gates into one misleading Done status.
 
 Task 7 requires the approved source gate; this never waives Tasks 4/5/9/10's real-service acceptance or native requirements.
+
+2026-09-13 checkpoint: the complete 424-state comparison is recorded in the existing frame ledger, with later fitting runs listed in the implementation map. The flow checklist distinguishes inspected sources, exercised app behavior and measured comparisons from owner acceptance. The earlier rejection of 1:1 acceptance remains active.
 
 ## Task 7 - Adapt the approved frontend to Treido
 

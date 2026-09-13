@@ -70,6 +70,7 @@ export const accountRecipes = {
   70: {
     family: "account-profile",
     startUrl: "/profile",
+    scenario: "home-welcome",
     frames: [
       state("starter-profile", [top]),
       state("account-empty", [

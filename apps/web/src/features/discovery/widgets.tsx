@@ -4,15 +4,25 @@ import { ShopSurface } from "./hydration-boundary";
 import { useState } from "react";
 import Link from "next/link";
 import { Sheet } from "./components";
+import { useAccount } from "../account/state";
+import "./widgets.css";
 function OrderWidget({ size }: { size: "large" | "medium" | "small" }) {
+  const { orders } = useAccount();
+  const bag = orders.find((order) => order.productId === "shampoo-bag");
+  const shirt = orders.find((order) => order.id === "REF-manual-shirt");
   return (
     <div className={`order-widget widget-${size}`}>
+      <Link
+        className="widget-order-open"
+        href={bag ? `/orders/${bag.id}` : "/orders"}
+        aria-label={`Open KITSCH order from ${size} widget`}
+      />
       <header>
-        <img src="/api/reference-media/kitsch-logo" alt="" />
+        <img src="/api/reference-media/widget-kitsch-logo" alt="" />
         {size !== "small" && <b>KITSCH</b>}
         <img
           className="widget-shop-mark"
-          src="/api/reference-media/auth-loop"
+          src="/api/reference-media/widget-shop-mark"
           alt="Shop"
         />
       </header>
@@ -22,15 +32,24 @@ function OrderWidget({ size }: { size: "large" | "medium" | "small" }) {
         <p>Standard Shipping</p>
         {size !== "small" && (
           <>
-            <progress value="20" max="100" />
+            <progress
+              value="20"
+              max="100"
+              aria-label="Order delivery progress"
+            />
             <img src="/api/reference-media/shampoo-bag" alt="Shampoo bar bag" />
           </>
         )}
       </div>
       {size === "large" && (
         <div className="widget-delivery">
+          <Link
+            className="widget-order-open"
+            href={shirt ? `/orders/${shirt.id}?view=tracking` : "/orders"}
+            aria-label="Open delivered T-shirt order from large widget"
+          />
           <header>
-            <span>DHL</span>
+            <img src="/api/reference-media/widget-dhl-logo" alt="DHL" />
             <b>Loose Fit Printed T-Shirt</b>
           </header>
           <div>

@@ -1,7 +1,7 @@
 import "server-only";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import sharp from "sharp";
+import sharp, { type OverlayOptions } from "sharp";
 // Rectangles are measured on a 393px-wide reference, including its system chrome.
 // Only product photography, brand marks and decorative imagery are extracted.
 // Interface text, cards, navigation and controls are rendered by React, never screenshots.
@@ -13,8 +13,532 @@ const media: Record<
     // Remove captured interface occlusions from tightly cropped product photography.
     // The image never supplies price labels, save controls, card edges or navigation.
     occlusions?: readonly (readonly [number, number, number, number])[];
+    // Remove light caption ink within these bounds, preserving the surrounding
+    // photo instead of clearing a rectangular block behind the DOM caption.
+    lightTextOcclusions?: readonly (readonly [
+      number,
+      number,
+      number,
+      number,
+    ])[];
+    // Exclude the recorded card edge while retaining only its product photograph.
+    photoRadius?: number;
+    // Circular native controls are removed without erasing extra photo corners.
+    circularOcclusions?: readonly (readonly [number, number, number])[];
   }
 > = {
+  "beauty-curls-photo": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/002.webp",
+    rect: [16, 196, 361, 203],
+    photoRadius: 28,
+    lightTextOcclusions: [
+      [19, 140, 176, 23],
+      [19, 164, 187, 19],
+    ],
+    circularOcclusions: [[325, 166, 17]],
+  },
+  "beauty-starter-photo": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/003.webp",
+    rect: [16, 393, 361, 203],
+    photoRadius: 28,
+    lightTextOcclusions: [
+      [19, 142, 177, 23],
+      [19, 166, 254, 19],
+    ],
+    circularOcclusions: [[325, 167, 17]],
+  },
+  "beauty-perfume-photo": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/004.webp",
+    rect: [16, 116, 176, 83],
+    photoRadius: 14,
+    lightTextOcclusions: [[25, 31, 126, 22]],
+  },
+  "beauty-bath-photo": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/004.webp",
+    rect: [201, 116, 176, 83],
+    photoRadius: 14,
+    lightTextOcclusions: [[46, 31, 85, 22]],
+  },
+  "beauty-hair-photo": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/004.webp",
+    rect: [16, 208, 176, 83],
+    photoRadius: 14,
+    lightTextOcclusions: [[49, 23, 84, 39]],
+  },
+  "beauty-nail-photo": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/004.webp",
+    rect: [201, 208, 176, 83],
+    photoRadius: 14,
+    lightTextOcclusions: [[57, 31, 63, 22]],
+  },
+  "chemical-video-photo": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/002.webp",
+    rect: [0, 59, 393, 793],
+    occlusions: [
+      [67, 617, 103, 17],
+      [68, 637, 37, 15],
+      [64, 672, 295, 17],
+      [64, 690, 41, 14],
+      [16, 667, 40, 41],
+      [27, 729, 17, 20],
+      [59, 737, 311, 4],
+    ],
+    circularOcclusions: [
+      [37, 20, 23],
+      [355, 20, 23],
+      [355, 78, 23],
+      [38, 634, 27],
+    ],
+  },
+  "chemical-video-logo": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/002.webp",
+    rect: [20, 675, 38, 38],
+    photoRadius: 19,
+  },
+  "chemical-video-item-photo": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/002.webp",
+    rect: [27, 734, 15, 29],
+  },
+  "chemical-store-header-photo": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
+    rect: [1, 68, 391, 144],
+    occlusions: [[14, 82, 377, 44]],
+    circularOcclusions: [
+      [37, 37, 23],
+      [85, 37, 23],
+    ],
+    photoRadius: 35,
+  },
+  "chemical-store-trim-photo": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
+    rect: [33, 267, 133, 133],
+    occlusions: [[10, 10, 51, 19]],
+    circularOcclusions: [[106, 106, 17]],
+    photoRadius: 19,
+  },
+  "chemical-store-protect-photo": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
+    rect: [176, 267, 133, 133],
+    occlusions: [[10, 10, 44, 19]],
+    circularOcclusions: [[106, 106, 17]],
+    photoRadius: 19,
+  },
+  "chemical-store-deep-partial": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
+    rect: [319, 267, 57, 133],
+    occlusions: [[10, 10, 47, 19]],
+  },
+  "chemical-store-clip-one": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
+    rect: [17, 477, 108, 158],
+    occlusions: [[9, 130, 48, 20]],
+    photoRadius: 19,
+  },
+  "chemical-store-clip-two": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
+    rect: [134, 477, 108, 158],
+    occlusions: [[9, 130, 48, 20]],
+    photoRadius: 19,
+  },
+  "chemical-store-clip-three": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
+    rect: [251, 477, 108, 158],
+    occlusions: [[9, 130, 48, 20]],
+    photoRadius: 19,
+  },
+  "chemical-featured-one-partial": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
+    rect: [35, 710, 129, 52],
+    photoRadius: 18,
+  },
+  "chemical-featured-two-partial": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
+    rect: [178, 710, 129, 52],
+    photoRadius: 18,
+  },
+  "chemical-featured-three-partial": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
+    rect: [321, 710, 55, 52],
+    occlusions: [
+      [0, 0, 17, 9],
+      [0, 9, 5, 8],
+    ],
+  },
+  "chemical-category-shop": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
+    rect: [20, 156, 30, 30],
+    photoRadius: 15,
+  },
+  "chemical-category-kits": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
+    rect: [134, 156, 30, 30],
+    photoRadius: 15,
+  },
+  "chemical-category-exterior": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
+    rect: [219, 156, 30, 30],
+    photoRadius: 15,
+  },
+  "chemical-category-interior": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
+    rect: [333, 156, 30, 30],
+    photoRadius: 15,
+  },
+  "beauty-whip-card-photo": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/002.webp",
+    rect: [17, 471, 170, 170],
+    photoRadius: 21,
+    occlusions: [[10, 10, 58, 19]],
+    circularOcclusions: [[143, 143, 18]],
+  },
+  "beauty-hanacure-card-photo": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/002.webp",
+    rect: [198, 471, 170, 170],
+    photoRadius: 21,
+    occlusions: [[10, 10, 76, 19]],
+    circularOcclusions: [[143, 143, 18]],
+  },
+  "beauty-bubble-card-photo": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/003.webp",
+    rect: [17, 111, 170, 170],
+    photoRadius: 21,
+    circularOcclusions: [[143, 143, 18]],
+  },
+  "beauty-bare-card-photo": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/003.webp",
+    rect: [198, 111, 170, 170],
+    photoRadius: 21,
+    occlusions: [[10, 10, 58, 19]],
+    circularOcclusions: [[143, 143, 18]],
+  },
+  "beauty-athena-header": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp",
+    rect: [17, 125, 175, 118],
+    photoRadius: 23,
+    occlusions: [[30, 73, 118, 42]],
+  },
+  "beauty-crown-header": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp",
+    rect: [202, 125, 174, 118],
+    photoRadius: 23,
+    occlusions: [[30, 73, 118, 42]],
+  },
+  "beauty-starface-header": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp",
+    rect: [17, 422, 175, 118],
+    photoRadius: 23,
+    occlusions: [[24, 67, 130, 43]],
+  },
+  "beauty-necessaire-header": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp",
+    rect: [202, 422, 174, 118],
+    photoRadius: 23,
+    occlusions: [[24, 67, 126, 43]],
+  },
+  "beauty-athena-card-photo": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp",
+    rect: [25, 245, 158, 158],
+    photoRadius: 21,
+    occlusions: [[10, 10, 51, 19]],
+  },
+  "beauty-crown-card-photo": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp",
+    rect: [210, 245, 158, 158],
+    photoRadius: 21,
+  },
+  "beauty-starface-card-photo": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp",
+    rect: [25, 542, 158, 158],
+    photoRadius: 21,
+  },
+  "beauty-necessaire-card-photo": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp",
+    rect: [210, 542, 158, 158],
+    photoRadius: 21,
+    occlusions: [[10, 10, 59, 19]],
+  },
+  "assistant-dad-photo": {
+    file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/005.webp",
+    rect: [18, 468, 148, 148],
+    photoRadius: 21,
+    circularOcclusions: [[122, 123, 18]],
+  },
+  "assistant-merch-photo": {
+    file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/005.webp",
+    rect: [178, 468, 148, 148],
+    photoRadius: 21,
+    circularOcclusions: [[122, 123, 18]],
+  },
+  "assistant-armor-photo": {
+    file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/007.webp",
+    rect: [26, 504, 163, 163],
+    photoRadius: 22,
+    circularOcclusions: [
+      [135, 135, 18],
+      [49, 149, 3.5],
+      [57, 149, 3.5],
+      [65, 149, 3.5],
+      [73, 149, 3.5],
+      [81, 149, 3.5],
+      [89, 149, 3.5],
+      [97, 149, 3.5],
+      [105, 149, 3.5],
+      [113, 149, 3.5],
+    ],
+  },
+  "order-peach-bee-photo": {
+    file: "flows/e6c06e9f-26c9-476e-a3e5-d34c968eaa3d/003.webp",
+    rect: [198, 458, 171, 171],
+    photoRadius: 21,
+    occlusions: [[10, 10, 51, 19]],
+    circularOcclusions: [[143, 143, 17]],
+  },
+  "order-drmtlgy-eye-photo": {
+    file: "flows/e6c06e9f-26c9-476e-a3e5-d34c968eaa3d/003.webp",
+    rect: [17, 458, 171, 171],
+    photoRadius: 21,
+    occlusions: [[10, 10, 57, 19]],
+    circularOcclusions: [[143, 143, 17]],
+  },
+  "order-deal-blue-bag": {
+    file: "flows/8f406a69-ad1c-4de8-a699-12aa504efb74/006.webp",
+    rect: [17, 304, 113, 113],
+    photoRadius: 21,
+    occlusions: [[10, 10, 51, 20]],
+    circularOcclusions: [[85.5, 85.5, 17.5]],
+  },
+  "order-deal-dropper": {
+    file: "flows/8f406a69-ad1c-4de8-a699-12aa504efb74/006.webp",
+    rect: [140, 304, 113, 113],
+    photoRadius: 21,
+    occlusions: [[10, 10, 73, 20]],
+    circularOcclusions: [[85.5, 85.5, 17.5]],
+  },
+  "order-deal-strawberry-balm": {
+    file: "flows/8f406a69-ad1c-4de8-a699-12aa504efb74/006.webp",
+    rect: [263, 304, 113, 113],
+    photoRadius: 21,
+    occlusions: [[10, 10, 51, 20]],
+    circularOcclusions: [[85.5, 85.5, 17.5]],
+  },
+  "order-deal-white-treatment": {
+    file: "flows/8f406a69-ad1c-4de8-a699-12aa504efb74/006.webp",
+    rect: [17, 427, 113, 113],
+    photoRadius: 21,
+    occlusions: [[10, 10, 57, 20]],
+    circularOcclusions: [[85.5, 85.5, 17.5]],
+  },
+  "order-deal-mascara": {
+    file: "flows/8f406a69-ad1c-4de8-a699-12aa504efb74/006.webp",
+    rect: [140, 427, 113, 113],
+    photoRadius: 21,
+    occlusions: [[10, 10, 57, 20]],
+    circularOcclusions: [[85.5, 85.5, 17.5]],
+  },
+  "order-deal-hush": {
+    file: "flows/8f406a69-ad1c-4de8-a699-12aa504efb74/006.webp",
+    rect: [263, 427, 113, 113],
+    photoRadius: 21,
+    occlusions: [[10, 10, 57, 20]],
+    circularOcclusions: [[85.5, 85.5, 17.5]],
+  },
+  "order-deal-carpe": {
+    file: "flows/8f406a69-ad1c-4de8-a699-12aa504efb74/004.webp",
+    rect: [263, 418, 113, 113],
+    photoRadius: 21,
+    occlusions: [[10, 10, 57, 20]],
+    circularOcclusions: [[85.5, 85.5, 17.5]],
+  },
+  "home-carpe-wordmark": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/006.webp",
+    // Brand ink only. The circular frame, card, labels and native dock are excluded.
+    rect: [34, 792, 40, 19],
+  },
+  "home-campaign-princess-header": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
+    rect: [17, 194, 359, 85],
+    occlusions: [
+      [14, 21, 162, 25],
+      [221, 24, 84, 19],
+    ],
+    circularOcclusions: [[327, 33, 18]],
+    photoRadius: 27,
+  },
+  "home-campaign-princess-wordmark": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
+    rect: [31, 215, 162, 25],
+  },
+  "home-campaign-princess-top": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
+    rect: [32, 280, 135, 135],
+    occlusions: [[11, 11, 89, 20]],
+    circularOcclusions: [[107, 107, 17]],
+    photoRadius: 20,
+  },
+  "home-campaign-princess-dress": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
+    rect: [175, 280, 135, 135],
+    occlusions: [[11, 11, 49, 20]],
+    circularOcclusions: [[107, 107, 17]],
+    photoRadius: 20,
+  },
+  "home-campaign-drmtlgy-header": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
+    rect: [17, 519, 359, 67],
+    occlusions: [
+      [21, 25, 153, 22],
+      [234, 23, 73, 21],
+    ],
+    circularOcclusions: [[327, 33, 18]],
+    photoRadius: 27,
+  },
+  "home-campaign-drmtlgy-wordmark": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
+    rect: [38, 544, 153, 22],
+  },
+  "home-campaign-drmtlgy-footer": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
+    rect: [17, 722, 359, 69],
+    occlusions: [
+      [113, 0, 133, 39],
+      [13, 21, 108, 30],
+      [64, 39, 231, 30],
+    ],
+    circularOcclusions: [[327, 37, 18]],
+    photoRadius: 27,
+  },
+  "home-campaign-tea-blue": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
+    rect: [32, 195, 135, 128],
+    occlusions: [[11, 10, 74, 21]],
+    circularOcclusions: [[107, 100, 17]],
+    photoRadius: 20,
+  },
+  "home-campaign-tea-orange": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
+    rect: [175, 195, 135, 128],
+    occlusions: [[11, 10, 73, 21]],
+    circularOcclusions: [[107, 100, 17]],
+    photoRadius: 20,
+  },
+  "home-campaign-accessories-header": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
+    rect: [17, 439, 359, 67],
+    occlusions: [[234, 24, 75, 20]],
+    circularOcclusions: [[327, 33, 18]],
+    photoRadius: 27,
+  },
+  "home-campaign-accessory-cap": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
+    rect: [32, 506, 135, 135],
+    occlusions: [[11, 11, 86, 21]],
+    circularOcclusions: [[107, 107, 17]],
+    photoRadius: 20,
+  },
+  "home-campaign-accessory-glasses": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
+    rect: [175, 506, 135, 135],
+    occlusions: [[11, 11, 109, 21]],
+    circularOcclusions: [[107, 107, 17]],
+    photoRadius: 20,
+  },
+  "home-campaign-mountain-header": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/004.webp",
+    rect: [17, 595, 359, 89],
+    occlusions: [[65, 17, 166, 40]],
+    circularOcclusions: [
+      [37, 38, 23],
+      [327, 37, 18],
+    ],
+    photoRadius: 27,
+  },
+  "home-campaign-kitsch-header": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/006.webp",
+    rect: [17, 115, 359, 59],
+    occlusions: [
+      [11, 14, 137, 42],
+      [219, 23, 95, 20],
+    ],
+    circularOcclusions: [[327, 33, 18]],
+    photoRadius: 27,
+  },
+  "home-campaign-kitsch-footer": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/006.webp",
+    rect: [17, 647, 359, 63],
+    occlusions: [[13, 18, 108, 29]],
+    circularOcclusions: [[327, 33, 18]],
+    photoRadius: 27,
+  },
+  "recent-kitsch-cover": {
+    file: "flows/1cb8d743-c728-4317-8c60-1cc3c2761f8c/002.webp",
+    rect: [17, 120, 173, 173],
+    circularOcclusions: [[146, 27, 17]],
+    photoRadius: 19,
+  },
+  "recent-pura-cover": {
+    file: "flows/1cb8d743-c728-4317-8c60-1cc3c2761f8c/002.webp",
+    rect: [202, 493, 172, 172],
+    circularOcclusions: [[145, 27, 17]],
+    photoRadius: 19,
+  },
+  "recent-terracotta-photo": {
+    file: "flows/1cb8d743-c728-4317-8c60-1cc3c2761f8c/002.webp",
+    rect: [17, 493, 173, 173],
+    occlusions: [[10, 11, 56, 18]],
+    circularOcclusions: [
+      [146, 27, 17],
+      [146, 148, 17],
+    ],
+    photoRadius: 19,
+  },
+  "recent-drmtlgy-photo": {
+    file: "flows/1cb8d743-c728-4317-8c60-1cc3c2761f8c/002.webp",
+    rect: [202, 680, 172, 80],
+    circularOcclusions: [[145, 27, 17]],
+  },
+  "recent-loaded-logo": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
+    rect: [33, 137, 42, 42],
+    photoRadius: 21,
+  },
+  "recent-jeans-conversation": {
+    file: "flows/52c46d53-6d5f-4c10-964a-f9b0c404203c/003.webp",
+    rect: [16, 331, 48, 49],
+    photoRadius: 11,
+  },
+  "assistant-mobbin-merch-cap": {
+    file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/005.webp",
+    // Cap photography only, above the source card's heart control.
+    rect: [192, 513, 108, 72],
+    occlusions: [[99, 65, 9, 7]],
+  },
+  "assistant-white-square": {
+    file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/002.webp",
+    rect: [18, 386, 148, 148],
+    occlusions: [[105, 104, 36, 35]],
+  },
+  "assistant-black-square": {
+    file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/002.webp",
+    rect: [178, 386, 148, 148],
+    occlusions: [[105, 104, 36, 35]],
+  },
+  "assistant-city-square": {
+    file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/003.webp",
+    rect: [26, 172, 162, 162],
+    occlusions: [
+      [8, 8, 58, 22],
+      [118, 118, 36, 36],
+      [48, 144, 56, 18],
+    ],
+  },
+  "assistant-signature-square": {
+    file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/003.webp",
+    rect: [26, 372, 162, 162],
+    occlusions: [
+      [118, 118, 36, 36],
+      [54, 144, 48, 18],
+    ],
+  },
   "profile-empty-package": {
     file: "flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/002.webp",
     rect: [32, 570, 66, 62],
@@ -115,11 +639,15 @@ const media: Record<
   },
   "deals-rinse-tres": {
     file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp",
-    rect: [30, 248, 118, 118],
+    rect: [17, 240, 171, 171],
+    photoRadius: 20,
+    circularOcclusions: [[144, 144, 17]],
   },
   "deals-rinse-rainbow": {
     file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp",
-    rect: [210, 268, 120, 113],
+    rect: [198, 240, 171, 171],
+    photoRadius: 20,
+    circularOcclusions: [[144, 144, 17]],
   },
   "deals-syman-logo": {
     file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp",
@@ -127,11 +655,15 @@ const media: Record<
   },
   "deals-syman-fir": {
     file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp",
-    rect: [30, 584, 118, 118],
+    rect: [17, 573, 171, 171],
+    photoRadius: 20,
+    circularOcclusions: [[144, 144, 17]],
   },
   "deals-syman-lilac": {
     file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp",
-    rect: [210, 581, 118, 118],
+    rect: [198, 573, 171, 171],
+    photoRadius: 20,
+    circularOcclusions: [[144, 144, 17]],
   },
   "deals-francesco-logo": {
     file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/003.webp",
@@ -139,11 +671,15 @@ const media: Record<
   },
   "deals-francesco-goat": {
     file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/003.webp",
-    rect: [34, 185, 112, 122],
+    rect: [17, 180, 171, 171],
+    photoRadius: 20,
+    circularOcclusions: [[144, 144, 17]],
   },
   "deals-francesco-lavender": {
     file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/003.webp",
-    rect: [210, 184, 118, 122],
+    rect: [198, 180, 171, 171],
+    photoRadius: 20,
+    circularOcclusions: [[144, 144, 17]],
   },
   "deals-solid-logo": {
     file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/003.webp",
@@ -151,11 +687,15 @@ const media: Record<
   },
   "deals-solid-raquels": {
     file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/003.webp",
-    rect: [60, 523, 75, 155],
+    rect: [17, 514, 171, 171],
+    photoRadius: 20,
+    circularOcclusions: [[144, 144, 17]],
   },
   "deals-solid-mask": {
     file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/003.webp",
-    rect: [220, 519, 105, 130],
+    rect: [198, 514, 171, 171],
+    photoRadius: 20,
+    circularOcclusions: [[144, 144, 17]],
   },
   "home-drmtlgy-eye": {
     file: "flows/b5716e20-b094-463c-b74b-a5e983dd1651/009.webp",
@@ -611,6 +1151,18 @@ const media: Record<
     file: "flows/b778fdce-2c65-4153-aaee-6703098f27d4/004.webp",
     rect: [181, 140, 32, 34],
   },
+  "widget-kitsch-logo": {
+    file: "flows/403ffb92-8c6c-4117-8d75-21555bb8db42/001.webp",
+    rect: [42, 659, 56, 56],
+  },
+  "widget-shop-mark": {
+    file: "flows/403ffb92-8c6c-4117-8d75-21555bb8db42/001.webp",
+    rect: [335, 98, 16, 17],
+  },
+  "widget-dhl-logo": {
+    file: "flows/403ffb92-8c6c-4117-8d75-21555bb8db42/001.webp",
+    rect: [42, 269, 32, 33],
+  },
   "sol-glasses-model": {
     file: "flows/ae7711ef-6c54-4aa1-bb56-bee25cf3bef7/003.webp",
     rect: [65, 433, 115, 118],
@@ -827,10 +1379,76 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
         Math.round(value * scale),
       );
       const crop = sharp(input).extract({ left, top, width, height });
-      if (entry.occlusions?.length) {
-        const cleanPhoto = await crop.ensureAlpha().png().toBuffer();
+      if (
+        entry.occlusions?.length ||
+        entry.lightTextOcclusions?.length ||
+        entry.circularOcclusions?.length ||
+        entry.photoRadius
+      ) {
+        let cleanPhoto = await crop.ensureAlpha().png().toBuffer();
+        if (entry.lightTextOcclusions?.length) {
+          const pixels = await sharp(cleanPhoto)
+            .raw()
+            .toBuffer({ resolveWithObject: true });
+          // At source scale, a small bounded dilation also removes the captured
+          // glyph's dark antialiasing/shadow. Only alpha changes; no photo pixels
+          // are synthesized and the mask cannot extend beyond the caption bounds.
+          const inkRadius = Math.max(1, Math.ceil(1.5 * scale));
+          for (const bounds of entry.lightTextOcclusions) {
+            const [x, y, w, h] = bounds.map((value) =>
+              Math.round(value * scale),
+            );
+            const left = Math.max(0, x),
+              top = Math.max(0, y);
+            const right = Math.min(x + w, width),
+              bottom = Math.min(y + h, height);
+            const maskWidth = right - left,
+              maskHeight = bottom - top;
+            if (maskWidth <= 0 || maskHeight <= 0) continue;
+            const captionInk = new Uint8Array(maskWidth * maskHeight);
+            for (let row = 0; row < maskHeight; row += 1) {
+              for (let column = 0; column < maskWidth; column += 1) {
+                const offset = ((top + row) * width + left + column) * 4;
+                const low = Math.min(
+                  pixels.data[offset],
+                  pixels.data[offset + 1],
+                  pixels.data[offset + 2],
+                );
+                const high = Math.max(
+                  pixels.data[offset],
+                  pixels.data[offset + 1],
+                  pixels.data[offset + 2],
+                );
+                if (low < 175 || high - low > 28) continue;
+                for (let delta = -inkRadius; delta <= inkRadius; delta += 1) {
+                  const maskRow = row + delta;
+                  if (maskRow < 0 || maskRow >= maskHeight) continue;
+                  const reach = Math.floor(
+                    Math.sqrt(inkRadius ** 2 - delta ** 2),
+                  );
+                  captionInk.fill(
+                    1,
+                    maskRow * maskWidth + Math.max(0, column - reach),
+                    maskRow * maskWidth +
+                      Math.min(maskWidth, column + reach + 1),
+                  );
+                }
+              }
+            }
+            for (let row = 0; row < maskHeight; row += 1) {
+              for (let column = 0; column < maskWidth; column += 1) {
+                if (!captionInk[row * maskWidth + column]) continue;
+                const offset = ((top + row) * width + left + column) * 4;
+                pixels.data[offset + 3] = 0;
+              }
+            }
+          }
+          cleanPhoto = await sharp(pixels.data, { raw: pixels.info })
+            .png()
+            .toBuffer();
+        }
         const cutouts = await Promise.all(
-          entry.occlusions.map(async ([x, y, w, h]) => ({
+          (entry.occlusions ?? []).map(async ([x, y, w, h]) => ({
             left: Math.round(x * scale),
             top: Math.round(y * scale),
             input: await sharp({
@@ -846,8 +1464,25 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
             blend: "dest-out" as const,
           })),
         );
+        const photoCutouts: OverlayOptions[] = [...cutouts];
+        if (entry.circularOcclusions?.length) {
+          photoCutouts.push({
+            input: Buffer.from(
+              `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">${entry.circularOcclusions.map(([x, y, radius]) => `<circle cx="${x * scale}" cy="${y * scale}" r="${radius * scale}" fill="white"/>`).join("")}</svg>`,
+            ),
+            blend: "dest-out",
+          });
+        }
+        if (entry.photoRadius) {
+          photoCutouts.push({
+            input: Buffer.from(
+              `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="${width}" height="${height}" rx="${entry.photoRadius * scale}" fill="white"/></svg>`,
+            ),
+            blend: "dest-in",
+          });
+        }
         return sharp(cleanPhoto)
-          .composite(cutouts)
+          .composite(photoCutouts)
           .webp({ quality: 95 })
           .toBuffer();
       }

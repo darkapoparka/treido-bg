@@ -184,7 +184,12 @@ export function OnboardingPage({
   const [choice, setChoice] = useState("");
   const [permission, setPermission] = useState(false);
   if (params.get("step") === "splash" || params.get("step") === "signout")
-    return <ShopSplash newJourney={params.get("step") === "splash"} />;
+    return (
+      <ShopSplash
+        newJourney={params.get("step") === "splash"}
+        captured={params.get("reference") === "captured"}
+      />
+    );
   if (params.get("step") === "discover")
     return (
       <AccountPage dock={false} className="source-intro discover-intro">
@@ -236,7 +241,11 @@ export function OnboardingPage({
         <div className="intro-actions">
           <Link
             className="primary form-submit"
-            href="/login"
+            href={
+              params.get("reference") === "captured"
+                ? "/login?reference=captured&journey=new"
+                : "/login?journey=new"
+            }
             aria-label="Continue to sign in"
           >
             <img
@@ -310,7 +319,10 @@ export function OnboardingPage({
             className="primary form-submit"
             href={
               params.get("journey") === "new"
-                ? "/onboarding?step=discover"
+                ? "/onboarding?step=discover&journey=new" +
+                  (params.get("reference") === "captured"
+                    ? "&reference=captured"
+                    : "")
                 : params.get("reference") === "captured"
                   ? "/login?screen=track&reference=captured"
                   : "/login?screen=track"
@@ -386,7 +398,7 @@ export function OnboardingPage({
         {step > 0 && step < 3 && (
           <p>
             {step === 1
-              ? "We’ll show you brands and products that match your style and interests"
+              ? "We'll show you brands and products that match your style and interests"
               : step === 2
                 ? "Connect the email you use for online shopping to track your orders with Shop."
                 : "Get updates about your orders."}
@@ -394,7 +406,7 @@ export function OnboardingPage({
         )}
         {step === 1 && (
           <div className="onboarding-choices">
-            {["Men’s", "Women’s", "Everything"].map((c) => (
+            {["Men's", "Women's", "Everything"].map((c) => (
               <button
                 className="pill"
                 key={c}

@@ -30,6 +30,7 @@ import {
   searchStores,
 } from "./search-model";
 import { SearchLoading } from "./search-loading";
+import { JeansAnswer } from "./assistant";
 import { RecentSearchItems } from "./search-recent";
 import styles from "./search-entry.module.css";
 import "./search-loading.css";
@@ -57,9 +58,15 @@ export function Search({
   const inputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const state = useDiscovery();
+  const { viewAnswer } = state;
   const [draft, setDraft] = useState(query || initialQuery);
   const [draftQuery, setDraftQuery] = useState(query);
   const [filter, setFilter] = useState(false);
+  const [filterUnderlay, setFilterUnderlay] = useState<SearchFilters | null>(
+    null,
+  );
+  const answerTrigger = useRef<HTMLButtonElement>(null);
+  const answerEntry = useRef(false);
   const [focused, setFocused] = useState(false);
   const [photos, setPhotos] = useState(false);
   const [photo, setPhoto] = useState("");
@@ -105,11 +112,46 @@ export function Search({
   const suggestions = focused && !!draft.trim() && !photo;
   const photoEditing = !!photo && focused;
   const history = params.get("view") === "recent";
-  const filtered = hasSearchFilters(filters);
+  const visibleFilters = filter && filterUnderlay ? filterUnderlay : filters;
+  const filtered = hasSearchFilters(visibleFilters);
+  const jeansQuery = query.trim().toLowerCase() === "jeans";
+  const answerOpen = params.get("answer") === "jeans";
+  useEffect(() => {
+    if (answerOpen) viewAnswer("jeans");
+  }, [answerOpen, viewAnswer]);
   const showResults = !!query.trim() || filtered;
   const resultsMode = (showResults || pending) && !suggestions && !photo;
-  const results = searchProducts(catalog, query, filters, state.followed);
-  const stores = searchStores(catalog, query, filters, results).slice(0, 2);
+  const results = searchProducts(
+    catalog,
+    query,
+    visibleFilters,
+    state.followed,
+  );
+  if (jeansQuery && visibleFilters.sort === "Relevance") {
+    const rank = (id: string) =>
+      id === "carpenter-jeans" ? 0 : id === "heritage-jeans" ? 1 : 2;
+    results.sort((a, b) => rank(a.id) - rank(b.id));
+  }
+  const stores = searchStores(catalog, query, visibleFilters, results);
+  function openAnswer() {
+    const next = new URLSearchParams(params);
+    next.set("answer", "jeans");
+    answerEntry.current = true;
+    router.push(`/search?${next}`, { scroll: false });
+  }
+  function closeAnswer() {
+    if (answerEntry.current) router.back();
+    else {
+      const next = new URLSearchParams(params);
+      next.delete("answer");
+      router.replace(`/search${next.size ? `?${next}` : ""}`, {
+        scroll: false,
+      });
+    }
+    requestAnimationFrame(() =>
+      answerTrigger.current?.focus({ preventScroll: true }),
+    );
+  }
 
   function update(next: SearchFilters) {
     commitSheetQuery(searchParameters(query, next));
@@ -157,7 +199,7 @@ export function Search({
   const searchForm = (
     <form
       ref={formRef}
-      className={`search-form ${resultsMode ? "top-search" : "search-composer"} ${styles.composer} ${photo ? styles.photoComposer : ""}`}
+      className={`search-form ${resultsMode ? "top-search" : "search-composer"} ${styles.composer} ${photo ? styles.photoComposer : ""} ${resultsMode ? styles.resultComposer : ""}`}
       onSubmit={(e) => {
         e.preventDefault();
         if (!draft.trim() && !photo) return;
@@ -231,7 +273,7 @@ export function Search({
   );
   return (
     <ShopSurface
-      className={`shop-page search-page ${styles.page} ${suggestions ? "search-has-suggestions" : ""} ${history ? "search-history" : ""} ${photoEditing ? styles.photoEditing : ""} ${focused ? styles.keyboard : ""}`}
+      className={`shop-page search-page ${styles.page} ${suggestions ? "search-has-suggestions" : ""} ${history ? "search-history" : ""} ${photoEditing ? styles.photoEditing : ""} ${focused ? styles.keyboard : ""} ${resultsMode ? styles.resultsPage : ""}`}
     >
       {searchForm}
       {photoEditing && (
@@ -321,20 +363,19 @@ export function Search({
         </>
       ) : showResults ? (
         <>
-          {query.toLowerCase().includes("jeans") && (
-            <Link className="assistant-result-link" href="/assistant">
-              Jeans <span>View answer ›</span>
-            </Link>
-          )}
           <div className="filter-chips">
             <IconButton
-              icon="filter"
+              icon="filter-circles"
               label="Filter"
-              onClick={() => setFilter(true)}
+              pressed={filtered}
+              onClick={() => {
+                setFilterUnderlay(filters);
+                setFilter(true);
+              }}
             />
             <button
               className="pill"
-              aria-pressed={!!filters.origin}
+              aria-pressed={!!visibleFilters.origin}
               onClick={() =>
                 update({
                   ...filters,
@@ -342,18 +383,38 @@ export function Search({
                 })
               }
             >
-              Sells from US
+              Sells from
+              <svg
+                className={styles.countryFlag}
+                role="img"
+                aria-label="United States"
+                viewBox="0 0 19 12"
+              >
+                <path fill="#fff" d="M0 0h19v12H0z" />
+                <path
+                  stroke="#bc4558"
+                  strokeWidth="1.1"
+                  d="M0 .6h19M0 2.5h19M0 4.3h19M0 6.2h19M0 8h19M0 9.8h19M0 11.6h19"
+                />
+                <path fill="#52688b" d="M0 0h8v6.6H0z" />
+                <path
+                  stroke="#fff"
+                  strokeWidth=".5"
+                  strokeDasharray=".5 1.2"
+                  d="M1 1h6M1 2.5h6M1 4h6M1 5.5h6"
+                />
+              </svg>
             </button>
             <button
               className="pill"
-              aria-pressed={filters.deals}
+              aria-pressed={visibleFilters.deals}
               onClick={() => update({ ...filters, deals: !filters.deals })}
             >
               Your deals
             </button>
             <button
               className="pill"
-              aria-pressed={filters.following}
+              aria-pressed={visibleFilters.following}
               onClick={() =>
                 update({ ...filters, following: !filters.following })
               }
@@ -387,6 +448,9 @@ export function Search({
                               .join("")}
                       </span>
                     )}
+                    {store.id === "fitjeans" && (
+                      <span className={styles.storeDeal}>Save $30</span>
+                    )}
                     <strong>{store.name}</strong>
                     {store.rating !== undefined && (
                       <span>
@@ -401,7 +465,7 @@ export function Search({
           )}
           <div className="search-results">
             {results.map((p) => (
-              <article className="result-row" key={p.id}>
+              <article className="result-row" key={p.id} data-result-id={p.id}>
                 <div className="product-media">
                   <Link href={`/products/${p.id}`}>
                     <img src={p.images[0]} alt={p.title} />
@@ -421,9 +485,30 @@ export function Search({
                     {formatMoney(p.price)}{" "}
                     {p.compareAt && <del>{formatMoney(p.compareAt)}</del>}
                   </p>
-                  <Link className="result-store" href={`/stores/${p.storeId}`}>
-                    {catalog.stores.find((s) => s.id === p.storeId)?.name}
-                  </Link>
+                  <div className={styles.resultMerchant}>
+                    <Link
+                      className="result-store"
+                      href={`/stores/${p.storeId}`}
+                    >
+                      {catalog.stores.find((s) => s.id === p.storeId)?.logo && (
+                        <img
+                          src={
+                            catalog.stores.find((s) => s.id === p.storeId)!.logo
+                          }
+                          alt=""
+                        />
+                      )}
+                      {catalog.stores.find((s) => s.id === p.storeId)?.name}
+                    </Link>
+                    {p.storeId === "fashion-nova" && (
+                      <span>
+                        4.3 ★ <span className={styles.muted}>(428.8K)</span>
+                      </span>
+                    )}
+                    {p.promotion && (
+                      <span className={styles.resultDeal}>{p.promotion}</span>
+                    )}
+                  </div>
                 </div>
               </article>
             ))}
@@ -440,6 +525,53 @@ export function Search({
               </div>
             )}
           </div>
+          {jeansQuery && (
+            <>
+              <section className={styles.relatedSearches}>
+                <h2>Related searches</h2>
+                <div>
+                  {[
+                    "light wash jeans",
+                    "jeans with pockets",
+                    "girl’s ripped jeans",
+                    "plus size jeans",
+                    "bootcut jeans",
+                    "women’s skinny jeans",
+                  ].map((suggestion) => (
+                    <Link
+                      key={suggestion}
+                      href={`/search?q=${encodeURIComponent(suggestion)}`}
+                    >
+                      <Icon name="search" />
+                      {suggestion}
+                    </Link>
+                  ))}
+                </div>
+              </section>
+              <button
+                ref={answerTrigger}
+                type="button"
+                className={styles.answerTeaser}
+                onClick={openAnswer}
+                aria-label="View answer for Jeans"
+              >
+                <span className={styles.answerThumbnails}>
+                  <img
+                    src="/api/reference-media/assistant-black-square"
+                    alt=""
+                  />
+                  <img
+                    src="/api/reference-media/assistant-white-square"
+                    alt=""
+                  />
+                </span>
+                <span>
+                  From everyday straight legs to bold, vintage-inspired...{" "}
+                  <span className={styles.answerMore}>View more ›</span>
+                </span>
+              </button>
+            </>
+          )}
         </>
       ) : (
         <>
@@ -450,18 +582,28 @@ export function Search({
             </h2>
           </Link>
           <RecentSearchItems catalog={catalog} />
-          <section className="keep-shopping">
-            <h2>Keep shopping ›</h2>
-            <Link href="/assistant">
-              <div>
-                <img src="/api/reference-media/assistant-white" alt="" />
-                <img src="/api/reference-media/assistant-black" alt="" />
-              </div>
-              <span>
-                Finding the right pair of jeans<small>Jul 24</small>
-              </span>
-            </Link>
-          </section>
+          {state.viewedAnswers.includes("jeans") && (
+            <section className={`keep-shopping ${styles.conversations}`}>
+              <Link className={styles.conversationHeading} href="/assistant">
+                <h2>
+                  Keep shopping <Icon name="back" />
+                </h2>
+              </Link>
+              <Link
+                className={styles.conversation}
+                href="/assistant"
+                aria-label="Continue Finding the right pair of jeans"
+              >
+                <img
+                  src="/api/reference-media/recent-jeans-conversation"
+                  alt=""
+                />
+                <span>
+                  Finding the right pair of jeans<small>Just now</small>
+                </span>
+              </Link>
+            </section>
+          )}
         </>
       )}
       <Sheet
@@ -524,6 +666,17 @@ export function Search({
       {!suggestions && !photoEditing && !focused && (
         <FloatingNav back={showResults || history || pending} />
       )}
+      <Sheet
+        open={answerOpen}
+        title="Jeans answer"
+        headerless
+        className={styles.answerSheet}
+        onClose={closeAnswer}
+        manageHistory={false}
+        initialFocus="[data-answer-heading]"
+      >
+        <JeansAnswer catalog={catalog} onClose={closeAnswer} />
+      </Sheet>
       <Filters
         open={filter}
         onClose={() => setFilter(false)}

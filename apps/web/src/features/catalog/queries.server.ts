@@ -1,7 +1,9 @@
 import "server-only";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
+import { setTimeout as delay } from "node:timers/promises";
+import { referenceCatalogDelay } from "./reference/replay-delay";
 import {
   referenceScenarioCookie,
   resolveReferenceScenario,
@@ -17,13 +19,19 @@ export async function readCatalog(): Promise<Catalog> {
   await connection();
   // No automatic mock fallback: until Task 4, the isolated preview is opt-in.
   if (!referencePreviewEnabled()) notFound();
+  const replayDelay = referenceCatalogDelay(
+    await headers(),
+    referencePreviewEnabled(),
+  );
+  if (replayDelay) await delay(replayDelay);
   const [
     { referenceCatalog },
     { followingProducts },
     { savedProducts, savedStores, savedListings },
     { storeProducts, storefrontProjection },
-    { detailProducts },
+    { detailProducts, productDetailProjection },
     { solSavedListings },
+    { orderProducts, orderStores },
   ] = await Promise.all([
     import("./reference/catalog"),
     import("./reference/following-fixtures"),
@@ -31,20 +39,25 @@ export async function readCatalog(): Promise<Catalog> {
     import("./reference/store-fixtures"),
     import("./reference/detail-fixtures"),
     import("./reference/sol-fixtures"),
+    import("./reference/order-fixtures"),
   ]);
   const scenarioName = (await cookies()).get(referenceScenarioCookie)?.value;
   const scenario = resolveReferenceScenario(scenarioName);
   const catalog: Catalog = {
     ...referenceCatalog,
-    products: [
-      ...referenceCatalog.products,
-      ...followingProducts,
-      ...savedProducts,
-      ...storeProducts,
-      ...detailProducts,
-    ],
+    products: productDetailProjection(
+      [
+        ...referenceCatalog.products,
+        ...followingProducts,
+        ...savedProducts,
+        ...storeProducts,
+        ...detailProducts,
+        ...orderProducts,
+      ],
+      scenario ? scenarioName : undefined,
+    ),
     stores: storefrontProjection(
-      [...referenceCatalog.stores, ...savedStores],
+      [...referenceCatalog.stores, ...savedStores, ...orderStores],
       scenario ? scenarioName : undefined,
     ),
     savedListings: [...savedListings, ...solSavedListings],

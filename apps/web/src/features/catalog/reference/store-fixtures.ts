@@ -5,6 +5,22 @@ import type { Product, Store } from "../types";
 // The allowlisted image preserves only the visible product packaging, not UI.
 export const storeProducts: readonly Product[] = [
   {
+    // Flow 15/001 records this truncated title, price and promotion only.
+    // The missing original price, photograph remainder and inventory stay unknown.
+    id: "chemical-deep-partial",
+    title: "Deep Clea…",
+    storeId: "chemical-guys",
+    category: "Kits",
+    images: ["/api/reference-media/chemical-store-deep-partial"],
+    price: { amount: 5199, currency: "USD" },
+    promotion: "15% off",
+    ratingCount: "",
+    description:
+      "Only the beginning of this product title and photograph were captured. Its full name, original price, variants and availability are unknown.",
+    saleUnit: "package",
+    variants: [],
+  },
+  {
     id: "sugar-scrub",
     title: "Exfoliating Sugar Body Scrub Bar",
     storeId: "kitsch",
@@ -25,6 +41,28 @@ export function storefrontProjection(
   stores: readonly Store[],
   scenario: string | undefined,
 ): readonly Store[] {
+  // The collection-saving recording independently advances the rating count.
+  // Its product offer label does not rewrite store savings or cart pricing.
+  if (scenario === "kitsch-product-saving-offer") {
+    return stores.map((store) =>
+      store.id === "kitsch" ? { ...store, ratingCount: "195.2K" } : store,
+    );
+  }
+  if (
+    scenario === "kitsch-product-arrival" ||
+    scenario === "kitsch-product-settled"
+  ) {
+    return stores.map((store) =>
+      store.id === "kitsch"
+        ? {
+            ...store,
+            promotionSavings: scenario === "kitsch-product-arrival" ? 15 : 20,
+            ratingCount:
+              scenario === "kitsch-product-arrival" ? "194.9K" : "195K",
+          }
+        : store,
+    );
+  }
   // The returning source also changes its cart and hero photograph. Do not
   // fabricate those as side effects of pressing Follow: replay this explicitly
   // as the existing following-pair session. The hero mismatch remains open.

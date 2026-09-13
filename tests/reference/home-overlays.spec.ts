@@ -1,4 +1,5 @@
 import { test, expect, type Locator } from "@playwright/test";
+import { useReferenceScenario } from "./helpers";
 
 async function settled(dialog: Locator) {
   await expect(dialog).toBeVisible();
@@ -178,4 +179,75 @@ test("the returning campaign uses six real product cards and preserves saving", 
       ),
     ).toBe(true);
   }
+});
+
+test("the captured Pura context preserves its continuation, actual hide/Undo and an empty Cart", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "home-pura-options");
+  await page.goto("/?feed=pura-options");
+  const campaigns = page.locator(".home-campaigns > .home-campaign");
+  await expect(campaigns).toHaveCount(2);
+  await expect(campaigns.nth(0)).toHaveAccessibleName("Pura campaign");
+  await expect(campaigns.nth(1)).toHaveAccessibleName("DRMTLGY campaign");
+  await page
+    .getByRole("button", { name: "More options for Pura", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Not interested", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Want to see less of Pura", exact: true })
+    .click();
+  const undo = campaigns
+    .nth(0)
+    .getByRole("button", { name: "Undo", exact: true });
+  await expect(undo).toBeVisible();
+  await expect(campaigns.nth(0).locator(".campaign-art")).toHaveAttribute(
+    "inert",
+    "",
+  );
+  await page.getByRole("button", { name: "Open cart", exact: true }).click();
+  const cart = page.getByRole("dialog", { name: "Your cart", exact: true });
+  await expect(
+    cart.getByRole("heading", { name: "Your cart is empty", exact: true }),
+  ).toBeVisible();
+  await page.goBack();
+  await expect(cart).not.toBeVisible();
+  await expect(undo).toBeVisible();
+  await undo.click();
+  await expect(
+    campaigns
+      .nth(0)
+      .getByRole("button", { name: "More options for Pura", exact: true }),
+  ).toBeVisible();
+  await expect(campaigns.nth(1)).toHaveAccessibleName("DRMTLGY campaign");
+});
+
+test("the shared Kitsch continuation contains only Carpe's captured identity and artwork", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "home-welcome");
+  await page.goto("/");
+  const carpe = page.locator(".campaign-kitsch + .campaign-carpe");
+  await expect(carpe).toHaveAccessibleName("Carpe campaign");
+  await expect(carpe.locator(".campaign-brand")).toHaveAttribute(
+    "href",
+    "/stores/carpe",
+  );
+  await expect(carpe.locator(".campaign-brand img")).toHaveAttribute(
+    "src",
+    "/api/reference-media/home-carpe-wordmark",
+  );
+  await expect(
+    carpe.locator(".campaign-product, .campaign-rating, .campaign-price"),
+  ).toHaveCount(0);
+  await carpe
+    .getByRole("button", { name: "More options for Carpe", exact: true })
+    .click();
+  const options = page.getByRole("dialog", { name: "Carpe", exact: true });
+  await options.getByRole("button", { name: "Follow", exact: true }).click();
+  await expect(
+    options.getByRole("button", { name: "Following", exact: true }),
+  ).toBeVisible();
 });

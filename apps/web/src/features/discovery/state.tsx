@@ -23,6 +23,8 @@ export type ViewedItem = {
 type State = {
   recentActivity: "products" | "stores" | "minis" | null;
   viewedItems: ViewedItem[];
+  viewedAnswers: "jeans"[];
+  viewAnswer: (id: "jeans") => void;
   viewStore: (id: string) => void;
   removeViewed: (kind: ViewedItem["kind"], id: string) => void;
   reportedProducts: string[];
@@ -53,6 +55,7 @@ export type DiscoverySeed = Partial<
     State,
     | "recentActivity"
     | "viewedItems"
+    | "viewedAnswers"
     | "viewedProducts"
     | "visitedMinis"
     | "reportedProducts"
@@ -86,6 +89,16 @@ export function DiscoveryProvider({
         id,
       })),
   );
+  const [viewedAnswers, setViewedAnswers] = useState<"jeans"[]>(
+    () => initial?.viewedAnswers ?? [],
+  );
+  const viewAnswer = useCallback((id: "jeans") => {
+    setViewedAnswers((answers) =>
+      answers[0] === id
+        ? answers
+        : [id, ...answers.filter((answer) => answer !== id)],
+    );
+  }, []);
   const viewStore = useCallback((id: string) => {
     setRecentActivity("stores");
     setViewedItems((v) =>
@@ -133,6 +146,8 @@ export function DiscoveryProvider({
         saved,
         viewedProducts,
         viewedItems,
+        viewedAnswers,
+        viewAnswer,
         viewStore,
         removeViewed: (kind, id) => {
           setViewedItems((v) =>

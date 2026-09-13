@@ -348,7 +348,7 @@
   gap: 10px;
   font-size: 14px;
   line-height: 20px;
-  margin: 0 0 12px;
+  margin: 0 0 8px;
   padding: 0;
 }
 .collection-person {
@@ -368,7 +368,7 @@
   font-size: 12px;
 }
 .collection-person > svg {
-  margin-left: -6px;
+  margin-left: -12px;
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -782,8 +782,17 @@
   color: #fff;
 }
 .featured-kitsch .kitsch-wordmark {
-  width: 104px;
-  height: 26px;
+  width: 92px;
+  height: 24px;
+}
+.saved-collection:has(.invite-collaborators) .saved-heading {
+  min-height: 34px;
+}
+.saved-collection:has(.invite-collaborators) .saved-grid {
+  row-gap: 18px;
+}
+.saved-collection:has(.invite-collaborators) > .featured-heading {
+  margin-top: 24px;
 }
 .saved-selection .saved-heading h1:not(.sr-only) {
   transform: translateY(-6px);

@@ -28,11 +28,104 @@ const offer = {
   name: /exclusive offer/,
 };
 
-// Twenty app-owned checkpoints, not twenty accepted screens. The original
+// App-owned checkpoints, not accepted screens. The original
 // sequence contains changed products and promotion histories; those differences
-// remain explicit. Flow 17's nine detail/variant checkpoints are still pending,
-// including the unrelated apparel listing: never substitute Shea for that dress.
+// remain explicit. Named entries retain the source's unrelated apparel and bag
+// snapshots without inventing navigation from the Shea product to those items.
 export const productRecipes = {
+  17: {
+    family: "product-detail",
+    owner,
+    startUrl: "/stores/kitsch",
+    scenario: "kitsch-product-arrival",
+    frames: [
+      {
+        state: "store-all-products-before-shea",
+        notes:
+          "The initial source has no compact coupon strip or side cart. This named $15 snapshot retains the real store-to-product transition without asserting its unrecorded Follow state.",
+        actions: [
+          { type: "waitVisible", selector: "#all-products" },
+          anchor(".store-grid-heading", 79),
+        ],
+      },
+      {
+        state: "shea-first-arrival",
+        actions: [
+          {
+            type: "clickSelector",
+            selector: '#all-products a[href="/products/shea-butter"]',
+          },
+          sheaHeading,
+          top,
+          { type: "waitVisible", selector: ".product-price-alert-tip" },
+        ],
+        notes:
+          "Actual prior-store history shows the save tip on the first product visit. This captured entry retains Save15 and 194.9K even after the tip expires; no timer or action changes the offer.",
+      },
+      {
+        ...productTop(),
+        state: "shea-settled-detail",
+        entry: { startUrl: shea, scenario: "kitsch-product-settled" },
+        notes:
+          "The recording changes both Save15/194.9K to Save20/195K between frames002 and003 without showing the cause. This distinct named snapshot does not attribute that change to tip dismissal. The following gallery gesture remains in this entry.",
+        actions: [
+          sheaHeading,
+          {
+            type: "waitVisible",
+            selector: '.product-page[data-price-tip="dismissed"]',
+          },
+          top,
+        ],
+      },
+      {
+        state: "shea-benefits-photo-in-inline-gallery",
+        actions: [
+          { type: "scrollElement", selector: ".product-gallery", x: 738 },
+        ],
+      },
+      {
+        state: "captured-midi-shirtdress-variants",
+        entry: {
+          startUrl: "/products/midi-shirtdress",
+          scenario: "home-welcome",
+        },
+        actions: [
+          visible(
+            "heading",
+            "Midi Shirtdress in Ultrasoft Cotton | Estate Blue/Open Air/White",
+          ),
+          top,
+        ],
+        notes:
+          "The source changes seller/product without showing a transition. Preserve this distinct captured detail and its unknown seller/photo boundary.",
+      },
+      {
+        state: "shea-purchase-options-description-and-reviews",
+        entry: { startUrl: shea, scenario: "home-welcome" },
+        actions: [sheaHeading, quantity],
+      },
+      {
+        state: "bag-purchase-description-and-reviews",
+        entry: { startUrl: bag, scenario: "home-welcome" },
+        actions: [visible("heading", "Shampoo Bar Bag"), quantity],
+      },
+      {
+        state: "shea-store-card-and-recommendations",
+        entry: { startUrl: shea, scenario: "home-welcome" },
+        actions: [sheaHeading, anchor(".pdp-store-card", 14)],
+      },
+      {
+        state: "bag-delivery-store-and-recommendations",
+        entry: { startUrl: bag, scenario: "home-welcome" },
+        actions: [
+          visible("heading", "Shampoo Bar Bag"),
+          anchor(".pdp-delivery", 20),
+        ],
+        notes:
+          "Captured following/cart/promotion history remains visible in comparisons; entry does not fabricate a purchase or a follow.",
+      },
+    ],
+  },
   18: {
     family: "product-gallery",
     owner,
@@ -61,15 +154,18 @@ export const productRecipes = {
     family: "product-saving",
     owner,
     startUrl: shea,
-    scenario: "home-welcome",
+    scenario: "kitsch-product-settled",
     frames: [
       productTop(),
       {
         state: "shea-saved-collection-picker",
         overlay: "dialog",
+        entry: { startUrl: shea, scenario: "kitsch-product-saving-offer" },
         notes:
-          "The source also changes to a 20%-off promotion and adds an arrival estimate. Saving must not fabricate a promotion change; those catalog differences remain visible in the comparison.",
+          "Frame002 changes the catalog to 195.2K, a Sun Aug2 arrival estimate and a 20%-off checkout offer without showing the cause. This explicit later snapshot precedes the real Save action; saving does not change the offer, delivery label or cart math. Frame003 continues this same entry.",
         actions: [
+          sheaHeading,
+          top,
           click("button", "Save product"),
           visible("dialog", "Save to collection"),
         ],

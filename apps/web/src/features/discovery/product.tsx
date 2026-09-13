@@ -3,7 +3,7 @@ import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { ProductOptions } from "./reviews";
 import { ReviewStars } from "./review-feedback";
 import { moveProductPhoto, productPhotoSwipe } from "./product-gallery";
@@ -56,8 +56,42 @@ export function ProductDetail({
     [toast, setToast] = useState(false),
     [subscription, setSubscription] = useState(false);
   const [postalCode, setPostalCode] = useState("94025");
+  const [priceAlertTip, setPriceAlertTip] = useState(
+    () =>
+      !state.viewedProducts.includes(product.id) &&
+      !state.saved.includes(product.id) &&
+      state.viewedItems[0]?.kind === "store" &&
+      state.viewedItems[0]?.id === product.storeId,
+  );
+  useEffect(() => {
+    if (!priceAlertTip) return;
+    const timer = setTimeout(() => setPriceAlertTip(false), 5000);
+    return () => clearTimeout(timer);
+  }, [priceAlertTip]);
   const addition = useProductAddition();
   const galleryRail = useRef<HTMLDivElement>(null);
+  const productUnderlay = useRef<HTMLDivElement>(null);
+  const [cartPresentation, setCartPresentation] = useState<{
+    scrollY: number;
+    peekScroll: number;
+    documentHeight: number;
+    pathname: string;
+  } | null>(null);
+  useLayoutEffect(() => {
+    if (!cart || !cartPresentation || !productUnderlay.current) return;
+    const underlay = productUnderlay.current;
+    underlay.scrollTop = cartPresentation.peekScroll;
+    return () => {
+      underlay.scrollTop = 0;
+      requestAnimationFrame(() => {
+        if (window.location.pathname === cartPresentation.pathname)
+          window.scrollTo({
+            top: cartPresentation.scrollY,
+            behavior: "instant",
+          });
+      });
+    };
+  }, [cart, cartPresentation]);
   const photoGesture = useRef<{ pointer: number; x: number; y: number } | null>(
     null,
   );
@@ -70,6 +104,7 @@ export function ProductDetail({
       product.variants.find((v) => v.id === variant) ?? product.variants[0];
   const shea = product.id === "shea-butter",
     bag = product.id === "shampoo-bag";
+  const capturedSpendOffer = `Save $${store?.promotionSavings ?? 20} when you spend $50`;
   const photos = shea
     ? [
         "/api/reference-media/shea-gallery-hero",
@@ -103,6 +138,19 @@ export function ProductDetail({
     setAdded(true);
     if (showFeedback && bag) setOfferPending(true);
   }
+  function showCart() {
+    // The source retains the bottom of the shopper's visible product viewport
+    // above the cart. Keep that same DOM and restore the original scroll on exit.
+    const underlayTop =
+      productUnderlay.current?.getBoundingClientRect().top ?? 0;
+    setCartPresentation({
+      scrollY: window.scrollY,
+      peekScroll: Math.max(0, window.innerHeight - 196 - underlayTop),
+      documentHeight: document.documentElement.scrollHeight,
+      pathname: window.location.pathname,
+    });
+    setCart(true);
+  }
   function openCart() {
     // The recording leaves the product interactive after its flight/confirmation.
     // Open the pending offer through a real cart action, not an invented network
@@ -113,7 +161,7 @@ export function ProductDetail({
     ) {
       setOfferPending(false);
       setOffer(true);
-    } else setCart(true);
+    } else showCart();
   }
   function buy() {
     if (!selected?.availableQuantity) return;
@@ -223,6 +271,15 @@ export function ProductDetail({
   return (
     <ShopSurface
       className={`shop-page product-page ${cart ? "cart-visible" : ""} ${photos.length ? "" : styles.detailsOnly}`}
+      data-price-tip={priceAlertTip ? "visible" : "dismissed"}
+      onPointerDownCapture={() => {
+        if (priceAlertTip) setPriceAlertTip(false);
+      }}
+      style={
+        cart && cartPresentation
+          ? { minHeight: cartPresentation.documentHeight }
+          : undefined
+      }
     >
       <ProductAdditionFlight flight={addition.flight} />
       <span className="sr-only" aria-live="polite">
@@ -233,7 +290,7 @@ export function ProductDetail({
           {addition.announcement}
         </span>
       </span>
-      <div className="product-underlay">
+      <div className="product-underlay" ref={productUnderlay}>
         {store && <StoreRow store={store} onMore={() => setOptions(true)} />}
         {photos.length > 0 && (
           <div className="product-gallery" ref={galleryRail}>
@@ -256,6 +313,7 @@ export function ProductDetail({
               label="Save product"
               pressed={state.saved.includes(product.id)}
               onClick={() => {
+                setPriceAlertTip(false);
                 if (!state.saved.includes(product.id))
                   state.toggleSaved(product.id);
                 setToast(false);
@@ -274,6 +332,13 @@ export function ProductDetail({
                 }
               }}
             />
+            {priceAlertTip && (
+              <p className="product-price-alert-tip" role="note">
+                Get alerts for price drops
+                <br />
+                on saved items
+              </p>
+            )}
           </div>
           {product.rating !== undefined && (
             <button
@@ -314,10 +379,12 @@ export function ProductDetail({
             >
               <img src="/api/reference-media/deal-tag" alt="" />
               <span>
-                <strong>
-                  {shea || bag
-                    ? "Save $20 when you spend $50"
-                    : product.promotion}
+                <strong
+                  className={
+                    product.promotion ? styles.promotionTitle : undefined
+                  }
+                >
+                  {product.promotion ?? capturedSpendOffer}
                 </strong>
                 <span>
                   {product.detail?.promotionTerms ?? "Exclusive to Shop"}
@@ -377,8 +444,9 @@ export function ProductDetail({
                 <label>
                   <span>
                     <strong>One time purchase</strong>
-                    <br />
-                    {formatMoney(product.price)}
+                    <span className="purchase-mode-price">
+                      {formatMoney(product.price)}
+                    </span>
                   </span>
                   <input
                     type="radio"
@@ -411,8 +479,9 @@ export function ProductDetail({
                     <strong>
                       Subscribe & save <small>Save 25%</small>
                     </strong>
-                    <br />
-                    $10.50 <del>$14.00</del>
+                    <span className="purchase-mode-price">
+                      $10.50 <del>$14.00</del>
+                    </span>
                   </span>
                   <input
                     type="radio"
@@ -480,7 +549,7 @@ export function ProductDetail({
             </button>
           )}
           <section
-            className={`pdp-description${bag ? " pdp-description-bag" : ""}`}
+            className={`pdp-description${bag ? " pdp-description-bag" : shea ? " pdp-description-shea" : ""}`}
           >
             <h2>Description</h2>
             {descriptionPreview.map((paragraph, index) => (
@@ -500,15 +569,22 @@ export function ProductDetail({
               productId={product.id}
               rating={product.rating ?? 4.6}
               ratingCount={shea ? "3.3K" : "3.8K"}
-              distribution={[80, 9, 5, 2, 1]}
+              distribution={shea ? [80, 9, 5, 3, 3] : [80, 9, 5, 3, 5]}
               reviews={
                 shea
                   ? [
                       {
-                        title: "Girlfriend loves it and I can breathe.",
+                        title: "Girlfriend loves it and I can breathe .",
                         rating: 5,
+                        author: "Wes",
+                        date: "13 days ago",
                       },
-                      { title: "How much I love your product", rating: 5 },
+                      {
+                        title: "How much I love your product",
+                        rating: 5,
+                        author: "Juanita",
+                        date: "18 days ago",
+                      },
                     ]
                   : [
                       {
@@ -817,7 +893,9 @@ export function ProductDetail({
         open={!!detail}
         title={detail}
         className={
-          detail === "Description" ? "product-description-sheet" : undefined
+          detail === "Description"
+            ? `product-description-sheet${shea ? " shea-description-sheet" : ""}`
+            : undefined
         }
         onClose={() => setDetail("")}
       >
@@ -828,8 +906,8 @@ export function ProductDetail({
                 <>
                   <ul>
                     <li>
-                      Super-hydrating formula moisturizes your skin (you won’t
-                      even need body lotion post-shower!)
+                      Super-hydrating formula moisturizes your skin (you
+                      won&apos;t even need body lotion post-shower!)
                     </li>
                     <li>
                       Small plant-derived exfoliants gently exfoliate to reveal
@@ -865,7 +943,7 @@ export function ProductDetail({
           ) : detail === "Offer details" ? (
             <p>
               {shea || bag
-                ? "Save $20 when you spend $50. Exclusive to Shop. This is a reference offer."
+                ? `${product.promotion ?? capturedSpendOffer}. ${product.detail?.promotionTerms ?? "Exclusive to Shop"}. This is a reference offer.`
                 : `${product.promotion ?? "No offer was captured."} ${product.detail?.promotionTerms ?? ""}`}
             </p>
           ) : detail === "Checkout preview" ? (

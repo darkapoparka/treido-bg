@@ -11,14 +11,17 @@ export async function GET(
     { readSavedMedia },
     { readStoreMedia },
     { readSolMedia },
+    { readOrderMedia },
   ] = await Promise.all([
     import("@/features/catalog/reference/media.server"),
     import("@/features/catalog/reference/following-media.server"),
     import("@/features/catalog/reference/saved-media.server"),
     import("@/features/catalog/reference/store-media.server"),
     import("@/features/catalog/reference/sol-media.server"),
+    import("@/features/catalog/reference/order-media.server"),
   ]);
   const media =
+    readOrderMedia(key) ??
     readSolMedia(key) ??
     readStoreMedia(key) ??
     readSavedMedia(key) ??

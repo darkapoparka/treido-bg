@@ -7,12 +7,21 @@ import { KitschWordmark } from "./kitsch-wordmark";
 import { useDiscovery } from "./state";
 import styles from "./search-entry.module.css";
 
+const recentCover: Record<string, string> = {
+  kitsch: "recent-kitsch-cover",
+  pura: "recent-pura-cover",
+  drmtlgy: "recent-drmtlgy-photo",
+  "loaded-tea": "recent-loaded-logo",
+};
+
 export function RecentSearchItems({
   catalog,
   expanded = false,
+  limit,
 }: {
   catalog: Catalog;
   expanded?: boolean;
+  limit?: number;
 }) {
   const state = useDiscovery();
   const items = state.viewedItems.flatMap((item) => {
@@ -42,7 +51,7 @@ export function RecentSearchItems({
           : `product-rail ${styles.recent}`
       }
     >
-      {items.map(({ item, product, store }) => (
+      {items.slice(0, limit).map(({ item, product, store }) => (
         <div
           key={`${item.kind}:${item.id}`}
           className={styles.item}
@@ -51,31 +60,39 @@ export function RecentSearchItems({
         >
           {product ? (
             <ProductCard
-              product={{ ...product, promotion: item.promotion }}
+              product={{
+                ...product,
+                promotion: item.promotion,
+                images:
+                  product.id === "terracotta"
+                    ? ["/api/reference-media/recent-terracotta-photo"]
+                    : product.images,
+              }}
               compact
             />
           ) : store ? (
             <Link
-              className={styles.store}
+              className={`${styles.store} ${recentCover[store.id] ? styles.capturedStore : ""} ${store.id === "loaded-tea" ? styles.logoStore : ""} ${store.id === "drmtlgy" ? styles.partialStore : ""}`}
+              data-recent-store={store.id}
               href={`/stores/${store.id}`}
               aria-label={`Visit ${store.name}`}
             >
-              <img
-                src={
-                  store.id === "kitsch"
-                    ? (catalog.products.find(
-                        (value) => value.id === "rice-conditioner",
-                      )?.images[0] ??
-                      store.coverImage ??
-                      store.logo)
-                    : store.coverImage || store.logo
-                }
-                alt=""
-              />
-              <span className={styles.wordmark} aria-hidden="true">
-                {store.id === "kitsch" ? <KitschWordmark /> : store.name}
-              </span>
-              {item.promotion && (
+              {(recentCover[store.id] || store.coverImage || store.logo) && (
+                <img
+                  src={
+                    recentCover[store.id]
+                      ? `/api/reference-media/${recentCover[store.id]}`
+                      : store.coverImage || store.logo
+                  }
+                  alt=""
+                />
+              )}
+              {(!recentCover[store.id] || store.id === "drmtlgy") && (
+                <span className={styles.wordmark} aria-hidden="true">
+                  {store.id === "kitsch" ? <KitschWordmark /> : store.name}
+                </span>
+              )}
+              {!expanded && item.promotion && (
                 <span className="price-badge deal">{item.promotion}</span>
               )}
             </Link>

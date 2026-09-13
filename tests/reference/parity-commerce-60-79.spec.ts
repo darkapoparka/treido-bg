@@ -79,8 +79,15 @@ test("flows 62, 66, and 67 preserve order actions, archive, and local review edi
   await page
     .getByRole("button", { name: "Order options", exact: true })
     .click();
+  await page.context().grantPermissions(["clipboard-read", "clipboard-write"], {
+    origin: new URL(page.url()).origin,
+  });
+  await page.bringToFront();
   await page.getByRole("button", { name: "Copy order number" }).click();
   await expect(page.getByRole("status")).toContainText("Order number copied");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    "12748251",
+  );
   await page
     .getByRole("button", { name: "Order options", exact: true })
     .click();
@@ -132,7 +139,11 @@ test("flows 68 and 79 create a manual package and retain source order-history co
   await expect(
     page.getByText("Loose Fit Printed T-Shirt", { exact: true }).first(),
   ).toBeVisible();
-  await page.goto("/orders/history");
+  await page.getByRole("link", { name: "Home", exact: true }).click();
+  await page.getByRole("link", { name: "Profile", exact: true }).click();
+  await page
+    .getByRole("link", { name: "Order history ›", exact: true })
+    .click();
   await expect(
     page.getByRole("heading", { name: "Order history" }),
   ).toBeVisible();
@@ -177,4 +188,31 @@ test("flow 63 marks a manually tracked DHL package delivered without a carrier s
   await expect(
     page.getByRole("button", { name: "Unmark as delivered" }),
   ).toBeVisible();
+});
+
+test("copying an order number exposes the number when clipboard access is rejected", async ({
+  page,
+}) => {
+  // Exercise the browser API rejection branch deterministically. The success
+  // journey above uses the real clipboard with origin-scoped permissions.
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator.clipboard, "writeText", {
+      configurable: true,
+      value: async () => {
+        throw new DOMException("Clipboard access denied", "NotAllowedError");
+      },
+    });
+  });
+  await page.goto("/orders/REF-1001?state=waiting");
+  await page
+    .getByRole("button", { name: "Order options", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Copy order number", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toHaveText("Order number: 12748251");
+  await expect(page.getByRole("status")).not.toContainText("copied");
+  await expect(
+    page.getByRole("dialog", { name: "Your order", exact: true }),
+  ).not.toBeVisible();
 });

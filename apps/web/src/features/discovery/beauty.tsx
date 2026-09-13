@@ -10,7 +10,8 @@ const brands = [
     mark: "Athena",
     rating: "4.8",
     count: "7.9K",
-    image: "beauty-athena-product",
+    image: "beauty-athena-card-photo",
+    artwork: "beauty-athena-header",
     deal: "Save $5",
     color: "#777775",
   },
@@ -19,7 +20,8 @@ const brands = [
     mark: "CROWN AFFAIR",
     rating: "4.8",
     count: "11K",
-    image: "beauty-crown-product",
+    image: "beauty-crown-card-photo",
+    artwork: "beauty-crown-header",
     deal: "",
     color: "#64563d",
   },
@@ -28,7 +30,8 @@ const brands = [
     mark: "STARFACE",
     rating: "4.6",
     count: "21.4K",
-    image: "beauty-starface-product",
+    image: "beauty-starface-card-photo",
+    artwork: "beauty-starface-header",
     deal: "",
     color: "#c990a4",
   },
@@ -37,7 +40,8 @@ const brands = [
     mark: "Nécessaire",
     rating: "4.6",
     count: "20.5K",
-    image: "beauty-necessaire-product",
+    image: "beauty-necessaire-card-photo",
+    artwork: "beauty-necessaire-header",
     deal: "Save $20",
     color: "#bcbcb9",
   },
@@ -71,7 +75,7 @@ export function BeautySections({ catalog }: { catalog: Catalog }) {
       <Editorial
         title="Skincare starter set"
         copy="Moisturizers, spot patches, and invisible SPF."
-        image="beauty-starter-upper"
+        image="beauty-starter-photo"
       />
       <section className="beauty-section">
         <h2>Scent &amp; body</h2>
@@ -87,8 +91,18 @@ export function BeautySections({ catalog }: { catalog: Catalog }) {
               style={{ background: color }}
               href={`/search?q=${encodeURIComponent(title)}`}
             >
-              <img src={`/api/reference-media/beauty-${key}`} alt="" />
-              <strong>{title}</strong>
+              <img src={`/api/reference-media/beauty-${key}-photo`} alt="" />
+              <strong>
+                {key === "hair" ? (
+                  <>
+                    Shampoo &amp;
+                    <br />
+                    conditioner
+                  </>
+                ) : (
+                  title
+                )}
+              </strong>
             </Link>
           ))}
         </div>
@@ -101,9 +115,12 @@ export function BeautySections({ catalog }: { catalog: Catalog }) {
               href={`/search?q=${encodeURIComponent(b.name)}`}
               key={b.name}
               className="beauty-brand"
+              data-brand={b.name}
               style={{ background: b.color }}
             >
-              <strong className="beauty-brand-mark">{b.mark}</strong>
+              <span className="beauty-brand-mark">
+                <img src={`/api/reference-media/${b.artwork}`} alt={b.mark} />
+              </span>
               <h3>{b.name}</h3>
               <p>
                 {b.rating} ★ ({b.count})
@@ -140,7 +157,10 @@ export function BeautySections({ catalog }: { catalog: Catalog }) {
             <Link
               href={`/search?q=${encodeURIComponent(b.name)}&deals=1`}
               key={b.name}
-              style={{ background: b.color }}
+              data-brand={b.name}
+              style={{
+                background: b.name === "Nécessaire" ? "#d6d3d0" : b.color,
+              }}
             >
               <div>
                 <img

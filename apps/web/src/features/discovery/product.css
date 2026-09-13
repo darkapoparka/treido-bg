@@ -7,7 +7,7 @@
   border-color: var(--color-accent);
 }
 .product-page .product-details {
-  margin-top: 16px;
+  margin-top: 23px;
 }
 .product-page .product-heading {
   position: relative;
@@ -46,21 +46,26 @@
   vertical-align: middle;
 }
 .product-page .product-price {
-  font-size: 20px;
-  margin-top: 16px;
+  font-size: 18px;
+  line-height: 24px;
+  margin-top: 12px;
 }
 .product-price del {
   font-size: 12px;
   color: #888;
 }
 .product-page .product-deal {
-  margin-top: 16px;
+  height: 59px;
+  min-height: 59px;
+  margin-top: 11px;
+  padding-block: 10px;
+  box-shadow: 0 4px 16px #00000005;
 }
 .product-page .quantity {
   margin-top: 28px;
 }
 .purchase-modes {
-  margin-top: 30px;
+  margin-top: 28px;
   border: 1px solid #eee;
   border-radius: 28px;
   background: white;
@@ -68,7 +73,10 @@
   overflow: hidden;
 }
 .purchase-modes > div {
-  padding: 16px;
+  padding: 16px 16px 15px;
+}
+.purchase-modes > div:has(.purchase-actions) {
+  padding-bottom: 18px;
 }
 .purchase-modes > div + div {
   border-top: 1px solid #eee;
@@ -96,14 +104,23 @@
 .purchase-actions {
   display: flex;
   gap: 8px;
-  margin-top: 16px;
+  margin-top: 14px;
 }
 .purchase-actions button {
   height: 44px;
+  padding: 0 12px;
   border-radius: 26px;
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   background: #111;
   color: white;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 500;
+  border: 1px solid #ffffff80;
+  box-shadow:
+    inset 0 0 0 1px #ffffff1a,
+    0 5px 12px #0002;
 }
 .purchase-actions .primary {
   background: var(--color-accent);
@@ -357,7 +374,8 @@
 }
 .pdp-related-heading {
   font-size: 18px;
-  margin: 16px 0;
+  line-height: 22px;
+  margin: 16px 0 12px;
 }
 .sheet.product-lightbox {
   inset: 0;
@@ -771,4 +789,165 @@
   color: #737373;
   font-size: 12px;
   line-height: 16px;
+}
+
+/* Product-only fitting from the ordered source17–20 and32–39 pairs. */
+.product-page {
+  background: #fdfdfd;
+}
+.product-page .product-underlay > .store-row {
+  height: 60px;
+  margin-bottom: 0;
+}
+.product-page .product-underlay > .store-row img {
+  outline: 1px solid #5433eb;
+  outline-offset: 2px;
+}
+.product-page .product-gallery img,
+.product-page .product-underlay .product-grid .product-media img {
+  filter: brightness(0.96);
+}
+.product-page .product-heading > .icon-button svg {
+  width: 20px;
+  height: 20px;
+}
+.product-price-alert-tip {
+  position: absolute;
+  right: 90px;
+  bottom: calc(100% + 6px);
+  width: 164px;
+  z-index: 2;
+  padding: 6px 14px;
+  border-radius: 18px;
+  background: #5433eb;
+  color: #fff;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+}
+.product-price-alert-tip::before,
+.product-price-alert-tip::after {
+  position: absolute;
+  content: "";
+  border-radius: 50%;
+  background: #5433eb;
+}
+.product-price-alert-tip::before {
+  width: 17px;
+  height: 17px;
+  bottom: -6px;
+  right: 5px;
+}
+.product-price-alert-tip::after {
+  width: 8px;
+  height: 8px;
+  bottom: -11px;
+  right: -2px;
+}
+.product-page .purchase-modes label > span {
+  font-size: 16px;
+  line-height: 22px;
+}
+.product-page .purchase-modes strong {
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 600;
+}
+.product-page .purchase-modes input[type="radio"] {
+  appearance: none;
+  flex: none;
+  margin: 0 1px 0 8px;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  background: #fff;
+}
+.product-page .purchase-modes input[type="radio"]:checked {
+  border-color: #111;
+  background: radial-gradient(circle, #111 0 5px, #fff 5.5px);
+}
+.product-page .pdp-description > p {
+  letter-spacing: 0.1px;
+}
+.pdp-review-preview[data-product-id="shea-butter"] .pdp-review-rail article {
+  min-height: 144px;
+}
+.product-page .product-underlay .product-grid .product-media {
+  border: 1px solid #d4d6d7;
+}
+.product-page .product-underlay .product-grid .product-copy {
+  row-gap: 0;
+}
+.product-page .product-underlay .product-grid .product-copy .rating {
+  font-size: 12px;
+  line-height: 18px;
+}
+.product-page .product-underlay .product-grid .product-copy > span:last-child {
+  line-height: 18px;
+}
+.product-page .product-underlay .product-grid .product-copy .rating > span {
+  font-size: 16px;
+  letter-spacing: -1px;
+}
+.product-page .product-underlay .product-grid .product-copy strong {
+  font-weight: 600;
+}
+.product-page .product-underlay .product-grid .save-button svg {
+  width: 18px;
+  height: 18px;
+}
+.product-description-sheet .sheet-header .icon-button {
+  width: 24px;
+  height: 24px;
+  color: #777;
+  background: #f1f2f3;
+}
+.product-description-sheet .sheet-header .icon-button svg {
+  width: 18px;
+  height: 18px;
+}
+.sheet.shea-description-sheet[open] {
+  height: 643px;
+  max-height: calc(100dvh - 68px);
+  bottom: 34px;
+  padding: 24px 16px 16px;
+}
+.shea-description-sheet .sheet-header {
+  height: 24px;
+  margin-bottom: 16px;
+}
+.shea-description-sheet .sheet-header h2 {
+  line-height: 24px;
+}
+.shea-description-sheet .sheet-copy {
+  font-size: 14.5px;
+  line-height: 16.8px;
+  letter-spacing: 0;
+}
+
+/* Measured text flow from source17/006 and32/002; the content remains selectable. */
+.product-page .purchase-modes label > span > strong {
+  display: block;
+}
+.product-page .purchase-mode-price {
+  display: block;
+  margin-top: 3px;
+  font-size: 16px;
+  line-height: 22px;
+}
+.product-page .pdp-description-shea > p {
+  font-size: 14.5px;
+  letter-spacing: 0;
+}
+.shea-description-sheet .sheet-header h2 {
+  letter-spacing: -1px;
+  transform: translateY(-1px);
+}
+.shea-description-sheet li {
+  letter-spacing: 0.1px;
+}
+.shea-description-sheet p {
+  margin-top: 24px;
+}
+.shea-description-sheet ul + p {
+  margin-top: 28px;
 }

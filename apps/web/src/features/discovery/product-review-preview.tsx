@@ -24,7 +24,7 @@ export function ProductReviewPreview({
   reviews: readonly Preview[];
 }) {
   return (
-    <section className="pdp-review-preview">
+    <section className="pdp-review-preview" data-product-id={productId}>
       <h2>Reviews</h2>
       <div className="review-summary">
         <div>

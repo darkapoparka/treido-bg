@@ -2,7 +2,7 @@
 import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatMoney, type Catalog } from "../catalog/types";
 import {
@@ -13,9 +13,11 @@ import {
   StoreRow,
 } from "./components";
 import { HomeCampaigns } from "./home-campaigns";
+import { RecentSearchItems } from "./search-recent";
 import { Icon } from "./icons";
 import { useDiscovery } from "./state";
 import { useAccount } from "../account/state";
+import { CartOverlay } from "../commerce/checkout";
 export function Home({ catalog }: { catalog: Catalog }) {
   const router = useRouter();
   const params = useSearchParams();
@@ -24,6 +26,8 @@ export function Home({ catalog }: { catalog: Catalog }) {
   // Different recorded journeys share these same feed components; only their data/order changes.
   const returning = params.get("journey") === "returning";
   const requestedFeed = params.get("feed");
+  const puraOptionsHistory = requestedFeed === "pura-options";
+  const [cartOpen, setCartOpen] = useState(false);
   const recentProducts =
     !returning &&
     (requestedFeed === "recent-products" ||
@@ -36,6 +40,15 @@ export function Home({ catalog }: { catalog: Catalog }) {
     returning ||
     requestedFeed === "tracking" ||
     (!!profile.firstName && !!profile.lastName);
+  const [hasScrolled, setHasScrolled] = useState(false);
+  useEffect(() => {
+    const observeScroll = () => {
+      if (window.scrollY > 16) setHasScrolled(true);
+    };
+    observeScroll();
+    window.addEventListener("scroll", observeScroll, { passive: true });
+    return () => window.removeEventListener("scroll", observeScroll);
+  }, []);
   const [shopMenu, setShopMenu] = useState("");
   const [reasonView, setReasonView] = useState(false);
   const [hidden, setHidden] = useState<string[]>([]);
@@ -125,43 +138,7 @@ export function Home({ catalog }: { catalog: Catalog }) {
         >
           <p>Jump back in</p>
           <div className="recent-store-grid">
-            {[
-              {
-                key: "kitsch-catalog",
-                store: "kitsch",
-                image: "rice-bundle",
-                offer: "Save $20",
-              },
-              {
-                key: "kitsch-care",
-                store: "kitsch",
-                image: "shea-butter",
-                offer: "$20 off order",
-              },
-              {
-                key: "loaded-tea",
-                store: "loaded-tea",
-                image: "home-loaded-logo",
-                offer: "Save $10",
-              },
-              {
-                key: "drmtlgy",
-                store: "drmtlgy",
-                image: "home-drmtlgy-retinol",
-                offer: "Save $30",
-              },
-            ].map((item) => (
-              <Link key={item.key} href={`/stores/${item.store}`}>
-                <img
-                  src={`/api/reference-media/${item.image}`}
-                  alt={
-                    catalog.stores.find((store) => store.id === item.store)
-                      ?.name || item.store
-                  }
-                />
-                <span>{item.offer}</span>
-              </Link>
-            ))}
+            <RecentSearchItems catalog={catalog} limit={4} />
           </div>
           <Link href="/search?view=recent" className="recent-title">
             <h1>Recently viewed</h1>
@@ -291,8 +268,46 @@ export function Home({ catalog }: { catalog: Catalog }) {
           tracking && !recentProducts && !recentStores ? "drmtlgy" : undefined
         }
         productLayout={returning ? "grid" : "rail"}
+        productOrder={tracking ? "tracking" : "welcome"}
+        history={puraOptionsHistory ? "pura-options" : "welcome"}
       />
-      <FloatingNav showExplore={!returning} />
+      {!tracking && !recentProducts && !recentStores && !hasScrolled && (
+        <button
+          className="home-keep-going"
+          onClick={() => {
+            setHasScrolled(true);
+            const nextCampaign = document.querySelector<HTMLElement>(
+              ".home-campaigns > .home-campaign:nth-child(2)",
+            );
+            if (nextCampaign) {
+              window.scrollTo({
+                top:
+                  window.scrollY +
+                  nextCampaign.getBoundingClientRect().top -
+                  56,
+                behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
+                  .matches
+                  ? "instant"
+                  : "smooth",
+              });
+            }
+          }}
+        >
+          Keep going <Icon name="arrow" />
+        </button>
+      )}
+      {puraOptionsHistory && (
+        <CartOverlay
+          catalog={catalog}
+          open={cartOpen}
+          onClose={() => setCartOpen(false)}
+        />
+      )}
+      <FloatingNav
+        showExplore={!returning}
+        showCartWhenEmpty={puraOptionsHistory}
+        cart={puraOptionsHistory ? () => setCartOpen(true) : undefined}
+      />
     </ShopSurface>
   );
 }

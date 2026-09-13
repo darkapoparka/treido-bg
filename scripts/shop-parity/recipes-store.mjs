@@ -24,7 +24,7 @@ const storefront = () => ({
 const chemicalFrame = () => ({
   state: "chemical-guys-products-and-video-rail",
   notes:
-    "The original captures only part of the Chemical Guys product inventory. Missing cards, artwork and the compact header remain compared, not masked.",
+    "The original captures only part of Chemical Guys inventory and Featured photos. Recovered photo interiors, native DOM controls and the compact header remain compared; the third product has only its recorded truncated title and no purchasable inventory.",
   actions: [heading("For you"), anchor(".store-recommendations", 153)],
 });
 
@@ -85,7 +85,7 @@ export const storeRecipes = {
       {
         state: "chemical-guys-tire-trim-video-frame",
         notes:
-          "The frozen flow contains two stills and no motion file. This captures the existing poster UI only; playback, audio and video/product interactions are explicitly not accepted as working motion parity.",
+          "The frozen flow contains two stills and no motion file. The recovered photo and DOM player controls expose the missing playback/audio boundary; the actual Tire+Trim product link works independently of unavailable motion.",
         actions: [
           selector(".store-video-rail a"),
           { type: "waitUrl", url: "**/stores/chemical-guys/video" },
@@ -278,7 +278,7 @@ export const storeRecipes = {
             role: "heading",
             name: "Reviews",
             exact: true,
-            y: 95,
+            y: 90,
           },
         ],
       },
@@ -290,7 +290,7 @@ export const storeRecipes = {
             role: "heading",
             name: "Policies",
             exact: true,
-            y: 46,
+            y: 41,
           },
         ],
       },

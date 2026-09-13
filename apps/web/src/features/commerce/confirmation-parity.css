@@ -1,0 +1,121 @@
+/* Captured checkout completion and its receipt, flows 21 and 31. */
+.order-confirmation-page,
+.receipt-page {
+  font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
+}
+.order-confirmation-page .confirmation-heading {
+  margin: 32px 0 24px;
+}
+.order-confirmation-page .confirmation-heading h1 {
+  line-height: 28px;
+}
+.order-confirmation-page .confirmation-heading small {
+  font-size: 14px;
+  line-height: 20px;
+}
+.order-confirmation-page .confirmation-destination {
+  position: relative;
+  min-height: 67px;
+  padding-bottom: 26px;
+}
+.order-confirmation-page .confirmation-destination small,
+.order-confirmation-page .confirmation-delivery small {
+  font-size: 14px;
+  line-height: 18px;
+}
+.order-confirmation-page .confirmation-destination strong {
+  padding-right: 62px;
+  margin-top: 4px;
+  line-height: 18px;
+}
+.order-confirmation-page .confirmation-destination img {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+}
+.order-confirmation-page .confirmation-delivery {
+  padding: 16px 0;
+}
+.order-confirmation-page .confirmation-delivery strong {
+  margin-top: 8px;
+  line-height: 18px;
+}
+.order-confirmation-page .confirmation-total {
+  padding: 18px 0 14px;
+}
+.order-confirmation-page .confirmation-total p {
+  margin: 0;
+  line-height: 18px;
+}
+.order-confirmation-page .confirmation-total p + p {
+  margin-top: 8px;
+  color: #555;
+  font-size: 14px;
+}
+.order-confirmation-page > .muted-button {
+  height: 40px;
+  min-height: 40px;
+  font-size: 14px;
+  background: #f3f4f4;
+}
+.order-confirmation-page > h2 {
+  margin: 38px 0 12px;
+  font-size: 18px;
+  line-height: 22px;
+}
+.order-confirmation-page > h2 a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.order-confirmation-page > h2 span {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #f3f4f4;
+}
+.order-confirmation-page > .product-rail {
+  gap: 8px;
+}
+.order-confirmation-page .product-card {
+  width: 173px;
+}
+.order-confirmation-page .product-media {
+  border: 1px solid #d5d7d8;
+  border-radius: 20px;
+  box-shadow: 0 3px 8px #00000005;
+}
+.order-confirmation-page .product-copy {
+  padding: 7px 4px 0;
+}
+.order-confirmation-page .product-copy strong {
+  font-weight: 500;
+}
+.order-confirmation-page .product-copy .rating {
+  line-height: 17px;
+}
+.order-confirmation-page .confirmation-deals {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 36px;
+  font-size: 18px;
+  font-weight: 600;
+}
+.receipt-page .receipt-share {
+  position: fixed;
+  z-index: 6;
+  right: max(16px, calc((100vw - 600px) / 2 + 16px));
+  top: 8px;
+}
+.receipt-page .receipt-method {
+  padding-top: 38px;
+}
+.receipt-page .receipt-method .receipt-payment {
+  margin-bottom: 14px;
+}

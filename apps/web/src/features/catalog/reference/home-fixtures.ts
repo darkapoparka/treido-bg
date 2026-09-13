@@ -2,6 +2,15 @@ import type { Product, Store } from "../types";
 // Isolated frozen Home presentation fixtures, not service inventory or merchant assertions.
 export const homeStores: readonly Store[] = [
   {
+    id: "carpe",
+    name: "Carpe",
+    logo: "/api/reference-media/home-carpe-wordmark",
+    ratingCount: "",
+    description:
+      "The frozen Home capture includes this shop identity, but not its products or store details.",
+    categories: [],
+  },
+  {
     id: "princess-polly",
     name: "PRINCESS POLLY",
     logo: "",

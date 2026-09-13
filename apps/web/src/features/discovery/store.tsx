@@ -39,15 +39,17 @@ const collectionMedia = [
 function StoreActions({
   store,
   close = false,
+  compact = false,
 }: {
   store: Store;
   close?: boolean;
+  compact?: boolean;
 }) {
   const state = useDiscovery();
   const [notice, setNotice] = useState("");
   return (
     <>
-      <div className="store-actions">
+      <div className="store-actions" data-compact={compact}>
         <Link
           className="icon-button"
           href={`/stores/${store.id}${close ? "" : "/info"}`}
@@ -64,27 +66,31 @@ function StoreActions({
             <Icon name="search" />
           </Link>
         )}
-        <button
-          className="pill follow"
-          aria-pressed={state.followed.includes(store.id)}
-          onClick={() => state.toggleFollow(store.id)}
-        >
-          {state.followed.includes(store.id) ? "Following" : "Follow"}
-        </button>
-        <IconButton
-          icon="share"
-          label="Share store"
-          onClick={async () => {
-            try {
-              await navigator.clipboard.writeText(
-                new URL(`/stores/${store.id}`, window.location.origin).href,
-              );
-              setNotice("Local preview link copied");
-            } catch {
-              setNotice("Clipboard unavailable");
-            }
-          }}
-        />
+        {!compact && (
+          <button
+            className="pill follow"
+            aria-pressed={state.followed.includes(store.id)}
+            onClick={() => state.toggleFollow(store.id)}
+          >
+            {state.followed.includes(store.id) ? "Following" : "Follow"}
+          </button>
+        )}
+        {!compact && (
+          <IconButton
+            icon="share"
+            label="Share store"
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(
+                  new URL(`/stores/${store.id}`, window.location.origin).href,
+                );
+                setNotice("Local preview link copied");
+              } catch {
+                setNotice("Clipboard unavailable");
+              }
+            }}
+          />
+        )}
       </div>
       {notice && (
         <button className="local-toast" onClick={() => setNotice("")}>
@@ -270,6 +276,104 @@ function StoreGrid({
     </>
   );
 }
+
+const chemicalCategoryMedia: Record<string, string> = {
+  "Shop all": "shop",
+  Kits: "kits",
+  Exterior: "exterior",
+  Interior: "interior",
+};
+function StoreCategoryRail({ store }: { store: Store }) {
+  return (
+    <div className="category-rail">
+      {store.categories.map((category) => (
+        <Link
+          className="pill"
+          key={category}
+          href={
+            category === "Shop all"
+              ? `/stores/${store.id}#all-products`
+              : `/stores/${store.id}/collections/${category === "What's New" ? "whats-new" : category.toLowerCase().replaceAll(" ", "-")}`
+          }
+        >
+          {store.id === "chemical-guys" && chemicalCategoryMedia[category] && (
+            <img
+              src={`/api/reference-media/chemical-category-${chemicalCategoryMedia[category]}`}
+              alt=""
+            />
+          )}
+          {category}
+        </Link>
+      ))}
+    </div>
+  );
+}
+function ChemicalMediaShelves() {
+  const [notice, setNotice] = useState(false);
+  const clipNames = ["one", "two", "three"];
+  return (
+    <>
+      <div className="store-video-rail">
+        {clipNames.map((name, index) => {
+          const contents = (
+            <>
+              <img
+                src={`/api/reference-media/chemical-store-clip-${name}`}
+                alt=""
+              />
+              <span>{index === 0 ? "3d" : "4d"} ago</span>
+            </>
+          );
+          return index === 0 ? (
+            <Link
+              key={name}
+              href="/stores/chemical-guys/video"
+              aria-label="Open Tire and Trim video"
+            >
+              {contents}
+            </Link>
+          ) : (
+            <button
+              key={name}
+              aria-label={`Open Chemical Guys clip ${index + 1}`}
+              onClick={() => setNotice(true)}
+            >
+              {contents}
+            </button>
+          );
+        })}
+      </div>
+      <section className={`store-recommendations ${styles.chemicalFeatured}`}>
+        <h2>Featured</h2>
+        <div className="product-rail">
+          {clipNames.map((name, index) => (
+            <button
+              key={name}
+              aria-label={`Open Chemical Guys featured video ${index + 1}`}
+              onClick={() => setNotice(true)}
+            >
+              <img
+                src={`/api/reference-media/chemical-featured-${name}-partial`}
+                alt=""
+              />
+            </button>
+          ))}
+        </div>
+      </section>
+      <Sheet
+        open={notice}
+        title="Video preview"
+        onClose={() => setNotice(false)}
+      >
+        <p className="sheet-copy">
+          Only this video thumbnail was captured. Its full video and audio are
+          unavailable.
+        </p>
+      </Sheet>
+    </>
+  );
+}
+
 export function Storefront({
   store,
   catalog,
@@ -287,6 +391,20 @@ export function Storefront({
   }, [store.id, viewStore]);
   const isKitsch = store.id === "kitsch",
     chemical = store.id === "chemical-guys";
+  const recommendationsAnchor = useRef<HTMLElement>(null);
+  const [chemicalPinned, setChemicalPinned] = useState(false);
+  useEffect(() => {
+    const element = recommendationsAnchor.current;
+    if (!chemical || !element) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry) setChemicalPinned(entry.boundingClientRect.top < 154);
+      },
+      { threshold: [0, 1], rootMargin: "-154px 0px 0px 0px" },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [chemical]);
   const all = catalog.products.filter((p) => p.storeId === store.id);
   const recommendations =
     store.recommendations ??
@@ -297,13 +415,25 @@ export function Storefront({
           { productId: "terracotta" },
           { productId: "rice-shampoo" },
         ]
-      : all.map((product) => ({ productId: product.id })));
+      : chemical
+        ? [
+            "chemical-clean-trim",
+            "chemical-easy-clean",
+            "chemical-deep-partial",
+          ].map((productId) => ({ productId }))
+        : all.map((product) => ({ productId: product.id })));
   const products = recommendations.flatMap((item) => {
     const product = all.find((product) => product.id === item.productId);
     return product
       ? [
           {
             ...product,
+            images:
+              chemical && product.id === "chemical-clean-trim"
+                ? ["/api/reference-media/chemical-store-trim-photo"]
+                : chemical && product.id === "chemical-easy-clean"
+                  ? ["/api/reference-media/chemical-store-protect-photo"]
+                  : product.images,
             ratingCount:
               "ratingCount" in item && item.ratingCount !== undefined
                 ? item.ratingCount
@@ -317,58 +447,48 @@ export function Storefront({
       className={`shop-page store-page ${styles.page} ${styles.store} ${chemical ? "chemical-store" : ""}`}
     >
       {isKitsch && <StorePromotion savings={store.promotionSavings} />}
+      {chemical && chemicalPinned && (
+        <div className={styles.chemicalPinned}>
+          <StoreActions store={store} compact />
+          <StoreCategoryRail store={store} />
+        </div>
+      )}
       <section className={`store-hero${isKitsch ? " store-hero-kitsch" : ""}`}>
-        <StoreActions store={store} />
-        <div className="store-brand">
-          <span aria-label={store.name}>
-            {isKitsch ? <KitschWordmark /> : store.name}
-          </span>
-          {store.rating && (
-            <Link href={`/stores/${store.id}/reviews`}>
-              {store.rating} ★ ({store.ratingCount})
-            </Link>
+        <div
+          className={styles.storeHeader}
+          inert={chemical && chemicalPinned}
+          aria-hidden={chemical && chemicalPinned ? true : undefined}
+        >
+          <StoreActions store={store} />
+          <div className="store-brand">
+            <span aria-label={store.name}>
+              {isKitsch ? <KitschWordmark /> : store.name}
+            </span>
+            {store.rating && (
+              <Link href={`/stores/${store.id}/reviews`}>
+                {store.rating} ★ ({store.ratingCount})
+              </Link>
+            )}
+          </div>
+          {isKitsch ? (
+            <StoreNavigation store={store} />
+          ) : (
+            <StoreCategoryRail store={store} />
           )}
         </div>
-        {isKitsch ? (
-          <StoreNavigation store={store} />
-        ) : (
-          <div className="category-rail">
-            {store.categories.map((c) => (
-              <Link
-                className="pill"
-                key={c}
-                href={
-                  c === "Shop all"
-                    ? `/stores/${store.id}#all-products`
-                    : `/stores/${store.id}/collections/${c === "What's New" ? "whats-new" : c.toLowerCase().replaceAll(" ", "-")}`
-                }
-              >
-                {c}
-              </Link>
-            ))}
-          </div>
-        )}
-        <section className="store-recommendations">
+        <section className="store-recommendations" ref={recommendationsAnchor}>
           <h1>For you</h1>
           <div className="product-rail">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                showPromotion={chemical}
+              />
             ))}
           </div>
         </section>
-        {chemical && (
-          <div className="store-video-rail">
-            {[1, 2, 3].map((n) => (
-              <Link key={n} href="/stores/chemical-guys/video">
-                <img
-                  src={`/api/reference-media/chemical-rail${n}`}
-                  alt="Chemical Guys product video"
-                />
-                <span>{n === 1 ? "3d" : "4d"} ago</span>
-              </Link>
-            ))}
-          </div>
-        )}
+        {chemical && <ChemicalMediaShelves />}
         {isKitsch && (
           <section className="store-recommendations">
             <h2>Collections</h2>
@@ -676,7 +796,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
           </Link>
         </>
       )}
-      <section className="store-info-panel">
+      <section className="store-info-panel store-info-reviews">
         <Link className="detail-row" href={`/stores/${store.id}/reviews`}>
           <h2>Reviews</h2>
           <Icon name="arrow" />
@@ -723,7 +843,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
           </div>
         )}
       </section>
-      <section className="store-info-panel">
+      <section className="store-info-panel store-info-links">
         <h2>Policies</h2>
         {kitsch ? (
           policies.map(([label, href, icon]) => (
@@ -742,7 +862,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
           <p>No policies were captured.</p>
         )}
       </section>
-      <section className="store-info-panel">
+      <section className="store-info-panel store-info-links">
         <h2>Contact</h2>
         {kitsch ? (
           contacts.map(([label, href, icon]) => (
@@ -1051,10 +1171,10 @@ export function StoreSearch({
 export function StoreVideo() {
   const [notice, setNotice] = useState(false);
   return (
-    <ShopSurface className="store-video-page">
+    <ShopSurface className={`store-video-page ${styles.page} ${styles.video}`}>
       <img
         className="video-poster"
-        src="/api/reference-media/chemical-poster"
+        src="/api/reference-media/chemical-video-photo"
         alt="Chemical Guys Tire and Trim Gel in front of a GMC tailgate"
       />
       <div className="video-top">
@@ -1071,26 +1191,57 @@ export function StoreVideo() {
           onClick={() => setNotice(true)}
         />
       </div>
-      <IconButton
-        icon="mic"
-        label="Video audio unavailable"
+      <button
+        className={`icon-button ${styles.videoAudio}`}
+        aria-label="Video audio unavailable"
         onClick={() => setNotice(true)}
-      />
-      <div className="video-bottom">
-        <Link href="/stores/chemical-guys">
-          <b>Chemical Guys</b>
-          <small>3d ago</small>
-        </Link>
-        <button onClick={() => setNotice(true)}>
-          Tire+Trim Gel Plastic and Rubber High-Glo…<small>$24.99</small>
-        </button>
-        <div>
-          <IconButton
-            icon="arrow"
-            label="Play video"
-            onClick={() => setNotice(true)}
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          aria-hidden="true"
+        >
+          <path
+            d="M4 9h4l5-4v14l-5-4H4zM17 10l4 4m0-4-4 4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
-          <progress value="0" max="100" />
+        </svg>
+      </button>
+      <div className="video-bottom">
+        <Link className={styles.videoStore} href="/stores/chemical-guys">
+          <span className={styles.videoStoreLogo}>
+            <img src="/api/reference-media/chemical-video-logo" alt="" />
+          </span>
+          <span>
+            <b>Chemical Guys</b>
+            <small>3d ago</small>
+          </span>
+        </Link>
+        <Link className={styles.videoProduct} href="/products/order-tire-trim">
+          <span className={styles.videoProductPhoto}>
+            <img src="/api/reference-media/chemical-video-item-photo" alt="" />
+          </span>
+          <span>
+            <b>Tire+Trim Gel Plastic and Rubber High-Glo…</b>
+            <small>$24.99</small>
+          </span>
+          <Icon name="chevron" />
+        </Link>
+        <div className={styles.videoTimeline}>
+          <button
+            className="icon-button"
+            aria-label="Video playback unavailable"
+            onClick={() => setNotice(true)}
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <rect x="4" y="3" width="6" height="18" rx=".5" />
+              <rect x="14" y="3" width="6" height="18" rx=".5" />
+            </svg>
+          </button>
+          <span className={styles.videoTrack} aria-hidden="true" />
         </div>
       </div>
       <Sheet

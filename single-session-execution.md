@@ -31,7 +31,9 @@ node scripts/shop-parity/run.mjs baseline --all --flows 14-16,40-41,96-97 --run 
 node scripts/shop-parity/run.mjs compare-runs --before BEFORE_RUN --after AFTER_RUN
 ```
 
-Run the relevant existing Playwright specs with the reference config; its development-server path uses `REFERENCE_DEV=1` and owns port 3103. Stop only a confirmed owned 6412 runtime before that harness uses the same `.next` directory, then restart the capture preview if needed. `scripts/shop-parity/ledger.mjs` takes the recorded run ID as its positional argument when regenerating the dated ledger from real evidence. Do not regenerate acceptance from mere source definitions.
+Run the relevant existing Playwright specs with the reference config. To use the confirmed preview already serving 6412, set `$env:REFERENCE_BASE_URL='http://127.0.0.1:6412'`; the harness validates loopback HTTP and does not start a second server. If using its separate development-server path instead, unset that override and use `REFERENCE_DEV=1`, which owns port 3103. Stop only the confirmed owned 6412 runtime before the separate harness uses the same `.next` directory, then restart the capture preview if needed. The default path without either override requires an existing production build. Do not mistake that default for the running dev preview.
+
+`scripts/shop-parity/ledger.mjs` takes the recorded run ID as its positional argument when regenerating the dated ledger from real evidence. Do not regenerate acceptance from mere source definitions.
 
 ## Decide and act
 

@@ -4,21 +4,23 @@ Current checkout/branch policy is owned by [AGENTS.md](AGENTS.md); use [single-s
 
 ## Current source checkpoint
 
-Current application source is **`c2ffa10beba653901009c6224325eb05f89785ad`**, synchronized onto local `main`. It adds cart-flight/confirmation and review-state work after the last inspected source/live batch. `recipes-reviews.mjs` contains 14 additional review definitions that are not yet imported by the registry. [Current status](docs/STATUS.md) records its unfinished CI/formatting verification and startup prerequisites. The comparisons below are the **dated `fc7d58b9699c64692ce4870601bf7e19ef07bee5` baseline**, not proof of the newer UI.
+Updated 2026-09-13. The local integration extends main at **`4d0539f2d0cd70f884941cc83f05ff075365542d`**. All **97 flows / 424 ordered states** now have executable recipes and complete ordered source inspection. The complete `20260913-complete-current` run scored **424/424 states with zero browser errors**: **31 numerical candidates**, **4.817% mean MAE**, 33 states above 10%. Later fitting changes are measured in separate named runs until the next complete comparison; retain their exact provenance. Owner acceptance remains **0/97 flows**.
 
-Registration commit `fe14af0` connects those existing product definitions to the registry and existing CI selection. Enumeration on 2026-09-12 now finds **97 flows, 424 frame entries and 195 registered replay definitions**. The 20 checkpoints cover flows **18-20, 32, 37 and 38**; their complete ordered source stills were inspected. Flow 17 remains a separate detail/variant obligation.
+Connected work includes onboarding and real streamed loading states, shared Home/search history, assistant photos/feedback, checkout editors/receipts, manual orders/tracking, Minis and account continuations. Later fitting covers the Carpe continuation, distinct product arrival/settled/saving-offer source entries, Chemical Guys photo regions, Shop information, photo menus, Beauty and order panels. The full interaction run passed **206/207**; its review-text expectation was corrected and **26/26** focused regressions passed, including two new phone/address journeys. Additional final onboarding, checkout/review and product siblings passed **12/12**, **14/14** and **16/16**. The suite now contains **210** tests. [Current status](docs/STATUS.md) owns final revision/check results and the resume action.
 
-Local media verification rejects `store-hero`, `shower-caddy` and `rice-shampoo`; fresh allowlisted downloads reproduced the last two mismatches. Other listed product assets passed. Keep their expected hashes and inspect provenance before repair. CI has its own verified cached originals; a CI capture does not repair local assets.
+The subsequent `20260913-final-fifty-reviewed` run scored all **50 states** with no browser errors. Store-video frame 15/002 improved to **1.475% MAE**, skin-menu frame 57/004 to **4.285%**, and expanded-order frame 61/002 to **4.583%**. Its two numerical candidates remain unaccepted. Final Beauty caption and phone normalization changes have a separate targeted run; do not present separate fitting runs as one complete final-source capture. The runner waits for loaded, decoded images before scroll anchors so captures preserve the intended positions.
 
-The owned checkout's old preview on 6412 is unresponsive and Windows denied stopping PID 16240. Local browser navigation failed; see [status](docs/STATUS.md) for the prerequisite. [Non-deploying run 34709677111](https://github.com/darkapoparka/treido-bg/actions/runs/34709677111) provides the inspected browser evidence on clean `fc7d58b`. Its cached originals passed unchanged provenance/dimension verification; the local rejected files remain unresolved.
+## Open source obligations
 
-The run scores **99/99 selected frames**, including **20/20 product checkpoints**, with no browser errors and **68/68 interactions passing** (zero skipped/flaky tests). It verifies the original 16px bag paragraph assertion, distinct bag/Shea descriptions, 320/393/430 containment and return focus/scroll. `f038-006` now replays the exact concealed Shea card in All products. All 20 ordered product source/live pairs were inspected.
+All **307 standalone images** are reconciled with existing ordered flow states: **179** have exact manifest-hash matches, and **128** were visually paired with their ordered counterpart. The latter are exports with different resolution, compression and footer packaging; no additional UI state or clearer photographic asset was found. Exact local inventories are `.qa/shop-parity/standalone-reconciliation.json`, `.qa/agent-patches/standalone-checkout/inventory.json` (47 images) and `.qa/agent-patches/standalone-minis/inventory.json` (81). This reconciles image inventory, not implementation acceptance. The **16 standalone videos** received poster inspection; complete motion/transition matching remains separate.
 
-Against the prior `cd4f8fc` run, `f020-001`/`f032-001` improve from **6.402% to 6.127% MAE**, `f020-002` from **6.964% to 5.750%**, and `f032-002` from **6.788% to 6.489%**. The retained main search fix improves `f040-004` from **6.828% to 6.487%**. The largest increase across 98 comparable frames is **0.0051 percentage points**. Four frames (`f005-004`, `f006-002`, `f018-002`, `f018-003`) are numerical candidates; the diagnostic gate fails and source acceptance remains open.
+- Original-media verification still rejects `store-hero`, `shower-caddy` and `rice-shampoo`; expected hashes are unchanged. Local rendered crops and older CI cache evidence do not resolve these provenance failures.
+- Pura's campaign changes scene in the source but lacks the required motion; its available still is already dimmed. Chemical Guys inventory/video remains incomplete. Still-image capture is not motion or provider acceptance.
+- Partial photographs, image regions hidden by captured controls, trailing products, campaign ordering and source-specific promotion/cart/history states remain visible gaps. Recover only lawful photo/brand regions and keep controls in canonical DOM; never fabricate missing imagery or provider success.
+- Unavailable source typography and named browser/native boundaries remain review obligations. Preserve frame-specific evidence and the original comparison rules.
+- Flow 17 retains the distinct Midi Shirtdress in Ultrasoft Cotton / Estate Blue, Open Air, White source identity; do not substitute Shea or invent its seller. Reassess the recorded storefront and product residuals against current pairs rather than treating historical observations as repaired or unchanged.
 
-Evidence: GitHub artifact **10303420683** (`shop-parity-fc7d58b9699c64692ce4870601bf7e19ef07bee5-1`). `.qa/shop-parity/runs/ci-fc7d58b9699c64692ce4870601bf7e19ef07bee5/` contains the exact report and unchanged source/live pairs; the prior `ci-cd4f8fc...` run is beside it. `.qa/shop-parity/imported-ci-fc7d58b/` retains interaction/build/provenance reports. `.qa/shop-parity/local-integration/product-batch-delta.json` is the existing runner's comparison, and `product-reviewed-family-fc7d58b.png` plus four full-size pairs record the inspection. The frame ledger was regenerated through `ledger.mjs`, preserving all 424 rows, 195 definitions and unmeasured frames.
-
-The inspected baseline has open promotion/arrival-history, Save-picker-backdrop, detail-photo-brightness, quantity/button, review-layout and description-sheet differences. Later source adds the previously missing cart flight/confirmation and changes review presentation; inspect its fresh evidence before treating these differences as repaired or unchanged. The report fixture truthfully says that no report was sent; captured saved-product history is not fabricated. No masks, expected hashes, assertions or diagnostic thresholds were weakened. **Next:** verify the added flow 20/review behavior, register the existing review definitions and compare the full family and siblings using the current-status prerequisites.
+Continue source fitting until the unchanged diagnostic thresholds and source-acceptance requirements are satisfied. No new acceptance is inferred from recipe registration, successful capture or focused interaction passes.
 
 ## Fixed source and comparison
 
@@ -35,39 +37,39 @@ The inspected baseline has open promotion/arrival-history, Save-picker-backdrop,
 
 `source frame -> family -> route/query -> scenario -> setup/actions -> scroll/focus/overlay -> comparison/evidence`.
 
-A route hint is not executable coverage. A reproducible definition is not visual completion. Retain every source frame even when several frames share a route or pixels.
+A route hint is not executable coverage. A reproducible definition is not visual completion. Retain every source frame even when several frames share a route or pixels. The following owners are under `apps/web/src/features/`; subsequent filenames in a row use the same feature folder. Their existing scoped CSS and state modules remain canonical.
 
-| Flows | Family / canonical owner |
-| --- | --- |
-| 1, 94 | onboarding/login: `/onboarding`, `/login` |
-| 2-6, 42 | Home/notifications/deals/following |
-| 7-13 | Saved/collections: `saved.tsx`, `saved-card.tsx`, `saved.css` |
-| 14-16, 40-41, 96-97 | storefront/collections/search/filter/info/video: `store.tsx`, `store-filter.tsx`, `store.module.css` |
-| 17-20, 32, 37-38 | product/gallery/save/cart/contact/report: `product.tsx`, `product.css`, `reviews.tsx` |
-| 21-31 | cart/checkout/review/pay/receipt |
-| 33-39 | product/store reviews and reports |
-| 43-49 | Search/assistant/result filters |
-| 50-59 | Explore/Minis |
-| 60-68, 79 | Orders/history/tracking/manual order/review |
-| 69-78 | Profile/account/people/preferences |
-| 80-82 | payment methods/card add/detail/delete |
-| 83-84 | addresses/detail/delete |
-| 85-93 | security/notifications/connections/privacy/support/logout |
-| 95 | widgets web adaptation |
+| Flows               | Family / canonical owners                                                                                                                              |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1, 94               | onboarding/login: `account/support.tsx`, `account/authentication.tsx`, `account/reference-transitions.tsx`                                             |
+| 2-6, 42             | Home/notifications/deals/following: `discovery/home.tsx`, `home-campaigns.tsx`, `notifications.tsx`, `deals.tsx`, `following.tsx`                      |
+| 7-13                | Saved/collections: `discovery/saved.tsx`, `saved-card.tsx`, `collection-editor.tsx`, `first-collection.tsx`                                            |
+| 14-16, 40-41, 96-97 | storefront/collections/search/filter/info/video: `discovery/store.tsx`, `store-filter.tsx`, `store.module.css`                                         |
+| 17-20, 32, 37-38    | product/gallery/save/cart/contact/report: `discovery/product.tsx`, `product-gallery.ts`, `product-addition.tsx`, `reviews.tsx`                         |
+| 21-31               | cart/checkout/review/pay/receipt: `commerce/cart.tsx`, `checkout.tsx`, `initial-payment.tsx`, `orders.tsx`                                             |
+| 33-39               | product/store reviews and reports: `discovery/reviews.tsx`, `review-feedback.tsx`, `store-reviews.tsx`                                                 |
+| 43-49               | Search/assistant/result filters: `discovery/search.tsx`, `search-recent.tsx`, `assistant.tsx`, `filters.tsx`                                           |
+| 50-59               | Explore/Minis: `discovery/explore.tsx`, `minis.tsx`, `mini-frame.tsx`, `sol.tsx`                                                                       |
+| 60-68, 79           | Orders/history/tracking/manual order/review: `commerce/orders.tsx`, `tracking.tsx`, `order-presentation.tsx`                                           |
+| 69-78               | Profile/account/people/preferences: `account/pages.tsx`, `profile-recent.tsx`, `preferences.tsx`                                                       |
+| 80-82               | payment methods/card add/detail/delete: `account/forms.tsx`, `pages.tsx`                                                                               |
+| 83-84               | addresses/detail/delete: `account/forms.tsx`, `pages.tsx`                                                                                              |
+| 85-93               | security/notifications/connections/privacy/support/logout: `account/pages.tsx`, `authentication.tsx`, `privacy.tsx`, `support.tsx`, `support-chat.tsx` |
+| 95                  | widgets web adaptation: `discovery/widgets.tsx`                                                                                                        |
 
-All families remain in scope. Preserve working canonical components and state rather than making disconnected screenshot pages. Captured history jumps belong in explicit named entries with source notes; do not invent a causal UI transition that the source does not show.
+All families remain in scope. Preserve working canonical components and state rather than making disconnected screenshot pages. Captured history jumps belong in explicit named entries with source notes; do not invent a causal UI transition that the source does not show. The catalog/reference adapter and existing account/discovery state own isolated fixtures; preview data is not real commerce.
 
 ## Historical evidence
 
-The earlier `77efe3e` / `b12796d` implementation, Actions runs, unresolved frame list and historical next step are already preserved in the [immutable pre-Astra map](docs/history/pre-astra-2026-09-12/shop-implementation-map.md.txt). Consult that specific record for older evidence; do not repeat its failures as current facts. Later main commits changed storefronts, Saved behavior and shared sheet history.
+The earlier `77efe3e` / `b12796d` implementation, Actions runs, unresolved frame list and historical next step are preserved in the [immutable pre-Astra map](docs/history/pre-astra-2026-09-12/shop-implementation-map.md.txt). Consult that specific record for older evidence; do not repeat its failures as current facts.
 
-The [pre-batch frame ledger at fc7d58b](https://github.com/darkapoparka/treido-bg/blob/fc7d58b9699c64692ce4870601bf7e19ef07bee5/shop-frame-ledger.md) preserves the older account/profile/wallet measurements and their exact run/source notes. Those families are not rescored by this 99-frame selection; the current generated ledger labels them accordingly without turning historical candidates into current acceptance.
+The [2026-09-12 map at `4d0539f`](https://github.com/darkapoparka/treido-bg/blob/4d0539f2d0cd70f884941cc83f05ff075365542d/shop-implementation-map.md) retains the 195-definition checkpoint, all 20 inspected product-frame identities, exact artifact/local paths and numerical comparisons for the `fc7d58b` baseline. [Run 34709677111](https://github.com/darkapoparka/treido-bg/actions/runs/34709677111) captured 99 selected frames and passed 68 interactions on that older source; four numeric candidates did not pass the diagnostic gate or gain owner acceptance. Artifact `10303420683` and `.qa/shop-parity/runs/ci-fc7d58b9699c64692ce4870601bf7e19ef07bee5/` retain its report and pairs.
 
-[Concurrent main checkpoint at 41445f9](https://github.com/darkapoparka/treido-bg/blob/41445f956883a15cf0e28cecc8521558670adc6d/shop-implementation-map.md) preserves its four intermediate Actions runs/artifact IDs, measured storefront improvements and that session's connector denial. Its GitHub-only operating mode and 175-definition limit predate this explicitly authorized local integration and its actual 195-definition/99-frame CI selection. They are historical evidence, not current instructions. The integration retains `a1bbc46`'s search-editing-only canvas and `87a1652`'s stronger Forward observation; the overlapping `701e4d8` paragraph fix is consolidated into the canonical product CSS.
+The [pre-batch ledger at `fc7d58b`](https://github.com/darkapoparka/treido-bg/blob/fc7d58b9699c64692ce4870601bf7e19ef07bee5/shop-frame-ledger.md) preserves earlier account/profile/wallet measurements and exact run/source notes. Historical candidates do not become current acceptance.
 
-The [concurrent verified checkpoint at ad32ac0](https://github.com/darkapoparka/treido-bg/blob/ad32ac05fd99445b4ba9a0ffbb8eadf5529b4a7c/shop-implementation-map.md) preserves granular source-commit provenance, artifact IDs and its additional Save-backdrop hypothesis (40% black versus approximately 50% in the source). Its 99-frame/68-test result is consolidated above; a scoped backdrop change remains unimplemented. The local comparison and regenerated ledger add evidence without discarding that checkpoint or its history.
+[The concurrent checkpoint at `41445f9`](https://github.com/darkapoparka/treido-bg/blob/41445f956883a15cf0e28cecc8521558670adc6d/shop-implementation-map.md) preserves four intermediate Actions runs/artifact IDs, measured storefront improvements and its connector denial. Its GitHub-only operating mode and 175-definition limit are historical context. The retained `a1bbc46` search-editing canvas, `87a1652` Forward observation and consolidated `701e4d8` paragraph fix remain part of the implementation history.
 
-Flow 17 still includes the distinct Midi Shirtdress in Ultrasoft Cotton / Estate Blue, Open Air, White source state; do not substitute Shea or invent its seller. Storefront residuals include filter-underlay alignment, photography, incomplete search-result rows, the returning Kitsch hero and Chemical Guys inventory/video. These remain source obligations alongside the product residuals above.
+[The verified checkpoint at `ad32ac0`](https://github.com/darkapoparka/treido-bg/blob/ad32ac05fd99445b4ba9a0ffbb8eadf5529b4a7c/shop-implementation-map.md) preserves granular source-commit provenance, artifact IDs and the Save-backdrop hypothesis (40% black versus approximately 50% in the source). Reassess that dated observation against current captures; it does not establish current behavior.
 
 ## Measurement and execution
 

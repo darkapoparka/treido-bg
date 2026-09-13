@@ -143,7 +143,9 @@ export function LoginPage() {
         " auth-phase-" +
         phase +
         " auth-screen-" +
-        screen
+        screen +
+        " auth-journey-" +
+        journey
       }
     >
       <Link

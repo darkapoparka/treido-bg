@@ -36,12 +36,15 @@
 }
 .detailsOnly.detailsOnly :global(.product-price) {
   margin-top: 12px;
-  line-height: 26px;
+  line-height: 24px;
   font-weight: 600;
 }
 .markdown {
   font-size: 12px;
   font-weight: 400;
+}
+.promotionTitle.promotionTitle {
+  color: #090909;
 }
 .arrival {
   margin-top: 4px;
@@ -49,7 +52,7 @@
   line-height: 16px;
 }
 .detailsOnly.detailsOnly :global(.product-deal) {
-  margin-top: 10px;
+  margin-top: 8px;
   box-shadow: 0 4px 16px #00000005;
 }
 .detailsOnly.detailsOnly :global(.product-deal strong) {

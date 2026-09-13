@@ -3,21 +3,42 @@ import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDiscovery } from "./state";
 import type { Catalog } from "../catalog/types";
 import { formatMoney } from "../catalog/types";
 import { Sheet, SaveButton, IconButton } from "./components";
 import { Icon } from "./icons";
+import styles from "./search-entry.module.css";
 export function Assistant({ catalog }: { catalog: Catalog }) {
   const params = useSearchParams();
-  if (params.get("example") === "photo") return <PhotoAssistant />;
-  return <JeansAssistant catalog={catalog} />;
+  const { viewAnswer } = useDiscovery();
+  const photo = params.get("example") === "photo";
+  useEffect(() => {
+    if (!photo) viewAnswer("jeans");
+  }, [photo, viewAnswer]);
+  if (photo) return <PhotoAssistant catalog={catalog} />;
+  return (
+    <ShopSurface className={`shop-page ${styles.assistantStandalone}`}>
+      <JeansAnswer catalog={catalog} />
+    </ShopSurface>
+  );
 }
-function JeansAssistant({ catalog }: { catalog: Catalog }) {
+export function JeansAnswer({
+  catalog,
+  onClose,
+}: {
+  catalog: Catalog;
+  onClose?: () => void;
+}) {
   const [feedback, setFeedback] = useState(false),
     [votes, setVotes] = useState<Record<string, boolean>>({}),
     [notes, setNotes] = useState(""),
     [submitted, setSubmitted] = useState(false),
+    [sentiment, setSentiment] = useState<"positive" | "negative" | null>(null),
+    [feedbackSentiment, setFeedbackSentiment] = useState<
+      "positive" | "negative"
+    >("positive"),
     [query, setQuery] = useState(""),
     [boundary, setBoundary] = useState("");
   const products = [
@@ -26,10 +47,31 @@ function JeansAssistant({ catalog }: { catalog: Catalog }) {
     "assistant-blue-skinny",
   ].flatMap((id) => {
     const p = catalog.products.find((p) => p.id === id);
-    return p ? [p] : [];
+    const artwork =
+      id === "assistant-signature-straight"
+        ? "assistant-white-square"
+        : id === "assistant-urban-straight"
+          ? "assistant-black-square"
+          : null;
+    return p
+      ? [
+          {
+            ...p,
+            images: artwork ? [`/api/reference-media/${artwork}`] : p.images,
+          },
+        ]
+      : [];
   });
+  const cityProduct = catalog.products.find(
+    (product) => product.id === "city-duaa-denim",
+  );
+  const signatureProduct = products.find(
+    (product) => product.id === "assistant-signature-straight",
+  );
   return (
-    <ShopSurface className="shop-page assistant-page">
+    <section
+      className={`assistant-page ${styles.answerBody} ${onClose ? styles.embeddedAnswer : ""}`}
+    >
       <Link
         href="/search?q=jeans"
         className="assistant-edit"
@@ -37,13 +79,16 @@ function JeansAssistant({ catalog }: { catalog: Catalog }) {
       >
         <Icon name="edit" />
       </Link>
-      <h1>Jeans</h1>
+      <h1 tabIndex={-1} data-answer-heading>
+        Jeans
+      </h1>
       <p>
         From everyday straight legs to bold, vintage-inspired streetwear, the
         right pair of jeans is all about the balance of comfort and a silhouette
         that feels like home. I have pulled some versatile styles from{" "}
-        <Link href="/stores/jeans-warehouse">Jeans Warehouse</Link> and City
-        Jeans to help you find your next go-to pair.
+        <Link href="/stores/jeans-warehouse">Jeans Warehouse</Link> and{" "}
+        <Link href="/stores/city-jeans">City Jeans</Link> to help you find your
+        next go-to pair.
       </p>
       <h2>Classic and straight leg fits</h2>
       <p className="form-note">
@@ -81,16 +126,32 @@ function JeansAssistant({ catalog }: { catalog: Catalog }) {
           </article>
         ))}
       </div>
-      <div className="assistant-answer-card">
-        <Link href="/products/city-duaa-denim">
-          <img
-            src="/api/reference-media/assistant-city-denim"
-            alt="Men’s Duaa Neptune Denim"
-          />
-        </Link>
+      <div
+        className="assistant-answer-card"
+        data-answer-product="city-duaa-denim"
+      >
+        <div className={`product-media ${styles.answerCardPhoto}`}>
+          <Link href="/products/city-duaa-denim">
+            <img
+              src="/api/reference-media/assistant-city-square"
+              alt="Men’s Duaa Neptune Denim"
+            />
+          </Link>
+          {cityProduct && <SaveButton product={cityProduct} />}
+          <span className={`price-badge deal ${styles.answerCardDeal}`}>
+            Save $10
+          </span>
+        </div>
         <div>
-          <Link href="/stores/city-jeans">City Jeans</Link>
-          <p>4.8 ★ (3.7K)</p>
+          <Link className={styles.answerSeller} href="/stores/city-jeans">
+            <img src="/api/reference-media/suggestion-city-jeans" alt="" />
+            <span>
+              City Jeans
+              <small>
+                4.8 ★ <span>(3.7K)</span>
+              </small>
+            </span>
+          </Link>
           <strong>Men’s Duaa Neptune Denim…</strong>
           <p>$90.00</p>
           <ul>
@@ -100,14 +161,29 @@ function JeansAssistant({ catalog }: { catalog: Catalog }) {
           </ul>
         </div>
       </div>
-      <div className="assistant-answer-card">
-        <img
-          src="/api/reference-media/assistant-white"
-          alt="Signature straight jeans"
-        />
+      <div
+        className="assistant-answer-card"
+        data-answer-product="assistant-signature-straight"
+      >
+        <div className={`product-media ${styles.answerCardPhoto}`}>
+          <Link href="/products/assistant-signature-straight">
+            <img
+              src="/api/reference-media/assistant-signature-square"
+              alt="Signature straight jeans"
+            />
+          </Link>
+          {signatureProduct && <SaveButton product={signatureProduct} />}
+        </div>
         <div>
-          <Link href="/stores/jeans-warehouse">Jeans Warehouse</Link>
-          <p>4.7 ★ (294)</p>
+          <Link className={styles.answerSeller} href="/stores/jeans-warehouse">
+            <img src="/api/reference-media/suggestion-jeans-warehouse" alt="" />
+            <span>
+              Jeans Warehouse
+              <small>
+                4.7 ★ <span>(294)</span>
+              </small>
+            </span>
+          </Link>
           <strong>SIGNATURE STRAIGHT…</strong>
           <p>$29.99</p>
           <ul>
@@ -133,12 +209,20 @@ function JeansAssistant({ catalog }: { catalog: Catalog }) {
         <IconButton
           icon="thumb-up"
           label="Give positive feedback"
-          onClick={() => setFeedback(true)}
+          pressed={sentiment === "positive"}
+          onClick={() => {
+            setFeedbackSentiment("positive");
+            setFeedback(true);
+          }}
         />
         <IconButton
           icon="thumb-down"
           label="Give negative feedback"
-          onClick={() => setFeedback(true)}
+          pressed={sentiment === "negative"}
+          onClick={() => {
+            setFeedbackSentiment("negative");
+            setFeedback(true);
+          }}
         />
       </div>
       <form
@@ -154,18 +238,22 @@ function JeansAssistant({ catalog }: { catalog: Catalog }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <Link
-          href="/search"
-          className="icon-button"
-          aria-label="Close assistant"
-        >
-          <Icon name="close" />
-        </Link>
+        {onClose ? (
+          <IconButton icon="close" label="Close assistant" onClick={onClose} />
+        ) : (
+          <Link
+            href="/search"
+            className="icon-button"
+            aria-label="Close assistant"
+          >
+            <Icon name="close" />
+          </Link>
+        )}
       </form>
       <Sheet
         open={feedback}
         title="Feedback"
-        className="assistant-feedback-sheet"
+        className={`assistant-feedback-sheet ${styles.feedbackSheet}`}
         onClose={() => setFeedback(false)}
       >
         <p>Let us know which products you preferred</p>
@@ -203,6 +291,7 @@ function JeansAssistant({ catalog }: { catalog: Catalog }) {
             onClick={() => {
               setFeedback(false);
               setSubmitted(true);
+              setSentiment(feedbackSentiment);
             }}
           >
             Submit
@@ -216,22 +305,28 @@ function JeansAssistant({ catalog }: { catalog: Catalog }) {
         </p>
       </Sheet>
       {submitted && (
-        <button className="local-toast" onClick={() => setSubmitted(false)}>
-          Thanks for your feedback · saved locally
+        <button
+          className={`local-toast ${styles.feedbackToast}`}
+          aria-label="Thanks for your feedback — saved in this local example"
+          onClick={() => setSubmitted(false)}
+        >
+          Thanks for your feedback
         </button>
       )}
-    </ShopSurface>
+    </section>
   );
 }
 
-function PhotoAssistant() {
-  const [steps, setSteps] = useState(false),
-    [choice, setChoice] = useState(""),
-    [boundary, setBoundary] = useState(false),
-    [draft, setDraft] = useState("");
+function PhotoAssistant({ catalog }: { catalog: Catalog }) {
+  const [steps, setSteps] = useState(false);
+  const [choice, setChoice] = useState("");
+  const [boundary, setBoundary] = useState("");
+  const [draft, setDraft] = useState("");
   const cards = [
     {
       id: "assistant-cap",
+      imageKey: "assistant-dad-photo",
+      productId: "assistant-mobbin-dad-hat",
       seller: "Mobbin",
       title: "Mobbin Dad Hat",
       price: "$19.99",
@@ -243,6 +338,8 @@ function PhotoAssistant() {
     },
     {
       id: "assistant-armor-cap",
+      imageKey: "assistant-armor-photo",
+      productId: "assistant-mob-armor-snapback",
       seller: "Mob Armor",
       title: "Mob Armor Snapback Hats",
       price: "$19.99",
@@ -253,8 +350,53 @@ function PhotoAssistant() {
       ],
     },
   ];
+  const recommendations = [
+    cards[0]!,
+    {
+      id: "assistant-mobbin-merch-cap",
+      imageKey: "assistant-merch-photo",
+      productId: "assistant-mobbin-merch-cap",
+      seller: "Mobbin Merch",
+      title: "Mobbin Cap",
+      price: "$45.00",
+    },
+  ];
+  function productMedia(card: (typeof recommendations)[number]) {
+    const product = catalog.products.find((item) => item.id === card.productId);
+    const photograph = (
+      <img src={`/api/reference-media/${card.imageKey}`} alt={card.title} />
+    );
+    return (
+      <div className={`product-media ${styles.photoCardMedia}`}>
+        {product ? (
+          <Link href={`/products/${product.id}`}>{photograph}</Link>
+        ) : (
+          <button
+            type="button"
+            className={styles.photoProduct}
+            aria-label={`View ${card.title}`}
+            onClick={() => setBoundary("Product details unavailable")}
+          >
+            {photograph}
+          </button>
+        )}
+        {product ? (
+          <SaveButton product={product} />
+        ) : (
+          <IconButton
+            icon="heart"
+            label={`Save ${card.title}`}
+            className="save-button"
+            onClick={() => setBoundary("Product details unavailable")}
+          />
+        )}
+      </div>
+    );
+  }
   return (
-    <ShopSurface className="shop-page assistant-page photo-assistant">
+    <ShopSurface
+      className={`shop-page assistant-page photo-assistant ${styles.answerBody} ${styles.photoAnswer}`}
+    >
       <Link href="/search" className="assistant-edit" aria-label="Edit search">
         <Icon name="edit" />
       </Link>
@@ -268,28 +410,36 @@ function PhotoAssistant() {
         onClick={() => setSteps(!steps)}
         aria-expanded={steps}
       >
-        Assistant steps {steps ? "⌄" : "›"}
+        Assistant steps <Icon name="chevron" />
       </button>
       {steps && (
         <div className="assistant-step-list">
           <small>Searched for products</small>
           {[
             "Mobbin black baseball cap",
-            "Mobbin Dad Hat",
+            "Mobbin hat black",
             "Mobbin embroidered baseball cap",
             "black baseball cap white embroidery Mobbin",
-          ].map((q) => (
-            <p key={q}>
+          ].map((query) => (
+            <p key={query}>
               <Icon name="search" />
-              {q}
+              {query}
             </p>
           ))}
+          <button
+            type="button"
+            onClick={() =>
+              setBoundary("Additional assistant steps unavailable")
+            }
+          >
+            + 2 more
+          </button>
         </div>
       )}
       <p>
-        The cap in your photo is the classic Mobbin dad hat—a relaxed,
-        low-profile staple that prioritizes that broken-in, “lived-in” feel
-        right out of the box.
+        The cap in your photo is the classic <strong>Mobbin dad hat</strong>—a
+        relaxed, low-profile staple that prioritizes that broken-in, “lived-in”
+        feel right out of the box.
       </p>
       <p>
         I found the exact match you’re looking for, along with a few structured
@@ -301,12 +451,17 @@ function PhotoAssistant() {
         The exact relaxed fit and branding from your photo
       </p>
       <div className="assistant-product-rail">
-        {cards.map((c) => (
-          <article key={c.id}>
-            <img src={`/api/reference-media/${c.id}`} alt={c.title} />
-            <span>{c.seller}</span>
-            <strong>{c.title}</strong>
-            <b>{c.price}</b>
+        {recommendations.map((card) => (
+          <article key={card.id} data-photo-recommendation={card.id}>
+            {productMedia(card)}
+            <span>{card.seller}</span>
+            <strong>{card.title}</strong>
+            {card.id === "assistant-mobbin-merch-cap" && (
+              <span className={styles.photoRating}>
+                <span aria-hidden="true">★★★★☆</span> (1)
+              </span>
+            )}
+            <b>{card.price}</b>
           </article>
         ))}
       </div>
@@ -314,72 +469,133 @@ function PhotoAssistant() {
       <p className="form-note">
         Higher-profile options with similar monochrome branding
       </p>
-      <p>
-        The Mobbin Dad Hat is built from bio-washed chino twill, which gives it
-        that soft, unstructured crown. The Mob Armor Snapback offers a
-        structured crown and a more rigid visor.
+      <div className="assistant-product-rail">
+        <article data-photo-recommendation={cards[1].id}>
+          {productMedia(cards[1])}
+          <span>{cards[1].seller}</span>
+          <strong>{cards[1].title}</strong>
+          <b>{cards[1].price}</b>
+        </article>
+      </div>
+      <p className={styles.photoComparisonCopy}>
+        The{" "}
+        <button
+          type="button"
+          onClick={() => setBoundary("Product details unavailable")}
+        >
+          Mobbin Dad Hat
+        </button>{" "}
+        is the hero here at just under $20. It&apos;s built from bio-washed
+        chino twill, which gives it that soft, unstructured crown that sits
+        close to the head for a cleaner, more casual profile. If you want
+        something with a bit more &quot;teeth,&quot; the{" "}
+        <button
+          type="button"
+          onClick={() => setBoundary("Product details unavailable")}
+        >
+          Mob Armor Snapback
+        </button>{" "}
+        offers a structured crown and a more rigid visor that keeps its shape
+        even after heavy use.
       </p>
-      {cards.map((c) => (
-        <article className="assistant-answer-card" key={c.id}>
-          <img src={`/api/reference-media/${c.id}`} alt={c.title} />
+      {cards.map((card) => (
+        <article
+          className="assistant-answer-card"
+          key={card.id}
+          data-photo-comparison={card.id}
+        >
+          {productMedia(card)}
           <div>
-            <p>{c.seller}</p>
-            <strong>{c.title}</strong>
-            <p>{c.price}</p>
+            <div className={styles.photoSeller}>
+              <span className={styles.photoSellerLogo} aria-hidden="true">
+                {card.seller === "Mobbin" ? "M" : ""}
+              </span>
+              <div>
+                <p>{card.seller}</p>
+                {card.seller === "Mob Armor" && (
+                  <small>
+                    4.8 ★ <span>(1.2K)</span>
+                  </small>
+                )}
+              </div>
+            </div>
+            <strong>{card.title}</strong>
+            <p>{card.price}</p>
             <ul>
-              {c.details.map((d) => (
-                <li key={d}>{d}</li>
+              {card.details.map((detail) => (
+                <li key={detail}>{detail}</li>
               ))}
             </ul>
           </div>
         </article>
       ))}
       <p>
-        Do you prefer this relaxed “dad hat” fit, or are you looking for
-        something more structured?
+        Mobbin is a brand rooted in car culture and urban movement, often
+        releasing limited &quot;drops&quot; that sell out quickly. Their gear is
+        designed to be tough enough for a garage session but clean enough for a
+        weekend out.
+      </p>
+      <p>
+        Do you prefer this relaxed &quot;dad hat&quot; fit, or are you looking
+        for a more structured snapback style?
       </p>
       <div className="assistant-preferences">
-        {["Relaxed dad hat", "Structured snapback", "Show Mobbin gear"].map(
-          (c) => (
+        {["Relaxed dad hats", "Structured snapbacks", "Other Mobbin gear"].map(
+          (option) => (
             <button
               className="pill"
-              key={c}
-              aria-pressed={choice === c}
+              key={option}
+              aria-pressed={choice === option}
               onClick={() => {
-                setChoice(c);
-                setBoundary(true);
+                setChoice(option);
+                setBoundary("Assistant is not connected");
               }}
             >
-              {c}
+              {option}
             </button>
           ),
         )}
       </div>
+      <div className="assistant-feedback-actions">
+        <IconButton
+          icon="thumb-up"
+          label="Give positive feedback"
+          onClick={() => setBoundary("Photo answer feedback unavailable")}
+        />
+        <IconButton
+          icon="thumb-down"
+          label="Give negative feedback"
+          onClick={() => setBoundary("Photo answer feedback unavailable")}
+        />
+      </div>
       <form
         className="assistant-composer"
-        onSubmit={(e) => {
-          e.preventDefault();
-          setBoundary(true);
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (draft.trim()) setBoundary("Assistant is not connected");
         }}
       >
         <input
           placeholder="Ask a follow-up"
           aria-label="Ask a follow-up"
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          onChange={(event) => setDraft(event.target.value)}
         />
-        <Link href="/search" aria-label="Close assistant">
+        <Link
+          href="/search"
+          className="icon-button"
+          aria-label="Close assistant"
+        >
           <Icon name="close" />
         </Link>
       </form>
-      <Sheet
-        open={boundary}
-        title="Assistant is not connected"
-        onClose={() => setBoundary(false)}
-      >
-        <p>
-          Your selection stays local. No photo or message was sent; this is the
-          captured example answer.
+      <Sheet open={!!boundary} title={boundary} onClose={() => setBoundary("")}>
+        <p className="sheet-copy">
+          {boundary === "Product details unavailable"
+            ? "This product was shown in the captured answer. Its complete product details are not available here, so it has not been opened, saved, or added to a cart."
+            : boundary === "Additional assistant steps unavailable"
+              ? "The capture shows two more search steps without their text. No additional search has been run."
+              : "Your selection stays local. No photo or message was sent; this is the captured example answer."}
         </p>
       </Sheet>
     </ShopSurface>

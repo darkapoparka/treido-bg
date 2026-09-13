@@ -5,6 +5,7 @@ import path from "node:path";
 import { chromium } from "@playwright/test";
 import sharp from "../../apps/web/node_modules/sharp/dist/index.mjs";
 import { flowRecipes } from "./recipes.mjs";
+import { createLoadingReplay } from "./loading-replay.mjs";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const ROOT = path.resolve(__dirname, "../..");
@@ -142,9 +143,11 @@ function allFrames() {
       family: recipe?.family || hintFamily,
       route: recipe?.startUrl || hintRoute,
       recipeFrame: recipe?.frames?.[frameIndex] || null,
-      mappingStatus: recipe?.frames?.[frameIndex]
-        ? "reproducible"
-        : "route-hint",
+      mappingStatus: recipe?.frames?.[frameIndex]?.unresolved
+        ? "needs-replay"
+        : recipe?.frames?.[frameIndex]
+          ? "reproducible"
+          : "route-hint",
     }));
   });
 }
@@ -214,8 +217,18 @@ function roleLocator(page, action) {
   return action.nth === undefined ? locator : locator.nth(action.nth);
 }
 
-async function perform(page, action) {
-  if (action.type === "click") {
+async function perform(page, action, loadingReplay) {
+  if (action.type === "holdRsc") {
+    loadingReplay.holdRsc(action.url);
+  } else if (action.type === "waitRscHeld") {
+    await loadingReplay.waitRsc();
+  } else if (action.type === "releaseRsc") {
+    await loadingReplay.releaseRsc();
+  } else if (action.type === "delayCatalog") {
+    loadingReplay.delayCatalog(action.url, action.ms);
+  } else if (action.type === "waitCatalogDelayed") {
+    await loadingReplay.waitCatalog();
+  } else if (action.type === "click") {
     await roleLocator(page, action).click();
   } else if (action.type === "clickSelector") {
     await page.locator(action.selector).first().click();
@@ -245,6 +258,7 @@ async function perform(page, action) {
     const y = override && action.y !== 0 ? Number(override) : action.y;
     await page.evaluate((targetY) => window.scrollTo(0, targetY), y);
   } else if (action.type === "anchor") {
+    await settle(page);
     const locator = roleLocator(page, action);
     await locator.waitFor({ state: "visible" });
     await locator.evaluate((node, targetY) => {
@@ -252,7 +266,10 @@ async function perform(page, action) {
       window.scrollBy(0, rect.top - targetY);
     }, action.y);
   } else if (action.type === "waitVisible") {
-    await roleLocator(page, action).waitFor({ state: "visible" });
+    await roleLocator(page, action).waitFor({
+      state: "visible",
+      timeout: action.timeoutMs,
+    });
   } else if (action.type === "waitUrl") {
     await page.waitForURL(action.url);
   } else if (action.type === "wait") {
@@ -279,6 +296,7 @@ async function perform(page, action) {
       );
     await page.setViewportSize({ width: action.width, height: action.height });
   } else if (action.type === "anchorSelector") {
+    await settle(page);
     await page
       .locator(action.selector)
       .first()
@@ -302,13 +320,20 @@ async function perform(page, action) {
 }
 async function settle(page) {
   await page.waitForLoadState("domcontentloaded");
+  // Streamed route images can be inserted after the first visible heading.
+  // Wait for the current DOM's decoded images before measuring scroll anchors.
+  await page.waitForFunction(() =>
+    [...document.images].every(
+      (image) =>
+        !image.getAttribute("src") ||
+        (image.complete && image.naturalWidth > 0),
+    ),
+  );
   await page.evaluate(async () => {
     await document.fonts.ready;
     await Promise.all(
       [...document.images].map((image) =>
-        image.complete
-          ? Promise.resolve()
-          : image.decode().catch(() => undefined),
+        image.getAttribute("src") ? image.decode() : Promise.resolve(),
       ),
     );
     await new Promise((resolve) =>
@@ -451,10 +476,12 @@ async function captureFrame(browser, frame, runDir) {
       },
     ]);
   const page = await context.newPage();
+  const loadingReplay = createLoadingReplay(page, BASE_URL);
   const browserErrors = [];
   page.on("pageerror", (error) => browserErrors.push(error.message));
 
   try {
+    await loadingReplay.install();
     page.setDefaultTimeout(10_000);
     await page.goto(`${BASE_URL}${startUrl}`, {
       waitUntil: "domcontentloaded",
@@ -478,16 +505,28 @@ async function captureFrame(browser, frame, runDir) {
     });
     for (let index = replayStart; index < frame.frameNo; index += 1) {
       for (const action of recipe.frames[index].actions || []) {
-        await perform(page, action);
+        await perform(page, action, loadingReplay);
       }
     }
     await settle(page);
+    const guard = frame.recipeFrame.captureGuard;
+    const assertCaptureState = async () => {
+      if (guard && !(await roleLocator(page, guard).isVisible()))
+        throw new Error(
+          `Required capture state is no longer visible: ${frame.id}`,
+        );
+    };
+    await assertCaptureState();
     await normalizeReference(frame.reference, referencePath);
     const viewport = page.viewportSize();
+    const captureUrl = page.url();
     const screenshot = await page.screenshot({
       fullPage: false,
       animations: "disabled",
     });
+    await assertCaptureState();
+    for (const action of frame.recipeFrame.afterCapture || [])
+      await perform(page, action, loadingReplay);
     if (viewport.height < HEIGHT) {
       const masks = frame.recipeFrame.masks ?? [];
       for (let y = viewport.height; y < HEIGHT; y += 1)
@@ -515,9 +554,13 @@ async function captureFrame(browser, frame, runDir) {
     return {
       ...serializeFrame(frame),
       status: "scored",
-      url: page.url(),
+      url: captureUrl,
+      continuationUrl: frame.recipeFrame.afterCapture?.length
+        ? page.url()
+        : undefined,
       scenario: scenario ?? "default",
       replayEntryFrame: replayStart + 1,
+      afterCaptureVerified: (frame.recipeFrame.afterCapture?.length ?? 0) > 0,
       browserErrors,
       ...comparison.metrics,
       artifacts: {
@@ -541,7 +584,11 @@ async function captureFrame(browser, frame, runDir) {
     );
     throw error;
   } finally {
-    await context.close();
+    try {
+      await loadingReplay.dispose();
+    } finally {
+      await context.close();
+    }
   }
 }
 
@@ -697,11 +744,13 @@ async function runBaseline(args) {
   });
   try {
     for (const frame of frames) {
-      if (!frame.recipeFrame) {
+      if (!frame.recipeFrame || frame.recipeFrame.unresolved) {
         rows.push({
           ...serializeFrame(frame),
           status: "unmapped",
-          error: "No deterministic replay recipe yet",
+          error:
+            frame.recipeFrame?.unresolved ||
+            "No deterministic replay recipe yet",
         });
         continue;
       }
@@ -753,8 +802,10 @@ function printInventory() {
   const payload = writeFrameMap();
   const byFlow = manifest.flows.map((flow, index) => {
     const flowNo = index + 1;
-    const mapped = flowRecipes[flowNo]?.frames?.length || 0;
-    return `${String(flowNo).padStart(2, "0")} ${String(flow.screens.length).padStart(2, "0")} frames, ${String(mapped).padStart(2, "0")} replayed - ${flow.title}`;
+    const mapped =
+      flowRecipes[flowNo]?.frames?.filter((frame) => frame && !frame.unresolved)
+        .length || 0;
+    return `${String(flowNo).padStart(2, "0")} ${String(flow.screens.length).padStart(2, "0")} frames, ${String(mapped).padStart(2, "0")} recipes - ${flow.title}`;
   });
   console.log(
     `${payload.flows} flows / ${payload.frames} frames / ${payload.reproducibleFrames} deterministic replay recipes`,

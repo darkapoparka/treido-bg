@@ -54,6 +54,10 @@ test("captured outfit labels scroll the complete result groups", async ({
 }) => {
   await page.goto("/minis/look");
   await page.getByRole("button", { name: "Choose Photo", exact: true }).click();
+  await page.keyboard.press("Escape");
+  await page
+    .getByRole("button", { name: "Get the Look preview controls", exact: true })
+    .click();
   await page.getByRole("button", { name: "Use reference outfit" }).click();
   await page.getByRole("button", { name: "View captured matches" }).click();
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -66,8 +70,23 @@ test("captured outfit labels scroll the complete result groups", async ({
     "Women’s Black and White Gingham Mini Skirt",
   ]) {
     await page.getByRole("button", { name: label, exact: true }).click();
+    const selected = page.getByRole("region", {
+      name: "Selected outfit piece",
+      exact: true,
+    });
+    await expect(
+      selected.getByRole("heading", { name: label, exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: label, exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
+    // f058-007 keeps the outfit in place and shows its selected-piece panel.
+    // The explicit all-matches action, not the hotspot, scrolls result groups.
+    await page
+      .getByRole("button", { name: "View all matching pieces", exact: true })
+      .click();
     const section = page
-      .locator(".look-results section")
+      .locator(".look-results section[id]")
       .filter({ has: page.getByRole("heading", { name: label, exact: true }) });
     await expect
       .poll(async () => {
@@ -97,6 +116,10 @@ test("captured skin result keeps existing source products", async ({
   await page.goto("/minis/skin");
   await page.getByRole("button", { name: "Analyze My Skin" }).click();
   await page.getByRole("button", { name: "Share", exact: true }).click();
+  await page.keyboard.press("Escape");
+  await page
+    .getByRole("button", { name: "Skincare AI preview controls", exact: true })
+    .click();
   await page.getByRole("button", { name: "View reference example" }).click();
   await expect(
     page.getByRole("heading", { name: "Overall Skin Summary" }),
@@ -146,7 +169,7 @@ test("search suggestions replace the entry and keep captured store choices", asy
   await page.goto("/search");
   await expect(
     page.getByRole("link", { name: /Finding the right pair of jeans/ }),
-  ).toBeVisible();
+  ).toHaveCount(0);
   const searchInput = page.getByRole("textbox", { name: "Search products" });
   await searchInput.click();
   await page.keyboard.type("Jeans", { delay: 90 });
@@ -198,9 +221,9 @@ test("Sol advances the entered captured example to source product cards", async 
   await page.goto("/minis/sol");
   await page.getByRole("button", { name: "Agree", exact: true }).click();
   await page.getByRole("button", { name: /Allow & Continue/ }).click();
-  await page
-    .getByRole("button", { name: "Continue with text", exact: true })
-    .click();
+  await page.getByRole("button", { name: "Share", exact: true }).click();
+  await expect(page.locator('[data-sol-phase="greeting"]')).toBeVisible();
+  await page.getByRole("button", { name: "Type instead", exact: true }).click();
   await page.getByRole("textbox", { name: "Message Sol" }).fill("sunglasses");
   await page.getByRole("button", { name: "Send local message" }).click();
   await expect(
@@ -217,9 +240,7 @@ test("Sol advances the entered captured example to source product cards", async 
   ).toBeVisible();
   await expect(page.locator(".sol-product-results")).toContainText("$14.90");
   await expect(
-    page
-      .locator('.sol-product-results a[href="/products/round-sunglasses"]')
-      .first(),
+    page.locator('.sol-product-results [data-product-id="hush-glasses"]'),
   ).toHaveCount(1);
 });
 
@@ -262,7 +283,7 @@ test("pickup payment follows card deletion when returning from account", async (
 }) => {
   await page.goto("/checkout?store=white-rock");
   await expect(
-    page.getByText("Visa •••• 4263", { exact: false }),
+    page.getByText("Visa ···· 4263", { exact: false }),
   ).toBeVisible();
   await page.getByRole("link", { name: "Edit payment method" }).click();
   await expect(page.locator(".payment-card-button")).toHaveCount(1);

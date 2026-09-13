@@ -25,7 +25,7 @@ type StoreReview = ReviewSearchRecord & {
 const records: StoreReview[] = [
   {
     id: "store-review-1",
-    syntheticAuthor: "Avery",
+    syntheticAuthor: "Anne",
     dateLabel: "Yesterday",
     stars: 5,
     title: "Best shampoo set ever",
@@ -34,7 +34,7 @@ const records: StoreReview[] = [
   },
   {
     id: "store-review-2",
-    syntheticAuthor: "Jamie",
+    syntheticAuthor: "Jill",
     dateLabel: "Yesterday",
     stars: 5,
     title: "Pleasant Surprise",

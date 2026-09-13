@@ -25,22 +25,23 @@ export const homeRecipes = {
       welcome(),
       {
         state: "recently-viewed-shops",
-        entry: { startUrl: "/?feed=recent-stores", scenario: "home-welcome" },
+        entry: {
+          startUrl: "/?feed=recent-stores",
+          scenario: "home-recent-shops",
+        },
         notes:
           "Separate recorded browsing history; no captured transition from the welcome feed.",
         actions: [top],
       },
       {
         state: "recently-viewed-products-with-order",
-        entry: { startUrl: "/products/u-see-me", scenario: "returning-home" },
+        entry: {
+          startUrl: "/?feed=recent-products",
+          scenario: "home-recent-products",
+        },
         notes:
-          "Reconstruct prior visits through product routes, not injected DOM or painted screenshots.",
-        actions: [
-          { type: "goto", url: "/products/round-sunglasses" },
-          { type: "goto", url: "/products/cleo" },
-          { type: "goto", url: "/?feed=recent-products" },
-          top,
-        ],
+          "Separate captured browsing history is an explicit entry fixture. A hard document navigation resets the in-memory history, so product-route goto calls cannot reconstruct preceding visits.",
+        actions: [top],
       },
       {
         state: "tracking-feed-drmtlgy",
@@ -91,7 +92,7 @@ export const homeRecipes = {
       },
       {
         state: "deals-francesco-solid-hair",
-        actions: [anchor(".deals-feed > section:nth-child(3)", 56)],
+        actions: [anchor(".deals-feed > section:nth-child(3)", 45)],
       },
     ],
   },
@@ -148,9 +149,13 @@ export const homeRecipes = {
       { state: "kitsch-campaign-feed", actions: [anchor(".campaign-kitsch")] },
       {
         state: "pura-shop-options",
+        entry: {
+          startUrl: "/?feed=pura-options",
+          scenario: "home-pura-options",
+        },
         overlay: "dialog",
         notes:
-          "The campaign video advances in the capture. Its still-image background remains a visual/transition review obligation, not a masked region.",
+          "Separate recorded feed history: Pura is followed by DRMTLGY and the empty Cart shortcut is present before hiding. The captured video advances; its still-image background remains an unmasked motion difference. This entry does not simulate a video or reorder the feed after the hide action.",
         actions: [
           anchor(".campaign-pura"),
           click("button", "More options for Pura"),

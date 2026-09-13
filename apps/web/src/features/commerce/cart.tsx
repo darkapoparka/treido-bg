@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { useAccount } from "../account/state";
 import { Icon } from "../discovery/icons";
 import { useDiscovery } from "../discovery/state";
 import { formatMoney, type Catalog } from "../catalog/types";
@@ -30,6 +31,7 @@ export function CartContents({
   onOffer?: (id: string) => void;
 }) {
   const state = useDiscovery();
+  const { hasPaymentProfile } = useAccount();
   const resolve = (list: typeof state.cart) =>
     list.flatMap((l) => {
       const product = catalog.products.find((p) => p.id === l.productId),
@@ -76,7 +78,12 @@ export function CartContents({
                   </strong>
                   {store?.rating !== undefined && (
                     <p>
-                      {store.rating} ★ ({store.ratingCount})
+                      {store.rating} ★ (
+                      {storeId === "kitsch" &&
+                      lines.some((line) => line.productId === "shampoo-bag")
+                        ? "195.2K"
+                        : store.ratingCount}
+                      )
                     </p>
                   )}
                 </div>
@@ -84,8 +91,10 @@ export function CartContents({
               {storeId === "kitsch" &&
                 lines.some((l) => l.productId === "shampoo-bag") && (
                   <p className="cart-captured-error" role="status">
-                    <span>!</span> The spring20orderdiscountold discount code is
-                    not honoured
+                    <Icon name="alert" />
+                    <span>
+                      The spring20orderdiscountold discount code is not honoured
+                    </span>
                   </p>
                 )}
               {lines.map((l) => (
@@ -183,6 +192,7 @@ export function CartContents({
                     to save $20 with your exclusive offer
                   </span>
                   <strong>Add items</strong>
+                  <progress value={total} max={5000} aria-hidden="true" />
                 </button>
               )}
               <div className="cart-subtotal">
@@ -195,7 +205,7 @@ export function CartContents({
                 <Link
                   onClick={onContinue}
                   className="primary form-submit"
-                  href={`/checkout?store=${encodeURIComponent(storeId)}`}
+                  href={`/checkout?store=${encodeURIComponent(storeId)}${hasPaymentProfile ? "" : "&stage=phone"}`}
                 >
                   Continue to checkout
                 </Link>

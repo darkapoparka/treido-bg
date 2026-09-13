@@ -144,6 +144,16 @@
 .information {
   background: #c2bfb5;
 }
+.information > :global(.store-actions) {
+  top: 8px;
+}
+.information > :global(.store-actions) :global(.icon-button svg) {
+  width: 20px;
+  height: 20px;
+}
+.information > :global(.store-actions) :global(.follow) {
+  font-weight: 500;
+}
 .information :global(.store-info-brand) {
   font-size: 14px;
 }
@@ -153,10 +163,15 @@
 }
 .information :global(.store-description) {
   color: #393939;
+  font-size: 14.5px;
+  line-height: 18px;
+}
+.information :global(.store-description-more) {
+  font-size: 14.5px;
   line-height: 18px;
 }
 .information :global(.store-info-categories) {
-  margin-top: 28px;
+  margin-top: 30px;
   gap: 12px 16px;
 }
 .information :global(.store-info-categories img),
@@ -170,12 +185,19 @@
 .information :global(.store-info-categories span) {
   margin: 10px 8px 0;
   line-height: 18px;
-  font-weight: 500;
+  font-weight: 600;
 }
 .information :global(.store-info-panel) {
   margin-top: 20px;
   padding: 16px;
-  background: #dcd9d3;
+  background: #dbd7d0;
+  box-shadow: 0 12px 24px #322b222e;
+}
+.information :global(.store-info-links) {
+  padding-bottom: 10px;
+}
+.information :global(.store-info-reviews) {
+  padding-bottom: 19px;
 }
 .information :global(.store-info-panel h2) {
   margin: 0;
@@ -186,7 +208,9 @@
 }
 .information :global(.store-info-panel .detail-row) {
   min-height: 44px;
+  margin-top: 0;
   padding: 12px 0;
+  align-items: center;
   font-size: 16px;
   line-height: 20px;
   color: #393939;
@@ -199,25 +223,45 @@
   height: 20px;
   color: #73736e;
 }
-.information :global(.store-info-panel > .detail-row:first-child) {
-  padding-top: 0;
+.information :global(.store-info-links > h2 + .detail-row) {
+  margin-top: 10px;
+}
+.information :global(.store-info-reviews > .detail-row) {
+  margin-top: 4px;
+  padding: 0;
   min-height: 40px;
+  height: 40px;
+}
+.information :global(.store-info-reviews > .detail-row > svg) {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  padding: 12px;
+  border-radius: 50%;
+  background: #cecdc7;
+  color: #111;
 }
 .information :global(.store-info-rating) {
-  margin-top: 16px;
+  margin-top: 18px;
 }
 .information :global(.store-info-rating > b) {
   font-size: 24px;
   line-height: 28px;
 }
 .information :global(.store-info-rating > span) {
+  display: block;
+  flex: 0 0 124px;
+  width: 124px;
+  height: 28px;
   font-size: 0;
   position: relative;
 }
 .information :global(.store-info-rating > span)::before,
 .information :global(.store-info-rating > span)::after {
   content: "★★★★★";
-  font-size: 24px;
+  display: block;
+  white-space: nowrap;
+  font-size: 28px;
   line-height: 28px;
   letter-spacing: 1px;
 }
@@ -243,18 +287,292 @@
 .information :global(.store-review-preview) {
   min-height: 116px;
   margin-top: 0;
+  padding: 12px 16px 17px;
   border: 1px solid #c2c2c0;
   background: #cececd;
 }
+.information :global(.store-review-preview > span) {
+  font-size: 14px;
+  line-height: 18px;
+}
 .information :global(.store-review-preview b) {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 16px;
   font-weight: 400;
 }
 .information :global(.store-review-preview small) {
   color: #767672;
+  font-size: 12px;
+  line-height: 16px;
+}
+.information :global(.store-review-preview i) {
+  font-size: 10px;
 }
 .information > :global(a.store-info-panel),
 .information > :global(button.store-info-panel) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   min-height: 64px;
   padding: 16px;
+  border: 0;
+  font-size: 16px;
+  font-weight: 500;
   line-height: 20px;
+}
+.information > :global(a.store-info-panel) > svg,
+.information > :global(button.store-info-panel) > svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: #73736e;
+}
+
+/* A short result set retains the filter trigger's viewport context. */
+.store :global(.store-all-products) {
+  min-height: calc(100dvh - 120px);
+}
+.storeHeader[inert] {
+  visibility: hidden;
+}
+.store:global(.chemical-store) :global(.store-hero) {
+  background:
+    url("/api/reference-media/chemical-store-header-photo") center top / 100%
+      145px no-repeat,
+    linear-gradient(#939098, #a6a5a1);
+}
+.store:global(.chemical-store) :global(.store-actions),
+.chemicalPinned :global(.store-actions) {
+  gap: 4px;
+}
+.store:global(.chemical-store) :global(.category-rail),
+.chemicalPinned :global(.category-rail) {
+  gap: 8px;
+}
+.store:global(.chemical-store) :global(.category-rail .pill),
+.chemicalPinned :global(.category-rail .pill) {
+  font-weight: 500;
+  padding-right: 13px;
+  gap: 6px;
+}
+.chemicalPinned {
+  position: fixed;
+  z-index: 25;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 760px;
+  height: 145px;
+  padding-top: 16px;
+  border-radius: 36px 36px 0 0;
+  background:
+    url("/api/reference-media/chemical-store-header-photo") center top / 100%
+      145px no-repeat,
+    #939098;
+}
+.chemicalPinned::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: #292a29;
+}
+.chemicalPinned :global(.category-rail) {
+  position: absolute;
+  top: 85px;
+  left: 0;
+  right: 0;
+  padding-top: 0;
+}
+.store:global(.chemical-store) :global(.store-recommendations) {
+  padding-bottom: 13px;
+  background: #cfd0c9;
+}
+.store:global(.chemical-store) :global(.store-recommendations h1),
+.store:global(.chemical-store) :global(.store-recommendations h2) {
+  line-height: 29px;
+  letter-spacing: -0.65px;
+  font-weight: 600;
+  margin-bottom: 9px;
+}
+.store:global(.chemical-store) :global(.store-recommendations .product-media) {
+  background: #f5f5f5;
+}
+.store:global(.chemical-store) :global(.product-copy) > strong {
+  font-weight: 600;
+}
+.store:global(.chemical-store) :global(.price-badge.deal) {
+  background: #080808;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  padding: 1px 6px;
+}
+.store:global(.chemical-store)
+  :global(.product-media img[src$="chemical-store-deep-partial"]) {
+  width: 57px;
+  height: 133px;
+  margin: 1px;
+  object-fit: fill;
+}
+.store:global(.chemical-store) :global(.store-video-rail) {
+  padding-top: 17px;
+  gap: 8px;
+}
+.store:global(.chemical-store) :global(.store-video-rail) > :is(a, button) {
+  position: relative;
+  flex: 0 0 109px;
+  width: 109px;
+  height: 160px;
+  padding: 0;
+  border-radius: 20px;
+  background: #656866;
+  overflow: hidden;
+}
+.store:global(.chemical-store) :global(.store-video-rail img) {
+  width: 109px;
+  height: 160px;
+  object-fit: fill;
+}
+.store:global(.chemical-store) :global(.store-video-rail span) {
+  left: 12px;
+  bottom: 8px;
+  font-weight: 400;
+  line-height: 16px;
+}
+.store:global(.chemical-store) .chemicalFeatured {
+  margin-top: 16px;
+}
+.store:global(.chemical-store) .chemicalFeatured h2 {
+  margin-bottom: 11px;
+}
+.chemicalFeatured :global(.product-rail) > button {
+  flex: 0 0 135px;
+  width: 135px;
+  height: 160px;
+  padding: 0;
+  border-radius: 20px;
+  background: #788183;
+  overflow: hidden;
+  display: block;
+}
+.chemicalFeatured :global(.product-rail) > button > img {
+  display: block;
+  margin: 3px;
+  width: 129px;
+  height: 52px;
+  object-fit: fill;
+}
+.chemicalFeatured :global(.product-rail) > button:last-child > img {
+  width: 55px;
+}
+.video {
+  background: linear-gradient(#575950, #383a35 76%, #32332f);
+}
+.video :global(.video-poster) {
+  object-fit: cover;
+}
+.video :global(.video-bottom) {
+  left: 14px;
+  right: 24px;
+  gap: 10px;
+}
+.video :global(.video-bottom) > .videoStore {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 48px;
+}
+.videoStoreLogo {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 0 1px #684cde;
+  background: #151515;
+}
+.videoStoreLogo img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+}
+.videoStore > span:last-child,
+.videoProduct > span:nth-child(2) {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.videoStore b,
+.videoProduct b {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+}
+.videoStore small,
+.videoProduct small {
+  color: #c7c7c4;
+  font-size: 12px;
+  line-height: 15px;
+}
+.video :global(.video-bottom) > .videoProduct {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  margin-left: 2px;
+}
+.videoProductPhoto {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  background: white;
+}
+.videoProductPhoto img {
+  width: 15px;
+  height: 29px;
+  object-fit: contain;
+}
+.videoProduct > span:nth-child(2) {
+  flex: 1;
+}
+.videoProduct b {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.videoProduct > svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+.video .videoTimeline {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.video .videoTimeline > :global(.icon-button) {
+  background: transparent;
+  flex: none;
+}
+.videoTrack {
+  height: 3px;
+  flex: 1;
+  background: #81817f;
+  border-radius: 2px;
+}
+.video .videoAudio svg {
+  width: 19px;
+  height: 19px;
 }

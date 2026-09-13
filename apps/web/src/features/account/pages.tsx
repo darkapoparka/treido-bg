@@ -48,6 +48,8 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
   } = useAccount();
   const discovery = useDiscovery();
   const [logout, setLogout] = useState(false);
+  const activeOrders = orders.filter((order) => !order.archived);
+  const hasOrders = orders.length > 0;
   const starterProfile =
     !profile.firstName &&
     !profile.lastName &&
@@ -139,15 +141,20 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
           <strong>Following</strong>
         </Link>
       </div>
-      <h2>
-        {starterProfile ? (
+      <h2 className="profile-order-heading">
+        {!hasOrders ? (
           "Order history"
         ) : (
-          <Link href="/orders/history">Order history ›</Link>
+          <Link href="/orders/history" aria-label="Order history ›">
+            Order history
+            <span aria-hidden="true">
+              <Icon name="back" />
+            </span>
+          </Link>
         )}
       </h2>
       <div className="account-panel profile-order-panel">
-        {starterProfile ? (
+        {!hasOrders ? (
           <div className="profile-empty-orders">
             <img
               className="profile-empty-package"
@@ -167,7 +174,7 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
           </div>
         ) : (
           <>
-            {orders.slice(0, 2).map((order) => {
+            {activeOrders.slice(0, 2).map((order) => {
               const product = catalog.products.find(
                 (p) => p.id === order.productId,
               );

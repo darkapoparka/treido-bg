@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Sheet } from "./components";
 import { Icon } from "./icons";
+import styles from "./search-entry.module.css";
 import {
   categoryValue,
   emptyFilters,
@@ -38,7 +39,19 @@ export function Filters({ open, ...props }: FilterProps) {
   return open ? <OpenFilters {...props} /> : null;
 }
 
-function OpenFilters({ onClose, value, onChange }: Omit<FilterProps, "open">) {
+function OpenFilters({
+  onClose,
+  value: initialValue,
+  onChange: commit,
+}: Omit<FilterProps, "open">) {
+  // Keep native controlled inputs in this sheet synchronous with their event.
+  // The URL remains the committed result state, but its external-store update
+  // can arrive after the browser checks whether a checkbox changed.
+  const [value, setValue] = useState(initialValue);
+  const onChange = (next: SearchFilters) => {
+    setValue(next);
+    commit(next);
+  };
   const [section, setSection] = useState<FilterSection | null>(null);
   const [categoryPath, setCategoryPath] = useState(false);
   const closeSection = () => {
@@ -54,7 +67,8 @@ function OpenFilters({ onClose, value, onChange }: Omit<FilterProps, "open">) {
     list.map((option) => {
       const opensChildren = key === "category" && option === "Women";
       const selected =
-        value[key] === (key === "category" ? categoryValue(option) : option);
+        value[key] === (key === "category" ? categoryValue(option) : option) ||
+        (key === "category" && option === "All Women" && !value.category);
       return (
         <button
           type="button"
@@ -83,7 +97,7 @@ function OpenFilters({ onClose, value, onChange }: Omit<FilterProps, "open">) {
       <Sheet
         open
         title="Filter"
-        className={`filter-tall ${section ? "filter-covered" : ""}`}
+        className={`${styles.filterSheet} filter-tall ${section ? "filter-covered" : ""}`}
         onClose={onClose}
       >
         <div className="filter-options">
@@ -129,7 +143,7 @@ function OpenFilters({ onClose, value, onChange }: Omit<FilterProps, "open">) {
       <Sheet
         open={section !== null}
         title={section ? names[section] : "Filter"}
-        className={`${section === "sort" ? "filter-short" : "filter-tall"} ${section === "category" && categoryPath ? "filter-covered" : ""}`}
+        className={`${styles.filterSheet} ${section === "sort" ? "filter-short" : "filter-tall"} ${section === "category" && categoryPath ? "filter-covered" : ""}`}
         onClose={closeSection}
       >
         <div className="filter-options">
@@ -155,7 +169,7 @@ function OpenFilters({ onClose, value, onChange }: Omit<FilterProps, "open">) {
       <Sheet
         open={section === "category" && categoryPath}
         title="Women"
-        className="filter-tall"
+        className={`${styles.filterSheet} filter-tall`}
         onClose={() => setCategoryPath(false)}
       >
         <div className="filter-options">

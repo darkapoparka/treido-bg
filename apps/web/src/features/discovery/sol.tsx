@@ -3,7 +3,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Catalog } from "../catalog/types";
-import { consumeSheetHistory, IconButton, ProductCard, Sheet } from "./components";
+import {
+  consumeSheetHistory,
+  IconButton,
+  ProductCard,
+  Sheet,
+} from "./components";
 import { Icon } from "./icons";
 import { MiniAccess, MiniShell } from "./mini-frame";
 import { SavedCard } from "./saved-card";
@@ -73,7 +78,9 @@ export function Sol({ catalog }: { catalog: Catalog }) {
   );
   useEffect(() => {
     const onBack = (event: PopStateEvent) => {
-      setDraft(typeof event.state?.solDraft === "string" ? event.state.solDraft : "");
+      setDraft(
+        typeof event.state?.solDraft === "string" ? event.state.solDraft : "",
+      );
     };
     window.addEventListener("popstate", onBack);
     return () => window.removeEventListener("popstate", onBack);
@@ -117,7 +124,9 @@ export function Sol({ catalog }: { catalog: Catalog }) {
             ? "Nice choice, let’s lean into that style and pull a few similar options."
             : "";
   const gold = catalog.products.find((product) => product.id === "u-see-me");
-  const hush = catalog.savedListings?.find((product) => product.id === "hush-glasses");
+  const hush = catalog.savedListings?.find(
+    (product) => product.id === "hush-glasses",
+  );
   function submit() {
     const value = draft.trim();
     if (!value) return;
@@ -166,7 +175,9 @@ export function Sol({ catalog }: { catalog: Catalog }) {
               <br />
               to hear you speak.
             </h2>
-            <button onClick={() => setPermission(true)}>Allow & Continue ›</button>
+            <button onClick={() => setPermission(true)}>
+              Allow & Continue ›
+            </button>
           </div>
         </section>
       ) : (
@@ -182,7 +193,11 @@ export function Sol({ catalog }: { catalog: Catalog }) {
             alt="Sol"
           />
           {phase === "connecting" ? (
-            <p className={styles.connecting} role="status" aria-label="Connecting">
+            <p
+              className={styles.connecting}
+              role="status"
+              aria-label="Connecting"
+            >
               Connecting <span aria-hidden="true">•••</span>
             </p>
           ) : (
@@ -195,23 +210,26 @@ export function Sol({ catalog }: { catalog: Catalog }) {
                     </span>{" "}
                     which one feels the easiest to wear every day.
                   </>
-                ) : title}
+                ) : (
+                  title
+                )}
               </h1>
               {phase === "choices" && <p className={styles.tap}>Tap one</p>}
               {(phase === "choices" || phase === "selected") && (
                 <div className={`sol-picks ${styles.picks}`}>
-                  {(phase === "selected" && choice ? [choice] : choices[topic]).map(
-                    ([id, artwork, label]) => (
-                      <button
-                        key={id}
-                        aria-label={label}
-                        aria-pressed={phase === "selected" && choice?.[0] === id}
-                        onClick={() => change({ sol: "selected", choice: id })}
-                      >
-                        <img src={`/api/reference-media/${artwork}`} alt="" />
-                      </button>
-                    ),
-                  )}
+                  {(phase === "selected" && choice
+                    ? [choice]
+                    : choices[topic]
+                  ).map(([id, artwork, label]) => (
+                    <button
+                      key={id}
+                      aria-label={label}
+                      aria-pressed={phase === "selected" && choice?.[0] === id}
+                      onClick={() => change({ sol: "selected", choice: id })}
+                    >
+                      <img src={`/api/reference-media/${artwork}`} alt="" />
+                    </button>
+                  ))}
                 </div>
               )}
               {phase === "selected" && choice?.[0] !== "gold" && (
@@ -220,7 +238,9 @@ export function Sol({ catalog }: { catalog: Catalog }) {
                     {choice?.[2]} selected. Further recommendations for this
                     choice were not included in the recording.
                   </p>
-                  <button onClick={() => change({ sol: "choices", choice: null })}>
+                  <button
+                    onClick={() => change({ sol: "choices", choice: null })}
+                  >
                     Choose another
                   </button>
                 </div>
@@ -233,12 +253,19 @@ export function Sol({ catalog }: { catalog: Catalog }) {
                   tabIndex={0}
                 >
                   {gold && (
-                    <ProductCard product={gold} ratingStyle="summary" storeName="AKIRA" />
+                    <ProductCard
+                      product={gold}
+                      ratingStyle="summary"
+                      storeName="AKIRA"
+                    />
                   )}
                   {hush && (
                     <div className={styles.partialResult}>
                       <SavedCard
-                        product={{ ...hush, images: ["/api/reference-media/sol-hush-partial"] }}
+                        product={{
+                          ...hush,
+                          images: ["/api/reference-media/sol-hush-partial"],
+                        }}
                         seller="FORK Eyewear"
                       />
                     </div>
@@ -296,7 +323,9 @@ export function Sol({ catalog }: { catalog: Catalog }) {
             )}
             <IconButton
               icon="mic"
-              label={muted ? "Unmute microphone preview" : "Mute microphone preview"}
+              label={
+                muted ? "Unmute microphone preview" : "Mute microphone preview"
+              }
               pressed={muted}
               disabled={phase === "connecting"}
               onClick={() => change({ muted: muted ? null : "1" }, true)}
@@ -322,13 +351,23 @@ export function Sol({ catalog }: { catalog: Catalog }) {
           <h2 aria-hidden="true">Allow access to your microphone?</h2>
           <img src="/api/reference-media/mini-sol-icon" alt="" />
         </div>
-        <p>Sol: Browse by Voice will be able to record audio and use your microphone.</p>
-        <p role="note">Captured permission example. No microphone access is requested.</p>
+        <p>
+          Sol: Browse by Voice will be able to record audio and use your
+          microphone.
+        </p>
+        <p role="note">
+          Captured permission example. No microphone access is requested.
+        </p>
         <div className={styles.permissionActions}>
           <button onClick={() => setPermission(false)}>Cancel</button>
           <button
             onClick={() => {
-              change({ sol: "connecting", mode: null, topic: null, choice: null });
+              change({
+                sol: "connecting",
+                mode: null,
+                topic: null,
+                choice: null,
+              });
               setPermission(false);
             }}
           >
@@ -336,17 +375,26 @@ export function Sol({ catalog }: { catalog: Catalog }) {
           </button>
         </div>
       </Sheet>
-      <Sheet open={menu} title="Sol preview controls" onClose={() => setMenu(false)}>
+      <Sheet
+        open={menu}
+        title="Sol preview controls"
+        onClose={() => setMenu(false)}
+      >
         <p className="sheet-copy">
-          These are recorded examples, not a live assistant. No audio is captured
-          or sent. Type a sunglasses or baseball-cap query, or replay the
-          recorded voice example.
+          These are recorded examples, not a live assistant. No audio is
+          captured or sent. Type a sunglasses or baseball-cap query, or replay
+          the recorded voice example.
         </p>
         <div className={styles.menu}>
           <button
             className="primary"
             onClick={() => {
-              change({ sol: "response", topic: "glasses", choice: null, mode: null });
+              change({
+                sol: "response",
+                topic: "glasses",
+                choice: null,
+                mode: null,
+              });
               setMenu(false);
               setDraft("");
             }}
@@ -356,7 +404,12 @@ export function Sol({ catalog }: { catalog: Catalog }) {
           <button
             className="pill"
             onClick={() => {
-              change({ sol: "greeting", mode: "text", topic: null, choice: null });
+              change({
+                sol: "greeting",
+                mode: "text",
+                topic: null,
+                choice: null,
+              });
               setMenu(false);
             }}
           >
@@ -365,7 +418,13 @@ export function Sol({ catalog }: { catalog: Catalog }) {
           <button
             className="pill"
             onClick={() => {
-              change({ sol: null, mode: null, topic: null, choice: null, muted: null });
+              change({
+                sol: null,
+                mode: null,
+                topic: null,
+                choice: null,
+                muted: null,
+              });
               setDraft("");
               setMenu(false);
             }}
@@ -383,7 +442,10 @@ export function Sol({ catalog }: { catalog: Catalog }) {
           This recording contains sunglasses and baseball-cap examples, not a
           live answer to every query. Your message has not been sent anywhere.
         </p>
-        <button className="primary form-submit" onClick={() => setUnsupported(false)}>
+        <button
+          className="primary form-submit"
+          onClick={() => setUnsupported(false)}
+        >
           Return to my draft
         </button>
       </Sheet>

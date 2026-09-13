@@ -34,11 +34,11 @@ export const shopSourceOrderNumber = "12748251";
 
 export const shopSourcePickup = {
   searchPostalCode: "94025",
-  warning: "The closest pickup location is more than 100 miles from 94025.",
+  warning: "The closest location with your item is more than 100 mi from",
   name: "White Rock Soap Gallery",
   distance: "1,468.9 mi",
   price: "Free",
   street: "10233 East Northwest Highway, Ste 401",
-  cityRegionPostal: "Dallas, TX 75238",
+  cityRegion: "Dallas TX",
   readiness: "Usually ready in 24 hours",
 } as const;

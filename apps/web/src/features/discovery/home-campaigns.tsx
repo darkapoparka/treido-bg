@@ -19,6 +19,9 @@ type Campaign = {
   tall?: boolean;
   photo?: string;
   partialPhoto?: boolean;
+  headerPhoto?: string;
+  footerPhoto?: string;
+  wordmark?: string;
   products: string[];
   partialProducts?: boolean;
   trailingPrice?: string;
@@ -33,6 +36,8 @@ const campaigns: Campaign[] = [
     title: "PRINCESS POLLY",
     rating: "4.5 ★ (414.7K)",
     tone: "princess",
+    headerPhoto: "home-campaign-princess-header",
+    wordmark: "home-campaign-princess-wordmark",
     products: ["home-princess-top", "home-princess-dress"],
     partialProducts: true,
     trailingPrice: "$35.00",
@@ -43,6 +48,9 @@ const campaigns: Campaign[] = [
     title: "DRMTLGY",
     rating: "4.5 ★ (78.1K)",
     tone: "drmtlgy",
+    headerPhoto: "home-campaign-drmtlgy-header",
+    footerPhoto: "home-campaign-drmtlgy-footer",
+    wordmark: "home-campaign-drmtlgy-wordmark",
     products: [
       "home-drmtlgy-eye",
       "home-drmtlgy-retinol",
@@ -57,6 +65,7 @@ const campaigns: Campaign[] = [
     store: "mountain-goat",
     rating: "4.9 ★ (2K)",
     tone: "mountain",
+    headerPhoto: "home-campaign-mountain-header",
     products: ["home-mountain-pink", "home-mountain-black"],
     partialProducts: true,
     trailingPrice: "$14.00",
@@ -76,6 +85,7 @@ const campaigns: Campaign[] = [
     id: "accessories",
     rating: "4.3 ★ (1.6K)",
     tone: "accessories",
+    headerPhoto: "home-campaign-accessories-header",
     products: [],
     offer: "Save $35",
     threshold: "$140",
@@ -86,12 +96,23 @@ const campaigns: Campaign[] = [
     title: "/kit·sch/",
     rating: "4.5 ★ (194.9K)",
     tone: "kitsch",
+    headerPhoto: "home-campaign-kitsch-header",
+    footerPhoto: "home-campaign-kitsch-footer",
     tall: true,
     photo: "home-kitsch-photo",
     partialPhoto: true,
     products: ["home-air-dry-cream", "home-curl-cream", "rice-bundle"],
     offer: "Save $15",
     threshold: "$50",
+  },
+  {
+    id: "carpe",
+    store: "carpe",
+    rating: "",
+    tone: "carpe",
+    // Only the next campaign's header is visible in f002-006/f042-001/f096-001.
+    // Its rating, product identities, prices and lower artwork are unknown.
+    products: [],
   },
   {
     id: "pura",
@@ -106,23 +127,39 @@ const campaigns: Campaign[] = [
   },
 ];
 
+// Campaign photographs preserve the recorded framing without changing detail-page media.
+const campaignProductPhotos: Record<string, string> = {
+  "home-princess-top": "home-campaign-princess-top",
+  "home-princess-dress": "home-campaign-princess-dress",
+  "home-tea-blue": "home-campaign-tea-blue",
+  "home-tea-orange": "home-campaign-tea-orange",
+};
+
 export function HomeCampaigns({
   catalog,
   first,
   productLayout = "rail",
+  productOrder = "welcome",
+  history = "welcome",
 }: {
   catalog: Catalog;
   first?: string;
   productLayout?: "rail" | "grid";
+  productOrder?: "welcome" | "tracking";
+  history?: "welcome" | "pura-options";
 }) {
   const firstIndex = Math.max(
     0,
     campaigns.findIndex((campaign) => campaign.id === first),
   );
-  const orderedCampaigns = [
-    ...campaigns.slice(firstIndex),
-    ...campaigns.slice(0, firstIndex),
-  ];
+  // This source history already has DRMTLGY after Pura before any hide action.
+  // Conceal/Undo only affect the selected card; they never reorder this feed.
+  const orderedCampaigns =
+    history === "pura-options"
+      ? ["pura", "drmtlgy"].flatMap((id) =>
+          campaigns.filter((campaign) => campaign.id === id),
+        )
+      : [...campaigns.slice(firstIndex), ...campaigns.slice(0, firstIndex)];
   const state = useDiscovery();
   const [menu, setMenu] = useState<Campaign | null>(null);
   const [stage, setStage] = useState<"menu" | "reason" | "report" | "reported">(
@@ -139,11 +176,15 @@ export function HomeCampaigns({
   }
   return (
     <>
-      <div className="home-campaigns">
+      <div className="home-campaigns" data-campaign-history={history}>
         {orderedCampaigns.map((c) => {
           const store = catalog.stores.find((s) => s.id === c.store),
             concealed = hidden.includes(c.id);
           const href = c.store ? `/stores/${c.store}` : "/search";
+          const rating =
+            c.id === "drmtlgy" && productOrder === "welcome"
+              ? "4.5 ★ (78K)"
+              : c.rating;
           return (
             <section
               key={c.id}
@@ -155,6 +196,21 @@ export function HomeCampaigns({
                 inert={concealed}
                 aria-hidden={concealed || undefined}
               >
+                {c.headerPhoto && (
+                  <img
+                    className="campaign-header-photo"
+                    src={`/api/reference-media/${c.headerPhoto}`}
+                    alt=""
+                  />
+                )}
+                {c.footerPhoto &&
+                  !(c.id === "drmtlgy" && productLayout === "grid") && (
+                    <img
+                      className="campaign-footer-photo"
+                      src={`/api/reference-media/${c.footerPhoto}`}
+                      alt=""
+                    />
+                  )}
                 {c.photo && (
                   <img
                     className={
@@ -172,7 +228,13 @@ export function HomeCampaigns({
                     className={`campaign-brand ${c.title ? "campaign-wordmark" : ""}`}
                     aria-label={`Visit ${store?.name ?? "shop"}`}
                   >
-                    {c.title ? (
+                    {c.wordmark ? (
+                      <img
+                        className="campaign-wordmark-image"
+                        src={`/api/reference-media/${c.wordmark}`}
+                        alt={c.title ?? store?.name ?? ""}
+                      />
+                    ) : c.title ? (
                       c.id === "kitsch" ? (
                         <KitschWordmark />
                       ) : (
@@ -192,13 +254,13 @@ export function HomeCampaigns({
                         )}
                         <span>
                           {store.name}
-                          <small>{c.rating}</small>
+                          {c.rating && <small>{c.rating}</small>}
                         </span>
                       </>
                     ) : null}
                   </Link>
                   {(c.title || !store) && (
-                    <span className="campaign-rating">{c.rating}</span>
+                    <span className="campaign-rating">{rating}</span>
                   )}
                   <IconButton
                     icon="more"
@@ -220,7 +282,14 @@ export function HomeCampaigns({
                         "home-drmtlgy-eye",
                         "home-drmtlgy-masks",
                       ]
-                    : c.products
+                    : c.id === "drmtlgy" && productOrder === "welcome"
+                      ? [
+                          "home-drmtlgy-retinol",
+                          "home-drmtlgy-needleless",
+                          "home-drmtlgy-tinted",
+                          "home-drmtlgy-eye",
+                        ]
+                      : c.products
                   ).map((id, index) => {
                     const p = catalog.products.find((p) => p.id === id);
                     return p ? (
@@ -229,7 +298,14 @@ export function HomeCampaigns({
                         key={`${id}-${index}`}
                       >
                         <Link href={`/products/${id}`} aria-label={p.title}>
-                          <img src={p.images[0]} alt={p.title} />
+                          <img
+                            src={
+                              campaignProductPhotos[id]
+                                ? `/api/reference-media/${campaignProductPhotos[id]}`
+                                : p.images[0]
+                            }
+                            alt={p.title}
+                          />
                         </Link>
                         <span className="campaign-price">
                           {formatMoney(p.price)}
@@ -255,8 +331,8 @@ export function HomeCampaigns({
                   )}
                   {c.id === "accessories" &&
                     [
-                      ["home-accessory-cap", "$38.50", "$99.99"],
-                      ["home-accessory-glasses", "$33.50", "$786.00"],
+                      ["home-campaign-accessory-cap", "$38.50", "$99.99"],
+                      ["home-campaign-accessory-glasses", "$33.50", "$786.00"],
                       ["", "$108.50", ""],
                     ].map(([image, price, was]) => (
                       <Link

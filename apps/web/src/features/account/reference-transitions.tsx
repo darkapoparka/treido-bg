@@ -7,16 +7,26 @@ import Link from "next/link";
 import { Icon } from "../discovery/icons";
 import { AccountPage } from "./forms";
 
-export function ShopSplash({ newJourney = false }: { newJourney?: boolean }) {
+export function ShopSplash({
+  newJourney = false,
+  captured = false,
+}: {
+  newJourney?: boolean;
+  captured?: boolean;
+}) {
   const router = useRouter();
   useEffect(() => {
     const timer = window.setTimeout(
       () =>
-        router.replace(newJourney ? "/onboarding?journey=new" : "/onboarding"),
+        router.replace(
+          newJourney
+            ? `/onboarding?journey=new${captured ? "&reference=captured" : ""}`
+            : "/onboarding",
+        ),
       1400,
     );
     return () => window.clearTimeout(timer);
-  }, [router, newJourney]);
+  }, [router, newJourney, captured]);
   return (
     <ShopSurface
       className={"shop-splash" + (newJourney ? " purple" : "")}

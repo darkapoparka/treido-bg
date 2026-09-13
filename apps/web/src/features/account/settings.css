@@ -645,7 +645,11 @@
   background: #5433eb;
 }
 .shop-splash.purple .splash-wordmark {
-  filter: brightness(0) invert(1);
+  top: calc(50dvh - 59px);
+  width: 140px;
+  height: 58px;
+  filter: grayscale(1) contrast(1.2) invert(1) brightness(2);
+  mix-blend-mode: screen;
 }
 .splash-powered {
   position: absolute;
@@ -826,7 +830,7 @@
 .login-page .auth-art.auth-loop {
   width: 32px;
   height: 34px;
-  margin-bottom: 24px;
+  margin-bottom: 21px;
 }
 .login-page .auth-content > h1 {
   font-size: 28px;
@@ -852,15 +856,15 @@
   min-height: 52px;
   border-radius: 28px;
   background: #5433e9;
-  margin-top: 16px;
+  margin-top: 0;
   font-size: 16px;
   font-weight: 500;
   box-shadow: 0 10px 20px #5433e92b;
 }
 .login-page .auth-content .auth-terms {
-  margin-top: 18px;
-  font-size: 11px;
-  line-height: 14px;
+  margin-top: 16px;
+  font-size: 12px;
+  line-height: 16px;
 }
 .login-page.auth-code .auth-form {
   padding: 0 3px;
@@ -904,6 +908,20 @@
   background: #f0ebff;
   border: 1.5px solid #5433e9;
   color: #5433e9;
+}
+.login-page.auth-journey-new.auth-screen-email-code.auth-phase-pending
+  .six-code
+  span {
+  background: #f0ebff;
+  border: 1.5px solid #5433e9;
+  color: #5433e9;
+}
+.login-page.auth-journey-new.auth-screen-email-code.auth-phase-verified
+  .six-code
+  span {
+  background: #eee;
+  border: 1px solid #e7e7e7;
+  color: #888;
 }
 .login-page .six-code:focus-within span:first-child {
   outline: none;

@@ -530,6 +530,12 @@ import { homeRecipes } from "./recipes-home.mjs";
 import { savedRecipes } from "./recipes-saved.mjs";
 import { storeRecipes } from "./recipes-store.mjs";
 import { productRecipes } from "./recipes-product.mjs";
+import { reviewRecipes } from "./recipes-reviews.mjs";
+import { searchRecipes } from "./recipes-search.mjs";
+import { miniRecipes } from "./recipes-minis.mjs";
+import { checkoutRecipes } from "./recipes-checkout.mjs";
+import { onboardingRecipes } from "./recipes-onboarding.mjs";
+import { orderRecipes } from "./recipes-orders.mjs";
 Object.assign(
   flowRecipes,
   accountRecipes,
@@ -537,4 +543,10 @@ Object.assign(
   savedRecipes,
   storeRecipes,
   productRecipes,
+  reviewRecipes,
+  searchRecipes,
+  miniRecipes,
+  checkoutRecipes,
+  onboardingRecipes,
+  orderRecipes,
 );

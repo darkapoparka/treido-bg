@@ -1,3 +1,6 @@
+.home-page {
+  font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
+}
 .home-campaigns {
   display: grid;
   gap: 16px;
@@ -415,43 +418,63 @@
 .home-shortcuts + .email-card {
   margin-top: 0;
 }
+/* Flow 2's mixed history uses the same cards and state as Search. */
 .recent-stores-panel {
-  height: auto;
-  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  height: 630px;
 }
 .recent-store-grid {
+  margin-top: 109px;
+}
+.home-page .recent-store-grid > .product-rail {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
-  margin-top: 24px;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
 }
-.recent-store-grid a {
-  position: relative;
-  display: block;
-  height: 140px;
-  border-radius: 22px;
-  overflow: hidden;
-  background: #efefef;
-}
-.recent-store-grid img {
+.home-page .recent-store-grid [data-recent-kind] {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  min-width: 0;
 }
-.recent-store-grid span {
+.home-page .recent-store-grid [data-recent-kind] > a,
+.home-page .recent-store-grid .product-media {
+  border: 0;
+  border-radius: 20px;
+}
+.home-page .recent-store-grid .price-badge {
+  font-size: 10px;
+  line-height: 15px;
+  padding: 1px 6px;
+}
+.recent-store-grid [data-recent-id="loaded-tea"] > a {
+  background: #0b0b0b;
+}
+.recent-store-grid [data-recent-id="loaded-tea"] > a > img {
   position: absolute;
-  bottom: 6px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  border-radius: 18px;
-  background: #5433eb;
-  color: #fff;
-  font-size: 12px;
-  padding: 3px 7px;
+  width: 72px;
+  height: 72px;
+  transform: translate(-50%, -50%);
+  filter: none;
+  border-radius: 50%;
+}
+.recent-store-grid [data-recent-id="loaded-tea"] > a > span[aria-hidden] {
+  display: none;
+}
+.recent-store-grid [data-recent-id="drmtlgy"] > a {
+  background: #9a8d7e;
+}
+.recent-store-grid [data-recent-id="drmtlgy"] > a > span[aria-hidden] {
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 4px;
 }
 .recent-stores-panel .recent-title {
-  margin-top: 24px;
+  margin-top: auto;
 }
 .home-returning .floating-nav {
   width: 224px;
@@ -470,9 +493,6 @@
     padding-inline: 4px;
     font-size: 10px;
   }
-  .recent-store-grid a {
-    height: 125px;
-  }
 }
 
 .campaign-isolated-bottle img {
@@ -482,4 +502,133 @@
 .campaign-product-grid .campaign-bundle img,
 .campaign-product-grid .campaign-eye-masks img {
   mix-blend-mode: normal;
+}
+/* Recovered photo regions surround the live campaign controls. */
+.campaign-princess {
+  --campaign-tone: #6f5653;
+}
+.campaign-drmtlgy {
+  --campaign-tone: #938678;
+}
+.campaign-kitsch {
+  --campaign-tone: #a99082;
+}
+.campaign-header-photo,
+.campaign-footer-photo {
+  position: absolute;
+  left: 1px;
+  width: calc(100% - 2px);
+  height: auto;
+  pointer-events: none;
+}
+.campaign-header-photo {
+  top: 0;
+}
+.campaign-footer-photo {
+  bottom: 0;
+}
+.campaign-header {
+  gap: 12px;
+  padding-right: 21px;
+}
+.campaign-brand > img.campaign-wordmark-image {
+  width: 162px;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0;
+  object-fit: contain;
+}
+.campaign-princess .campaign-wordmark-image {
+  margin-left: -1px;
+}
+.campaign-drmtlgy .campaign-wordmark-image {
+  width: 153px;
+  margin-left: 6px;
+  transform: translateY(2px);
+}
+.campaign-kitsch .campaign-brand .kitsch-wordmark {
+  width: 123px;
+}
+.campaign-tea .campaign-product {
+  height: 128px;
+}
+.home-keep-going {
+  position: fixed;
+  z-index: 40;
+  left: 50%;
+  bottom: 98px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 36px;
+  padding: 8px 13px;
+  border-radius: 20px;
+  background: var(--color-accent);
+  color: white;
+  box-shadow: 0 2px 7px #33118540;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+.home-keep-going > svg {
+  width: 17px;
+  height: 17px;
+  transform: rotate(90deg);
+}
+
+/* The next captured campaign exposes Carpe's identity, not its unseen inventory. */
+.campaign-carpe {
+  --campaign-tone: #fff;
+  background: #fff;
+  color: #111;
+}
+.campaign-carpe .campaign-header {
+  min-height: 80px;
+  padding: 16px 16px 16px 12px;
+}
+.campaign-carpe .campaign-brand {
+  gap: 8px;
+}
+.campaign-carpe .campaign-brand > img {
+  width: 50px;
+  height: 50px;
+  padding: 14px 4px;
+  object-fit: contain;
+  border: 1.5px solid #aa96ff;
+  background: #fff;
+}
+.campaign-carpe .campaign-art {
+  background:
+    radial-gradient(ellipse 140px 70px at 60% 110px, #e1f5fb, transparent 70%),
+    #fff;
+}
+
+/* f042-004 is an intentionally concealed field. No unknown Pura photograph or
+   product is synthesized underneath it; Undo restores the existing source still. */
+.campaign-pura.campaign-concealed .campaign-art {
+  opacity: 0;
+}
+.campaign-pura.campaign-concealed::before {
+  content: "";
+  position: absolute;
+  inset: -16px;
+  pointer-events: none;
+  filter: blur(14px);
+  background:
+    radial-gradient(
+      ellipse 14% 15% at 21% 73%,
+      #638ec0 0%,
+      #7899b6a8 48%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 23% 17% at 55% 73%,
+      #e7e4ddf0 0%,
+      #d3c9bb9c 58%,
+      transparent 100%
+    ),
+    radial-gradient(ellipse 13% 16% at 94% 76%, #b6c8bcc4 0%, transparent 100%),
+    linear-gradient(#796e64 0%, #786957 57%, #aaa292 80%, #787a78 100%);
 }

@@ -88,7 +88,7 @@ test("expanded review reveals the captured full body", async ({ page }) => {
     review.getByRole("button", { name: "Read less", exact: true }),
   ).toBeVisible();
   await expect(review.locator("p")).toContainText(
-    "I can finally go to bed and not have allergy issues. Thank you",
+    "I can finally go to bed and not have allergy issues . Thank you",
   );
   await expect(review.locator("p")).not.toHaveClass(/review-truncated/);
 });

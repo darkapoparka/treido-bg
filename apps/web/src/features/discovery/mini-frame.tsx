@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { useAccount } from "../account/state";
+import { AccountIcon } from "../account/icons";
 import { Sheet } from "./components";
 import { ShopSurface } from "./hydration-boundary";
 import { Icon } from "./icons";
@@ -13,15 +14,19 @@ export function MiniShell({
   showBack = true,
   onBack,
   onMenu,
+  menuLabel = "Sol preview controls",
+  className = "",
 }: {
   name: string;
   children: ReactNode;
   showBack?: boolean;
   onBack?: () => void;
   onMenu?: () => void;
+  menuLabel?: string;
+  className?: string;
 }) {
   return (
-    <ShopSurface className="mini-shell">
+    <ShopSurface className={`mini-shell ${className}`}>
       <header>
         {showBack ? (
           onBack ? (
@@ -37,7 +42,7 @@ export function MiniShell({
           <span aria-hidden="true" />
         )}
         {onMenu ? (
-          <button aria-label="Sol preview controls" onClick={onMenu}>
+          <button aria-label={menuLabel} onClick={onMenu}>
             {name}⌄
           </button>
         ) : (
@@ -58,42 +63,57 @@ export function MiniAccess({
   onContinue,
   name,
   previewNote,
+  className = "",
 }: {
   open: boolean;
   onClose: () => void;
   onContinue: () => void;
   name: string;
   previewNote?: string;
+  className?: string;
 }) {
   const account = useAccount();
   const [information, setInformation] = useState("");
+  const firstName = account.profile.firstName.trim();
+  const title =
+    name === "Gift Sense"
+      ? firstName
+        ? `Continue as ${firstName}?`
+        : "Continue to Gift Sense?"
+      : "Continue";
   return (
     <>
       <Sheet
         open={open}
-        title="Continue"
+        title={title}
         headerless
-        className="mini-access"
+        className={`mini-access ${className}`}
         onClose={onClose}
       >
         <div className="mini-access-heading">
-          <h2 aria-hidden="true">Continue</h2>
+          <h2 aria-hidden="true">{title}</h2>
           <div>
             <img
               src={`/api/reference-media/mini-${name === "Gift Sense" ? "gift" : "sol"}-icon`}
               alt=""
             />
-            <span>{account.profile.firstName[0]}</span>
+            <span
+              aria-label={firstName ? `${firstName}'s profile` : "Your profile"}
+            >
+              {firstName ? firstName[0] : <AccountIcon name="person" />}
+            </span>
           </div>
         </div>
-        <p>
-          By continuing to use this Mini, you agree to the{" "}
-          <button onClick={() => setInformation("Terms")}>terms</button> and{" "}
-          <button onClick={() => setInformation("Privacy policy")}>
-            privacy policy
-          </button>{" "}
-          of 9.8.
-        </p>
+        {name !== "Gift Sense" && (
+          <p>
+            By continuing to use this Mini, you agree to the{" "}
+            <button onClick={() => setInformation("Terms")}>terms</button> and{" "}
+            <button onClick={() => setInformation("Privacy policy")}>
+              privacy policy
+            </button>{" "}
+            of 9.8.
+          </p>
+        )}
         <p>
           By Agreeing, {name} will be able to access your profile and update
           your saved products.{" "}

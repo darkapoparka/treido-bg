@@ -34,6 +34,12 @@ const beautyShelves = [
   ["Top rated", ["whip-mousse", "hanacure-cleanser"]],
   ["What’s new", ["bubble-sunrise", "bare-liquid"]],
 ] as const;
+const beautyShelfPhotos: Readonly<Record<string, string>> = {
+  "whip-mousse": "beauty-whip-card-photo",
+  "hanacure-cleanser": "beauty-hanacure-card-photo",
+  "bubble-sunrise": "beauty-bubble-card-photo",
+  "bare-liquid": "beauty-bare-card-photo",
+};
 
 export function Explore({
   catalog,
@@ -48,7 +54,13 @@ export function Explore({
   const byIds = (ids: readonly string[]) =>
     ids.flatMap((id) => {
       const product = catalog.products.find((value) => value.id === id);
-      return product ? [product] : [];
+      if (!product) return [];
+      const sourcePhoto = beauty ? beautyShelfPhotos[id] : undefined;
+      return [
+        sourcePhoto
+          ? { ...product, images: [`/api/reference-media/${sourcePhoto}`] }
+          : product,
+      ];
     });
   const shelves = beauty
     ? beautyShelves.map(([title, ids]) => ({
@@ -88,7 +100,10 @@ export function Explore({
                 ],
         }));
   return (
-    <ShopSurface className={`shop-page explore-page ${styles.page}`}>
+    <ShopSurface
+      className={`shop-page explore-page ${styles.page}`}
+      data-category={category}
+    >
       <h1>{category ?? "Explore"}</h1>
       {category && (
         <div className="category-rail">
@@ -119,7 +134,7 @@ export function Explore({
           href={`/search?q=${beauty ? "Hair" : "Dresses"}`}
         >
           <img
-            src={`/api/reference-media/${beauty ? "explore-curls-upper" : "explore-summer-upper"}`}
+            src={`/api/reference-media/${beauty ? "beauty-curls-photo" : "explore-summer-upper"}`}
             alt={beauty ? "Wavy hair" : "Summer dress"}
           />
           <div>
@@ -229,7 +244,7 @@ export function Explore({
       <FloatingNav
         back={!!category}
         cart={() => setCart(true)}
-        showCartWhenEmpty
+        showCartWhenEmpty={!beauty}
       />
       <CartOverlay
         catalog={catalog}

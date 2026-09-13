@@ -1,15 +1,28 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AccountPage, Row, Boundary } from "../account/forms";
-import { Sheet, ProductCard } from "../discovery/components";
+import { AccountPage, Boundary } from "../account/forms";
+import {
+  consumeSheetHistory,
+  Sheet,
+  ProductCard,
+} from "../discovery/components";
 import { Icon } from "../discovery/icons";
 import { useAccount, type ReferenceOrder } from "../account/state";
 import type { Catalog } from "../catalog/types";
 import { capturedReceipts } from "./receipt-data";
 import { shopSourceAddress } from "./source-fixtures";
+import {
+  CarrierMark,
+  ManageOrderIcon,
+  OrderAction,
+  OrderBrand,
+  OrderProgress,
+  OrderRecommendations,
+} from "./order-presentation";
+import styles from "./orders-parity.module.css";
 const events = [
   ["Milpitas, CA, 95035, US · Jul 31, 6:04pm", "Successfully delivered"],
   ["Milpitas, CA, 95035, US · Jul 31, 10:56am", "Out for delivery"],
@@ -33,6 +46,14 @@ export function TrackingDetail({
   const { saveOrder } = useAccount(),
     router = useRouter(),
     params = useSearchParams();
+  const [menu, setMenu] = useState(false);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  useEffect(
+    () => () => {
+      timers.current.forEach(clearTimeout);
+    },
+    [],
+  );
   const [activity, setActivity] = useState(false),
     [boundary, setBoundary] = useState(""),
     [copied, setCopied] = useState(false),
@@ -42,34 +63,47 @@ export function TrackingDetail({
     delivered = order.status === "Delivered",
     waiting = order.status === "Ordered" && Boolean(product),
     manualLabel = order.status === "Ordered" && !product,
-    map = params.get("map") === "1";
+    map = params.get("map") === "1",
+    laterManualHistory =
+      !product && params.get("history") === "delivered-later",
+    labelCreated =
+      !delivered && (manualLabel || params.get("progress") === "label");
   const sourceReceipt = capturedReceipts[order.id];
   const displayOrderNumber = sourceReceipt?.displayOrderNumber ?? order.id;
   const sourceCarrier = order.carrier;
   const sourceTracking = order.tracking;
   const visible = waiting
     ? []
-    : manualLabel
+    : labelCreated
       ? [events.at(-1)!]
       : delivered
         ? [events[0], events[1], events.at(-1)!]
         : [events[6], events.at(-1)!];
-  const all = waiting ? [] : manualLabel ? [events.at(-1)!] : events;
+  const all = waiting ? [] : labelCreated ? [events.at(-1)!] : events;
   const mark = () => {
-    const next = delivered ? "In transit" : "Delivered";
+    const next = delivered ? (product ? "In transit" : "Ordered") : "Delivered";
     saveOrder({ ...order, status: next });
+    consumeSheetHistory();
+    const query = new URLSearchParams(params.toString());
+    query.delete("state");
+    query.delete("history");
+    window.history.replaceState(
+      {},
+      "",
+      `/orders/${order.id}${query.size ? `?${query}` : ""}`,
+    );
     setStatusToast(
       next === "Delivered" ? "Marked as delivered" : "Unmarked as delivered",
     );
     if (next === "Delivered") {
       setCelebrate(true);
-      window.setTimeout(() => setCelebrate(false), 1400);
+      timers.current.push(setTimeout(() => setCelebrate(false), 1400));
     }
-    window.setTimeout(() => setStatusToast(""), 1800);
+    timers.current.push(setTimeout(() => setStatusToast(""), 1800));
   };
   return (
     <AccountPage
-      className={`tracking-detail ${map ? "tracking-map-view" : ""}`}
+      className={`tracking-detail ${styles.tracking} ${!product ? styles.manualTracking : ""} ${map ? `tracking-map-view ${styles.mapView}` : ""}`}
       onBack={() => router.back()}
     >
       {celebrate && (
@@ -80,28 +114,43 @@ export function TrackingDetail({
         </div>
       )}
       {map && (
-        <div className="tracking-map" aria-label="Illustrative delivery map">
+        <div
+          className={`tracking-map ${styles.sourceMap}`}
+          role="img"
+          aria-label={`Recorded delivery map in ${delivered ? "Milpitas" : "Jurupa Valley"}`}
+        >
           <img
-            className="map-fragment"
-            src="/api/reference-media/tracking-map-fragment"
+            className={styles.mapGeography}
+            src={`/api/reference-media/order-tracking-map-${delivered ? "delivered" : "transit"}`}
+            width={393}
+            height={250}
             alt=""
           />
-          <svg viewBox="0 0 393 230" aria-hidden="true">
-            <path
-              d="M244 0 214 106 196 184"
-              fill="none"
-              stroke="black"
-              strokeWidth="2"
-            />
-          </svg>
-          {product && (
-            <img className="map-product" src={product.images[0]} alt="" />
+          {delivered && (
+            <svg
+              className={styles.mapRoute}
+              viewBox="0 0 393 250"
+              aria-hidden="true"
+            >
+              <path d="M244 0L228.5 59M203.5 154L196.67 180.5" />
+            </svg>
           )}
-          <span className="map-location" />
-          <small>{delivered ? "Milpitas" : "Jurupa Valley"}</small>
+          {product && (
+            <div className={styles.mapCard}>
+              <img src={product.images[0]} alt="" />
+            </div>
+          )}
+          <span className={styles.mapPin} aria-hidden="true" />
         </div>
       )}
       <div className="tracking-body">
+        <button
+          className={styles.trackingMore}
+          aria-label="Tracking options"
+          onClick={() => setMenu(true)}
+        >
+          <Icon name="more" />
+        </button>
         <button
           className="tracking-status-card"
           onClick={() => {
@@ -133,25 +182,42 @@ export function TrackingDetail({
               {delivered
                 ? product
                   ? "Arrived at 8:04 AM"
-                  : "Arrived at 7:34 PM"
+                  : laterManualHistory
+                    ? "Arrived at 5:09 PM"
+                    : "Arrived at 7:34 PM"
                 : waiting
                   ? "Waiting for details"
-                  : "In transit"}
+                  : labelCreated
+                    ? "Label created"
+                    : "In transit"}
             </p>
           )}
-          <div className={`tracking-progress ${delivered ? "delivered" : ""}`}>
-            <span />
-          </div>
+          <OrderProgress
+            carrier={sourceCarrier}
+            phase={
+              delivered
+                ? "delivered"
+                : waiting
+                  ? "waiting"
+                  : labelCreated
+                    ? "label"
+                    : "transit"
+            }
+          />
         </button>
         {!waiting && (
           <section className="tracking-carrier">
-            <strong className="carrier-wordmark">
-              {sourceCarrier === "Amazon Logistics" ? "amazon" : sourceCarrier}
-            </strong>
-            <p>{sourceCarrier}</p>
-            <small>Tracking no.</small>
-            <div>
-              <span>{sourceTracking}</span>
+            <div
+              className={`${styles.carrierHeading} ${sourceCarrier.startsWith("DHL") ? styles.dhlHeading : ""}`}
+            >
+              <CarrierMark carrier={sourceCarrier} />
+              <strong>{sourceCarrier}</strong>
+            </div>
+            <div className={styles.trackingNumber}>
+              <span>
+                <small>Tracking no.</small>
+                <span>{sourceTracking}</span>
+              </span>
               <button
                 aria-label="Copy tracking number"
                 onClick={async () => {
@@ -169,7 +235,7 @@ export function TrackingDetail({
                 aria-label="Open carrier tracking"
                 onClick={() => setBoundary("Carrier tracking")}
               >
-                <Icon name="share" />
+                <Icon name="external-link" />
               </button>
             </div>
             {copied && <p role="status">Tracking number copied</p>}
@@ -188,16 +254,8 @@ export function TrackingDetail({
           </section>
         )}
         {product && (
-          <section
-            className="tracking-order-card"
-            style={{
-              backgroundImage:
-                "linear-gradient(#ffffff88,#ffffffaa),url(/api/reference-media/order-hero)",
-            }}
-          >
-            <span className="order-store-mark">/kit·sch/</span>
-            <strong>Order #{displayOrderNumber}</strong>
-            <p>Jul 27, 2026</p>
+          <section className="tracking-order-card">
+            <OrderBrand number={displayOrderNumber} tracking />
             <div className="order-item">
               <img src={product.images[0]} alt="" />
               <span>
@@ -213,7 +271,7 @@ export function TrackingDetail({
               className="muted-button"
               onClick={() => setBoundary("Order management")}
             >
-              Manage your order
+              <ManageOrderIcon /> Manage your order
             </button>
             <Link className="muted-button" href="/stores/kitsch">
               Visit store
@@ -223,8 +281,8 @@ export function TrackingDetail({
             </Link>
           </section>
         )}
-        {!manualLabel && (
-          <section className="delivery-preview">
+        {product && !manualLabel && (
+          <section className="delivery-preview" data-waiting={waiting}>
             <h2>Delivery progress</h2>
             <div className="delivery-destination">
               <small>Delivery to</small>
@@ -233,7 +291,9 @@ export function TrackingDetail({
                 {shopSourceAddress.postalCode}
               </strong>
             </div>
-            {visible.length > 0 && <Activity rows={visible} />}
+            {visible.length > 0 && (
+              <Activity rows={visible} submittedParcel={labelCreated} />
+            )}
             {all.length > visible.length && (
               <button
                 className="muted-button"
@@ -246,44 +306,62 @@ export function TrackingDetail({
         )}
         <div className="tracking-action-panel">
           {!waiting && (
-            <Row
+            <OrderAction
               label={delivered ? "Unmark as delivered" : "Mark as delivered"}
               onClick={mark}
             />
           )}
           {!waiting && !manualLabel && !delivered && (
-            <Row label="Edit tracking details" onClick={onEdit} />
+            <OrderAction label="Edit tracking details" onClick={onEdit} />
           )}
-          <Row
+          <OrderAction
             label="Report incorrect information"
             onClick={() => setBoundary("Tracking report")}
           />
         </div>
-        <h2>{product ? "Popular at KITSCH" : "Your deals"} ›</h2>
+        {!product && <h2>Your deals ›</h2>}
         {product ? (
-          <div className="product-rail">
-            {[
-              "black-conditioner-bag",
-              "chocolate-body-bag",
-              "shower-caddy",
-              "solid-shave-butter",
-            ]
-              .map((id) => catalog.products.find((p) => p.id === id))
-              .filter((p) => !!p)
-              .map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-          </div>
+          <OrderRecommendations catalog={catalog} />
         ) : (
-          <div className="tracking-deal-rail">
-            {[0, 2].map((deal) => (
-              <img
-                key={deal}
-                src={`/api/reference-media/order-deal-${deal}`}
-                alt=""
-              />
-            ))}
+          <div className={`product-rail ${styles.manualDeals}`}>
+            {[
+              laterManualHistory ? "home-drmtlgy-eye" : "order-tire-trim",
+              "order-peach-bee",
+            ].flatMap((id) => {
+              const item = catalog.products.find(
+                (product) => product.id === id,
+              );
+              if (!item) return [];
+              const projected =
+                id === "home-drmtlgy-eye"
+                  ? {
+                      ...item,
+                      title: "Luminous Eye Corrector® SPF 41",
+                      images: ["/api/reference-media/order-drmtlgy-eye-photo"],
+                      rating: 4,
+                      ratingCount: "3.2K",
+                      promotion: "Save $25",
+                    }
+                  : item;
+              return [
+                <ProductCard
+                  key={projected.id}
+                  product={projected}
+                  showPromotion
+                  storeName={
+                    catalog.stores.find((store) => store.id === item.storeId)
+                      ?.name
+                  }
+                />,
+              ];
+            })}
           </div>
+        )}
+        {product && (
+          <h2 className={styles.inspiredHeading}>Inspired by your order</h2>
+        )}
+        {laterManualHistory && (
+          <h2 className={styles.manualPicked}>Picked for you ›</h2>
         )}
         {statusToast && (
           <p className="order-action-toast" role="status">
@@ -294,10 +372,45 @@ export function TrackingDetail({
       <Sheet
         open={activity}
         title="Delivery progress"
-        className="full-activity-sheet"
+        className={`full-activity-sheet ${styles.activitySheet}`}
         onClose={() => setActivity(false)}
       >
         <Activity rows={all} />
+      </Sheet>
+      <Sheet
+        open={menu}
+        title="Your order"
+        className={styles.orderMenu}
+        onClose={() => setMenu(false)}
+      >
+        <OrderAction
+          label={delivered ? "Unmark as delivered" : "Mark as delivered"}
+          onClick={() => {
+            mark();
+            setMenu(false);
+          }}
+        />
+        <OrderAction
+          label="Edit tracking details"
+          onClick={() => {
+            setMenu(false);
+            onEdit();
+          }}
+        />
+        <OrderAction
+          label={order.archived ? "Unarchive order" : "Archive order"}
+          onClick={() => {
+            saveOrder({ ...order, archived: !order.archived });
+            setMenu(false);
+          }}
+        />
+        <OrderAction
+          label="Report incorrect information"
+          onClick={() => {
+            setMenu(false);
+            setBoundary("Tracking report");
+          }}
+        />
       </Sheet>
       <Boundary
         open={!!boundary}
@@ -307,12 +420,39 @@ export function TrackingDetail({
     </AccountPage>
   );
 }
-function Activity({ rows }: { rows: string[][] }) {
+function Activity({
+  rows,
+  submittedParcel = false,
+}: {
+  rows: string[][];
+  submittedParcel?: boolean;
+}) {
   return (
-    <div className="source-activity">
-      {rows.map(([time, label], i) => (
+    <div className={`source-activity ${styles.activity}`}>
+      {rows.map(([time, label]) => (
         <div key={`${time}-${label}`}>
-          <i>{i === 0 ? "●" : ""}</i>
+          <i
+            data-event-kind={
+              label === "Successfully delivered"
+                ? "delivered"
+                : label === "Parcel data submitted to carrier"
+                  ? "carrier"
+                  : rows.length > 3
+                    ? "dot"
+                    : "parcel"
+            }
+          >
+            {label === "Successfully delivered" ? (
+              <Icon name="location" />
+            ) : label === "Parcel data submitted to carrier" &&
+              !submittedParcel ? (
+              <CarrierMark carrier="Amazon Logistics" />
+            ) : rows.length > 3 ? (
+              <span />
+            ) : (
+              <img src="/api/reference-media/parcel" alt="" />
+            )}
+          </i>
           <span>
             <small>{time}</small>
             <strong>{label}</strong>

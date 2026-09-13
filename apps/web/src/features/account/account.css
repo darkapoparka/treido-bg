@@ -2394,31 +2394,36 @@
 .onboarding-step-1 h1 {
   font-size: 24px;
   line-height: 1.1;
-  font-weight: 500;
+  font-weight: 400;
   max-width: 220px;
-  margin: 25px auto 18px;
+  margin: 21px auto 18px;
 }
 .onboarding-step-1 > p {
   font-size: 16px;
   line-height: 1.4;
-  max-width: 335px;
-  margin: 0 auto 18px;
+  max-width: 290px;
+  margin: 0 auto 14px;
+  font-weight: 500;
 }
 .onboarding-step-1 .onboarding-choices {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
   gap: 16px 8px;
   width: 100%;
+  margin: 0;
 }
 .onboarding-step-1 .onboarding-choices button {
-  height: 44px;
+  flex: 1 1 auto;
+  height: 46px;
+  font-size: 16px;
+  font-weight: 500;
 }
 .onboarding-step-1 .onboarding-choices button:last-child {
-  grid-column: 1/-1;
+  flex-basis: 100%;
 }
 .onboarding-step-1 .onboarding-actions {
   position: static;
   margin-top: 18px;
+  padding-top: 0;
 }
 .onboarding-step-1 .onboarding-actions button {
   background: transparent;
@@ -2607,7 +2612,7 @@
 }
 
 .preference-onboarding-art {
-  width: 100%;
+  width: calc(100% + 32px);
   max-width: 393px;
   flex: 0 0 310px;
 }

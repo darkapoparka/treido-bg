@@ -234,3 +234,874 @@
   width: 20px;
   height: 20px;
 }
+
+/* Frozen Search/answer family: f044-005, f046-002/003, f047-002/005. */
+.resultsPage {
+  padding-top: 4px;
+  padding-bottom: 190px;
+}
+.resultComposer {
+  position: sticky;
+  top: 4px;
+  z-index: 19;
+  height: 44px;
+  background: #f2f3f4;
+}
+.resultComposer > button {
+  display: none;
+}
+.resultsPage :global(.filter-chips) {
+  position: sticky;
+  top: 48px;
+  z-index: 18;
+  padding-block: 8px;
+  margin-block: 0;
+  background: #fff;
+}
+.resultsPage :global(.filter-chips) :global(.pill),
+.resultsPage :global(.filter-chips) :global(.icon-button) {
+  height: 40px;
+  flex: none;
+  font-size: 14px;
+  padding-inline: 16px;
+  gap: 4px;
+}
+.resultsPage :global(.filter-chips) :global(.icon-button) {
+  width: 40px;
+  padding: 10px;
+}
+.resultsPage :global(.filter-chips) [aria-pressed="true"] {
+  background: #111;
+  border-color: #111;
+  color: #fff;
+}
+.resultsPage :global(.search-store) {
+  font-size: 14px;
+  line-height: 18px;
+}
+.resultsPage :global(.search-store) strong {
+  font-weight: 500;
+}
+.resultsPage :global(.search-store)[href="/stores/fitjeans"] > img {
+  height: 115px;
+  object-fit: cover;
+}
+.storeDeal,
+.resultDeal {
+  width: fit-content;
+  white-space: nowrap;
+  background: #5934f0;
+  color: #fff;
+  border-radius: 14px;
+  padding: 2px 8px;
+  font-size: 10px;
+  line-height: 14px;
+}
+.storeDeal {
+  margin-bottom: 8px;
+}
+.resultsPage :global(.search-results) {
+  gap: 12px;
+}
+.resultsPage :global(.result-row) {
+  box-shadow: 0 4px 12px #00000005;
+}
+.resultsPage :global(.result-row) :global(.product-media) {
+  border-radius: 20px;
+}
+.resultsPage :global(.result-row) strong {
+  font-weight: 500;
+  line-height: 16px;
+}
+.resultMerchant {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin-top: auto;
+  padding-bottom: 6px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.resultMerchant :global(.result-store) {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  font-size: 10px;
+}
+.resultMerchant img {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: 50%;
+  object-fit: contain;
+}
+.resultDeal {
+  margin-left: auto;
+  background: #af98ef;
+}
+.muted {
+  color: #8b8b8b;
+}
+.relatedSearches {
+  padding-block: 16px;
+  scroll-margin-top: 110px;
+}
+.relatedSearches > h2 {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+.relatedSearches > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.relatedSearches a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 54px;
+  padding: 12px 16px;
+  border: 1px solid #e3e3e3;
+  border-radius: 12px;
+  font-size: 12px;
+}
+.relatedSearches svg {
+  width: 18px;
+  height: 18px;
+  color: #777;
+  flex: none;
+}
+.answerTeaser {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: calc(100% - 40px);
+  max-width: 720px;
+  min-height: 68px;
+  padding: 0;
+  z-index: 20;
+  background: #ffffffed;
+  text-align: left;
+  font-size: 16px;
+  line-height: 22px;
+}
+.answerTeaser::before {
+  content: "";
+  position: absolute;
+  inset: -34px -20px -96px;
+  z-index: -1;
+  background: linear-gradient(#ffffff00, #fffffff2 25%, #ffffffed);
+  pointer-events: none;
+}
+.answerThumbnails {
+  position: relative;
+  display: block;
+  width: 64px;
+  height: 64px;
+  flex: none;
+}
+.answerThumbnails img {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #e8e0ef;
+  transform: rotate(-8deg);
+}
+.answerThumbnails img + img {
+  left: 16px;
+  top: 0;
+  transform: rotate(7deg);
+}
+.answerMore {
+  color: #5132cb;
+}
+.answerSheet:global(.sheet) {
+  inset: 27px 0 0;
+  width: 100%;
+  max-width: 760px;
+  height: calc(100dvh - 27px);
+  max-height: none;
+  border-radius: 28px 28px 0 0;
+  padding: 0;
+  overflow: hidden;
+}
+.answerSheet::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 4px;
+  border-radius: 4px;
+  background: #e6e6e6;
+  z-index: 2;
+}
+.assistantStandalone {
+  padding: 0;
+}
+.answerBody:global(.assistant-page) {
+  position: relative;
+  padding: 66px 16px 140px;
+  font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
+}
+.embeddedAnswer:global(.assistant-page) {
+  padding-top: 40px;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.answerBody > h1 {
+  font-size: 24px;
+  line-height: 30px;
+  letter-spacing: -0.7px;
+  margin: 0 0 22px;
+}
+.answerBody > p {
+  font-size: 16px;
+  line-height: 22px;
+  margin: 0 0 20px;
+  letter-spacing: -0.25px;
+}
+.answerBody > p a {
+  text-decoration: underline;
+  text-decoration-color: #a6a6a6;
+  text-underline-offset: 4px;
+}
+.answerBody > h2 {
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: -0.5px;
+  margin: 20px 0 2px;
+}
+.answerBody > :global(.form-note) {
+  margin: 0 0 16px;
+  font-size: 12px;
+  line-height: 16px;
+  color: #777;
+}
+.answerBody :global(.assistant-edit) {
+  position: sticky;
+  top: 42px;
+  float: right;
+  margin: 0 4px -44px 12px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid #e4e4e4;
+  background: #ffffffed;
+  box-shadow: 0 8px 28px #00000004;
+  z-index: 4;
+}
+.answerBody :global(.assistant-edit) svg {
+  width: 24px;
+  height: 24px;
+}
+.answerBody :global(.assistant-product-rail) {
+  margin: 16px -16px 24px 0;
+}
+.answerBody :global(.assistant-product-rail) :global(.product-media) {
+  background: #ddd5e9;
+  border-radius: 20px;
+  border: 1px solid #cfc8da;
+  overflow: hidden;
+}
+.answerBody :global(.assistant-product-rail) strong,
+.answerBody :global(.assistant-product-rail) article > span,
+.answerBody :global(.assistant-product-rail) b {
+  font-size: 12px;
+  line-height: 15px;
+  margin: 0 4px;
+  font-weight: 400;
+}
+.answerBody :global(.assistant-product-rail) article > span {
+  margin-top: 8px;
+}
+.answerBody :global(.assistant-product-rail) strong {
+  font-weight: 500;
+}
+.answerBody :global(.assistant-answer-card) {
+  align-items: stretch;
+  min-height: 182px;
+  margin: 16px 0;
+  gap: 12px;
+}
+.answerBody :global(.assistant-answer-card) > a {
+  width: 48%;
+  flex: none;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #ececec;
+}
+.answerBody :global(.assistant-answer-card) > a > img {
+  width: 100%;
+  height: 100%;
+  max-height: 182px;
+  object-fit: contain;
+  border-radius: inherit;
+}
+.answerBody :global(.assistant-answer-card) > div {
+  font-size: 12px;
+  line-height: 16px;
+  padding-top: 4px;
+  min-width: 0;
+}
+.answerBody :global(.assistant-answer-card) strong {
+  display: block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  margin: 12px 0 2px;
+  font-weight: 500;
+}
+.answerBody :global(.assistant-answer-card) ul {
+  font-size: 12px;
+  line-height: 16px;
+  margin-top: 12px;
+}
+.answerBody :global(.assistant-preferences) {
+  margin: 24px 0 16px;
+  font-size: 16px;
+  line-height: 22px;
+}
+.answerBody :global(.assistant-preferences) > p {
+  margin-bottom: 20px;
+}
+.answerBody :global(.assistant-preferences) :global(.pill) {
+  font-size: 14px;
+  height: 42px;
+  padding: 10px 14px;
+  border: 1px solid #eee;
+  box-shadow: 0 3px 5px #00000010;
+  margin-right: 8px;
+}
+.answerBody :global(.assistant-feedback-actions) :global(.icon-button) {
+  width: 24px;
+  height: 24px;
+  padding: 5px;
+}
+.answerBody :global(.assistant-feedback-actions) svg {
+  width: 14px;
+  height: 14px;
+}
+.answerBody :global(.assistant-feedback-actions) [aria-pressed="true"] {
+  color: #008950;
+}
+.answerBody :global(.assistant-composer) {
+  z-index: 5;
+  width: calc(100% - 24px);
+  bottom: 32px;
+}
+.answerBody :global(.assistant-composer) > input {
+  height: 56px;
+  background: #ffffffed;
+  font-size: 16px;
+}
+.answerBody :global(.assistant-composer) > :global(.icon-button) {
+  width: 56px;
+  height: 56px;
+  flex: none;
+  background: #fff;
+}
+.feedbackSheet:global(.assistant-feedback-sheet) {
+  font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
+  padding: 20px 16px 16px;
+}
+.feedbackSheet :global(.feedback-products) {
+  flex: none;
+}
+.feedbackSheet :global(.feedback-products) img {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  background: #ded7eb;
+}
+.feedbackSheet :global(.feedback-products) button {
+  right: 12px;
+  top: 36px;
+}
+.feedbackSheet :global(.feedback-products) button + button {
+  top: 86px;
+}
+.feedbackSheet textarea {
+  display: block;
+  width: 100%;
+  height: 80px;
+  margin-top: 8px;
+  padding: 12px;
+  font: inherit;
+}
+.feedbackToast:global(.local-toast) {
+  z-index: 7;
+  bottom: 48px;
+  padding: 12px 18px;
+  font-size: 12px;
+  border-radius: 30px;
+  background: #000;
+  color: #fff;
+}
+@media (max-width: 360px) {
+  .resultMerchant {
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .answerTeaser {
+    gap: 10px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
+.photoAnswer:global(.assistant-page) {
+  padding-top: 48px;
+}
+.photoAnswer > h1 {
+  margin-bottom: 8px;
+}
+.photoAnswer :global(.assistant-edit) {
+  position: fixed;
+  top: 0;
+  right: max(20px, calc((100vw - 760px) / 2 + 20px));
+  margin: 0;
+}
+.photoAnswer :global(.photo-tag) {
+  height: 32px;
+  padding: 4px 10px 4px 4px;
+  gap: 8px;
+  font-size: 12px;
+}
+.photoAnswer :global(.photo-tag) img {
+  width: 24px;
+  height: 24px;
+  padding: 6px;
+  border-radius: 50%;
+  background: #e8e8e8;
+}
+.photoAnswer :global(.assistant-steps) {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 20px 0 22px;
+  padding: 0;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+}
+.photoAnswer :global(.assistant-steps) > svg {
+  width: 12px;
+  height: 12px;
+}
+.photoAnswer :global(.assistant-steps)[aria-expanded="true"] > svg {
+  transform: rotate(90deg);
+}
+.photoAnswer :global(.assistant-step-list) {
+  margin: -10px 0 22px 8px;
+  padding-left: 16px;
+  border: 0;
+}
+.photoAnswer :global(.assistant-step-list) > small {
+  position: relative;
+  display: block;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.photoAnswer :global(.assistant-step-list) > small::before {
+  position: absolute;
+  content: "";
+  width: 8px;
+  height: 2px;
+  left: -16px;
+  top: 6px;
+  background: #e8e8e8;
+}
+.photoAnswer :global(.assistant-step-list) > p,
+.photoAnswer :global(.assistant-step-list) > button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  max-width: 100%;
+  margin-bottom: 8px;
+  padding: 6px 12px;
+  background: #f5f5f5;
+  border-radius: 24px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+}
+.photoAnswer :global(.assistant-step-list) svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin: 0;
+}
+.photoAnswer :global(.assistant-product-rail) .photoCardMedia {
+  height: 152px;
+  background: #eee;
+  border-color: #ddd;
+  box-shadow: 0 3px 6px #00000008;
+}
+.photoProduct,
+.photoCardMedia > a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+.photoProduct img,
+.photoCardMedia > a img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 20px;
+}
+.photoAnswer :global(.assistant-product-rail) .photoRating {
+  display: flex;
+  gap: 6px;
+  margin-top: 0;
+}
+.photoRating > span {
+  color: #d5b336;
+  letter-spacing: 1px;
+}
+.photoAnswer .photoComparisonCopy > button {
+  display: inline;
+  text-decoration: underline;
+  text-decoration-color: #aaa;
+  text-underline-offset: 3px;
+  text-align: inherit;
+  line-height: inherit;
+  padding: 0;
+}
+.photoAnswer :global(.assistant-answer-card) {
+  min-height: 182px;
+  margin: 24px 0;
+}
+.photoAnswer :global(.assistant-answer-card) .photoCardMedia {
+  position: relative;
+  width: 48%;
+  height: 166px;
+  flex: none;
+  padding: 0;
+  border-radius: 24px;
+  background: #f5f5f5;
+  overflow: hidden;
+}
+.photoAnswer :global(.assistant-answer-card) .photoCardMedia img {
+  padding: 20px;
+}
+.photoSeller {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.photoSellerLogo {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: 50%;
+  background: #999;
+  color: white;
+  font-size: 20px;
+}
+.photoSellerLogo:empty {
+  background: #000;
+}
+.photoSeller small {
+  font-size: 10px;
+  line-height: 14px;
+}
+.photoSeller small span {
+  color: #777;
+}
+.photoAnswer :global(.assistant-preferences) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 24px;
+}
+.photoAnswer :global(.assistant-preferences) :global(.pill) {
+  margin: 0;
+}
+
+.countryFlag {
+  width: 16px;
+  height: 12px;
+  flex: none;
+}
+.embeddedAnswer:global(.assistant-page) :global(.assistant-edit) {
+  position: fixed;
+  top: 69px;
+  right: max(20px, calc((100vw - 760px) / 2 + 20px));
+  margin: 0;
+}
+.filterSheet :global(.sheet-header) {
+  min-height: 24px;
+}
+.filterSheet :global(.sheet-header) h2 {
+  font-size: 18px;
+  line-height: 24px;
+}
+.filterSheet :global(.sheet-header) :global(.icon-button) {
+  width: 24px;
+  height: 24px;
+}
+.filterSheet :global(.sheet-header) :global(.icon-button) svg {
+  width: 16px;
+  height: 16px;
+}
+.answerBody :global(.assistant-answer-card) .answerCardPhoto {
+  position: relative;
+  width: 48%;
+  height: 166px;
+  flex: none;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #f5f5f5;
+}
+.answerCardPhoto > a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.answerCardPhoto > a > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.answerCardPhoto :global(.save-button) {
+  right: 12px;
+  bottom: 12px;
+}
+.answerCardPhoto .answerCardDeal {
+  top: 12px;
+  left: 12px;
+  bottom: auto;
+  font-size: 10px;
+  line-height: 14px;
+}
+.answerSeller {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 16px;
+}
+.answerSeller > img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex: none;
+}
+.answerSeller small {
+  display: block;
+  font-size: 10px;
+  line-height: 14px;
+}
+.answerSeller small > span {
+  color: #777;
+}
+/* Search entry and expanded history, source f043-002/003 and f049-002. */
+.page :global(.search-section-heading) > h2 {
+  gap: 6px;
+  font-size: 18px;
+  line-height: 24px;
+  margin-bottom: 10px;
+}
+.page :global(.search-section-heading) svg,
+.conversationHeading svg {
+  width: 24px;
+  height: 24px;
+  padding: 6px;
+  border-radius: 50%;
+  background: #f2f3f3;
+  transform: rotate(180deg);
+}
+.history:global(.recent-history-grid) {
+  width: calc(100% - 2px);
+  margin-top: 14px;
+  column-gap: 10px;
+  row-gap: 12px;
+}
+.history .remove {
+  background: #9fa2a580;
+}
+.capturedStore {
+  background: #969791;
+}
+.capturedStore > img {
+  filter: none;
+}
+.capturedStore[data-recent-store="pura"] {
+  background: #3b342a;
+}
+.logoStore {
+  background: linear-gradient(#0b0b0b, #242424);
+}
+.logoStore > img {
+  position: absolute;
+  width: 44%;
+  height: auto;
+  left: 50%;
+  top: calc(50% - 2px);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+.partialStore {
+  background: #c8c5be;
+}
+.partialStore > img {
+  height: auto;
+  object-fit: contain;
+  object-position: top;
+}
+.partialStore > .wordmark {
+  padding: 0;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 5px;
+}
+.composer:global(.search-composer) {
+  bottom: calc(95px + var(--search-keyboard-inset, 0px));
+}
+.conversations:global(.keep-shopping) {
+  margin-top: 18px;
+}
+.conversations > .conversationHeading {
+  display: block;
+  width: fit-content;
+  margin-bottom: 18px;
+}
+.conversationHeading > h2 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 18px;
+  line-height: 24px;
+  margin: 0;
+}
+.conversations > .conversation {
+  gap: 12px;
+}
+.conversation > img {
+  width: 48px;
+  height: 48px;
+  flex: none;
+  object-fit: cover;
+  border-radius: 12px;
+}
+.conversation small {
+  font-size: 12px;
+  line-height: 16px;
+  margin-top: 2px;
+}
+/* These existing wide-leg photographs are only the visible upper source
+   portion; their recorded pixels must keep their natural aspect ratio. */
+.answerBody :global(.assistant-wide-rail) :global(.product-media) > img {
+  height: auto;
+  object-fit: contain;
+  object-position: top;
+}
+.answerBody :global(.assistant-product-rail) > article {
+  min-width: 0;
+}
+.resultsPage :global(.result-row) strong,
+.resultsPage :global(.search-store.plain) strong,
+.resultsPage :global(.store-monogram) {
+  font-weight: 600;
+}
+.resultMerchant {
+  padding-right: 8px;
+}
+
+/* Captured cap answer, f045-005..008; photo layout only. */
+.photoAnswer > h1 {
+  font-size: 23px;
+  letter-spacing: -0.6px;
+  margin-bottom: 0;
+}
+.photoAnswer > p {
+  letter-spacing: 0;
+  margin-bottom: 12px;
+}
+.photoAnswer > h2 {
+  font-size: 18px;
+  line-height: 22px;
+  letter-spacing: -0.3px;
+  margin-bottom: 0;
+}
+.photoAnswer > :global(.form-note) {
+  margin-bottom: 16px;
+}
+.photoAnswer :global(.assistant-product-rail) .photoCardMedia {
+  background: #f5f5f5;
+}
+.photoAnswer .photoProduct img,
+.photoAnswer .photoCardMedia > a img,
+.photoAnswer :global(.assistant-answer-card) .photoCardMedia img {
+  object-fit: cover;
+  padding: 0;
+}
+.photoAnswer :global(.assistant-product-rail) strong,
+.photoAnswer :global(.assistant-product-rail) b {
+  font-weight: 500;
+}
+.photoAnswer :global(.assistant-answer-card) {
+  margin: 20px 0;
+}
+.photoAnswer :global(.assistant-answer-card) .photoCardMedia {
+  width: min(166px, 48%);
+}
+.photoAnswer
+  :global(.assistant-answer-card)
+  .photoCardMedia
+  :global(.save-button) {
+  right: 12px;
+  bottom: 12px;
+}
+.photoAnswer :global(.assistant-preferences) {
+  margin-bottom: 20px;
+}
+
+.photoAnswer :global(.assistant-step-list) > small {
+  margin-bottom: 0;
+}
+.photoAnswer::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 760px;
+  height: 44px;
+  background: linear-gradient(#fff 0, #ffffffdd 40%, #ffffff00);
+  pointer-events: none;
+  z-index: 3;
+}
+.photoAnswer :global(.assistant-composer)::before {
+  content: "";
+  position: absolute;
+  inset: -12px -12px -36px;
+  background: linear-gradient(#ffffff00, #ffffffba 32%, #fff 90%);
+  backdrop-filter: blur(6px);
+  mask-image: linear-gradient(transparent, #000 28%);
+  pointer-events: none;
+  z-index: -1;
+}

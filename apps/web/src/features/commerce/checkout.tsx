@@ -2,13 +2,17 @@
 import { ShopSurface } from "../discovery/hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { formatMoney, type Catalog } from "../catalog/types";
 import { useDiscovery } from "../discovery/state";
-import { Sheet } from "../discovery/components";
+import { consumeSheetHistory, Sheet } from "../discovery/components";
+import { Icon } from "../discovery/icons";
+import { AccountIcon } from "../account/icons";
 import { AccountPage } from "../account/forms";
 import type { Address } from "../account/state";
 import { CartContents } from "./cart";
+import "./cart-parity.css";
 export { CartContents } from "./cart";
 import { InitialPayment } from "./initial-payment";
 import { CheckoutExtras, checkoutRecommendations } from "./checkout-extras";
@@ -78,7 +82,7 @@ export function CartOverlay({
           aria-label="Close cart"
           onClick={onClose}
         >
-          ×
+          <Icon name="close" />
         </button>
       </Sheet>
       <CartOffer
@@ -101,8 +105,12 @@ export function Checkout({
   initialStage?: CheckoutStep;
 }) {
   const state = useDiscovery();
-  const [step, setStep] = useState<CheckoutStep>(initialStage);
-  const [expanded, setExpanded] = useState<CheckoutSection | "">("");
+  const searchParams = useSearchParams();
+  const addressFocus = useRef<HTMLButtonElement | null>(null);
+  const [step, updateStep] = useState<CheckoutStep>(initialStage);
+  const [expanded, setExpanded] = useState<CheckoutSection[]>([]);
+  const [addressCompact, setAddressCompact] = useState(false);
+  const [addressSearching, setAddressSearching] = useState(false);
   const [addresses, setAddresses] = useState<Address[]>(() => [
     { ...shopSourceAddress },
   ]);
@@ -114,7 +122,9 @@ export function Checkout({
   const [paymentChoice, setPaymentChoice] = useState<string>(
     shopSourcePayment.id,
   );
-  const [phoneStage, setPhoneStage] = useState<"phone" | "code">("phone");
+  const [phoneStage, updatePhoneStage] = useState<"phone" | "code">(() =>
+    searchParams.get("verification") === "code" ? "code" : "phone",
+  );
   const [phoneDraft, setPhoneDraft] = useState("");
   const [extraIds, setExtraIds] = useState<string[]>([]);
   const [summary, setSummary] = useState(false);
@@ -132,7 +142,7 @@ export function Checkout({
   const [paymentModal, setPaymentModal] = useState(false);
   const [paymentMenu, setPaymentMenu] = useState("");
   const [storeOffers, setStoreOffers] = useState(true);
-  const [textOffers, setTextOffers] = useState(false);
+  const [textOfferPhone, setTextOfferPhone] = useState("");
   const [processing, setProcessing] = useState(false);
   const [paymentBoundary, setPaymentBoundary] = useState(false);
 
@@ -173,8 +183,56 @@ export function Checkout({
     addresses.find((entry) => entry.id === addressId) ?? addresses[0];
   const selectedPayment = payments.find((card) => card.id === paymentChoice);
 
+  // Checkout steps live in browser history; drafts stay in this mounted owner.
+  // A provider-boundary sheet is consumed before the next stage replaces it.
+  const navigateSetup = (
+    next: CheckoutStep,
+    verification: "phone" | "code" = "phone",
+    replaceEntry = false,
+  ) => {
+    const url = new URL(window.location.href);
+    if (next === "review") url.searchParams.delete("stage");
+    else url.searchParams.set("stage", next);
+    if (next === "phone" && verification === "code")
+      url.searchParams.set("verification", "code");
+    else url.searchParams.delete("verification");
+    const fromSheet = consumeSheetHistory();
+    const method = fromSheet || replaceEntry ? "replaceState" : "pushState";
+    window.history[method]({ shopCheckoutStep: true }, "", url);
+    updateStep(next);
+    updatePhoneStage(verification);
+    setAddressSearching(false);
+    window.scrollTo(0, 0);
+  };
+  const setStep = (next: CheckoutStep) => navigateSetup(next);
+  const setPhoneStage = (next: "phone" | "code") =>
+    navigateSetup("phone", next);
+  useEffect(() => {
+    const restore = () => {
+      const params = new URLSearchParams(window.location.search);
+      const next = params.get("stage");
+      updateStep(
+        next === "phone" ||
+          next === "address-search" ||
+          next === "address" ||
+          next === "payment-setup"
+          ? next
+          : "review",
+      );
+      updatePhoneStage(
+        params.get("verification") === "code" ? "code" : "phone",
+      );
+      setAddressSearching(false);
+    };
+    window.addEventListener("popstate", restore);
+    return () => window.removeEventListener("popstate", restore);
+  }, []);
   const toggle = (section: CheckoutSection) =>
-    setExpanded((current) => (current === section ? "" : section));
+    setExpanded((current) =>
+      current.includes(section)
+        ? current.filter((entry) => entry !== section)
+        : [...current, section],
+    );
 
   const saveAddress = (next: Address) => {
     const id =
@@ -184,12 +242,28 @@ export function Checkout({
         : `checkout-address-${Date.now()}`);
     const normalized = { ...next, id };
     setAddresses((current) => {
-      const exists = current.some((entry) => entry.id === id);
-      if (!exists) return [...current, normalized];
-      return current.map((entry) => (entry.id === id ? normalized : entry));
+      const existing = normalized.isDefault
+        ? current.map((entry) => ({ ...entry, isDefault: false }))
+        : current;
+      const exists = existing.some((entry) => entry.id === id);
+      if (!exists) return [...existing, normalized];
+      return existing.map((entry) => (entry.id === id ? normalized : entry));
     });
     setAddressId(id);
     return normalized;
+  };
+
+  const closeDeleteAddress = () => {
+    setDeleteAddressId("");
+    setAddressMenu("");
+    window.requestAnimationFrame(() => {
+      const target = addressFocus.current?.isConnected
+        ? addressFocus.current
+        : document.querySelector<HTMLButtonElement>(
+            ".checkout-addresses .selected .context-trigger",
+          );
+      target?.focus({ preventScroll: true });
+    });
   };
 
   if (!lines.length)
@@ -208,28 +282,30 @@ export function Checkout({
     );
 
   const backFromSetup = () => {
-    if (step === "phone" && phoneStage === "code") {
-      setPhoneStage("phone");
+    if (window.history.state?.shopCheckoutStep) {
+      window.history.back();
       return;
     }
-    if (step === "payment-setup") setStep("address");
-    else if (step === "address") setStep("address-search");
-    else setStep("review");
+    if (step === "phone" && phoneStage === "code")
+      navigateSetup("phone", "phone", true);
+    else if (step === "payment-setup") navigateSetup("address", "phone", true);
+    else if (step === "address") navigateSetup("address-search", "phone", true);
+    else navigateSetup("review", "phone", true);
   };
 
   return (
     <ShopSurface
-      className={`shop-page checkout-page source-checkout ${processing ? "is-processing" : ""}`}
+      className={`shop-page checkout-page source-checkout ${step !== "review" ? "is-setup" : ""} ${addressSearching ? "is-address-searching" : ""} ${processing ? "is-processing" : ""}`}
       aria-busy={processing}
     >
       <header className="checkout-header">
         {step === "review" ? (
           <Link href="/cart" aria-label="Close checkout">
-            ×
+            <Icon name="close" />
           </Link>
         ) : (
           <button aria-label="Go back" onClick={backFromSetup}>
-            ‹
+            <Icon name="back" />
           </button>
         )}
         <h1>
@@ -250,9 +326,9 @@ export function Checkout({
         step === "payment-setup") && (
         <div className={`checkout-steps checkout-steps-${step}`}>
           <i className="active" />
-          <i className={step !== "address-search" ? "active" : ""} />
-          <i className={step === "payment-setup" ? "active" : ""} />
-          <i />
+          <i className="active" />
+          <i className={step === "payment-setup" ? "active" : "partial"} />
+          <i className={step === "payment-setup" ? "partial" : ""} />
         </div>
       )}
 
@@ -263,19 +339,33 @@ export function Checkout({
           onPhoneChange={setPhoneDraft}
           onStageChange={setPhoneStage}
           onDone={(phone) => {
-            setPhoneDraft(phone);
+            // Keep the national-number draft as entered; the phone-step
+            // callback already includes the country code for the address.
             setAddressDraft({ ...blankCheckoutAddress(), phone });
             setStep("address-search");
           }}
         />
       ) : step === "address-search" ? (
         <SourceAddressLookup
+          onSearchingChange={setAddressSearching}
           onManual={() => {
-            setAddressDraft(blankCheckoutAddress());
+            setAddressCompact(false);
+            setAddressDraft({
+              ...blankCheckoutAddress(),
+              phone: phoneDraft
+                ? `+1${phoneDraft.replace(/\D/g, "")}`
+                : shopSourceBuyer.phone,
+            });
             setStep("address");
           }}
           onSelect={(next) => {
-            setAddressDraft(next);
+            setAddressCompact(true);
+            setAddressDraft({
+              ...next,
+              phone: phoneDraft
+                ? `+1${phoneDraft.replace(/\D/g, "")}`
+                : next.phone,
+            });
             setStep("address");
           }}
         />
@@ -283,6 +373,9 @@ export function Checkout({
         <SourceAddressEditor
           variant="initial"
           initialValue={addressDraft}
+          compact={addressCompact}
+          onExpand={() => setAddressCompact(false)}
+          onChange={setAddressDraft}
           onCancel={() => setStep("address-search")}
           onSave={(next) => {
             const saved = saveAddress(next);
@@ -306,11 +399,11 @@ export function Checkout({
             <section className="checkout-section">
               <button
                 className="checkout-section-toggle"
-                aria-expanded={expanded === "ship"}
+                aria-expanded={expanded.includes("ship")}
                 onClick={() => toggle("ship")}
               >
                 <span className="checkout-section-label">Ship to</span>
-                {expanded !== "ship" && address && (
+                {!expanded.includes("ship") && address && (
                   <span className="checkout-section-value">
                     <strong>
                       {address.firstName} {address.lastName}
@@ -323,14 +416,16 @@ export function Checkout({
                   </span>
                 )}
                 <span className="checkout-section-caret">
-                  {expanded === "ship" ? "⌃" : "⌄"}
+                  {expanded.includes("ship") ? "⌃" : "⌄"}
                 </span>
               </button>
-              {expanded === "ship" && (
-                <div className="checkout-section-body checkout-addresses">
+              {expanded.includes("ship") && (
+                <div
+                  className={`checkout-section-body checkout-addresses ${addresses.length === 1 ? "has-one-option" : ""}`}
+                >
                   {addresses.map((entry) => (
                     <div
-                      className={`shipping-option address-radio ${address?.id === entry.id ? "selected" : ""}`}
+                      className={`shipping-option address-radio ${address?.id === entry.id ? "selected" : ""} ${!entry.isDefault ? "has-default-action" : ""}`}
                       key={entry.id}
                     >
                       <label>
@@ -355,14 +450,32 @@ export function Checkout({
                           )}
                         </span>
                       </label>
+                      {!entry.isDefault && (
+                        <button
+                          type="button"
+                          className="source-default-action"
+                          aria-label={`Set ${entry.street} as default address`}
+                          onClick={() =>
+                            setAddresses((current) =>
+                              current.map((item) => ({
+                                ...item,
+                                isDefault: item.id === entry.id,
+                              })),
+                            )
+                          }
+                        >
+                          Set as default
+                        </button>
+                      )}
                       <button
                         className="context-trigger"
                         aria-label={`Address options for ${entry.street}`}
-                        onClick={() =>
+                        onClick={(event) => {
+                          addressFocus.current = event.currentTarget;
                           setAddressMenu(
                             addressMenu === entry.id ? "" : entry.id,
-                          )
-                        }
+                          );
+                        }}
                       >
                         •••
                       </button>
@@ -395,7 +508,11 @@ export function Checkout({
                     className="checkout-link source-checkout-link"
                     onClick={() => {
                       setEditingAddressId("");
-                      setAddressDraft(blankCheckoutAddress());
+                      setAddressDraft({
+                        ...blankCheckoutAddress(),
+                        firstName: shopSourceBuyer.firstName,
+                        lastName: shopSourceBuyer.lastName,
+                      });
                       setAddressModal(true);
                     }}
                   >
@@ -408,11 +525,11 @@ export function Checkout({
             <section className="checkout-section">
               <button
                 className="checkout-section-toggle"
-                aria-expanded={expanded === "shipping"}
+                aria-expanded={expanded.includes("shipping")}
                 onClick={() => toggle("shipping")}
               >
                 <span className="checkout-section-label">Shipping</span>
-                {expanded !== "shipping" && (
+                {!expanded.includes("shipping") && (
                   <span className="checkout-section-value">
                     <strong>
                       {shipping === 0
@@ -428,10 +545,10 @@ export function Checkout({
                   </span>
                 )}
                 <span className="checkout-section-caret">
-                  {expanded === "shipping" ? "⌃" : "⌄"}
+                  {expanded.includes("shipping") ? "⌃" : "⌄"}
                 </span>
               </button>
-              {expanded === "shipping" && (
+              {expanded.includes("shipping") && (
                 <div className="checkout-section-body">
                   {[
                     [
@@ -477,21 +594,21 @@ export function Checkout({
             <section className="checkout-section">
               <button
                 className="checkout-section-toggle"
-                aria-expanded={expanded === "plan"}
+                aria-expanded={expanded.includes("plan")}
                 onClick={() => toggle("plan")}
               >
                 <span className="checkout-section-label">Plan</span>
-                {expanded !== "plan" && (
+                {!expanded.includes("plan") && (
                   <span className="checkout-section-value">
                     <strong>Pay now</strong>
                     <span>Pay the entire amount today</span>
                   </span>
                 )}
                 <span className="checkout-section-caret">
-                  {expanded === "plan" ? "⌃" : "⌄"}
+                  {expanded.includes("plan") ? "⌃" : "⌄"}
                 </span>
               </button>
-              {expanded === "plan" && (
+              {expanded.includes("plan") && (
                 <div className="checkout-section-body checkout-plan-body">
                   <div className="installment-unavailable">
                     <strong>
@@ -524,22 +641,24 @@ export function Checkout({
             <section className="checkout-section">
               <button
                 className="checkout-section-toggle"
-                aria-expanded={expanded === "payment"}
+                aria-expanded={expanded.includes("payment")}
                 onClick={() => toggle("payment")}
               >
                 <span className="checkout-section-label">Payment</span>
-                {expanded !== "payment" && selectedPayment && (
+                {!expanded.includes("payment") && selectedPayment && (
                   <span className="checkout-section-value payment-summary-value">
                     <strong>Visa ···· {selectedPayment.last4}</strong>
                     <b className="visa-mark">VISA</b>
                   </span>
                 )}
                 <span className="checkout-section-caret">
-                  {expanded === "payment" ? "⌃" : "⌄"}
+                  {expanded.includes("payment") ? "⌃" : "⌄"}
                 </span>
               </button>
-              {expanded === "payment" && (
-                <div className="checkout-section-body checkout-payments">
+              {expanded.includes("payment") && (
+                <div
+                  className={`checkout-section-body checkout-payments ${payments.length === 1 ? "has-one-option" : ""}`}
+                >
                   {payments.map((card) => (
                     <div
                       className={`shipping-option ${paymentChoice === card.id ? "selected" : ""}`}
@@ -557,7 +676,7 @@ export function Checkout({
                             Visa ···· {card.last4}{" "}
                             <b className="visa-mark">VISA</b>
                           </strong>
-                          <span>
+                          <span className="checkout-payment-address">
                             {address?.firstName} {address?.lastName},{" "}
                             {address?.street}, {address?.city} ...
                           </span>
@@ -605,7 +724,11 @@ export function Checkout({
                       <span>＋</span> Pay another way
                     </button>
                     <span className="payment-marks" aria-hidden="true">
-                      ▰ Pay
+                      <span className="source-mastercard">
+                        <i />
+                        <i />
+                      </span>
+                      <SourceApplePayMark />
                     </span>
                   </div>
                 </div>
@@ -638,21 +761,29 @@ export function Checkout({
               Sign up to be in the loop on exclusive offers, new products, and
               haircare tips.
             </p>
-            <label>
+            <label className="source-text-offer-phone">
               <input
-                type="checkbox"
-                checked={textOffers}
+                type="tel"
+                aria-label="Phone number for text offers"
+                placeholder="Phone number"
+                autoComplete="tel-national"
+                value={textOfferPhone}
                 disabled={processing}
-                onChange={(event) => setTextOffers(event.target.checked)}
+                onChange={(event) => setTextOfferPhone(event.target.value)}
               />
-              Text me with news and offers
+              <span aria-hidden="true">
+                <SourceUnitedStatesFlag />
+                <span>⌄</span>
+              </span>
             </label>
             <p className="checkout-sms-terms">
-              By providing your number and clicking the button, you agree to
-              receive recurring auto-dialed marketing SMS. Consent is not
-              required to purchase. Msg & data rates may apply. Reply HELP for
-              help; STOP to opt-out. View{" "}
-              <Link href="/account/help">TERMS OF SERVICE</Link> and{" "}
+              &quot;By providing your number and clicking the button, you agree
+              to receive recurring auto-dialed marketing SMS (including cart
+              reminders; AI content; artificial or prerecorded voices) and our{" "}
+              <Link href="/account/help">TERMS OF SERVICE</Link> (including
+              arbitration). Consent is not required to purchase. Msg & data
+              rates may apply. Msg frequency varies. Reply HELP for help; STOP
+              to opt-out. View{" "}
               <Link href="/account/privacy">PRIVACY POLICY</Link>.
             </p>
           </section>
@@ -710,9 +841,16 @@ export function Checkout({
 
             {summary && (
               <div className="inline-order-summary">
-                <p className="order-points">
-                  Complete this purchase to earn 4 points
-                </p>
+                <details className="order-points">
+                  <summary>
+                    <AccountIcon name="info" /> Complete this purchase to earn 4
+                    points <span aria-hidden="true">⌄</span>
+                  </summary>
+                  <p>
+                    The captured offer awards 4 points. No loyalty account is
+                    connected in this reference preview.
+                  </p>
+                </details>
                 {lines.map((line) => {
                   const net = capturedLineAmount(
                     line,
@@ -729,7 +867,9 @@ export function Checkout({
                         {net !== line.product.price.amount && (
                           <small>27% OFF BACK TO SCHOOL SALE (-$1.35)</small>
                         )}
-                        <small>Quantity {line.quantity}</small>
+                        {line.quantity > 1 && (
+                          <small>Quantity {line.quantity}</small>
+                        )}
                       </span>
                       <strong>
                         {net !== line.product.price.amount && (
@@ -769,7 +909,7 @@ export function Checkout({
                 >
                   <input
                     aria-label="Discount code"
-                    placeholder="Discount code"
+                    placeholder="Discount code or gift card"
                     disabled={processing}
                     value={code}
                     onChange={(event) => {
@@ -777,7 +917,7 @@ export function Checkout({
                       setDiscountError(false);
                     }}
                   />
-                  <button type="submit" disabled={processing}>
+                  <button type="submit" disabled={processing || !code.trim()}>
                     Apply
                   </button>
                 </form>
@@ -899,7 +1039,7 @@ export function Checkout({
         open={Boolean(deleteAddressId)}
         title="Delete address"
         className="delete-address-confirm source-delete-address"
-        onClose={() => setDeleteAddressId("")}
+        onClose={closeDeleteAddress}
       >
         <p>
           Are you sure you want to delete the address{" "}
@@ -913,10 +1053,7 @@ export function Checkout({
           })()}
         </p>
         <div className="editor-actions">
-          <button
-            className="form-cancel"
-            onClick={() => setDeleteAddressId("")}
-          >
+          <button className="form-cancel" onClick={closeDeleteAddress}>
             Cancel
           </button>
           <button
@@ -925,10 +1062,18 @@ export function Checkout({
               const remaining = addresses.filter(
                 (entry) => entry.id !== deleteAddressId,
               );
+              if (
+                addresses.find((entry) => entry.id === deleteAddressId)
+                  ?.isDefault &&
+                remaining.length &&
+                !remaining.some((entry) => entry.isDefault)
+              ) {
+                remaining[0] = { ...remaining[0], isDefault: true };
+              }
               setAddresses(remaining);
               if (addressId === deleteAddressId)
                 setAddressId(remaining[0]?.id ?? "");
-              setDeleteAddressId("");
+              closeDeleteAddress();
             }}
           >
             Delete
@@ -1025,7 +1170,10 @@ function SourcePhoneSetup({
                   }
                   placeholder="Enter your phone number"
                 />
-                <span aria-hidden="true">🇺🇸⌄</span>
+                <span aria-hidden="true">
+                  <SourceUnitedStatesFlag />
+                  <span>⌄</span>
+                </span>
               </div>
             </label>
             <p className="source-phone-note">
@@ -1041,7 +1189,9 @@ function SourcePhoneSetup({
         ) : (
           <>
             <p className="source-code-intro">
-              Enter the code sent to +1{digits}
+              {digits
+                ? `Enter the code sent to +1${digits}`
+                : "Enter your security code to continue."}
             </p>
             <label className="source-code-entry">
               <span className="sr-only">Security code</span>
@@ -1113,66 +1263,116 @@ function SourcePhoneSetup({
 function SourceAddressLookup({
   onSelect,
   onManual,
+  onSearchingChange,
 }: {
   onSelect: (address: Address) => void;
   onManual: () => void;
+  onSearchingChange: (searching: boolean) => void;
 }) {
   const [query, setQuery] = useState("");
   const [focused, setFocused] = useState(false);
-  const showSuggestion = focused && query.trim().length > 0;
+  const searchInput = useRef<HTMLInputElement>(null);
+  const showSuggestion = focused && /1226|university|menlo/i.test(query.trim());
+  const stopSearching = () => {
+    setFocused(false);
+    onSearchingChange(false);
+  };
   return (
-    <div className="source-address-lookup">
+    <div className={`source-address-lookup ${focused ? "is-searching" : ""}`}>
       {!focused && (
-        <label className="form-field">
-          Country/Region
+        <label className="form-field source-country-field">
+          Country/region
           <select defaultValue="United States">
             <option>United States</option>
           </select>
+          <span aria-hidden="true">
+            <SourceUnitedStatesFlag />
+          </span>
         </label>
       )}
       <label className="form-field source-address-search-field">
+        <Icon name="search" />
         <span>{focused ? "Address" : ""}</span>
         <input
+          ref={searchInput}
           aria-label="Search address"
           placeholder="Start typing address..."
           value={query}
-          autoFocus={false}
-          onFocus={() => setFocused(true)}
+          onFocus={() => {
+            setFocused(true);
+            onSearchingChange(true);
+          }}
           onChange={(event) => setQuery(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              stopSearching();
+              searchInput.current?.blur();
+            }
+          }}
         />
         {query && (
           <button
             type="button"
             aria-label="Clear address"
-            onClick={() => setQuery("")}
+            onClick={() => {
+              setQuery("");
+              searchInput.current?.focus();
+            }}
           >
             ×
           </button>
         )}
       </label>
       {focused && (
-        <button className="checkout-link" onClick={onManual}>
-          Enter address manually
+        <button
+          className="checkout-link"
+          onClick={() => {
+            stopSearching();
+            onManual();
+          }}
+        >
+          <span aria-hidden="true">▱</span> Enter address manually
         </button>
       )}
       {showSuggestion && (
         <button
           className="source-address-suggestion"
-          onClick={() => onSelect({ ...shopSourceAddress, id: "" })}
+          onClick={() => {
+            stopSearching();
+            onSelect({
+              ...shopSourceAddress,
+              id: "",
+              firstName: "",
+              lastName: "",
+              isDefault: false,
+            });
+          }}
         >
-          <span>⌖</span>
+          <AccountIcon name="location" filled />
           <span>
-            <strong>1226 University Dr</strong>
-            <small>Menlo Park, CA 94025, United States</small>
+            1226 University Dr, Menlo Park CA 94025,
+            <br /> United States
           </span>
         </button>
+      )}
+      {focused && !showSuggestion && query.trim() && (
+        <p className="source-address-no-match" role="status">
+          No captured suggestion matches. Enter your address manually.
+        </p>
       )}
       {focused && (
         <p className="source-google-note">Suggestions powered by Google</p>
       )}
-      <button className="primary address-lookup-continue" onClick={onManual}>
-        Continue to payment details
-      </button>
+      {!focused && (
+        <div className="source-address-lookup-actions">
+          <button
+            className="primary address-lookup-continue"
+            onClick={onManual}
+          >
+            Continue to payment details
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -1181,16 +1381,26 @@ function SourceAddressEditor({
   initialValue,
   onSave,
   onCancel,
+  onChange,
+  compact = false,
+  onExpand,
   variant,
 }: {
   initialValue: Address;
   onSave: (value: Address) => void;
   onCancel: () => void;
+  onChange?: (value: Address) => void;
+  compact?: boolean;
+  onExpand?: () => void;
   variant: "initial" | "sheet";
 }) {
   const [value, setValue] = useState(initialValue);
-  const change = (key: keyof Address, next: string | boolean) =>
-    setValue((current) => ({ ...current, [key]: next }));
+  const [suggestions, setSuggestions] = useState(false);
+  const change = (key: keyof Address, next: string | boolean) => {
+    const updated = { ...value, [key]: next };
+    setValue(updated);
+    onChange?.(updated);
+  };
   const field = (
     key: keyof Pick<
       Address,
@@ -1206,43 +1416,97 @@ function SourceAddressEditor({
     label: string,
     required = true,
   ) => (
-    <label className="form-field" key={key}>
-      {label}
-      <input
-        aria-label={label}
-        value={String(value[key] ?? "")}
-        required={required}
-        type={key === "phone" ? "tel" : "text"}
-        onChange={(event) => change(key, event.target.value)}
-      />
+    <div
+      className={`source-address-field source-address-field-${key}`}
+      key={key}
+    >
+      <label
+        className="form-field source-floating-field"
+        data-filled={Boolean(value[key])}
+      >
+        <span>{label}</span>
+        <input
+          aria-label={label}
+          value={String(value[key] ?? "")}
+          placeholder={label}
+          required={required}
+          type={key === "phone" ? "tel" : "text"}
+          autoComplete="off"
+          onFocus={() => {
+            if (key === "street" && variant === "sheet") setSuggestions(true);
+          }}
+          onBlur={(event) => {
+            if (
+              key === "street" &&
+              !event.currentTarget.parentElement?.parentElement?.contains(
+                event.relatedTarget,
+              )
+            )
+              setSuggestions(false);
+          }}
+          onChange={(event) => change(key, event.target.value)}
+        />
+        {key === "street" && <Icon name="search" />}
+      </label>
+      {key === "street" &&
+        suggestions &&
+        /1226|university|menlo/i.test(value.street) && (
+          <div className="source-inline-address-suggestion">
+            <span>SUGGESTIONS</span>
+            <button
+              type="button"
+              aria-label="Close address suggestions"
+              onClick={() => setSuggestions(false)}
+            >
+              ×
+            </button>
+            <button
+              type="button"
+              className="source-address-result"
+              onClick={() => {
+                const updated = {
+                  ...value,
+                  street: shopSourceAddress.street,
+                  city: shopSourceAddress.city,
+                  region: shopSourceAddress.region,
+                  postalCode: shopSourceAddress.postalCode,
+                };
+                setValue(updated);
+                onChange?.(updated);
+                setSuggestions(false);
+              }}
+            >
+              <strong>1226 University Dr,</strong> Menlo Park CA 94025, United
+              States
+            </button>
+          </div>
+        )}
+    </div>
+  );
+  const country = (
+    <label className="form-field source-country-field">
+      Country/Region
+      <select
+        value={value.country}
+        onChange={(event) => change("country", event.target.value)}
+      >
+        <option>United States</option>
+      </select>
+      {variant === "initial" && (
+        <span aria-hidden="true">
+          <SourceUnitedStatesFlag />
+        </span>
+      )}
     </label>
   );
-  return (
-    <form
-      className={`source-address-editor source-address-editor-${variant}`}
-      onSubmit={(event) => {
-        event.preventDefault();
-        onSave(value);
-      }}
-    >
-      <label className="form-field">
-        Country/Region
-        <select
-          value={value.country}
-          onChange={(event) => change("country", event.target.value)}
-        >
-          <option>United States</option>
-        </select>
-      </label>
-      {field("firstName", "First name")}
-      {field("lastName", "Last name")}
-      {field("company", "Company (optional)", false)}
-      {field("street", "Address")}
-      {field("apartment", "Apartment, suite, etc (optional)", false)}
-      {field("phone", "Phone (optional)", false)}
+  const locality = (
+    <>
       {field("city", "City")}
-      <label className="form-field">
-        State
+      <label
+        className="form-field source-floating-field"
+        data-filled={Boolean(value.region)}
+      >
+        <span>State</span>
         <select
           aria-label="State"
           value={value.region}
@@ -1254,6 +1518,41 @@ function SourceAddressEditor({
         </select>
       </label>
       {field("postalCode", "ZIP code")}
+    </>
+  );
+  return (
+    <form
+      className={`source-address-editor source-address-editor-${variant} ${compact ? "is-compact" : ""}`}
+      onSubmit={(event) => {
+        event.preventDefault();
+        onSave(value);
+      }}
+    >
+      {compact && (
+        <div className="source-selected-address">
+          <AccountIcon name="location" filled />
+          <span>
+            <strong>{value.street}</strong>
+            <small>
+              {value.city}, {value.region}, {value.postalCode}, US
+            </small>
+          </span>
+          <button type="button" onClick={onExpand}>
+            Edit
+          </button>
+        </div>
+      )}
+      {variant === "sheet" && country}
+      {field("firstName", "First name")}
+      {field("lastName", "Last name")}
+      {!compact && variant === "initial" && country}
+      {variant === "sheet" && field("company", "Company (optional)", false)}
+      {!compact && field("street", "Address")}
+      {field("apartment", "Apartment, suite, etc (optional)", false)}
+      {variant === "initial" && field("company", "Company (optional)", false)}
+      {variant === "sheet" && locality}
+      {field("phone", "Phone (optional)", false)}
+      {variant === "initial" && !compact && locality}
       {variant === "sheet" && (
         <label className="check-row source-default-address">
           <input
@@ -1261,7 +1560,7 @@ function SourceAddressEditor({
             checked={value.isDefault}
             onChange={(event) => change("isDefault", event.target.checked)}
           />
-          Set as default address
+          This is my default address
         </label>
       )}
       <div className="editor-actions">
@@ -1277,6 +1576,40 @@ function SourceAddressEditor({
         </button>
       </div>
     </form>
+  );
+}
+
+function SourceUnitedStatesFlag() {
+  return (
+    <svg className="source-us-flag" viewBox="0 0 26 18" aria-hidden="true">
+      <rect width="26" height="18" rx="2" fill="#fff" />
+      <path
+        d="M0 1h26M0 4h26M0 7h26M0 10h26M0 13h26M0 16h26"
+        stroke="#db3445"
+        strokeWidth="1.5"
+      />
+      <path fill="#304a80" d="M0 0h12v10H0z" />
+      <path
+        d="M2 2h8M2 4h8M2 6h8M2 8h8"
+        stroke="#fff"
+        strokeWidth=".8"
+        strokeDasharray="1 1.4"
+      />
+    </svg>
+  );
+}
+
+function SourceApplePayMark() {
+  return (
+    <span className="source-apple-mark" aria-hidden="true">
+      <svg viewBox="0 0 18 21">
+        <path
+          fill="currentColor"
+          d="M12.3.6c.2 1.8-.6 3.7-2.8 4.3-.4-1.9.8-3.8 2.8-4.3ZM8.7 6c1.7 0 2.2-1.1 3.9-.9 1.6.1 2.5.8 3.1 1.7-3.1 1.9-2.6 5.6.5 7-.6 1.6-1.4 3.2-2.4 4.4-1.9 2.4-2.7.6-5 .6s-3.3 1.9-5.1-.8C1.3 14.4.2 9.7 3.1 6.6 4.7 4.9 6.6 5.2 8.7 6Z"
+        />
+      </svg>
+      Pay
+    </span>
   );
 }
 
@@ -1299,6 +1632,8 @@ function SourcePaymentEditor({
     `${shopSourceBuyer.firstName} ${shopSourceBuyer.lastName}`,
   );
   const [nickname, setNickname] = useState("");
+  const [securityHelp, setSecurityHelp] = useState(false);
+  const nameInput = useRef<HTMLInputElement>(null);
   const [billing, setBilling] = useState(selectedAddressId);
   const [billOpen, setBillOpen] = useState(false);
   const [billingEditor, setBillingEditor] = useState(false);
@@ -1323,75 +1658,126 @@ function SourcePaymentEditor({
           setBoundary(true);
         }}
       >
-        <label className="shipping-option selected source-payment-method-choice">
-          <input
-            type="radio"
-            name="new-payment"
-            checked={method === "card"}
-            onChange={() => setMethod("card")}
-          />
-          <span>
-            <strong>Credit card</strong>
-            <small>VISA Mastercard AMEX +5</small>
-          </span>
-        </label>
-        <div className="source-card-fields">
-          <label className="form-field">
-            Card number
+        <div className="source-card-method">
+          <label className="shipping-option selected source-payment-method-choice">
             <input
-              aria-label="Card number"
-              inputMode="numeric"
-              autoComplete="off"
+              type="radio"
+              name="new-payment"
+              checked={method === "card"}
+              onChange={() => setMethod("card")}
+            />
+            <span>
+              <strong>Credit card</strong>
+              <small className="source-payment-brands">
+                <b className="visa-mark">VISA</b>
+                {!number && (
+                  <>
+                    <b className="source-mastercard" aria-label="Mastercard">
+                      <i />
+                      <i />
+                    </b>
+                    <b className="source-amex">
+                      AM
+                      <br />
+                      EX
+                    </b>
+                    <b className="source-more-cards">+5</b>
+                  </>
+                )}
+              </small>
+            </span>
+          </label>
+          <div className="source-card-fields">
+            <label className="form-field">
+              Card number
+              <input
+                aria-label="Card number"
+                inputMode="numeric"
+                autoComplete="off"
+                disabled={method !== "card"}
+                value={number}
+                onChange={(event) =>
+                  setNumber(event.target.value.replace(/[^0-9 ]/g, ""))
+                }
+                placeholder="Card number"
+              />
+              <Icon name="lock" />
+            </label>
+            <div>
+              <label className="form-field">
+                {" "}
+                Expiration date (MM / YY)
+                <input
+                  aria-label="Expiration"
+                  disabled={method !== "card"}
+                  value={expiry}
+                  onChange={(event) => setExpiry(event.target.value)}
+                  placeholder="Expiration date (MM / YY)"
+                />
+              </label>{" "}
+              <div className="form-field source-security-field">
+                <span>Security code</span>
+                <input
+                  aria-label="Security code"
+                  inputMode="numeric"
+                  disabled={method !== "card"}
+                  value={cvc}
+                  onChange={(event) =>
+                    setCvc(event.target.value.replace(/\D/g, ""))
+                  }
+                  placeholder="Security code"
+                />
+                <button
+                  type="button"
+                  className="source-card-help"
+                  aria-label="About security code"
+                  aria-expanded={securityHelp}
+                  onClick={() => setSecurityHelp((current) => !current)}
+                >
+                  ?
+                </button>
+                {securityHelp && (
+                  <p className="source-security-help" role="status">
+                    The 3 or 4 digit security code printed on your card.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>{" "}
+          <div className="form-field source-card-name">
+            <span>Name on card</span>
+            <input
+              ref={nameInput}
+              aria-label="Name on card"
+              placeholder="Name on card"
+              value={name}
               disabled={method !== "card"}
-              value={number}
-              onChange={(event) =>
-                setNumber(event.target.value.replace(/[^0-9 ]/g, ""))
-              }
-              placeholder="Card number"
+              onChange={(event) => setName(event.target.value)}
+            />
+            {name && (
+              <button
+                type="button"
+                aria-label="Clear name on card"
+                disabled={method !== "card"}
+                onClick={() => {
+                  setName("");
+                  nameInput.current?.focus();
+                }}
+              >
+                <Icon name="close" />
+              </button>
+            )}
+          </div>
+          <label className="form-field">
+            Nickname (optional){" "}
+            <input
+              placeholder="Nickname (optional)"
+              value={nickname}
+              onChange={(event) => setNickname(event.target.value)}
             />
           </label>
-          <div>
-            <label className="form-field">
-              Expiration
-              <input
-                aria-label="Expiration"
-                disabled={method !== "card"}
-                value={expiry}
-                onChange={(event) => setExpiry(event.target.value)}
-                placeholder="MM/YY"
-              />
-            </label>
-            <label className="form-field">
-              Security code
-              <input
-                aria-label="Security code"
-                inputMode="numeric"
-                disabled={method !== "card"}
-                value={cvc}
-                onChange={(event) =>
-                  setCvc(event.target.value.replace(/\D/g, ""))
-                }
-                placeholder="CVC"
-              />
-            </label>
-          </div>
         </div>
-        <label className="form-field">
-          Name on card
-          <input
-            value={name}
-            disabled={method !== "card"}
-            onChange={(event) => setName(event.target.value)}
-          />
-        </label>
-        <label className="form-field">
-          Nickname (optional)
-          <input
-            value={nickname}
-            onChange={(event) => setNickname(event.target.value)}
-          />
-        </label>
-        <label className="shipping-option source-payment-method-choice">
+        <label className="shipping-option source-payment-method-choice source-apple-choice">
           <input
             type="radio"
             name="new-payment"
@@ -1399,55 +1785,68 @@ function SourcePaymentEditor({
             onChange={() => setMethod("apple")}
           />
           <strong>Apple Pay</strong>
+          <SourceApplePayMark />
         </label>
-        <button
-          type="button"
-          className="source-bill-to"
-          aria-expanded={billOpen}
-          onClick={() => setBillOpen((current) => !current)}
-        >
-          <span>Bill to</span>
-          {!billOpen && selectedBilling && (
-            <span>
-              {selectedBilling.firstName} {selectedBilling.lastName},{" "}
-              {selectedBilling.street}
-            </span>
-          )}
-          <b>{billOpen ? "⌃" : "⌄"}</b>
-        </button>
-        {billOpen && (
-          <div className="source-billing-options">
-            {billingAddresses.map((entry) => (
-              <label
-                className={`shipping-option ${billing === entry.id ? "selected" : ""}`}
-                key={entry.id}
-              >
-                <input
-                  type="radio"
-                  name="billing"
-                  checked={billing === entry.id}
-                  onChange={() => setBilling(entry.id)}
-                />
-                <span>
-                  <strong>
-                    {entry.firstName} {entry.lastName}
-                  </strong>
-                  <span>{entry.street}</span>
+        <div className="source-billing-group">
+          <button
+            type="button"
+            className="source-bill-to"
+            aria-expanded={billOpen}
+            onClick={() => setBillOpen((current) => !current)}
+          >
+            <span>Bill to</span>
+            {!billOpen && selectedBilling && (
+              <span>
+                <strong>
+                  {selectedBilling.firstName} {selectedBilling.lastName}
+                </strong>
+                <br />
+                {selectedBilling.street}
+                <br />
+                {selectedBilling.city} {selectedBilling.region}{" "}
+                {selectedBilling.postalCode}, US
+              </span>
+            )}
+            <b>{billOpen ? "⌃" : "⌄"}</b>
+          </button>
+          {billOpen && (
+            <div className="source-billing-options">
+              {billingAddresses.map((entry) => (
+                <label
+                  className={`shipping-option ${billing === entry.id ? "selected" : ""}`}
+                  key={entry.id}
+                >
+                  <input
+                    type="radio"
+                    name="billing"
+                    checked={billing === entry.id}
+                    onChange={() => setBilling(entry.id)}
+                  />
                   <span>
-                    {entry.city}, {entry.region} {entry.postalCode}
+                    <strong>
+                      {" "}
+                      {entry.firstName} {entry.lastName}, {entry.street}
+                    </strong>
+                    <span>
+                      {entry.city} {entry.region} {entry.postalCode}, US,
+                    </span>
+                    {entry.phone && <span>{entry.phone}</span>}
+                    {entry.isDefault && (
+                      <small className="default-pill">Default</small>
+                    )}
                   </span>
-                </span>
-              </label>
-            ))}
-            <button
-              type="button"
-              className="checkout-link"
-              onClick={() => setBillingEditor(true)}
-            >
-              ＋ Use a different address
-            </button>
-          </div>
-        )}
+                </label>
+              ))}
+              <button
+                type="button"
+                className="checkout-link"
+                onClick={() => setBillingEditor(true)}
+              >
+                ＋ Use a different address
+              </button>
+            </div>
+          )}
+        </div>
         {boundary && (
           <div className="payment-preview-boundary" role="status">
             <strong>Payment service is not connected.</strong>

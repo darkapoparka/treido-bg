@@ -183,6 +183,12 @@ test("initial checkout card validates numeric input and retains an independent b
     .fill("1226 University");
   await page.getByRole("button", { name: /1226 University Dr/ }).click();
   await page
+    .getByRole("textbox", { name: "First name", exact: true })
+    .fill("Alex");
+  await page
+    .getByRole("textbox", { name: "Last name", exact: true })
+    .fill("Smith");
+  await page
     .getByRole("button", { name: "Continue to payment details", exact: true })
     .click();
   await expect(
