@@ -39,6 +39,7 @@ export type SavedListing = Readonly<{
   id: string;
   title: string;
   storeId: string;
+  sellerName?: string;
   images: readonly string[];
   price?: Money;
   promotion?: string;

@@ -770,6 +770,23 @@ const media: Record<
     file: "flows/5f25f0ee-f19a-49a8-8f9d-ca2f3259c3c6/002.webp",
     rect: [17, 174, 359, 332],
   },
+  "search-x721-photo": {
+    file: "flows/4d0f0532-ce38-49b5-a94b-32e8ace4716c/006.webp",
+    rect: [26, 397, 132, 132],
+    circularOcclusions: [[103, 107, 17]],
+    photoRadius: 20,
+  },
+  "search-tough-love-photo": {
+    file: "flows/4d0f0532-ce38-49b5-a94b-32e8ace4716c/006.webp",
+    rect: [26, 558, 132, 132],
+    circularOcclusions: [[103, 107, 17]],
+    photoRadius: 20,
+  },
+  "search-mmml-logo": {
+    file: "flows/4d0f0532-ce38-49b5-a94b-32e8ace4716c/006.webp",
+    rect: [171, 500, 26, 26],
+    photoRadius: 13,
+  },
   "suggestion-jeans-warehouse": {
     file: "flows/4d0f0532-ce38-49b5-a94b-32e8ace4716c/002.webp",
     rect: [16, 113, 44, 44],

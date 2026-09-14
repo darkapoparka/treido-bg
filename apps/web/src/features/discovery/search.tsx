@@ -32,6 +32,7 @@ import {
 import { SearchLoading } from "./search-loading";
 import { JeansAnswer } from "./assistant";
 import { RecentSearchItems } from "./search-recent";
+import { CapturedJeansContinuation } from "./search-captured-continuation";
 import styles from "./search-entry.module.css";
 import "./search-loading.css";
 
@@ -132,6 +133,16 @@ export function Search({
       id === "carpenter-jeans" ? 0 : id === "heritage-jeans" ? 1 : 2;
     results.sort((a, b) => rank(a.id) - rank(b.id));
   }
+  // The frozen default Jeans history contains two leading rows, Related
+  // searches, then the separately captured lower continuation. Assistant-only
+  // recommendations must not be stitched into that result history. Faceted
+  // searches retain the complete local result set.
+  const displayedResults =
+    jeansQuery && !filtered
+      ? results.filter((product) =>
+          ["carpenter-jeans", "heritage-jeans"].includes(product.id),
+        )
+      : results;
   const stores = searchStores(catalog, query, visibleFilters, results);
   function openAnswer() {
     const next = new URLSearchParams(params);
@@ -464,7 +475,7 @@ export function Search({
             </div>
           )}
           <div className="search-results">
-            {results.map((p) => (
+            {displayedResults.map((p) => (
               <article className="result-row" key={p.id} data-result-id={p.id}>
                 <div className="product-media">
                   <Link href={`/products/${p.id}`}>
@@ -512,7 +523,7 @@ export function Search({
                 </div>
               </article>
             ))}
-            {!results.length && (
+            {!displayedResults.length && (
               <div className="empty-state" role="status">
                 <h2>No results found</h2>
                 <p>Try another search or clear your filters.</p>
@@ -548,6 +559,7 @@ export function Search({
                   ))}
                 </div>
               </section>
+              {!filtered && <CapturedJeansContinuation />}
               <button
                 ref={answerTrigger}
                 type="button"

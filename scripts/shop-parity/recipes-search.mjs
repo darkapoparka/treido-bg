@@ -123,11 +123,11 @@ export const searchRecipes = {
           {
             type: "anchorSelector",
             selector: '[class*="relatedSearches"]',
-            y: 110,
+            y: 98,
           },
         ],
         notes:
-          "Source continues below related searches with X721 Dusted Skinny Denim and Tough Love jeans. Those exact lower rows require catalog/artwork coverage; current query links are connected without substituting products.",
+          "The captured X721 Dusted Skinny Denim and Tough Love rows now continue directly below Related searches using source-bounded listing fixtures and extracted photography. Their uncaptured detail destinations remain explicitly unavailable rather than invented.",
       },
     ],
   },

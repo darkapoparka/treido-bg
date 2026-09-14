@@ -334,7 +334,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
                 product={product}
                 seller={
                   catalog.stores.find((store) => store.id === product.storeId)
-                    ?.name
+                    ?.name ?? product.sellerName
                 }
                 selected={collection?.productIds.includes(product.id)}
                 onSelect={addMode ? () => choose(product.id) : undefined}
