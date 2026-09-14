@@ -1,10 +1,13 @@
 import { test, expect } from "@playwright/test";
 
+import { useReferenceScenario } from "./helpers";
+
 test("discovery images, navigation and mobile width remain usable", async ({
   page,
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  await useReferenceScenario(page, "home-welcome");
   await page.goto("/");
   await expect(page).toHaveTitle("Shop reference preview");
   await expect(

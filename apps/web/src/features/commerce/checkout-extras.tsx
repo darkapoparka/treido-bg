@@ -5,7 +5,7 @@ import type { Catalog } from "../catalog/types";
 import { formatMoney } from "../catalog/types";
 import { Icon } from "../discovery/icons";
 import { ReviewStars } from "../discovery/review-feedback";
-export const checkoutRecommendations = [
+export const kitschCheckoutRecommendations = [
   {
     id: "checkout-shea",
     name: "Shea Butter Exfoliating Body Wash",
@@ -21,21 +21,29 @@ export const checkoutRecommendations = [
     reviews: "1094",
   },
 ];
+export type CheckoutRecommendation =
+  (typeof kitschCheckoutRecommendations)[number];
+export function checkoutRecommendationsForStore(
+  storeId?: string,
+): readonly CheckoutRecommendation[] {
+  return storeId === "kitsch" ? kitschCheckoutRecommendations : [];
+}
 export function CheckoutExtras({
   catalog,
+  recommendations,
   onAdd,
   added = [],
   disabled = false,
 }: {
   catalog: Catalog;
+  recommendations: readonly CheckoutRecommendation[];
   onAdd?: (id: string) => void;
   added?: string[];
   disabled?: boolean;
 }) {
   const [reverse, setReverse] = useState(false);
-  const products = reverse
-    ? [...checkoutRecommendations].reverse()
-    : checkoutRecommendations;
+  const products = reverse ? [...recommendations].reverse() : recommendations;
+  if (!products.length) return null;
   return (
     <section className="checkout-recommendations">
       <header>

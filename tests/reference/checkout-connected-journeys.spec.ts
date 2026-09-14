@@ -161,3 +161,80 @@ test("review address default, cancel and delete keep one default and restore a u
     page.getByRole("button", { name: /Pay now \$10\.82/ }),
   ).toBeEnabled();
 });
+
+test("Home product checkout keeps the selected seller and omits uncaptured merchandising", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "home-welcome");
+  await page.goto("/");
+  const campaign = page.getByRole("region", {
+    name: "PRINCESS POLLY campaign",
+    exact: true,
+  });
+  await campaign
+    .getByRole("link", { name: "Sage green top", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/products\/home-princess-top$/);
+  await page.getByRole("button", { name: "Add to cart", exact: true }).click();
+  await page.getByRole("button", { name: "Open cart", exact: true }).click();
+  const cart = page.getByRole("dialog", { name: "Your cart", exact: true });
+  await expect(cart.getByText("PRINCESS POLLY", { exact: true })).toBeVisible();
+  await cart
+    .getByRole("link", { name: "Continue to checkout", exact: true })
+    .click();
+
+  await expect(page).toHaveURL(/\/checkout\?store=princess-polly$/);
+  await expect(page.locator(".checkout-terms")).toContainText("PRINCESS POLLY");
+  await expect(
+    page.getByRole("link", { name: "Terms of Service", exact: true }),
+  ).toHaveAttribute("href", "/stores/princess-polly?info=terms");
+  await expect(
+    page.getByRole("link", { name: "Privacy Policy", exact: true }),
+  ).toHaveAttribute("href", "/stores/princess-polly?info=privacy");
+  await expect(page.locator(".shop-cash-section")).toHaveCount(0);
+  await expect(page.locator(".checkout-text-offers")).toHaveCount(0);
+  await expect(page.locator(".checkout-recommendations")).toHaveCount(0);
+  await expect(page.locator(".checkout-terms")).not.toContainText("Kitsch");
+
+  await page
+    .getByRole("button", { name: /^Total 1 item USD \$40\.82/ })
+    .click();
+  await expect(page.getByText("Sage green top", { exact: true })).toBeVisible();
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width);
+  }
+  await page.setViewportSize({ width: 393, height: 793 });
+  await page.getByRole("button", { name: /Pay now \$40\.82/ }).click();
+  await expect(
+    page.getByRole("heading", { name: "Payment service is not connected" }),
+  ).toBeVisible();
+});
+
+test("captured Kitsch checkout retains its source-specific offers and recommendations", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "checkout");
+  await page.goto("/checkout?store=kitsch");
+  await expect(page.locator(".checkout-terms")).toContainText("Kitsch");
+  await expect(
+    page.getByRole("link", { name: "Terms of Service", exact: true }).last(),
+  ).toHaveAttribute("href", "/stores/kitsch?info=terms");
+  await expect(
+    page.getByRole("link", { name: "Privacy Policy", exact: true }).last(),
+  ).toHaveAttribute("href", "/stores/kitsch?info=privacy");
+  await expect(page.locator(".shop-cash-section")).toContainText(
+    "Get $20.00 off on orders over $50.00",
+  );
+  await expect(page.locator(".checkout-text-offers")).toContainText(
+    "haircare tips",
+  );
+  await expect(page.locator(".checkout-recommendations")).toContainText(
+    "Shea Butter Exfoliating Body Wash",
+  );
+  await expect(page.locator(".checkout-recommendations")).toContainText(
+    "Strengthening Rosemary & Biotin Scalp & Hair Oil",
+  );
+});

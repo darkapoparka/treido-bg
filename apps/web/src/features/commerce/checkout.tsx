@@ -15,7 +15,10 @@ import { CartContents } from "./cart";
 import "./cart-parity.css";
 export { CartContents } from "./cart";
 import { InitialPayment } from "./initial-payment";
-import { CheckoutExtras, checkoutRecommendations } from "./checkout-extras";
+import {
+  CheckoutExtras,
+  checkoutRecommendationsForStore,
+} from "./checkout-extras";
 import { capturedLineAmount, capturedOfferCompareAt } from "./pricing";
 import {
   shopSourceAddress,
@@ -146,12 +149,30 @@ export function Checkout({
   const [processing, setProcessing] = useState(false);
   const [paymentBoundary, setPaymentBoundary] = useState(false);
 
-  const lines = state.cart.flatMap((line) => {
+  const resolvedLines = state.cart.flatMap((line) => {
     const product = catalog.products.find((p) => p.id === line.productId);
-    return product && (!storeId || product.storeId === storeId)
-      ? [{ ...line, product }]
-      : [];
+    return product ? [{ ...line, product }] : [];
   });
+  const effectiveStoreId = storeId || resolvedLines[0]?.product.storeId;
+  const lines = resolvedLines.filter(
+    (line) => !effectiveStoreId || line.product.storeId === effectiveStoreId,
+  );
+  const checkoutStore = catalog.stores.find(
+    (store) => store.id === effectiveStoreId,
+  );
+  const checkoutStoreName =
+    effectiveStoreId === "kitsch"
+      ? "Kitsch"
+      : (checkoutStore?.name ?? "this store");
+  const checkoutTermsHref = checkoutStore
+    ? `/stores/${checkoutStore.id}?info=terms`
+    : "/account/help";
+  const checkoutPrivacyHref = checkoutStore
+    ? `/stores/${checkoutStore.id}?info=privacy`
+    : "/account/privacy";
+  const hasCapturedKitschMerchandising = effectiveStoreId === "kitsch";
+  const checkoutRecommendations =
+    checkoutRecommendationsForStore(effectiveStoreId);
   const quantity = lines.reduce((n, line) => n + line.quantity, 0);
   const itemSubtotal = lines.reduce(
     (n, line) =>
@@ -735,14 +756,16 @@ export function Checkout({
               )}
             </section>
 
-            <section className="shop-cash-section">
-              <span>Shop Cash</span>
-              <div>
-                Get $20.00 off on orders over $50.00
-                <br />
-                <Link href="/search">Keep Shopping</Link>
-              </div>
-            </section>
+            {hasCapturedKitschMerchandising && (
+              <section className="shop-cash-section">
+                <span>Shop Cash</span>
+                <div>
+                  Get $20.00 off on orders over $50.00
+                  <br />
+                  <Link href="/search">Keep Shopping</Link>
+                </div>
+              </section>
+            )}
           </div>
 
           <label className="checkout-store-offers">
@@ -755,41 +778,44 @@ export function Checkout({
             <span>Sign me up for news and offers from this store</span>
           </label>
 
-          <section className="checkout-text-offers">
-            <h2>Text offers</h2>
-            <p>
-              Sign up to be in the loop on exclusive offers, new products, and
-              haircare tips.
-            </p>
-            <label className="source-text-offer-phone">
-              <input
-                type="tel"
-                aria-label="Phone number for text offers"
-                placeholder="Phone number"
-                autoComplete="tel-national"
-                value={textOfferPhone}
-                disabled={processing}
-                onChange={(event) => setTextOfferPhone(event.target.value)}
-              />
-              <span aria-hidden="true">
-                <SourceUnitedStatesFlag />
-                <span>⌄</span>
-              </span>
-            </label>
-            <p className="checkout-sms-terms">
-              &quot;By providing your number and clicking the button, you agree
-              to receive recurring auto-dialed marketing SMS (including cart
-              reminders; AI content; artificial or prerecorded voices) and our{" "}
-              <Link href="/account/help">TERMS OF SERVICE</Link> (including
-              arbitration). Consent is not required to purchase. Msg & data
-              rates may apply. Msg frequency varies. Reply HELP for help; STOP
-              to opt-out. View{" "}
-              <Link href="/account/privacy">PRIVACY POLICY</Link>.
-            </p>
-          </section>
+          {hasCapturedKitschMerchandising && (
+            <section className="checkout-text-offers">
+              <h2>Text offers</h2>
+              <p>
+                Sign up to be in the loop on exclusive offers, new products, and
+                haircare tips.
+              </p>
+              <label className="source-text-offer-phone">
+                <input
+                  type="tel"
+                  aria-label="Phone number for text offers"
+                  placeholder="Phone number"
+                  autoComplete="tel-national"
+                  value={textOfferPhone}
+                  disabled={processing}
+                  onChange={(event) => setTextOfferPhone(event.target.value)}
+                />
+                <span aria-hidden="true">
+                  <SourceUnitedStatesFlag />
+                  <span>⌄</span>
+                </span>
+              </label>
+              <p className="checkout-sms-terms">
+                &quot;By providing your number and clicking the button, you
+                agree to receive recurring auto-dialed marketing SMS (including
+                cart reminders; AI content; artificial or prerecorded voices)
+                and our <Link href="/account/help">TERMS OF SERVICE</Link>{" "}
+                (including arbitration). Consent is not required to purchase.
+                Msg & data rates may apply. Msg frequency varies. Reply HELP for
+                help; STOP to opt-out. View{" "}
+                <Link href="/account/privacy">PRIVACY POLICY</Link>.
+              </p>
+            </section>
+          )}
 
           <CheckoutExtras
             catalog={catalog}
+            recommendations={checkoutRecommendations}
             added={extraIds}
             disabled={processing}
             onAdd={(id) =>
@@ -959,9 +985,9 @@ export function Checkout({
             )}
 
             <p className="checkout-terms">
-              By clicking ‘Pay Now’ you agree to Kitsch’s{" "}
-              <Link href="/stores/kitsch?info=terms">Terms of Service</Link> and{" "}
-              <Link href="/stores/kitsch?info=privacy">Privacy Policy</Link>.
+              By clicking ‘Pay Now’ you agree to {checkoutStoreName}’s{" "}
+              <Link href={checkoutTermsHref}>Terms of Service</Link> and{" "}
+              <Link href={checkoutPrivacyHref}>Privacy Policy</Link>.
             </p>
           </div>
 
