@@ -159,6 +159,28 @@ test("captured Amazon label tracking keeps a compact carrier handoff at mobile w
     expect(geometry.continuationGap).toBeLessThanOrEqual(18);
     expect(geometry.documentWidth).toBeLessThanOrEqual(width + 1);
   }
+
+  await page.setViewportSize({ width: 393, height: 793 });
+  const preview = page.locator(".delivery-preview");
+  await preview.evaluate((node) =>
+    window.scrollBy(0, node.getBoundingClientRect().top - 12),
+  );
+  const recommendationGap = await page.evaluate(() => {
+    const heading = [...document.querySelectorAll<HTMLElement>("h2")].find(
+      (node) => node.textContent?.includes("Popular at KITSCH"),
+    );
+    const firstCard = document.querySelector<HTMLElement>(
+      ".product-rail .product-card",
+    );
+    if (!heading || !firstCard)
+      throw new Error("Order recommendation continuation is missing");
+    return (
+      firstCard.getBoundingClientRect().top -
+      heading.getBoundingClientRect().bottom
+    );
+  });
+  expect(recommendationGap).toBeGreaterThanOrEqual(8);
+  expect(recommendationGap).toBeLessThanOrEqual(10);
 });
 
 test("manual package validates carrier selection and email forwarding remains an explicit boundary", async ({

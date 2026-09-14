@@ -1270,6 +1270,9 @@
 .tracking .recommendationHeading {
   margin-top: 26px;
 }
+.labelTracking .recommendationHeading {
+  margin-bottom: 9px;
+}
 .recommendationHeading > a {
   display: inline-flex;
   align-items: center;
