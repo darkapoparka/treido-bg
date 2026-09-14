@@ -89,7 +89,7 @@ test("Home campaign navigation restores the same campaign across Back and Forwar
   ).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
 
-  await page.goBack();
+  await page.getByRole("button", { name: "Go back", exact: true }).click();
   await expect(page).toHaveURL(/\/$/);
   await expect(page.locator("main.home-page")).toHaveAttribute(
     "data-feed",
@@ -104,6 +104,65 @@ test("Home campaign navigation restores the same campaign across Back and Forwar
 
   await page.goForward();
   await expect(page).toHaveURL(/\/stores\/kitsch$/);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/$/);
+  await expect
+    .poll(async () => Math.round((await campaign.boundingBox())?.y ?? -1))
+    .toBe(56);
+  await expect
+    .poll(() => page.evaluate(() => window.scrollY))
+    .toBe(restoredScroll);
+});
+
+test("Home campaign product navigation starts at the top and restores its product control", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "home-welcome");
+  await page.goto("/");
+  const campaign = page.getByRole("region", {
+    name: "KITSCH campaign",
+    exact: true,
+  });
+  await campaign.evaluate((element) =>
+    window.scrollTo(
+      0,
+      window.scrollY + element.getBoundingClientRect().top - 56,
+    ),
+  );
+  await expect
+    .poll(async () => Math.round((await campaign.boundingBox())?.y ?? -1))
+    .toBe(56);
+  const originalScroll = await page.evaluate(() => window.scrollY);
+  const trigger = campaign.getByRole("link", {
+    name: "Smoothing Air Dry Cream",
+    exact: true,
+  });
+  await trigger.click();
+  await expect(page).toHaveURL(/\/products\/home-air-dry-cream$/);
+  await expect(
+    page.getByRole("heading", {
+      name: "Smoothing Air Dry Cream",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+
+  await page.getByRole("button", { name: "Go back", exact: true }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator("main.home-page")).toHaveAttribute(
+    "data-feed",
+    "recent-products",
+  );
+  await expect
+    .poll(async () => Math.round((await campaign.boundingBox())?.y ?? -1))
+    .toBe(56);
+  const restoredScroll = await page.evaluate(() => window.scrollY);
+  expect(restoredScroll).toBeGreaterThan(originalScroll);
+  await expect(trigger).toBeFocused();
+
+  await page.goForward();
+  await expect(page).toHaveURL(/\/products\/home-air-dry-cream$/);
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   await page.goBack();
   await expect(page).toHaveURL(/\/$/);

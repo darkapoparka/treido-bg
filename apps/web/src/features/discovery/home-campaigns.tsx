@@ -145,11 +145,12 @@ const campaignHistoryIds: Record<CampaignHistory, string[]> = {
   "pura-options": ["pura", "drmtlgy"],
 };
 
-type HomeCampaignReturn = { id: string; top: number };
+type HomeCampaignReturn = { id: string; top: number; focus: string };
 
 function rememberHomeCampaignReturn(
   event: MouseEvent<HTMLAnchorElement>,
   id: string,
+  focus: string,
 ) {
   if (
     event.button !== 0 ||
@@ -168,6 +169,7 @@ function rememberHomeCampaignReturn(
       shopHomeCampaignReturn: {
         id,
         top: campaign.getBoundingClientRect().top,
+        focus,
       } satisfies HomeCampaignReturn,
     },
     "",
@@ -210,7 +212,9 @@ export function HomeCampaigns({
       !("id" in value) ||
       typeof value.id !== "string" ||
       !("top" in value) ||
-      typeof value.top !== "number"
+      typeof value.top !== "number" ||
+      !("focus" in value) ||
+      typeof value.focus !== "string"
     )
       return;
     const saved = value as HomeCampaignReturn;
@@ -233,7 +237,9 @@ export function HomeCampaigns({
           if (cancelled) return;
           align();
           campaign
-            .querySelector<HTMLAnchorElement>("[data-home-campaign-return]")
+            .querySelector<HTMLAnchorElement>(
+              `[data-home-campaign-return="${CSS.escape(saved.focus)}"]`,
+            )
             ?.focus({ preventScroll: true });
           const state = { ...window.history.state };
           delete state.shopHomeCampaignReturn;
@@ -316,8 +322,10 @@ export function HomeCampaigns({
                     href={href}
                     className={`campaign-brand ${c.title ? "campaign-wordmark" : ""}`}
                     aria-label={`Visit ${store?.name ?? "shop"}`}
-                    data-home-campaign-return={c.id}
-                    onClick={(event) => rememberHomeCampaignReturn(event, c.id)}
+                    data-home-campaign-return="brand"
+                    onClick={(event) =>
+                      rememberHomeCampaignReturn(event, c.id, "brand")
+                    }
                   >
                     {c.wordmark ? (
                       <img
@@ -388,7 +396,18 @@ export function HomeCampaigns({
                         className={`campaign-product ${c.partialProducts ? "campaign-partial-product" : ""} ${id === "home-drmtlgy-bundle" ? "campaign-bundle" : id === "home-drmtlgy-masks" ? "campaign-eye-masks" : ["home-drmtlgy-eye", "home-drmtlgy-tinted"].includes(id) ? "campaign-isolated-bottle" : ""}`}
                         key={`${id}-${index}`}
                       >
-                        <Link href={`/products/${id}`} aria-label={p.title}>
+                        <Link
+                          href={`/products/${id}`}
+                          aria-label={p.title}
+                          data-home-campaign-return={`product-${index}`}
+                          onClick={(event) =>
+                            rememberHomeCampaignReturn(
+                              event,
+                              c.id,
+                              `product-${index}`,
+                            )
+                          }
+                        >
                           <img
                             src={
                               campaignProductPhotos[id]
@@ -416,6 +435,10 @@ export function HomeCampaigns({
                       className="campaign-product campaign-uncaptured"
                       href={href}
                       aria-label={`More products from ${store?.name}`}
+                      data-home-campaign-return="more-products"
+                      onClick={(event) =>
+                        rememberHomeCampaignReturn(event, c.id, "more-products")
+                      }
                     >
                       <span className="campaign-price">{c.trailingPrice}</span>
                     </Link>
@@ -425,12 +448,20 @@ export function HomeCampaigns({
                       ["home-campaign-accessory-cap", "$38.50", "$99.99"],
                       ["home-campaign-accessory-glasses", "$33.50", "$786.00"],
                       ["", "$108.50", ""],
-                    ].map(([image, price, was]) => (
+                    ].map(([image, price, was], index) => (
                       <Link
                         href="/search"
                         className="campaign-product campaign-partial-product"
                         key={price}
                         aria-label="Browse accessories"
+                        data-home-campaign-return={`accessory-${index}`}
+                        onClick={(event) =>
+                          rememberHomeCampaignReturn(
+                            event,
+                            c.id,
+                            `accessory-${index}`,
+                          )
+                        }
                       >
                         {image && (
                           <img src={`/api/reference-media/${image}`} alt="" />
@@ -447,11 +478,26 @@ export function HomeCampaigns({
                         key={n}
                         className="campaign-product campaign-uncaptured"
                         aria-label="Explore Pura fragrances"
+                        data-home-campaign-return={`fragrance-${n}`}
+                        onClick={(event) =>
+                          rememberHomeCampaignReturn(
+                            event,
+                            c.id,
+                            `fragrance-${n}`,
+                          )
+                        }
                       />
                     ))}
                 </div>
                 {(c.offer || c.id === "princess") && (
-                  <Link href={href} className="campaign-cta">
+                  <Link
+                    href={href}
+                    className="campaign-cta"
+                    data-home-campaign-return="cta"
+                    onClick={(event) =>
+                      rememberHomeCampaignReturn(event, c.id, "cta")
+                    }
+                  >
                     <strong>{c.offer ?? "Shop all"}</strong>
                     <Icon name="arrow" />
                   </Link>
@@ -463,6 +509,10 @@ export function HomeCampaigns({
                   className="campaign-offer"
                   inert={concealed}
                   aria-hidden={concealed || undefined}
+                  data-home-campaign-return="offer"
+                  onClick={(event) =>
+                    rememberHomeCampaignReturn(event, c.id, "offer")
+                  }
                 >
                   <b>{c.offer}</b>
                   <span>on orders over {c.threshold}</span>
