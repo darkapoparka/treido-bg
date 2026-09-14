@@ -121,6 +121,46 @@ test("tracking edit discards cancelled text, disables unchanged save and restore
   await expect(page).not.toHaveURL(/[?&]state=/);
 });
 
+test("captured Amazon label tracking keeps a compact carrier handoff at mobile widths", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "orders-transit");
+  await page.goto("/orders/REF-1001?view=tracking&progress=label");
+  await expect(page.locator("[data-shop-interactive]").first()).toHaveAttribute(
+    "data-shop-interactive",
+    "true",
+  );
+  const carrier = page.locator(".tracking-carrier");
+  await expect(carrier).toHaveAttribute("data-carrier-mark", "amazon");
+  await expect(carrier).toContainText("Amazon Logistics");
+  await expect(carrier).toContainText("TBA333200762603");
+
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    const geometry = await page.evaluate(() => {
+      const carrierCard =
+        document.querySelector<HTMLElement>(".tracking-carrier");
+      const orderCard = document.querySelector<HTMLElement>(
+        ".tracking-order-card",
+      );
+      if (!carrierCard || !orderCard)
+        throw new Error("Tracking continuation cards are missing");
+      const carrierRect = carrierCard.getBoundingClientRect();
+      const orderRect = orderCard.getBoundingClientRect();
+      return {
+        carrierHeight: carrierRect.height,
+        continuationGap: orderRect.top - carrierRect.bottom,
+        documentWidth: document.documentElement.scrollWidth,
+      };
+    });
+    expect(geometry.carrierHeight).toBeGreaterThanOrEqual(138);
+    expect(geometry.carrierHeight).toBeLessThanOrEqual(142);
+    expect(geometry.continuationGap).toBeGreaterThanOrEqual(14);
+    expect(geometry.continuationGap).toBeLessThanOrEqual(18);
+    expect(geometry.documentWidth).toBeLessThanOrEqual(width + 1);
+  }
+});
+
 test("manual package validates carrier selection and email forwarding remains an explicit boundary", async ({
   page,
 }) => {

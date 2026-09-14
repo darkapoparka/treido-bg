@@ -474,6 +474,9 @@
   padding: 16px 20px;
   margin-bottom: 16px;
 }
+.tracking :global(.tracking-carrier[data-carrier-mark="amazon"]) {
+  padding: 8px 20px 12px;
+}
 .tracking :global(.tracking-carrier) > .carrierHeading {
   display: flex;
   flex-direction: column;
@@ -482,6 +485,11 @@
   margin-bottom: 13px;
   font-size: 16px;
   line-height: 21px;
+}
+.tracking
+  :global(.tracking-carrier[data-carrier-mark="amazon"])
+  > .carrierHeading {
+  margin-bottom: 7px;
 }
 .tracking :global(.tracking-carrier) > .dhlHeading {
   flex-direction: row;

@@ -206,7 +206,12 @@ export function TrackingDetail({
           />
         </button>
         {!waiting && (
-          <section className="tracking-carrier">
+          <section
+            className="tracking-carrier"
+            data-carrier-mark={
+              sourceCarrier === "Amazon Logistics" ? "amazon" : undefined
+            }
+          >
             <div
               className={`${styles.carrierHeading} ${sourceCarrier.startsWith("DHL") ? styles.dhlHeading : ""}`}
             >

@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { useReferenceScenario } from "./helpers";
+
 test("flows 60-61 expose empty, waiting, transit, and captured order-detail states", async ({
   page,
 }) => {
@@ -119,6 +121,7 @@ test("flows 62, 66, and 67 preserve order actions, archive, and local review edi
 test("flows 68 and 79 create a manual package and retain source order-history composition", async ({
   page,
 }) => {
+  await useReferenceScenario(page, "orders-transit-history");
   await page.goto("/orders");
   await page.getByRole("button", { name: "More order options" }).click();
   await page.getByRole("link", { name: "Add order manually" }).click();
