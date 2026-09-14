@@ -1114,16 +1114,28 @@ export function Checkout({
         onClose={() => setPaymentBoundary(false)}
       >
         <p>
-          No card was charged and no order was created. The confirmation in the
-          frozen reference is available below only as a captured source state.
+          {hasCapturedKitschMerchandising ? (
+            <>
+              No card was charged and no order was created. The confirmation in
+              the frozen reference is available below only as a captured source
+              state.
+            </>
+          ) : (
+            <>
+              No card was charged and no order was created. This seller checkout
+              does not have a captured confirmation.
+            </>
+          )}
         </p>
-        <Link
-          className="primary form-submit"
-          href="/orders/REF-1001/confirmation"
-          onClick={() => setPaymentBoundary(false)}
-        >
-          View captured source confirmation
-        </Link>
+        {hasCapturedKitschMerchandising && (
+          <Link
+            className="primary form-submit"
+            href="/orders/REF-1001/confirmation"
+            onClick={() => setPaymentBoundary(false)}
+          >
+            View captured source confirmation
+          </Link>
+        )}
         <button
           className="form-cancel"
           onClick={() => setPaymentBoundary(false)}

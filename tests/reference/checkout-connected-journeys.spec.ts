@@ -211,6 +211,12 @@ test("Home product checkout keeps the selected seller and omits uncaptured merch
   await expect(
     page.getByRole("heading", { name: "Payment service is not connected" }),
   ).toBeVisible();
+  await expect(
+    page.getByText(/does not have a captured confirmation/),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "View captured source confirmation" }),
+  ).toHaveCount(0);
 });
 
 test("captured Kitsch checkout retains its source-specific offers and recommendations", async ({
@@ -237,4 +243,12 @@ test("captured Kitsch checkout retains its source-specific offers and recommenda
   await expect(page.locator(".checkout-recommendations")).toContainText(
     "Strengthening Rosemary & Biotin Scalp & Hair Oil",
   );
+  await page.getByRole("button", { name: /Pay now \$10\.82/ }).click();
+  const boundary = page.getByRole("dialog", {
+    name: "Payment service is not connected",
+  });
+  await expect(boundary).toBeVisible();
+  await expect(
+    boundary.getByRole("link", { name: "View captured source confirmation" }),
+  ).toHaveAttribute("href", "/orders/REF-1001/confirmation");
 });
