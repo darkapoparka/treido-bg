@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import type { Catalog } from "../catalog/types";
 import { formatMoney } from "../catalog/types";
 import { IconButton, SaveButton, Sheet } from "./components";
@@ -145,6 +145,39 @@ const campaignHistoryIds: Record<CampaignHistory, string[]> = {
   "pura-options": ["pura", "drmtlgy"],
 };
 
+type HomeCampaignReturn = { id: string; top: number };
+
+function rememberHomeCampaignReturn(
+  event: MouseEvent<HTMLAnchorElement>,
+  id: string,
+) {
+  if (
+    event.button !== 0 ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey ||
+    event.currentTarget.target === "_blank"
+  )
+    return;
+  const campaign = event.currentTarget.closest<HTMLElement>(".home-campaign");
+  if (!campaign) return;
+  window.history.replaceState(
+    {
+      ...window.history.state,
+      shopHomeCampaignReturn: {
+        id,
+        top: campaign.getBoundingClientRect().top,
+      } satisfies HomeCampaignReturn,
+    },
+    "",
+    window.location.href,
+  );
+  // Next can preserve a long Home scroll while the destination mounts. Reset
+  // before navigation; the owned Home entry restores its campaign anchor on Back.
+  window.scrollTo(0, 0);
+}
+
 // Campaign photographs preserve the recorded framing without changing detail-page media.
 const campaignProductPhotos: Record<string, string> = {
   "home-princess-top": "home-campaign-princess-top",
@@ -169,6 +202,52 @@ export function HomeCampaigns({
   const orderedCampaigns = campaignHistoryIds[history].flatMap((id) =>
     campaigns.filter((campaign) => campaign.id === id),
   );
+  useEffect(() => {
+    const value: unknown = window.history.state?.shopHomeCampaignReturn;
+    if (
+      !value ||
+      typeof value !== "object" ||
+      !("id" in value) ||
+      typeof value.id !== "string" ||
+      !("top" in value) ||
+      typeof value.top !== "number"
+    )
+      return;
+    const saved = value as HomeCampaignReturn;
+    let cancelled = false;
+    let secondFrame = 0;
+    let focusFrame = 0;
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => {
+        if (cancelled) return;
+        const selector = `[data-campaign="${CSS.escape(saved.id)}"]`;
+        const campaign = document.querySelector<HTMLElement>(selector);
+        if (!campaign) return;
+        const align = () => {
+          const delta = campaign.getBoundingClientRect().top - saved.top;
+          if (Math.abs(delta) > 0.5)
+            window.scrollBy({ top: delta, behavior: "instant" });
+        };
+        align();
+        focusFrame = requestAnimationFrame(() => {
+          if (cancelled) return;
+          align();
+          campaign
+            .querySelector<HTMLAnchorElement>("[data-home-campaign-return]")
+            ?.focus({ preventScroll: true });
+          const state = { ...window.history.state };
+          delete state.shopHomeCampaignReturn;
+          window.history.replaceState(state, "", window.location.href);
+        });
+      });
+    });
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(firstFrame);
+      cancelAnimationFrame(secondFrame);
+      cancelAnimationFrame(focusFrame);
+    };
+  }, [history]);
   const state = useDiscovery();
   const [menu, setMenu] = useState<Campaign | null>(null);
   const [stage, setStage] = useState<"menu" | "reason" | "report" | "reported">(
@@ -237,6 +316,8 @@ export function HomeCampaigns({
                     href={href}
                     className={`campaign-brand ${c.title ? "campaign-wordmark" : ""}`}
                     aria-label={`Visit ${store?.name ?? "shop"}`}
+                    data-home-campaign-return={c.id}
+                    onClick={(event) => rememberHomeCampaignReturn(event, c.id)}
                   >
                     {c.wordmark ? (
                       <img

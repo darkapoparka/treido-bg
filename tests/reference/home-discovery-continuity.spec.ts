@@ -59,6 +59,62 @@ test("Home mixed history uses the shared product save and recent-history navigat
     .toBe(true);
 });
 
+test("Home campaign navigation restores the same campaign across Back and Forward", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "home-welcome");
+  await page.goto("/");
+  const campaign = page.getByRole("region", {
+    name: "KITSCH campaign",
+    exact: true,
+  });
+  await campaign.evaluate((element) =>
+    window.scrollTo(
+      0,
+      window.scrollY + element.getBoundingClientRect().top - 56,
+    ),
+  );
+  await expect
+    .poll(async () => Math.round((await campaign.boundingBox())?.y ?? -1))
+    .toBe(56);
+  const originalScroll = await page.evaluate(() => window.scrollY);
+  const trigger = campaign.getByRole("link", {
+    name: "Visit KITSCH",
+    exact: true,
+  });
+  await trigger.click();
+  await expect(page).toHaveURL(/\/stores\/kitsch$/);
+  await expect(
+    page.getByRole("heading", { name: "For you", exact: true }),
+  ).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator("main.home-page")).toHaveAttribute(
+    "data-feed",
+    "recent-stores",
+  );
+  await expect
+    .poll(async () => Math.round((await campaign.boundingBox())?.y ?? -1))
+    .toBe(56);
+  const restoredScroll = await page.evaluate(() => window.scrollY);
+  expect(restoredScroll).toBeGreaterThan(originalScroll);
+  await expect(trigger).toBeFocused();
+
+  await page.goForward();
+  await expect(page).toHaveURL(/\/stores\/kitsch$/);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/$/);
+  await expect
+    .poll(async () => Math.round((await campaign.boundingBox())?.y ?? -1))
+    .toBe(56);
+  await expect
+    .poll(() => page.evaluate(() => window.scrollY))
+    .toBe(restoredScroll);
+});
+
 test("Deals categories remain reachable after feed scrolling and category Back navigation", async ({
   page,
 }) => {
