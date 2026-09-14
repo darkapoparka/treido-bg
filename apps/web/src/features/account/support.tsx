@@ -365,31 +365,33 @@ export function OnboardingPage({
         {step === 0 && <small>Powered by Shopify</small>}
         {step === 1 && (
           <div className="preference-onboarding-art">
-            {[
-              ["bottle", 0, 107, 51, 111],
-              ["vest", 60, 83, 85, 110],
-              ["woman", 155, 18, 85, 111],
-              ["game", 249, 69, 84, 110],
-              ["lotion", 343, 116, 50, 110],
-              ["robe", 0, 227, 51, 110],
-              ["camera", 60, 204, 85, 110],
-              ["man", 155, 139, 85, 110],
-              ["coat", 249, 190, 84, 110],
-              ["shoe", 155, 259, 85, 110],
-              ["bear", 343, 242, 50, 97],
-            ].map(([name, x, y, w, h]) => (
-              <img
-                key={name}
-                src={`/api/reference-media/preference-${name}`}
-                alt=""
-                style={{
-                  left: `${(Number(x) / 393) * 100}%`,
-                  top: Number(y) - 59,
-                  width: Number(w),
-                  height: Number(h),
-                }}
-              />
-            ))}
+            <div className="preference-onboarding-art-inner">
+              {[
+                ["bottle", 0, 107, 51, 111],
+                ["vest", 60, 83, 85, 110],
+                ["woman", 155, 18, 85, 111],
+                ["game", 249, 69, 84, 110],
+                ["lotion", 343, 116, 50, 110],
+                ["robe", 0, 227, 51, 110],
+                ["camera", 60, 204, 85, 110],
+                ["man", 155, 139, 85, 110],
+                ["coat", 249, 190, 84, 110],
+                ["shoe", 155, 259, 85, 110],
+                ["bear", 343, 242, 50, 97],
+              ].map(([name, x, y, w, h]) => (
+                <img
+                  key={name}
+                  src={`/api/reference-media/preference-${name}`}
+                  alt=""
+                  style={{
+                    left: `${(Number(x) / 393) * 100}%`,
+                    top: Number(y) - 59,
+                    width: Number(w),
+                    height: Number(h),
+                  }}
+                />
+              ))}
+            </div>
           </div>
         )}
         <h1>

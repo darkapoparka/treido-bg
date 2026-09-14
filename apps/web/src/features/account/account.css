@@ -4028,3 +4028,37 @@
 .payment-add-page {
   padding-bottom: 185px;
 }
+
+.preference-onboarding-art-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-height: 600px) {
+  .onboarding-step-1 .preference-onboarding-art {
+    height: 242px;
+    flex-basis: 242px;
+  }
+  .onboarding-step-1 .preference-onboarding-art-inner {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 128.205%;
+    height: 310px;
+    transform: translateX(-50%) scale(0.78);
+    transform-origin: top center;
+  }
+  .onboarding-step-1 h1 {
+    margin: 12px auto 10px;
+  }
+  .onboarding-step-1 > p {
+    margin-bottom: 10px;
+  }
+  .onboarding-step-1 .onboarding-choices {
+    gap: 8px;
+  }
+  .onboarding-step-1 .onboarding-actions {
+    margin-top: 10px;
+  }
+}
