@@ -264,12 +264,15 @@ export function Home({ catalog }: { catalog: Catalog }) {
       </Sheet>
       <HomeCampaigns
         catalog={catalog}
-        first={
-          tracking && !recentProducts && !recentStores ? "drmtlgy" : undefined
-        }
         productLayout={returning ? "grid" : "rail"}
         productOrder={tracking ? "tracking" : "welcome"}
-        history={puraOptionsHistory ? "pura-options" : "welcome"}
+        history={
+          puraOptionsHistory
+            ? "pura-options"
+            : tracking && !recentProducts && !recentStores
+              ? "tracking"
+              : "welcome"
+        }
       />
       {!tracking && !recentProducts && !recentStores && !hasScrolled && (
         <button

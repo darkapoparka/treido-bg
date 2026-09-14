@@ -61,7 +61,8 @@ test("dragging a sheet header dismisses it without losing the originating route"
 test("campaign following and not-interested undo retain the full card", async ({
   page,
 }) => {
-  await page.goto("/");
+  await useReferenceScenario(page, "home-pura-options");
+  await page.goto("/?feed=pura-options");
   const card = page.getByRole("region", { name: "Pura campaign" });
   await card.getByRole("button", { name: "More options for Pura" }).click();
   const dialog = page.getByRole("dialog", { name: "Pura", exact: true });
@@ -127,6 +128,7 @@ test("all five gallery photos are reachable and reduced motion removes sheet ent
 test("Home reflects the actual journey instead of always showing seeded history", async ({
   page,
 }) => {
+  await useReferenceScenario(page, "home-welcome");
   await page.goto("/");
   await expect(page.locator("main.home-page")).toHaveAttribute(
     "data-feed",
@@ -148,7 +150,17 @@ test("Home reflects the actual journey instead of always showing seeded history"
 test("the returning campaign uses six real product cards and preserves saving", async ({
   page,
 }) => {
+  await useReferenceScenario(page, "returning-home");
   await page.goto("/?journey=returning");
+  const campaigns = page.locator(".home-campaigns");
+  await expect(campaigns).toHaveAttribute("data-campaign-history", "tracking");
+  expect(
+    await campaigns
+      .locator(":scope > .home-campaign")
+      .evaluateAll((elements) =>
+        elements.map((element) => element.getAttribute("data-campaign")),
+      ),
+  ).toEqual(["drmtlgy", "mountain", "tea", "accessories", "kitsch", "carpe"]);
   const campaign = page.getByRole("region", { name: "DRMTLGY campaign" });
   await expect(campaign.locator(".campaign-product")).toHaveCount(6);
   await expect(
@@ -190,10 +202,22 @@ test("the captured Pura context preserves its continuation, actual hide/Undo and
   await expect(campaigns).toHaveCount(2);
   await expect(campaigns.nth(0)).toHaveAccessibleName("Pura campaign");
   await expect(campaigns.nth(1)).toHaveAccessibleName("DRMTLGY campaign");
-  await page
-    .getByRole("button", { name: "More options for Pura", exact: true })
+  await expect(
+    page.getByRole("region", { name: "Carpe campaign", exact: true }),
+  ).toHaveCount(0);
+  const trigger = page.getByRole("button", {
+    name: "More options for Pura",
+    exact: true,
+  });
+  await trigger.click();
+  const options = page.getByRole("dialog", { name: "Pura", exact: true });
+  await options
+    .getByRole("button", { name: "Close shop options", exact: true })
     .click();
-  await page
+  await expect(options).not.toBeVisible();
+  await expect(trigger).toBeFocused();
+  await trigger.click();
+  await options
     .getByRole("button", { name: "Not interested", exact: true })
     .click();
   await page
@@ -222,15 +246,46 @@ test("the captured Pura context preserves its continuation, actual hide/Undo and
       .getByRole("button", { name: "More options for Pura", exact: true }),
   ).toBeVisible();
   await expect(campaigns.nth(1)).toHaveAccessibleName("DRMTLGY campaign");
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width);
+  }
 });
 
-test("the shared Kitsch continuation contains only Carpe's captured identity and artwork", async ({
+test("the shared Kitsch continuation is a bounded Carpe header in the welcome history", async ({
   page,
 }) => {
   await useReferenceScenario(page, "home-welcome");
   await page.goto("/");
+  const campaigns = page.locator(".home-campaigns > .home-campaign");
+  await expect(campaigns).toHaveCount(7);
+  expect(
+    await campaigns.evaluateAll((elements) =>
+      elements.map((element) => element.getAttribute("data-campaign")),
+    ),
+  ).toEqual([
+    "princess",
+    "drmtlgy",
+    "mountain",
+    "tea",
+    "accessories",
+    "kitsch",
+    "carpe",
+  ]);
+  await expect(
+    page.getByRole("region", { name: "Pura campaign", exact: true }),
+  ).toHaveCount(0);
+
   const carpe = page.locator(".campaign-kitsch + .campaign-carpe");
   await expect(carpe).toHaveAccessibleName("Carpe campaign");
+  await expect(carpe).toHaveClass(/campaign-continuation/);
+  expect(
+    await carpe.evaluate((element) =>
+      Math.round(element.getBoundingClientRect().height),
+    ),
+  ).toBe(96);
   await expect(carpe.locator(".campaign-brand")).toHaveAttribute(
     "href",
     "/stores/carpe",
@@ -242,12 +297,27 @@ test("the shared Kitsch continuation contains only Carpe's captured identity and
   await expect(
     carpe.locator(".campaign-product, .campaign-rating, .campaign-price"),
   ).toHaveCount(0);
-  await carpe
-    .getByRole("button", { name: "More options for Carpe", exact: true })
-    .click();
+
+  const trigger = carpe.getByRole("button", {
+    name: "More options for Carpe",
+    exact: true,
+  });
+  await trigger.click();
   const options = page.getByRole("dialog", { name: "Carpe", exact: true });
   await options.getByRole("button", { name: "Follow", exact: true }).click();
   await expect(
     options.getByRole("button", { name: "Following", exact: true }),
   ).toBeVisible();
+  await options
+    .getByRole("button", { name: "Close shop options", exact: true })
+    .click();
+  await expect(options).not.toBeVisible();
+  await expect(trigger).toBeFocused();
+
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width);
+  }
 });

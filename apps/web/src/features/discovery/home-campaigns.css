@@ -584,6 +584,12 @@
   background: #fff;
   color: #111;
 }
+.campaign-carpe.campaign-continuation {
+  height: 96px;
+}
+.campaign-carpe.campaign-continuation .campaign-art {
+  height: 100%;
+}
 .campaign-carpe .campaign-header {
   min-height: 80px;
   padding: 16px 16px 16px 12px;

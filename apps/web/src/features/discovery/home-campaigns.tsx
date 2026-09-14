@@ -27,6 +27,7 @@ type Campaign = {
   trailingPrice?: string;
   offer?: string;
   threshold?: string;
+  continuation?: boolean;
 };
 // Each composition is a frozen Home capture. Missing photo regions are not fabricated.
 const campaigns: Campaign[] = [
@@ -110,6 +111,7 @@ const campaigns: Campaign[] = [
     store: "carpe",
     rating: "",
     tone: "carpe",
+    continuation: true,
     // Only the next campaign's header is visible in f002-006/f042-001/f096-001.
     // Its rating, product identities, prices and lower artwork are unknown.
     products: [],
@@ -127,6 +129,22 @@ const campaigns: Campaign[] = [
   },
 ];
 
+export type CampaignHistory = "welcome" | "tracking" | "pura-options";
+
+const campaignHistoryIds: Record<CampaignHistory, string[]> = {
+  welcome: [
+    "princess",
+    "drmtlgy",
+    "mountain",
+    "tea",
+    "accessories",
+    "kitsch",
+    "carpe",
+  ],
+  tracking: ["drmtlgy", "mountain", "tea", "accessories", "kitsch", "carpe"],
+  "pura-options": ["pura", "drmtlgy"],
+};
+
 // Campaign photographs preserve the recorded framing without changing detail-page media.
 const campaignProductPhotos: Record<string, string> = {
   "home-princess-top": "home-campaign-princess-top",
@@ -137,29 +155,20 @@ const campaignProductPhotos: Record<string, string> = {
 
 export function HomeCampaigns({
   catalog,
-  first,
   productLayout = "rail",
   productOrder = "welcome",
   history = "welcome",
 }: {
   catalog: Catalog;
-  first?: string;
   productLayout?: "rail" | "grid";
   productOrder?: "welcome" | "tracking";
-  history?: "welcome" | "pura-options";
+  history?: CampaignHistory;
 }) {
-  const firstIndex = Math.max(
-    0,
-    campaigns.findIndex((campaign) => campaign.id === first),
+  // Captured histories are bounded sequences, not one rotating global feed.
+  // Conceal/Undo only affect the selected card; they never reorder the history.
+  const orderedCampaigns = campaignHistoryIds[history].flatMap((id) =>
+    campaigns.filter((campaign) => campaign.id === id),
   );
-  // This source history already has DRMTLGY after Pura before any hide action.
-  // Conceal/Undo only affect the selected card; they never reorder this feed.
-  const orderedCampaigns =
-    history === "pura-options"
-      ? ["pura", "drmtlgy"].flatMap((id) =>
-          campaigns.filter((campaign) => campaign.id === id),
-        )
-      : [...campaigns.slice(firstIndex), ...campaigns.slice(0, firstIndex)];
   const state = useDiscovery();
   const [menu, setMenu] = useState<Campaign | null>(null);
   const [stage, setStage] = useState<"menu" | "reason" | "report" | "reported">(
@@ -188,8 +197,9 @@ export function HomeCampaigns({
           return (
             <section
               key={c.id}
+              data-campaign={c.id}
               aria-label={`${store?.name ?? "Accessories"} campaign`}
-              className={`home-campaign campaign-${c.tone} ${c.tall || (c.id === "drmtlgy" && productLayout === "grid") ? "campaign-tall" : ""} ${c.id === "drmtlgy" && productLayout === "grid" ? "campaign-product-grid" : ""} ${concealed ? "campaign-concealed" : ""}`}
+              className={`home-campaign campaign-${c.tone} ${c.tall || (c.id === "drmtlgy" && productLayout === "grid") ? "campaign-tall" : ""} ${c.continuation ? "campaign-continuation" : ""} ${c.id === "drmtlgy" && productLayout === "grid" ? "campaign-product-grid" : ""} ${concealed ? "campaign-concealed" : ""}`}
             >
               <div
                 className="campaign-art"
