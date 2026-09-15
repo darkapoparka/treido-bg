@@ -257,7 +257,7 @@ export const miniRecipes = {
         actions: [visible('[data-skin-phase="results"]'), top],
       },
       minis("skincare-cleanser-grid", [
-        anchor('[data-skin-phase="results"] > h2', 60),
+        anchor('[data-skin-phase="results"] > h2', 37),
       ]),
     ],
   },

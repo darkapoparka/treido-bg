@@ -65,6 +65,19 @@ test("Skin's recorded flow retains products, returns by history, and never start
   await expect(
     page.getByRole("heading", { name: "Overall Skin Summary", exact: true }),
   ).toBeVisible();
+  await page.evaluate(() => scrollTo(0, 0));
+  await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
+  const firstSummaryBounds = await page
+    .locator(".skin-summary")
+    .first()
+    .boundingBox();
+  expect(Math.round(firstSummaryBounds?.y ?? -1)).toBeGreaterThanOrEqual(131);
+  expect(Math.round(firstSummaryBounds?.y ?? -1)).toBeLessThanOrEqual(134);
+  const cleanserBounds = await page
+    .getByRole("heading", { name: "Cleanser", exact: true })
+    .boundingBox();
+  expect(Math.round(cleanserBounds?.y ?? -1)).toBeGreaterThanOrEqual(408);
+  expect(Math.round(cleanserBounds?.y ?? -1)).toBeLessThanOrEqual(411);
   for (const id of ["skin-anua", "skin-mimi", "skin-loretta", "skin-harry"]) {
     await expect(
       page.locator(
