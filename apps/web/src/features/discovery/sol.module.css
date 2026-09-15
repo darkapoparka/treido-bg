@@ -1,3 +1,8 @@
+.sourceDimmedArtwork.sourceDimmedArtwork {
+  /* These source crops already contain the 40% modal dim; the live backdrop reapplies it. */
+  filter: brightness(1.6667);
+}
+
 .surface.surface {
   height: calc(100dvh - 44px);
   min-height: 600px;
@@ -312,25 +317,78 @@
   margin-top: 10px;
   text-decoration: underline;
 }
+.access.access {
+  padding: 22px 20px 18px;
+}
+.access :global(.mini-access-heading) {
+  position: relative;
+  min-height: 24px;
+}
+.access :global(.mini-access-heading > div) {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.access :global(.mini-access-heading h2) {
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: -0.4px;
+}
+.access.access p {
+  margin: 14px 0;
+  font-size: 12px;
+  line-height: 16px;
+}
+.access :global(.mini-agree),
+.access :global(.mini-without) {
+  height: 44px;
+  padding: 0;
+  font-size: 16px;
+  line-height: 20px;
+}
 .permission.permission {
-  bottom: 34px;
-  padding: 24px;
+  bottom: 32px;
+  padding: 16px 20px;
 }
 .permission :global(.mini-access-heading) {
-  align-items: center;
+  align-items: flex-start;
 }
 .permission :global(.mini-access-heading h2) {
-  max-width: 245px;
+  max-width: 226px;
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: -0.4px;
 }
-.permission :global(.mini-access-heading > img) {
+.permissionMark {
+  position: relative;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+}
+.permissionIcon.permissionIcon {
+  display: block;
   width: 48px;
   height: 48px;
   border-radius: 14px;
 }
+.permissionAvatar.permissionAvatar {
+  position: absolute;
+  top: 24px;
+  left: -10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.permission.permission p {
+  margin: 14px 0;
+  font-size: 12px;
+  line-height: 18px;
+}
 .permissionActions {
   display: flex;
   gap: 12px;
-  margin-top: 16px;
+  margin-top: 14px;
 }
 .permissionActions button {
   flex: 1;

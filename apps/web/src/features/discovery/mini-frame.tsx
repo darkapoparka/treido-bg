@@ -62,6 +62,8 @@ export function MiniAccess({
   onClose,
   onContinue,
   name,
+  accessDescription,
+  profileImageSrc,
   previewNote,
   className = "",
 }: {
@@ -69,6 +71,8 @@ export function MiniAccess({
   onClose: () => void;
   onContinue: () => void;
   name: string;
+  accessDescription?: string;
+  profileImageSrc?: string;
   previewNote?: string;
   className?: string;
 }) {
@@ -100,7 +104,13 @@ export function MiniAccess({
             <span
               aria-label={firstName ? `${firstName}'s profile` : "Your profile"}
             >
-              {firstName ? firstName[0] : <AccountIcon name="person" />}
+              {profileImageSrc ? (
+                <img src={profileImageSrc} alt="" />
+              ) : firstName ? (
+                firstName[0]
+              ) : (
+                <AccountIcon name="person" />
+              )}
             </span>
           </div>
         </div>
@@ -115,8 +125,12 @@ export function MiniAccess({
           </p>
         )}
         <p>
-          By Agreeing, {name} will be able to access your profile and update
-          your saved products.{" "}
+          {accessDescription ?? (
+            <>
+              By Agreeing, {name} will be able to access your profile and update
+              your saved products.
+            </>
+          )}{" "}
           <button onClick={() => setInformation("Mini access")}>
             Learn more
           </button>

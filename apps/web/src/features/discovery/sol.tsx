@@ -123,6 +123,8 @@ export function Sol({ catalog }: { catalog: Catalog }) {
           : phase === "selected"
             ? "Nice choice, let’s lean into that style and pull a few similar options."
             : "";
+  const artworkVariant = access ? "loading" : permission ? "permission" : "";
+  const artworkPrefix = artworkVariant ? `${artworkVariant}-` : "";
   const gold = catalog.products.find((product) => product.id === "u-see-me");
   const hush = catalog.savedListings?.find(
     (product) => product.id === "hush-glasses",
@@ -151,15 +153,15 @@ export function Sol({ catalog }: { catalog: Catalog }) {
       {phase === "welcome" ? (
         <section className={`sol-welcome ${styles.welcome}`}>
           <img
-            className="sol-welcome-art"
-            src="/api/reference-media/sol-welcome-art"
+            className={`sol-welcome-art ${artworkVariant ? styles.sourceDimmedArtwork : ""}`}
+            src={`/api/reference-media/sol-welcome-${artworkPrefix}art`}
             alt=""
           />
           {["lower-left", "lower-right"].map((position) => (
             <img
               key={position}
-              className={`sol-decoration sol-decoration-${position}`}
-              src={`/api/reference-media/sol-welcome-${position}`}
+              className={`sol-decoration sol-decoration-${position} ${artworkVariant ? styles.sourceDimmedArtwork : ""}`}
+              src={`/api/reference-media/sol-welcome-${artworkPrefix}${position}`}
               alt=""
             />
           ))}
@@ -336,7 +338,9 @@ export function Sol({ catalog }: { catalog: Catalog }) {
       <MiniAccess
         open={access}
         name="Sol: Browse by Voice"
-        previewNote="Local reference preview. No profile, saved products or audio are sent to Sol."
+        className={styles.access}
+        accessDescription="This local preview does not share your profile with Sol: Browse by Voice and does not let it update your saved products."
+        profileImageSrc="/api/reference-media/auth-reference-avatar"
         onClose={() => setAccess(false)}
         onContinue={() => setAccess(false)}
       />
@@ -349,14 +353,21 @@ export function Sol({ catalog }: { catalog: Catalog }) {
       >
         <div className="mini-access-heading">
           <h2 aria-hidden="true">Allow access to your microphone?</h2>
-          <img src="/api/reference-media/mini-sol-icon" alt="" />
+          <div className={styles.permissionMark} aria-hidden="true">
+            <img
+              className={styles.permissionIcon}
+              src="/api/reference-media/mini-sol-icon"
+              alt=""
+            />
+            <img
+              className={styles.permissionAvatar}
+              src="/api/reference-media/auth-reference-avatar"
+              alt=""
+            />
+          </div>
         </div>
-        <p>
-          Sol: Browse by Voice will be able to record audio and use your
-          microphone.
-        </p>
         <p role="note">
-          Captured permission example. No microphone access is requested.
+          This local preview does not request microphone access or send audio.
         </p>
         <div className={styles.permissionActions}>
           <button onClick={() => setPermission(false)}>Cancel</button>

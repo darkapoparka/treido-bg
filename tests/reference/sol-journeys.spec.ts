@@ -75,13 +75,27 @@ test("Sol setup follows catalogue, consent, welcome, permission, connecting and 
   await page.locator('.mini-feature[href="/minis/sol"]').click();
   const access = page.getByRole("dialog", { name: "Continue", exact: true });
   await expect(access).toBeVisible();
-  await expect(access).toContainText("Local reference preview");
+  await expect(access).toContainText(
+    "does not share your profile with Sol: Browse by Voice",
+  );
+  await expect(page.locator(".sol-welcome-art")).toHaveAttribute(
+    "src",
+    "/api/reference-media/sol-welcome-loading-art",
+  );
+  await expect(page.locator(".sol-decoration-lower-right")).toHaveAttribute(
+    "src",
+    "/api/reference-media/sol-welcome-loading-lower-right",
+  );
   await capture(page, "f053-002");
   await access.getByRole("button", { name: "Agree", exact: true }).click();
   await expect(access).not.toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Hi, I’m Sol", exact: true }),
   ).toBeVisible();
+  await expect(page.locator(".sol-welcome-art")).toHaveAttribute(
+    "src",
+    "/api/reference-media/sol-welcome-art",
+  );
   await capture(page, "f053-003");
   await button(page, "Allow & Continue ›").click();
   const microphone = page.getByRole("dialog", {
@@ -89,7 +103,17 @@ test("Sol setup follows catalogue, consent, welcome, permission, connecting and 
     exact: true,
   });
   await expect(microphone).toBeVisible();
-  await expect(microphone).toContainText("No microphone access is requested");
+  await expect(microphone).toContainText(
+    "does not request microphone access or send audio",
+  );
+  await expect(page.locator(".sol-welcome-art")).toHaveAttribute(
+    "src",
+    "/api/reference-media/sol-welcome-permission-art",
+  );
+  await expect(page.locator(".sol-decoration-lower-right")).toHaveAttribute(
+    "src",
+    "/api/reference-media/sol-welcome-permission-lower-right",
+  );
   await capture(page, "f053-004");
   await microphone.getByRole("button", { name: "Share", exact: true }).click();
   await expect(phase(page, "connecting")).toBeVisible();
@@ -256,6 +280,86 @@ test("cancelling microphone setup restores focus and Back cancels the pending lo
   await expect(phase(page, "greeting")).toHaveCount(0);
 });
 
+test("Sol setup sheets keep actions reachable at short sibling viewports", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await useReferenceScenario(page, "home-welcome");
+  await page.goto("/minis/sol");
+  const access = page.getByRole("dialog", { name: "Continue", exact: true });
+  await expect(access).toBeVisible();
+  const viewports = [
+    { width: 320, height: 568 },
+    { width: 393, height: 650 },
+    { width: 430, height: 793 },
+  ];
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    const contained = await access.evaluate((element) => {
+      const bounds = element.getBoundingClientRect();
+      const actions = [...element.querySelectorAll("button")].map((button) =>
+        button.getBoundingClientRect(),
+      );
+      return (
+        bounds.left >= 0 &&
+        bounds.right <= innerWidth &&
+        bounds.top >= 0 &&
+        bounds.bottom <= innerHeight &&
+        actions.every(
+          (action) =>
+            action.left >= 0 &&
+            action.right <= innerWidth &&
+            action.top >= 0 &&
+            action.bottom <= innerHeight,
+        ) &&
+        document.documentElement.scrollWidth <= innerWidth
+      );
+    });
+    expect(
+      contained,
+      `Sol access at ${viewport.width}x${viewport.height}`,
+    ).toBe(true);
+  }
+  await page.setViewportSize({ width: 393, height: 793 });
+  await access.getByRole("button", { name: "Agree", exact: true }).click();
+  const trigger = button(page, "Allow & Continue ›");
+  await trigger.click();
+  const permission = page.getByRole("dialog", {
+    name: "Allow access to your microphone?",
+    exact: true,
+  });
+  await expect(permission).toBeVisible();
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    const contained = await permission.evaluate((element) => {
+      const bounds = element.getBoundingClientRect();
+      const actions = [...element.querySelectorAll("button")].map((button) =>
+        button.getBoundingClientRect(),
+      );
+      return (
+        bounds.left >= 0 &&
+        bounds.right <= innerWidth &&
+        bounds.top >= 0 &&
+        bounds.bottom <= innerHeight &&
+        actions.every(
+          (action) =>
+            action.left >= 0 &&
+            action.right <= innerWidth &&
+            action.top >= 0 &&
+            action.bottom <= innerHeight,
+        ) &&
+        document.documentElement.scrollWidth <= innerWidth
+      );
+    });
+    expect(
+      contained,
+      `Sol microphone permission at ${viewport.width}x${viewport.height}`,
+    ).toBe(true);
+  }
+  await page.setViewportSize({ width: 393, height: 793 });
+  await permission.getByRole("button", { name: "Cancel", exact: true }).click();
+  await expect(trigger).toBeFocused();
+});
 test("Sol contains its editable composer at sibling widths and keeps unsupported queries as drafts", async ({
   page,
 }) => {

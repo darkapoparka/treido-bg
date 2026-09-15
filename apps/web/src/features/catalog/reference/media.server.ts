@@ -1006,6 +1006,16 @@ const media: Record<
     file: "flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/003.webp",
     rect: [0, 103, 393, 300],
   },
+  "sol-welcome-loading-art": {
+    // Source frame 002 records the Mini access sheet before remote artwork resolves.
+    file: "flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/002.webp",
+    rect: [0, 103, 393, 300],
+  },
+  "sol-welcome-permission-art": {
+    // Source frame 004 has a distinct product rotation behind the permission sheet.
+    file: "flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/004.webp",
+    rect: [0, 103, 393, 300],
+  },
   "sol-welcome-right": {
     file: "flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/003.webp",
     rect: [262, 177, 131, 207],
@@ -1014,8 +1024,24 @@ const media: Record<
     file: "flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/003.webp",
     rect: [0, 486, 66, 134],
   },
+  "sol-welcome-loading-lower-left": {
+    file: "flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/002.webp",
+    rect: [0, 486, 66, 134],
+  },
   "sol-welcome-lower-right": {
     file: "flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/003.webp",
+    rect: [323, 577, 70, 102],
+  },
+  "sol-welcome-loading-lower-right": {
+    file: "flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/002.webp",
+    rect: [323, 577, 70, 102],
+  },
+  "sol-welcome-permission-lower-left": {
+    file: "flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/004.webp",
+    rect: [0, 486, 66, 134],
+  },
+  "sol-welcome-permission-lower-right": {
+    file: "flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/004.webp",
     rect: [323, 577, 70, 102],
   },
 
