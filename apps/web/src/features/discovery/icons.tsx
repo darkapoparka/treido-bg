@@ -42,6 +42,7 @@ const paths = {
   "thumb-down": "M7 14H3V3h4v11Zm0-10h11l3 10h-8l1 6-2 2-5-8",
   trash: "M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7",
   edit: "M4 16 16 4l4 4L8 20H4zM14 6l4 4",
+  "edit-search": "M6 9v9h9M10 14 18 6M12 6h6v6",
   mic: "M9 4a3 3 0 0 1 6 0v8a3 3 0 0 1-6 0ZM5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8",
   camera: "M3 7h4l2-3h6l2 3h4v14H3ZM16 14a4 4 0 1 1-8 0 4 4 0 0 1 8 0",
   "photo-library": "M3 5h18v14H3zM6 15l4-4 3 3 2-2 4 4M8 9h.01",

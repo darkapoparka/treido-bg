@@ -39,6 +39,11 @@ test("photo history keeps the source-bounded fourth fragment and chooser sheet a
   await button(page, "Add photos").click();
   const chooser = page.getByRole("dialog", { name: "Add photos", exact: true });
   await expect(chooser).toBeVisible();
+  await expect
+    .poll(() =>
+      chooser.evaluate((element) => element.getBoundingClientRect().bottom),
+    )
+    .toBeLessThanOrEqual(793);
   const chooserGeometry = await chooser.evaluate((element) => {
     const bounds = element.getBoundingClientRect();
     const firstRow = element.querySelector<HTMLElement>(".account-row");
@@ -105,9 +110,7 @@ test("the partial third recommendation stays bounded, invents no destination, an
   await expect(boundary).toContainText(
     "complete seller, title, destination, variants, and inventory",
   );
-  await boundary
-    .getByRole("button", { name: /^Close / })
-    .click();
+  await boundary.getByRole("button", { name: /^Close / }).click();
   await expect(boundary).not.toBeVisible();
   await expect(trigger).toBeFocused();
 });

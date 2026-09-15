@@ -12,22 +12,6 @@ import { Icon } from "./icons";
 import styles from "./search-entry.module.css";
 import photoStyles from "./search-photo.module.css";
 
-function EditSearchIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M10.5 4.5a6 6 0 1 0 3.9 10.55M14.7 14.7 20 9.4l2.1 2.1-5.3 5.3-3.1 1 1-3.1ZM14.8 14.6l2.1 2.1" />
-    </svg>
-  );
-}
-
 export function Assistant({ catalog }: { catalog: Catalog }) {
   const params = useSearchParams();
   const { viewAnswer } = useDiscovery();
@@ -95,7 +79,7 @@ export function JeansAnswer({
         className="assistant-edit"
         aria-label="Edit search"
       >
-        <EditSearchIcon />
+        <Icon name="edit-search" />
       </Link>
       <h1 tabIndex={-1} data-answer-heading>
         Jeans
@@ -413,8 +397,7 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
     );
   }
   function closeBoundary() {
-    const restoreBoundedTrigger =
-      boundary === "Source-bounded recommendation";
+    const restoreBoundedTrigger = boundary === "Source-bounded recommendation";
     setBoundary("");
     if (restoreBoundedTrigger)
       requestAnimationFrame(() =>
@@ -426,7 +409,7 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
       className={`shop-page assistant-page photo-assistant ${styles.answerBody} ${styles.photoAnswer}`}
     >
       <Link href="/search" className="assistant-edit" aria-label="Edit search">
-        <EditSearchIcon />
+        <Icon name="edit-search" />
       </Link>
       <h1>Find me a baseball cap like this</h1>
       <span className="photo-tag">

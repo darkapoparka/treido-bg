@@ -1145,7 +1145,7 @@
   content: "";
   position: absolute;
   inset: -12px -12px -36px;
-  background: linear-gradient(#ffffff00, #ffffffba 32%, #fff 90%);
+  background: linear-gradient(#ffffff00, #ffffff66 32%, #ffffff00 100%);
   backdrop-filter: blur(6px);
   mask-image: linear-gradient(transparent, #000 28%);
   pointer-events: none;

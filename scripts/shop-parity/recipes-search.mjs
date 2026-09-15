@@ -147,7 +147,7 @@ export const searchRecipes = {
           visible("dialog", "Add photos"),
         ],
         notes:
-          "The frozen source jumps to a sunglasses history. Web library/camera inputs remain device-local; the explicit captured-example control and local-device copy are named source differences.",
+          "The source-specific sunglasses and Jeans history is seeded, including only the evidenced partial fourth recent card. The initial sheet viewport matches the two captured library/camera rows; the explicit local captured-example path remains reachable by scrolling below them.",
       },
       {
         state: "captured-photo-selected-empty-draft",
@@ -177,7 +177,7 @@ export const searchRecipes = {
           top,
         ],
         notes:
-          "The answer belongs to the explicitly chosen captured cap, never to an arbitrary uploaded photograph. Photo rail imagery and exact product destinations retain their own open evidence.",
+          "The answer belongs to the explicitly chosen captured cap, never to an arbitrary uploaded photograph. The first rail includes only the two complete captured cards plus the evidenced partial third card; its unseen seller, title, destination, variants, and inventory remain unavailable rather than invented.",
       },
       {
         state: "photo-answer-steps-expanded",
