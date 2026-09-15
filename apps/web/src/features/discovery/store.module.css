@@ -452,6 +452,7 @@
   margin-bottom: 11px;
 }
 .chemicalFeatured :global(.product-rail) > button {
+  position: relative;
   flex: 0 0 135px;
   width: 135px;
   height: 160px;
@@ -462,8 +463,10 @@
   display: block;
 }
 .chemicalFeatured :global(.product-rail) > button > img {
+  position: absolute;
+  top: 3px;
+  left: 3px;
   display: block;
-  margin: 3px;
   width: 129px;
   height: 52px;
   object-fit: fill;

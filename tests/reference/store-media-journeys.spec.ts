@@ -75,6 +75,71 @@ test("unknown Chemical clips and the partial product do not borrow unrelated pla
   ).toBeDisabled();
 });
 
+test("Chemical Featured keeps the captured thumbnail fragments anchored to their cards", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 393, height: 793 });
+  await openChemical(page);
+  const featured = page.locator("section.store-recommendations").filter({
+    has: page.getByRole("heading", { name: "Featured", exact: true }),
+  });
+  await expect(featured).toBeVisible();
+  await expect(featured.locator(".product-rail > button")).toHaveCount(3);
+
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    const geometry = await featured.evaluate((section) =>
+      [
+        ...section.querySelectorAll<HTMLButtonElement>(
+          ".product-rail > button",
+        ),
+      ].map((button) => {
+        const image = button.querySelector<HTMLImageElement>("img");
+        if (!image) throw new Error("Featured source fragment is missing");
+        const buttonRect = button.getBoundingClientRect();
+        const imageRect = image.getBoundingClientRect();
+        return {
+          buttonWidth: buttonRect.width,
+          buttonHeight: buttonRect.height,
+          imageLeftOffset: imageRect.left - buttonRect.left,
+          imageTopOffset: imageRect.top - buttonRect.top,
+          imageWidth: imageRect.width,
+          imageHeight: imageRect.height,
+        };
+      }),
+    );
+    expect(geometry).toEqual([
+      {
+        buttonWidth: 135,
+        buttonHeight: 160,
+        imageLeftOffset: 3,
+        imageTopOffset: 3,
+        imageWidth: 129,
+        imageHeight: 52,
+      },
+      {
+        buttonWidth: 135,
+        buttonHeight: 160,
+        imageLeftOffset: 3,
+        imageTopOffset: 3,
+        imageWidth: 129,
+        imageHeight: 52,
+      },
+      {
+        buttonWidth: 135,
+        buttonHeight: 160,
+        imageLeftOffset: 3,
+        imageTopOffset: 3,
+        imageWidth: 55,
+        imageHeight: 52,
+      },
+    ]);
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width);
+  }
+});
+
 test("short honest store sale results retain the filter trigger viewport position", async ({
   page,
 }) => {
