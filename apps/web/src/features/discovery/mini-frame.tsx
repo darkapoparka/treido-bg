@@ -42,11 +42,19 @@ export function MiniShell({
           <span aria-hidden="true" />
         )}
         {onMenu ? (
-          <button aria-label={menuLabel} onClick={onMenu}>
-            {name}⌄
+          <button
+            className="mini-shell-title"
+            aria-label={menuLabel}
+            onClick={onMenu}
+          >
+            <span>{name}</span>
+            <Icon name="chevron" />
           </button>
         ) : (
-          <span>{name}⌄</span>
+          <span className="mini-shell-title">
+            <span>{name}</span>
+            <Icon name="chevron" />
+          </span>
         )}
         <Link href="/minis" aria-label={`Close ${name}`}>
           <Icon name="close" />

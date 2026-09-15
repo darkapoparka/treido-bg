@@ -1790,12 +1790,33 @@ h3 {
 }
 .mini-shell > header {
   height: 44px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) 24px;
   align-items: center;
-  justify-content: space-between;
   color: white;
   padding: 0 20px;
   font-weight: 600;
+}
+.mini-shell > header > :first-child {
+  justify-self: start;
+}
+.mini-shell > header > :last-child {
+  justify-self: end;
+}
+.mini-shell-title {
+  display: inline-flex;
+  align-items: center;
+  justify-self: center;
+  gap: 4px;
+  min-width: 0;
+  font-size: 15px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+.mini-shell-title svg {
+  width: 12px;
+  height: 12px;
+  transform: rotate(90deg);
 }
 .mini-shell > section {
   min-height: calc(100dvh - 44px);

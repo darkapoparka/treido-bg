@@ -317,7 +317,7 @@ export function Sol({ catalog }: { catalog: Catalog }) {
               </div>
             ) : (
               <IconButton
-                icon="edit"
+                icon="type-input"
                 label="Type instead"
                 disabled={phase === "connecting"}
                 onClick={() => change({ mode: "text" })}

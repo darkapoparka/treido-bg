@@ -22,20 +22,20 @@
   object-fit: contain;
 }
 .conversation.conversation {
-  margin-top: 240px;
+  margin-top: 236px;
 }
 .conversation.conversation h1 {
-  max-width: 300px;
+  max-width: 280px;
   margin-inline: auto;
   font-size: 22px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 30px;
   letter-spacing: -0.04em;
   outline: none;
 }
 .surface[data-sol-phase="choices"] .conversation,
 .surface[data-sol-phase="selected"] .conversation {
-  margin-top: 48px;
+  margin-top: 42px;
 }
 .surface[data-sol-phase="choices"] h1,
 .surface[data-sol-phase="selected"] h1,
@@ -45,7 +45,7 @@
   max-width: 284px;
 }
 .surface[data-sol-topic="caps"][data-sol-phase="choices"] .conversation {
-  margin-top: 70px;
+  margin-top: 66px;
 }
 .conversation .tap {
   margin: 88px 0 0;
@@ -54,7 +54,7 @@
   line-height: 20px;
 }
 .picks.picks {
-  margin-top: 36px;
+  margin-top: 30px;
   gap: 0;
 }
 .picks.picks > button {
@@ -65,7 +65,7 @@
   border: 1px solid #e5eaf0;
   border-radius: 26px;
   box-shadow: 0 8px 15px #1029441a;
-  transform: rotate(-7deg) translateY(10px);
+  transform: rotate(-7deg) translateY(5px);
 }
 .picks.picks > button + button {
   transform: rotate(8deg) translateY(-8px);
@@ -75,8 +75,30 @@
   border-radius: 20px;
   object-fit: cover;
 }
+.surface[data-sol-topic="glasses"] .picks > button + button img,
+.surface[data-sol-topic="caps"] .picks img {
+  object-fit: contain;
+}
+.surface[data-sol-phase="choices"][data-sol-topic="glasses"]
+  .picks
+  > button
+  + button
+  img,
+.surface[data-sol-phase="choices"][data-sol-topic="caps"]
+  .picks
+  > button
+  + button
+  img {
+  transform: scale(0.91);
+}
+.surface[data-sol-phase="choices"][data-sol-topic="caps"]
+  .picks
+  > button:first-child
+  img {
+  transform: scale(0.84);
+}
 .surface[data-sol-phase="selected"] .picks {
-  margin-top: 142px;
+  margin-top: 136px;
 }
 .picks.picks > button:only-child {
   transform: none;
@@ -85,14 +107,14 @@
   flex-basis: 161px;
 }
 .surface[data-sol-phase="results"] .conversation {
-  margin-top: 29px;
+  margin-top: 21px;
 }
 .spoken {
   color: #9e9da5;
 }
 .results.results {
   width: 100%;
-  margin: 76px 0 0;
+  margin: 53px 0 0;
   padding: 0 calc(50% - 126px) 22px;
   gap: 16px;
   scroll-padding-inline: calc(50% - 126px);
@@ -208,6 +230,10 @@
   gap: 14px;
   align-items: center;
 }
+.controls.controls:not(.typing) {
+  bottom: 45px;
+  transform: translateX(-24px);
+}
 .controls.controls :global(.icon-button) {
   flex: none;
   width: 52px;
@@ -255,7 +281,7 @@
   line-height: 20px;
   color: #132340;
   background: transparent;
-  outline-offset: 0;
+  outline: none;
 }
 .composer > button {
   display: grid;
@@ -278,6 +304,11 @@
 }
 .composer > button[type="button"] svg {
   transform: none;
+}
+.typing.typing {
+  left: 47px;
+  right: 47px;
+  gap: 11px;
 }
 .typing.typing :global(.icon-button) {
   width: 42px;

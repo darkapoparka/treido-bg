@@ -1225,7 +1225,7 @@ const media: Record<
   },
   "sol-glasses-model": {
     file: "flows/ae7711ef-6c54-4aa1-bb56-bee25cf3bef7/003.webp",
-    rect: [65, 433, 115, 118],
+    rect: [60, 423, 130, 132],
   },
   "sol-glasses-dark": {
     file: "flows/ae7711ef-6c54-4aa1-bb56-bee25cf3bef7/003.webp",
