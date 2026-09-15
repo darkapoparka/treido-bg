@@ -75,6 +75,115 @@ test("Explore preserves the six captured departments and the ordered product she
   expect(photos).toBe(true);
 });
 
+test("Explore keeps the captured Mini and product-shelf continuation bounded", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 393, height: 793 });
+  await open(page);
+
+  const topGeometry = await page.evaluate(() => {
+    const categories = document.querySelector<HTMLElement>(
+      ".explore-categories",
+    );
+    const minis = document.querySelector<HTMLElement>(".explore-minis");
+    if (!categories || !minis)
+      throw new Error("Explore continuation sections are missing");
+    return {
+      categoriesBottom: categories.getBoundingClientRect().bottom,
+      minisTop: minis.getBoundingClientRect().top,
+      documentWidth: document.documentElement.scrollWidth,
+    };
+  });
+  expect(topGeometry.categoriesBottom).toBeGreaterThanOrEqual(712);
+  expect(topGeometry.categoriesBottom).toBeLessThanOrEqual(714);
+  expect(topGeometry.minisTop).toBeGreaterThanOrEqual(792);
+  expect(topGeometry.minisTop).toBeLessThanOrEqual(794);
+  expect(topGeometry.documentWidth).toBeLessThanOrEqual(393);
+
+  const minis = page.locator(".explore-minis");
+  await minis.evaluate((element) => {
+    window.scrollBy(0, element.getBoundingClientRect().top - 26);
+  });
+  await expect(minis).toContainText(
+    "Analyze your skin instantly with advanced AI. Detect vi…",
+  );
+  const continuation = await page.evaluate(() => {
+    const heading = document.querySelector<HTMLElement>(".explore-minis h2");
+    const miniChevron = document.querySelector<SVGElement>(
+      ".explore-minis > a svg",
+    );
+    const copy = document.querySelector<HTMLElement>(".explore-minis > p");
+    const rows = [
+      ...document.querySelectorAll<HTMLElement>(".explore-minis a"),
+    ].slice(1);
+    const shelf = document.querySelector<HTMLElement>(".explore-shelf");
+    const shelfHeading = shelf?.querySelector<HTMLElement>("h2");
+    const shelfChevron = shelf?.querySelector<HTMLElement>("h2 span");
+    const firstCard = shelf?.querySelector<HTMLElement>(".product-card");
+    const firstMedia = shelf?.querySelector<HTMLElement>(".product-media");
+    if (
+      !heading ||
+      !miniChevron ||
+      !copy ||
+      rows.length !== 3 ||
+      !shelf ||
+      !shelfHeading ||
+      !shelfChevron ||
+      !firstCard ||
+      !firstMedia
+    )
+      throw new Error("Captured Explore continuation is incomplete");
+    const headingRect = heading.getBoundingClientRect();
+    const miniChevronRect = miniChevron.getBoundingClientRect();
+    const copyRect = copy.getBoundingClientRect();
+    const rowRects = rows.map((row) => row.getBoundingClientRect());
+    const shelfRect = shelf.getBoundingClientRect();
+    const shelfHeadingRect = shelfHeading.getBoundingClientRect();
+    const shelfChevronRect = shelfChevron.getBoundingClientRect();
+    const cardRect = firstCard.getBoundingClientRect();
+    const mediaRect = firstMedia.getBoundingClientRect();
+    return {
+      miniChevronGap: miniChevronRect.left - headingRect.right,
+      copyTop: copyRect.top,
+      rowTops: rowRects.map((rect) => rect.top),
+      shelfTop: shelfRect.top,
+      shelfHeadingHeight: shelfHeadingRect.height,
+      shelfChevronWidth: shelfChevronRect.width,
+      shelfChevronHeight: shelfChevronRect.height,
+      cardTop: cardRect.top,
+      cardWidth: cardRect.width,
+      mediaHeight: mediaRect.height,
+    };
+  });
+  expect(continuation.miniChevronGap).toBeGreaterThanOrEqual(9);
+  expect(continuation.miniChevronGap).toBeLessThanOrEqual(11);
+  expect(continuation.copyTop).toBeGreaterThanOrEqual(47);
+  expect(continuation.copyTop).toBeLessThanOrEqual(49);
+  expect(continuation.rowTops).toEqual([82, 138, 194]);
+  expect(continuation.shelfTop).toBeGreaterThanOrEqual(277);
+  expect(continuation.shelfTop).toBeLessThanOrEqual(279);
+  expect(continuation.shelfHeadingHeight).toBeGreaterThanOrEqual(23);
+  expect(continuation.shelfHeadingHeight).toBeLessThanOrEqual(25);
+  expect(continuation.shelfChevronWidth).toBe(24);
+  expect(continuation.shelfChevronHeight).toBe(24);
+  expect(continuation.cardTop).toBeGreaterThanOrEqual(311);
+  expect(continuation.cardTop).toBeLessThanOrEqual(313);
+  expect(continuation.cardWidth).toBeGreaterThanOrEqual(172);
+  expect(continuation.cardWidth).toBeLessThanOrEqual(174);
+  expect(continuation.mediaHeight).toBeGreaterThanOrEqual(171);
+  expect(continuation.mediaHeight).toBeLessThanOrEqual(173);
+
+  const newBeautyPhoto = page
+    .locator(".explore-shelf")
+    .nth(2)
+    .locator(".product-media img")
+    .first();
+  await expect(newBeautyPhoto).toHaveAttribute(
+    "src",
+    "/api/reference-media/beauty-bubble-card-photo",
+  );
+});
+
 test("the Mini heading opens the real catalogue and a Mini visit survives the return to Explore", async ({
   page,
 }) => {
@@ -152,6 +261,55 @@ test("Beauty retains every captured section and its saved product uses the share
   await expect(
     page.locator('.saved-grid [data-product-id="whip-mousse"]'),
   ).toBeVisible();
+});
+
+test("Beauty exposes only the captured nails card and bounded next-card continuation", async ({
+  page,
+}) => {
+  await open(page);
+  await page.locator('.explore-categories a[href="/explore/Beauty"]').click();
+  await expect(page).toHaveURL(/\/explore\/Beauty$/);
+
+  const rail = page.locator(".beauty-editorial-rail");
+  const continuation = page.locator(".beauty-editorial-continuation");
+  await expect(rail).toContainText("Vacation-ready nails");
+  await expect(continuation).toHaveAttribute("aria-hidden", "true");
+  await expect(continuation).toHaveText("");
+
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    const geometry = await page.evaluate(() => {
+      const editorialRail = document.querySelector<HTMLElement>(
+        ".beauty-editorial-rail",
+      );
+      const editorial =
+        editorialRail?.querySelector<HTMLElement>(".beauty-editorial");
+      const nextCard = editorialRail?.querySelector<HTMLElement>(
+        ".beauty-editorial-continuation",
+      );
+      if (!editorialRail || !editorial || !nextCard)
+        throw new Error("Beauty editorial continuation is missing");
+      const railRect = editorialRail.getBoundingClientRect();
+      const editorialRect = editorial.getBoundingClientRect();
+      const nextRect = nextCard.getBoundingClientRect();
+      return {
+        railWidth: railRect.width,
+        editorialWidth: editorialRect.width,
+        editorialHeight: editorialRect.height,
+        nextLeft: nextRect.left,
+        nextWidth: nextRect.width,
+        visibleContinuation: innerWidth - nextRect.left,
+        documentWidth: document.documentElement.scrollWidth,
+      };
+    });
+    expect(geometry.railWidth).toBe(width - 16);
+    expect(geometry.editorialWidth).toBe(width - 40);
+    expect(geometry.editorialHeight).toBe(197);
+    expect(geometry.nextLeft).toBe(width - 16);
+    expect(geometry.nextWidth).toBe(64);
+    expect(geometry.visibleContinuation).toBe(16);
+    expect(geometry.documentWidth).toBeLessThanOrEqual(width);
+  }
 });
 
 test("Explore and Beauty stay within the three reference widths and expose a working empty cart", async ({

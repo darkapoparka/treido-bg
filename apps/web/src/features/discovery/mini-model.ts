@@ -7,7 +7,7 @@ export const miniCatalog = {
   },
   skin: {
     name: "Skincare AI",
-    description: "Analyze your skin instantly with advanced AI.",
+    description: "Analyze your skin instantly with advanced AI. Detect vi…",
     available: true,
   },
   look: {

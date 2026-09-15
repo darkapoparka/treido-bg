@@ -55,7 +55,7 @@ export function Explore({
     ids.flatMap((id) => {
       const product = catalog.products.find((value) => value.id === id);
       if (!product) return [];
-      const sourcePhoto = beauty ? beautyShelfPhotos[id] : undefined;
+      const sourcePhoto = beautyShelfPhotos[id];
       return [
         sourcePhoto
           ? { ...product, images: [`/api/reference-media/${sourcePhoto}`] }
@@ -200,7 +200,9 @@ export function Explore({
       {shelves.map(({ title, href, products }) => (
         <section className="explore-shelf" key={title}>
           <Link href={href}>
-            <h2>{title} ›</h2>
+            <h2>
+              {title} <span className={styles.shelfChevron}>›</span>
+            </h2>
           </Link>
           {products.length ? (
             <div className="product-rail">
@@ -229,7 +231,10 @@ export function Explore({
       {beauty && <BeautySections catalog={catalog} />}
       {!category && (
         <section className="explore-shelf">
-          <h2>Top rated in womenswear ›</h2>
+          <h2>
+            Top rated in womenswear{" "}
+            <span className={styles.shelfChevron}>›</span>
+          </h2>
           <div className="product-rail explore-women-partials">
             <div />
             <div>
