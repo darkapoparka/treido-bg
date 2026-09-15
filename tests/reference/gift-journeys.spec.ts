@@ -29,6 +29,25 @@ async function reachNotes(
   await expect(phase(page, "notes")).toBeVisible();
 }
 
+async function giftResultGeometry(page: Page) {
+  return page.evaluate(() => {
+    const rows = [
+      ...document.querySelectorAll<HTMLElement>(".gift-result-row"),
+    ];
+    const bounds = rows.map((row) => row.getBoundingClientRect());
+    return {
+      firstTop: bounds.length ? Math.round(bounds[0].top) : -1,
+      gaps: bounds
+        .slice(1)
+        .map((bound, index) => Math.round(bound.top - bounds[index].bottom)),
+      margins: rows.map((row) => {
+        const style = getComputedStyle(row);
+        return { top: style.marginTop, bottom: style.marginBottom };
+      }),
+    };
+  });
+}
+
 test("Gift Sense keeps the captured custom recipient, selected traits, budget and notes through history", async ({
   page,
 }) => {
@@ -86,6 +105,7 @@ test("Gift Sense keeps the captured custom recipient, selected traits, budget an
 test("Gift's captured loading states resolve to the right products without submitting answers", async ({
   page,
 }) => {
+  await page.setViewportSize({ width: 393, height: 793 });
   const writes: string[] = [];
   page.on("request", (request) => {
     if (!["GET", "HEAD"].includes(request.method())) writes.push(request.url());
@@ -100,13 +120,39 @@ test("Gift's captured loading states resolve to the right products without submi
   await expect(page.locator("[data-gift-note]")).toHaveText(
     "He likes black color",
   );
+  const findingBottomGap = await page.evaluate(() => {
+    const scroller = document.querySelector<HTMLElement>(".gift-conversation");
+    const finding = document.querySelector<HTMLElement>('[data-gift-step="6"]');
+    if (!scroller || !finding) return -1;
+    return Math.round(
+      scroller.getBoundingClientRect().bottom -
+        finding.getBoundingClientRect().bottom,
+    );
+  });
+  expect(findingBottomGap).toBeGreaterThanOrEqual(22);
+  expect(findingBottomGap).toBeLessThanOrEqual(26);
+
   await expect(phase(page, "results-loading")).toBeVisible();
   await expect(page.getByLabel("Loading captured product image")).toHaveCount(
     3,
   );
+  const loadingGeometry = await giftResultGeometry(page);
+  expect(loadingGeometry.margins).toEqual([
+    { top: "0px", bottom: "0px" },
+    { top: "0px", bottom: "0px" },
+    { top: "0px", bottom: "0px" },
+  ]);
+  expect(loadingGeometry.gaps).toEqual([12, 12]);
+  expect(loadingGeometry.firstTop).toBeGreaterThanOrEqual(286);
+  expect(loadingGeometry.firstTop).toBeLessThanOrEqual(292);
+
   await expect(phase(page, "results")).toBeVisible();
   await expect(page.locator(".gift-result-row")).toHaveCount(3);
   await expect(page.locator(".gift-result-row img")).toHaveCount(3);
+  const resultGeometry = await giftResultGeometry(page);
+  expect(resultGeometry.gaps).toEqual([12, 12]);
+  expect(resultGeometry.firstTop).toBeGreaterThanOrEqual(222);
+  expect(resultGeometry.firstTop).toBeLessThanOrEqual(228);
   await expect(
     page.locator('.gift-result-row a[href="/products/gift-logic"]'),
   ).toContainText("$18.99");

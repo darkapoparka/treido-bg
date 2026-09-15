@@ -1161,14 +1161,12 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
       const scroller = conversation.current;
       if (!scroller) return;
       if (step === 0 || step === 1) scroller.scrollTo({ top: 0 });
-      else if (step === 5 || step === 6)
+      else if (step === 5 || step === 6) {
+        const tailOffset = step === 6 ? 32 : loadingResults ? 64 : 0;
         scroller.scrollTo({
-          top:
-            scroller.scrollHeight -
-            scroller.clientHeight -
-            (loadingResults ? 64 : 0),
+          top: scroller.scrollHeight - scroller.clientHeight - tailOffset,
         });
-      else {
+      } else {
         const target = scroller.querySelector<HTMLElement>(
           `[data-gift-step="${step === 4 ? 3 : step}"]`,
         );
