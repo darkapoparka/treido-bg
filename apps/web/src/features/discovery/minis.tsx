@@ -655,6 +655,7 @@ const outfitPieces = [
     id: "blazer",
     label: "Women’s White Linen Blazer",
     products: ["look-sculpt", "look-aven"],
+    boundedMedia: "look-blazer-third-partial",
     top: "41.5%",
     left: "-7%",
     pointAtEnd: true,
@@ -663,6 +664,7 @@ const outfitPieces = [
     id: "shirt",
     label: "Women’s Black Crew Neck T-shirt",
     products: ["look-black-crew", "look-white-crew"],
+    boundedMedia: "look-shirt-third-partial",
     top: "33.5%",
     left: "43%",
     pointAtEnd: false,
@@ -671,6 +673,7 @@ const outfitPieces = [
     id: "skirt",
     label: "Women’s Black and White Gingham Mini Skirt",
     products: [],
+    boundedMedia: "look-skirt-three-partial",
     top: "50.5%",
     left: "42%",
     pointAtEnd: false,
@@ -747,6 +750,19 @@ export function GetLook({ catalog }: { catalog: Catalog }) {
               />
             </div>
           ))}
+        <div
+          className={`${styles.lookBoundedCard} ${piece.id === "skirt" ? styles.lookBoundedCardShort : ""}`}
+          data-look-source-boundary={piece.id}
+          aria-hidden="true"
+        >
+          <img src={`/api/reference-media/${piece.boundedMedia}`} alt="" />
+          {piece.id !== "skirt" && (
+            <span className={styles.lookBoundedCopy}>
+              <i />
+              <i />
+            </span>
+          )}
+        </div>
       </div>
     );
   }

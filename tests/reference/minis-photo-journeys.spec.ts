@@ -151,6 +151,29 @@ test("Get the Look connects source hotspots, selected panel, all result groups a
   await expect(
     page.locator('.look-results a[href="/products/look-black-crew"]').first(),
   ).toBeVisible();
+
+  for (const [piece, height] of [
+    ["blazer", 200],
+    ["shirt", 200],
+    ["skirt", 64],
+  ] as const) {
+    const boundary = page.locator(`[data-look-source-boundary="${piece}"]`);
+    await expect(boundary).toBeAttached();
+    await expect(boundary.locator("a, button")).toHaveCount(0);
+    const bounds = await boundary.boundingBox();
+    expect(Math.round(bounds?.x ?? -1), `${piece} boundary x`).toBe(352);
+    expect(Math.round(bounds?.width ?? -1), `${piece} boundary width`).toBe(41);
+    expect(Math.round(bounds?.height ?? -1), `${piece} boundary height`).toBe(
+      height,
+    );
+    await expect
+      .poll(() =>
+        boundary
+          .locator("img")
+          .evaluate((image: HTMLImageElement) => image.naturalWidth),
+      )
+      .toBeGreaterThan(0);
+  }
 });
 
 test("the native-photo boundary offers a local file, cancels cleanly, and keeps mobile widths contained", async ({

@@ -904,6 +904,14 @@ const media: Record<
     file: "flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/007.webp",
     rect: [253, 704, 60, 144],
   },
+  "look-blazer-third-partial": {
+    file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp",
+    rect: [360, 181, 33, 134],
+  },
+  "look-shirt-third-partial": {
+    file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp",
+    rect: [360, 492, 33, 134],
+  },
   "look-skirt-one-partial": {
     file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp",
     rect: [30, 802, 129, 48],
@@ -911,6 +919,10 @@ const media: Record<
   "look-skirt-two-partial": {
     file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp",
     rect: [198, 802, 128, 48],
+  },
+  "look-skirt-three-partial": {
+    file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp",
+    rect: [360, 802, 33, 48],
   },
   "beauty-nails-upper": {
     file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/006.webp",

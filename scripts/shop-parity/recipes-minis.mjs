@@ -298,10 +298,15 @@ export const miniRecipes = {
       minis("get-look-selected-shirt", [
         click("button", "Women’s Black Crew Neck T-shirt"),
       ]),
-      minis("get-look-all-matching-pieces", [
-        click("button", "View all matching pieces"),
-        anchor("#look-blazer", 70),
-      ]),
+      {
+        state: "get-look-all-matching-pieces",
+        notes:
+          "Each recorded rail exposes two complete recommendations and only a bounded third-card continuation. Preserve that continuation without inventing an unseen product identity, destination, or lower skirt-card extent.",
+        actions: [
+          click("button", "View all matching pieces"),
+          anchor("#look-blazer", 70),
+        ],
+      },
     ],
   },
 };
