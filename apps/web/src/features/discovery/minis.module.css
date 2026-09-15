@@ -6,7 +6,7 @@
   padding-top: 12px;
 }
 .catalog :global(.section-heading) {
-  margin-bottom: 16px;
+  margin-bottom: 5px;
 }
 .catalog :global(.section-heading h1) {
   font-size: 28px;
@@ -19,6 +19,7 @@
 }
 .catalog :global(.mini-carousel) {
   gap: 16px;
+  padding-right: 16px;
   scroll-padding-left: 0;
 }
 .catalog :global(.mini-feature) {
@@ -65,7 +66,7 @@
   line-height: 16px;
 }
 .catalog h2 {
-  margin: 36px 0 14px;
+  margin: 36px 0 11px;
   font-size: 18px;
   line-height: 22px;
   letter-spacing: -0.4px;
