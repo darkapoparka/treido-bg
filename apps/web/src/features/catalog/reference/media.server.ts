@@ -1050,6 +1050,11 @@ const media: Record<
   "mini-gift-hero": { file: "screens/178.webp", rect: [33, 129, 335, 175] },
   "mini-sol-icon": { file: "screens/176.webp", rect: [16, 444, 72, 72] },
   "mini-skin-icon": { file: "screens/177.webp", rect: [16, 444, 72, 72] },
+  "skin-permission-avatar": {
+    file: "flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/003.webp",
+    rect: [293, 676, 36, 36],
+    photoRadius: 18,
+  },
   "mini-look-icon": { file: "screens/178.webp", rect: [16, 444, 72, 72] },
   "mini-gift-icon": { file: "screens/178.webp", rect: [41, 316, 44, 44] },
   "mini-room-icon": { file: "screens/174.webp", rect: [16, 502, 44, 44] },

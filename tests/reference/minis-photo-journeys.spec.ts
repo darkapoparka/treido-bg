@@ -23,6 +23,28 @@ test("Skin's recorded flow retains products, returns by history, and never start
     exact: true,
   });
   await expect(permission).toContainText("No camera access is requested");
+  await expect
+    .poll(async () => {
+      const bounds = await permission.boundingBox();
+      const gap = Math.round(
+        793 - (bounds?.y ?? 0) - (bounds?.height ?? Number.POSITIVE_INFINITY),
+      );
+      return gap >= 31 && gap <= 33;
+    })
+    .toBe(true);
+  const permissionBounds = await permission.boundingBox();
+  expect(Math.round(permissionBounds?.x ?? -1)).toBeGreaterThanOrEqual(16);
+  expect(Math.round(permissionBounds?.x ?? -1)).toBeLessThanOrEqual(17);
+  expect(Math.round(permissionBounds?.width ?? -1)).toBeGreaterThanOrEqual(359);
+  expect(Math.round(permissionBounds?.width ?? -1)).toBeLessThanOrEqual(361);
+  expect(Math.round(permissionBounds?.height ?? -1)).toBeLessThanOrEqual(194);
+  await expect
+    .poll(() =>
+      permission
+        .locator('img[src="/api/reference-media/skin-permission-avatar"]')
+        .evaluate((image: HTMLImageElement) => image.naturalWidth),
+    )
+    .toBeGreaterThan(0);
   await permission.getByRole("button", { name: "Share", exact: true }).click();
   const choose = page.getByRole("dialog", {
     name: "Choose a photo",

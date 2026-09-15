@@ -592,11 +592,22 @@ export function Skin({ catalog }: { catalog: Catalog }) {
       >
         <div className={styles.permissionHeading}>
           <h2 aria-hidden="true">Allow access to your camera?</h2>
-          <img src="/api/reference-media/mini-skin-icon" alt="" />
+          <span className={styles.permissionMark} aria-hidden="true">
+            <img
+              className={styles.permissionIcon}
+              src="/api/reference-media/mini-skin-icon"
+              alt=""
+            />
+            <img
+              className={styles.permissionAvatar}
+              src="/api/reference-media/skin-permission-avatar"
+              alt=""
+            />
+          </span>
         </div>
         <p>
-          No camera access is requested at this step. Choose a photo locally,
-          take one with your device picker, or view the captured example.
+          No camera access is requested. Choose a photo locally or use your
+          device picker.
         </p>
         <div className={styles.permissionActions}>
           <button onClick={() => setCameraAccess(false)}>Cancel</button>
