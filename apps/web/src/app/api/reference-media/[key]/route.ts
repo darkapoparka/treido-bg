@@ -12,6 +12,7 @@ export async function GET(
     { readStoreMedia },
     { readSolMedia },
     { readOrderMedia },
+    { readSearchMedia },
   ] = await Promise.all([
     import("@/features/catalog/reference/media.server"),
     import("@/features/catalog/reference/following-media.server"),
@@ -19,6 +20,7 @@ export async function GET(
     import("@/features/catalog/reference/store-media.server"),
     import("@/features/catalog/reference/sol-media.server"),
     import("@/features/catalog/reference/order-media.server"),
+    import("@/features/catalog/reference/search-media.server"),
   ]);
   const media =
     readOrderMedia(key) ??
@@ -26,6 +28,7 @@ export async function GET(
     readStoreMedia(key) ??
     readSavedMedia(key) ??
     readFollowingMedia(key) ??
+    readSearchMedia(key) ??
     readReferenceMedia(key);
   if (!media) return new Response(null, { status: 404 });
   try {

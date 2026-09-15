@@ -56,6 +56,7 @@ const manualOrder: ReferenceOrder = {
   review: "",
 };
 const emptyDiscovery: DiscoverySeed = {
+  capturedSearchHistory: null,
   saved: [],
   collections: [],
   viewedProducts: [],
@@ -232,6 +233,8 @@ export const referenceScenarios = {
   "search-photo": {
     discovery: {
       ...emptyDiscovery,
+      capturedSearchHistory: "photo",
+      viewedAnswers: ["jeans"],
       viewedItems: [
         { kind: "product", id: "cleo" },
         { kind: "product", id: "round-sunglasses", promotion: "Save $20" },

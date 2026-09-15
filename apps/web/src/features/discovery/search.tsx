@@ -34,6 +34,7 @@ import { JeansAnswer } from "./assistant";
 import { RecentSearchItems } from "./search-recent";
 import { CapturedJeansContinuation } from "./search-captured-continuation";
 import styles from "./search-entry.module.css";
+import photoStyles from "./search-photo.module.css";
 import "./search-loading.css";
 
 const capturedCapPhoto = "/api/reference-media/assistant-cap";
@@ -370,7 +371,11 @@ export function Search({
       ) : history ? (
         <>
           <h1>Recently viewed</h1>
-          <RecentSearchItems catalog={catalog} expanded />
+          <RecentSearchItems
+            catalog={catalog}
+            expanded
+            capturedContinuation={state.capturedSearchHistory}
+          />
         </>
       ) : showResults ? (
         <>
@@ -593,7 +598,10 @@ export function Search({
               Recently viewed <Icon name="back" />
             </h2>
           </Link>
-          <RecentSearchItems catalog={catalog} />
+          <RecentSearchItems
+            catalog={catalog}
+            capturedContinuation={state.capturedSearchHistory}
+          />
           {state.viewedAnswers.includes("jeans") && (
             <section className={`keep-shopping ${styles.conversations}`}>
               <Link className={styles.conversationHeading} href="/assistant">
@@ -611,7 +619,7 @@ export function Search({
                   alt=""
                 />
                 <span>
-                  Finding the right pair of jeans<small>Just now</small>
+                  Finding the right pair of jeans<small>Jul 24</small>
                 </span>
               </Link>
             </section>
@@ -621,7 +629,7 @@ export function Search({
       <Sheet
         open={photos}
         title="Add photos"
-        className={styles.photoSheet}
+        className={`${styles.photoSheet} ${photoStyles.photoSheet}`}
         onClose={() => setPhotos(false)}
       >
         <label className="account-row">

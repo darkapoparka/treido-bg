@@ -6,6 +6,7 @@ import { IconButton, ProductCard } from "./components";
 import { KitschWordmark } from "./kitsch-wordmark";
 import { useDiscovery } from "./state";
 import styles from "./search-entry.module.css";
+import photoStyles from "./search-photo.module.css";
 
 const recentCover: Record<string, string> = {
   kitsch: "recent-kitsch-cover",
@@ -18,10 +19,12 @@ export function RecentSearchItems({
   catalog,
   expanded = false,
   limit,
+  capturedContinuation,
 }: {
   catalog: Catalog;
   expanded?: boolean;
   limit?: number;
+  capturedContinuation?: "photo" | null;
 }) {
   const state = useDiscovery();
   const items = state.viewedItems.flatMap((item) => {
@@ -107,6 +110,20 @@ export function RecentSearchItems({
           )}
         </div>
       ))}
+      {!expanded && capturedContinuation === "photo" && (
+        <div
+          className={`${styles.item} ${photoStyles.recentFragment}`}
+          data-captured-search-continuation="photo"
+          aria-hidden="true"
+        >
+          <span className={photoStyles.recentFragmentMedia}>
+            <img
+              src="/api/reference-media/search-photo-recent-fragment"
+              alt=""
+            />
+          </span>
+        </div>
+      )}
     </div>
   );
 }

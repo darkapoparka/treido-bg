@@ -3,13 +3,31 @@ import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDiscovery } from "./state";
 import type { Catalog } from "../catalog/types";
 import { formatMoney } from "../catalog/types";
 import { Sheet, SaveButton, IconButton } from "./components";
 import { Icon } from "./icons";
 import styles from "./search-entry.module.css";
+import photoStyles from "./search-photo.module.css";
+
+function EditSearchIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M10.5 4.5a6 6 0 1 0 3.9 10.55M14.7 14.7 20 9.4l2.1 2.1-5.3 5.3-3.1 1 1-3.1ZM14.8 14.6l2.1 2.1" />
+    </svg>
+  );
+}
+
 export function Assistant({ catalog }: { catalog: Catalog }) {
   const params = useSearchParams();
   const { viewAnswer } = useDiscovery();
@@ -77,7 +95,7 @@ export function JeansAnswer({
         className="assistant-edit"
         aria-label="Edit search"
       >
-        <Icon name="edit" />
+        <EditSearchIcon />
       </Link>
       <h1 tabIndex={-1} data-answer-heading>
         Jeans
@@ -322,6 +340,7 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
   const [choice, setChoice] = useState("");
   const [boundary, setBoundary] = useState("");
   const [draft, setDraft] = useState("");
+  const boundedTrigger = useRef<HTMLButtonElement>(null);
   const cards = [
     {
       id: "assistant-cap",
@@ -393,12 +412,21 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
       </div>
     );
   }
+  function closeBoundary() {
+    const restoreBoundedTrigger =
+      boundary === "Source-bounded recommendation";
+    setBoundary("");
+    if (restoreBoundedTrigger)
+      requestAnimationFrame(() =>
+        boundedTrigger.current?.focus({ preventScroll: true }),
+      );
+  }
   return (
     <ShopSurface
       className={`shop-page assistant-page photo-assistant ${styles.answerBody} ${styles.photoAnswer}`}
     >
       <Link href="/search" className="assistant-edit" aria-label="Edit search">
-        <Icon name="edit" />
+        <EditSearchIcon />
       </Link>
       <h1>Find me a baseball cap like this</h1>
       <span className="photo-tag">
@@ -464,6 +492,27 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
             <b>{card.price}</b>
           </article>
         ))}
+        <article
+          className={photoStyles.boundedRecommendation}
+          data-photo-recommendation="source-bounded-third"
+          data-source-boundary="partial-third"
+        >
+          <button
+            ref={boundedTrigger}
+            type="button"
+            className={`product-media ${styles.photoCardMedia} ${photoStyles.boundedMedia}`}
+            aria-label="View source-bounded recommendation"
+            onClick={() => setBoundary("Source-bounded recommendation")}
+          >
+            <img
+              src="/api/reference-media/assistant-bounded-third-photo"
+              alt="Source-bounded cap recommendation"
+            />
+          </button>
+          <span>Venice Ru…</span>
+          <strong>Mobbin B…</strong>
+          <b>$25.00</b>
+        </article>
       </div>
       <h2>Structured and snapback alternatives</h2>
       <p className="form-note">
@@ -589,13 +638,15 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
           <Icon name="close" />
         </Link>
       </form>
-      <Sheet open={!!boundary} title={boundary} onClose={() => setBoundary("")}>
+      <Sheet open={!!boundary} title={boundary} onClose={closeBoundary}>
         <p className="sheet-copy">
-          {boundary === "Product details unavailable"
-            ? "This product was shown in the captured answer. Its complete product details are not available here, so it has not been opened, saved, or added to a cart."
-            : boundary === "Additional assistant steps unavailable"
-              ? "The capture shows two more search steps without their text. No additional search has been run."
-              : "Your selection stays local. No photo or message was sent; this is the captured example answer."}
+          {boundary === "Source-bounded recommendation"
+            ? "The source exposes only this bounded fragment. Its complete seller, title, destination, variants, and inventory are unavailable, so no unseen product details or destination were invented."
+            : boundary === "Product details unavailable"
+              ? "This product was shown in the captured answer. Its complete product details are not available here, so it has not been opened, saved, or added to a cart."
+              : boundary === "Additional assistant steps unavailable"
+                ? "The capture shows two more search steps without their text. No additional search has been run."
+                : "Your selection stays local. No photo or message was sent; this is the captured example answer."}
         </p>
       </Sheet>
     </ShopSurface>

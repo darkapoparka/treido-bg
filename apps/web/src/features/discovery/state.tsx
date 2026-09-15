@@ -21,6 +21,7 @@ export type ViewedItem = {
   promotion?: string;
 };
 type State = {
+  capturedSearchHistory: "photo" | null;
   recentActivity: "products" | "stores" | "minis" | null;
   viewedItems: ViewedItem[];
   viewedAnswers: "jeans"[];
@@ -53,6 +54,7 @@ type State = {
 export type DiscoverySeed = Partial<
   Pick<
     State,
+    | "capturedSearchHistory"
     | "recentActivity"
     | "viewedItems"
     | "viewedAnswers"
@@ -74,6 +76,7 @@ export function DiscoveryProvider({
   children: ReactNode;
   initial?: DiscoverySeed;
 }) {
+  const capturedSearchHistory = initial?.capturedSearchHistory ?? null;
   const [recentActivity, setRecentActivity] = useState<
     "products" | "stores" | "minis" | null
   >(initial?.recentActivity ?? null);
@@ -139,6 +142,7 @@ export function DiscoveryProvider({
   return (
     <Context
       value={{
+        capturedSearchHistory,
         recentActivity,
         reportedProducts,
         reportProduct: (id) =>
