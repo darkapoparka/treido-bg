@@ -116,13 +116,13 @@ export const productRecipes = {
       },
       {
         state: "bag-delivery-store-and-recommendations",
-        entry: { startUrl: bag, scenario: "home-welcome" },
+        entry: { startUrl: bag, scenario: "kitsch-bag-following-cart" },
         actions: [
           visible("heading", "Shampoo Bar Bag"),
           anchor(".pdp-delivery", 20),
         ],
         notes:
-          "Captured following/cart/promotion history remains visible in comparisons; entry does not fabricate a purchase or a follow.",
+          "This distinct captured bag history already contains a followed Kitsch shop and one Shampoo Bar Bag in the cart. The entry reproduces only that evidenced state; it does not attribute either change to an unrecorded action in the preceding unrelated product snapshots.",
       },
     ],
   },

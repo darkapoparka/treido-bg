@@ -88,6 +88,55 @@ test("the separately captured settled entry starts at 20/195K without borrowing 
   await expect(page.locator(".product-price-alert-tip")).toHaveCount(0);
 });
 
+test("the captured bag delivery entry preserves its followed shop and one cart line", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 393, height: 793 });
+  await useReferenceScenario(page, "kitsch-bag-following-cart");
+  await page.goto("/products/shampoo-bag");
+  await expect(
+    page.getByRole("heading", { name: "Shampoo Bar Bag", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.locator('[data-shop-interactive="true"]').first(),
+  ).toBeAttached();
+
+  const following = page
+    .locator(".pdp-store-card")
+    .getByRole("button", { name: "Following", exact: true });
+  await expect(following).toHaveAttribute("aria-pressed", "true");
+  const cartTrigger = page.getByRole("button", {
+    name: "Open cart",
+    exact: true,
+  });
+  await expect(cartTrigger).toBeVisible();
+  await expect(page.locator(".dock-cart-count")).toHaveText("1");
+
+  await cartTrigger.click();
+  const cart = page.getByRole("dialog", { name: "Your cart", exact: true });
+  await expect(cart).toBeVisible();
+  await expect(
+    cart.getByText("Shampoo Bar Bag", { exact: true }).first(),
+  ).toBeVisible();
+  await expect(cart.locator(".seller-cart output")).toHaveText("1");
+  await page.goBack();
+  await expect(cart).not.toBeVisible();
+  await expect(cartTrigger).toBeFocused();
+  await expect(following).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".dock-cart-count")).toHaveText("1");
+
+  await useReferenceScenario(page, "home-welcome");
+  await page.goto("/products/shampoo-bag");
+  await expect(
+    page
+      .locator(".pdp-store-card")
+      .getByRole("button", { name: "Follow", exact: true }),
+  ).toHaveAttribute("aria-pressed", "false");
+  await expect(
+    page.getByRole("button", { name: "Open cart", exact: true }),
+  ).toHaveCount(0);
+});
+
 test("saving in the later captured offer entry changes membership without changing the offer", async ({
   page,
 }) => {

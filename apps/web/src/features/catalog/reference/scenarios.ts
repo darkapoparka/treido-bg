@@ -188,6 +188,16 @@ export const referenceScenarios = {
       viewedItems: [{ kind: "product", id: "shea-butter" }],
     },
   },
+  // Flow 17/009 is a separate captured bag history. The recording already
+  // contains a followed Kitsch shop and one Shampoo Bar Bag in the cart; no
+  // preceding product-detail action in this flow proves when either changed.
+  "kitsch-bag-following-cart": {
+    discovery: {
+      ...emptyDiscovery,
+      followed: ["kitsch"],
+      cart: [bagLine],
+    },
+  },
   "home-pura-options": {
     account: { orders: [] },
     discovery: emptyDiscovery,
