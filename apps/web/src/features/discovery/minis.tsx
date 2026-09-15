@@ -1172,23 +1172,26 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
         const target = scroller.querySelector<HTMLElement>(
           `[data-gift-step="${step === 4 ? 3 : step}"]`,
         );
-        if (target)
+        if (target) {
+          const adjustment = step === 4 ? 38 + (access ? 69 : 0) : 0;
           scroller.scrollTo({
-            top: target.offsetTop - scroller.offsetTop + (step === 4 ? 38 : 0),
+            top: target.offsetTop - scroller.offsetTop + adjustment,
           });
+        }
       }
       if (step === 4) composer.current?.focus({ preventScroll: true });
     });
     return () => cancelAnimationFrame(frame);
-  }, [step, loadingResults]);
+  }, [step, loadingResults, access]);
   function requestIdeas() {
     const next = { ...answers, notes: draft.trim() };
     remember(next);
     setAccess(true);
   }
   const completed = step === 5 || step === 6;
-  const progress =
-    step === 0 || step === 1
+  const progress = access
+    ? 10
+    : step === 0 || step === 1
       ? 0
       : step === 2
         ? 5
@@ -1209,6 +1212,7 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
       <section
         className={`gift-surface ${styles.gift}`}
         data-gift-phase={loadingResults ? "results-loading" : giftPhases[step]}
+        data-gift-access={access ? "true" : undefined}
       >
         <div className="gift-progress">
           <Icon name="gift" />
@@ -1360,7 +1364,7 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
                     <p>
                       <em>Optional, type any extra details.</em>
                     </p>
-                    {step === 4 && (
+                    {step === 4 && !access && (
                       <button
                         className={`gift-action ${styles.skip}`}
                         onClick={requestIdeas}
@@ -1541,7 +1545,9 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
           open={access}
           name="Gift Sense"
           className={styles.giftAccess}
-          previewNote="Recorded gift example. No answers or profile are sent to a gift service."
+          accessDescription="This local preview keeps your profile, gift answers, and saved products private and does not send them to Gift Sense."
+          profileImageSrc="/api/reference-media/auth-reference-avatar"
+          profileImageRequiresName
           onClose={() => {
             setAccess(false);
             requestAnimationFrame(() =>

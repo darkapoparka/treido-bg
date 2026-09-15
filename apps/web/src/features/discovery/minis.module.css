@@ -724,8 +724,8 @@
 .gift :global(.gift-progress) {
   flex: none;
   height: 74px;
-  gap: 28px;
-  padding: 16px 24px;
+  gap: 0;
+  padding: 16px 16px 16px 24px;
   border-bottom: 1px solid #e6e6e6;
   background: #fafafa;
 }
@@ -736,6 +736,8 @@
 }
 .gift :global(.gift-progress > div) {
   gap: 6px;
+  margin-left: 28px;
+  margin-right: 21px;
 }
 .gift :global(.gift-progress i) {
   height: 6px;
@@ -758,6 +760,9 @@
 }
 .gift :global(.gift-conversation section) {
   display: flow-root;
+}
+.gift[data-gift-access="true"] :global(.gift-conversation) {
+  padding-bottom: 96px;
 }
 .gift :global(.gift-message) {
   padding: 16px 20px;
@@ -1018,12 +1023,22 @@
   box-shadow: none;
 }
 .giftAccess.giftAccess {
+  bottom: 37px;
   width: calc(100% - 32px);
   max-width: 360px;
-  margin: auto auto 32px;
-  padding: 22px 20px;
+  margin: auto;
+  padding: 22px 20px 14px;
   border-radius: 28px;
   font-family: Arial, Helvetica, sans-serif;
+}
+.giftAccess :global(.mini-access-heading) {
+  position: relative;
+  min-height: 24px;
+}
+.giftAccess :global(.mini-access-heading > div) {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 .giftAccess :global(.mini-access-heading h2) {
   font-size: 20px;

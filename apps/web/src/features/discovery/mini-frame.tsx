@@ -72,6 +72,7 @@ export function MiniAccess({
   name,
   accessDescription,
   profileImageSrc,
+  profileImageRequiresName = false,
   previewNote,
   className = "",
 }: {
@@ -81,6 +82,7 @@ export function MiniAccess({
   name: string;
   accessDescription?: string;
   profileImageSrc?: string;
+  profileImageRequiresName?: boolean;
   previewNote?: string;
   className?: string;
 }) {
@@ -112,7 +114,7 @@ export function MiniAccess({
             <span
               aria-label={firstName ? `${firstName}'s profile` : "Your profile"}
             >
-              {profileImageSrc ? (
+              {profileImageSrc && (!profileImageRequiresName || firstName) ? (
                 <img src={profileImageSrc} alt="" />
               ) : firstName ? (
                 firstName[0]

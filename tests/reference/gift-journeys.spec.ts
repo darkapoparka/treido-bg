@@ -32,6 +32,7 @@ async function reachNotes(
 test("Gift Sense keeps the captured custom recipient, selected traits, budget and notes through history", async ({
   page,
 }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 393, height: 793 });
   await reachNotes(page);
   const notes = page.getByRole("textbox", {
@@ -62,7 +63,20 @@ test("Gift Sense keeps the captured custom recipient, selected traits, budget an
     exact: true,
   });
   await expect(access).toBeVisible();
-  await expect(access).toContainText("No answers or profile are sent");
+  await expect(access).toContainText("does not send them to Gift Sense");
+  await expect(page.getByLabel("Gift questions 10 of 10")).toBeVisible();
+  await expect(
+    access.getByLabel("Alex's profile").locator("img"),
+  ).toHaveAttribute("src", "/api/reference-media/auth-reference-avatar");
+  const geometry = await access.evaluate((element) => {
+    const bounds = element.getBoundingClientRect();
+    return { height: bounds.height, bottomGap: innerHeight - bounds.bottom };
+  });
+  expect(geometry.height).toBeLessThan(260);
+  expect(geometry.bottomGap).toBeLessThanOrEqual(40);
+  const note = await page.locator("[data-gift-note]").boundingBox();
+  expect(note?.y).toBeLessThan(515);
+  await expect(button(page, "Skip")).toHaveCount(0);
   await page.keyboard.press("Escape");
   await expect(access).not.toBeVisible();
   await expect(notes).toBeFocused();
@@ -155,10 +169,10 @@ test("Gift uses an unnamed profile fallback instead of inventing a name", async 
   });
   await expect(access).toBeVisible();
   await expect(access).not.toContainText("Continue as Alex?");
-  await expect(
-    access.getByLabel("Your profile", { exact: true }),
-  ).toBeVisible();
-  await expect(access).toContainText("No answers or profile are sent");
+  const profile = access.getByLabel("Your profile", { exact: true });
+  await expect(profile).toBeVisible();
+  await expect(profile.locator("img")).toHaveCount(0);
+  await expect(access).toContainText("does not send them to Gift Sense");
 });
 
 test("Restart and browser Back cancel Gift playback, and the composer stays inside sibling widths", async ({
