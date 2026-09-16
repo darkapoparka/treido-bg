@@ -68,7 +68,8 @@ export function TrackingDetail({
     laterManualHistory =
       !product && params.get("history") === "delivered-later",
     labelCreated =
-      !delivered && (manualLabel || params.get("progress") === "label");
+      !delivered && (manualLabel || params.get("progress") === "label"),
+    inTransit = Boolean(product) && !delivered && !waiting && !labelCreated;
   const sourceReceipt = capturedReceipts[order.id];
   const displayOrderNumber = sourceReceipt?.displayOrderNumber ?? order.id;
   const sourceCarrier = order.carrier;
@@ -104,7 +105,7 @@ export function TrackingDetail({
   };
   return (
     <AccountPage
-      className={`tracking-detail ${styles.tracking} ${waiting ? styles.waitingTracking : ""} ${labelCreated && product ? styles.labelTracking : ""} ${!product ? styles.manualTracking : ""} ${delivered ? styles.deliveredTracking : ""} ${map ? `tracking-map-view ${styles.mapView}` : ""}`}
+      className={`tracking-detail ${styles.tracking} ${waiting ? styles.waitingTracking : ""} ${inTransit ? styles.inTransitTracking : ""} ${labelCreated && product ? styles.labelTracking : ""} ${!product ? styles.manualTracking : ""} ${delivered ? styles.deliveredTracking : ""} ${map ? `tracking-map-view ${styles.mapView}` : ""}`}
       onBack={() => router.back()}
     >
       {celebrate && <DeliveryConfetti />}

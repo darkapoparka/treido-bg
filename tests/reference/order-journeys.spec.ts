@@ -118,6 +118,85 @@ test("tracking edit discards cancelled text, disables unchanged save and restore
   );
   expect(initialY).toBeGreaterThanOrEqual(20);
   expect(initialY).toBeLessThanOrEqual(46);
+  const transitGeometry = await preview.evaluate((node) => {
+    const previewRect = node.getBoundingClientRect();
+    const heading = node.querySelector<HTMLElement>("h2");
+    const destination = node.querySelector<HTMLElement>(
+      ".delivery-destination",
+    );
+    const activityRows = [
+      ...node.querySelectorAll<HTMLElement>(".source-activity > div"),
+    ];
+    const activityButton = node.querySelector<HTMLElement>(".muted-button");
+    const panel = document.querySelector<HTMLElement>(".tracking-action-panel");
+    const panelRows = panel
+      ? [...panel.querySelectorAll<HTMLElement>(":scope > .account-row")]
+      : [];
+    const recommendation = [
+      ...document.querySelectorAll<HTMLElement>("h2"),
+    ].find((candidate) => candidate.textContent?.includes("Popular at KITSCH"));
+    const product = document.querySelector<HTMLElement>(".product-card");
+    if (
+      !heading ||
+      !destination ||
+      activityRows.length !== 2 ||
+      !activityButton ||
+      !panel ||
+      panelRows.length !== 3 ||
+      !recommendation ||
+      !product
+    )
+      throw new Error("In-transit delivery continuation is incomplete");
+    const panelRect = panel.getBoundingClientRect();
+    const recommendationRect = recommendation.getBoundingClientRect();
+    return {
+      previewHeight: previewRect.height,
+      headingTop: heading.getBoundingClientRect().top - previewRect.top,
+      destinationTop: destination.getBoundingClientRect().top - previewRect.top,
+      firstEventTop:
+        activityRows[0].getBoundingClientRect().top - previewRect.top,
+      eventStep:
+        activityRows[1].getBoundingClientRect().top -
+        activityRows[0].getBoundingClientRect().top,
+      activityButtonTop:
+        activityButton.getBoundingClientRect().top - previewRect.top,
+      panelGap: panelRect.top - previewRect.bottom,
+      panelHeight: panelRect.height,
+      panelRowHeight: panelRows[0].getBoundingClientRect().height,
+      panelRowStep:
+        panelRows[1].getBoundingClientRect().top -
+        panelRows[0].getBoundingClientRect().top,
+      recommendationGap: recommendationRect.top - panelRect.bottom,
+      productGap:
+        product.getBoundingClientRect().top - recommendationRect.bottom,
+      documentWidth: document.documentElement.scrollWidth,
+    };
+  });
+  expect(transitGeometry.previewHeight).toBeGreaterThanOrEqual(281);
+  expect(transitGeometry.previewHeight).toBeLessThanOrEqual(283);
+  expect(transitGeometry.headingTop).toBeGreaterThanOrEqual(18);
+  expect(transitGeometry.headingTop).toBeLessThanOrEqual(20);
+  expect(transitGeometry.destinationTop).toBeGreaterThanOrEqual(56);
+  expect(transitGeometry.destinationTop).toBeLessThanOrEqual(58);
+  expect(transitGeometry.firstEventTop).toBeGreaterThanOrEqual(114);
+  expect(transitGeometry.firstEventTop).toBeLessThanOrEqual(116);
+  expect(transitGeometry.eventStep).toBeGreaterThanOrEqual(57);
+  expect(transitGeometry.eventStep).toBeLessThanOrEqual(59);
+  expect(transitGeometry.activityButtonTop).toBeGreaterThanOrEqual(222);
+  expect(transitGeometry.activityButtonTop).toBeLessThanOrEqual(224);
+  expect(transitGeometry.panelGap).toBeGreaterThanOrEqual(11);
+  expect(transitGeometry.panelGap).toBeLessThanOrEqual(13);
+  expect(transitGeometry.panelHeight).toBeGreaterThanOrEqual(155);
+  expect(transitGeometry.panelHeight).toBeLessThanOrEqual(157);
+  expect(transitGeometry.panelRowHeight).toBeGreaterThanOrEqual(47);
+  expect(transitGeometry.panelRowHeight).toBeLessThanOrEqual(49);
+  expect(transitGeometry.panelRowStep).toBeGreaterThanOrEqual(47);
+  expect(transitGeometry.panelRowStep).toBeLessThanOrEqual(49);
+  expect(transitGeometry.recommendationGap).toBeGreaterThanOrEqual(22);
+  expect(transitGeometry.recommendationGap).toBeLessThanOrEqual(24);
+  expect(transitGeometry.productGap).toBeGreaterThanOrEqual(11);
+  expect(transitGeometry.productGap).toBeLessThanOrEqual(13);
+  expect(transitGeometry.documentWidth).toBeLessThanOrEqual(394);
   let editor = await openTrackingEditor(page);
   await editor.evaluate(async (node) => {
     await Promise.all(

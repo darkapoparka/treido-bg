@@ -1476,6 +1476,33 @@
   width: 22px;
   height: 22px;
 }
+.inTransitTracking :global(.delivery-preview) {
+  padding: 18px 16px 15px;
+}
+.inTransitTracking :global(.delivery-preview h2) {
+  margin-bottom: 16px;
+}
+.inTransitTracking :global(.delivery-destination) {
+  margin-bottom: 25px;
+}
+.inTransitTracking :global(.delivery-destination small),
+.inTransitTracking .activity :global(small) {
+  line-height: 15px;
+}
+.inTransitTracking .activity > div:first-child {
+  padding-bottom: 25px;
+}
+.inTransitTracking :global(.delivery-preview > .muted-button) {
+  margin-top: 17px;
+}
+.inTransitTracking :global(.tracking-action-panel) {
+  margin-bottom: 23px;
+  padding-bottom: 10px;
+}
+.inTransitTracking :global(.tracking-action-panel) .action {
+  min-height: 48px;
+  padding: 16px 0 8px;
+}
 .recommendationHeading.recommendationHeading {
   margin: 36px 0 14px;
   font-size: 18px;
@@ -1487,6 +1514,9 @@
 }
 .labelTracking .recommendationHeading {
   margin-bottom: 9px;
+}
+.inTransitTracking .recommendationHeading.recommendationHeading {
+  margin: 23px 0 12px;
 }
 .labelTracking :global(.delivery-preview) {
   margin-bottom: 14px;
