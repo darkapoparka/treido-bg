@@ -308,6 +308,7 @@ export const orderRecipes = {
         state: "order-review-five-stars",
         actions: [
           clickSelector(".tracking-card"),
+          visible(".order-review-page"),
           heading("Review your order"),
           top,
         ],
@@ -315,7 +316,7 @@ export const orderRecipes = {
       {
         state: "order-review-written",
         actions: [
-          fill("Tell us about the product", "Love it!"),
+          fill("Tell us about the product", "Love it"),
           blur("Tell us about the product"),
           top,
         ],
@@ -323,7 +324,7 @@ export const orderRecipes = {
       {
         state: "order-review-saved-locally",
         notes:
-          "Review submission updates isolated local state. The visible local-only notice is retained because no review publishing provider is connected.",
+          "Review submission updates isolated local state. The nonvisual status announces that no review publishing provider is connected without adding content absent from the captured screen.",
         actions: [click("button", "Submit"), heading("Edit your review"), top],
       },
     ],

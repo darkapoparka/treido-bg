@@ -5,6 +5,7 @@ import sharp from "sharp";
 
 let tirePhoto: Promise<Buffer> | undefined;
 let orderBrandMark: Promise<Buffer> | undefined;
+let manualParcelPhoto: Promise<Buffer> | undefined;
 
 function readOrderBrandMark() {
   if (!orderBrandMark) {
@@ -92,11 +93,45 @@ function readTrackingMap(key: string, file: string) {
   return trackingMaps.get(key)!;
 }
 
+function readManualParcelPhoto() {
+  if (!manualParcelPhoto) {
+    manualParcelPhoto = (async () => {
+      // Flow 68 exposes the complete package photograph at 72 CSS pixels.
+      // Extract only that photographic tile; every card, label and control
+      // surrounding it remains live React/CSS.
+      const input = await readFile(
+        resolve(
+          process.cwd(),
+          "../../references/shop/flows/bdd3954f-d943-464a-8c57-6621ffba7fa6/006.webp",
+        ),
+      );
+      const metadata = await sharp(input).metadata();
+      if (!metadata.width)
+        throw new Error("Manual parcel photograph has no width");
+      const scale = metadata.width / 393;
+      return sharp(input)
+        .extract({
+          left: Math.round(289 * scale),
+          top: Math.round(137 * scale),
+          width: Math.round(72 * scale),
+          height: Math.round(72 * scale),
+        })
+        .webp({ quality: 95 })
+        .toBuffer();
+    })();
+    void manualParcelPhoto.catch(() => {
+      manualParcelPhoto = undefined;
+    });
+  }
+  return manualParcelPhoto;
+}
+
 // The same photograph appears twice. f063-002 shows its full lower edge above
 // the dock. Replace only its three confetti-covered patches with the clear,
 // identically aligned photograph in f061-006. No hidden pixels are generated.
 export function readOrderMedia(key: string): Promise<Buffer> | undefined {
   if (key === "order-brand-mark") return readOrderBrandMark();
+  if (key === "order-manual-parcel") return readManualParcelPhoto();
   if (Object.hasOwn(trackingMapFiles, key))
     return readTrackingMap(key, trackingMapFiles[key]);
   if (key !== "order-tire-trim-photo") return undefined;

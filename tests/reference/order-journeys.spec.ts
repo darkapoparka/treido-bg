@@ -192,18 +192,80 @@ test("manual package validates carrier selection and email forwarding remains an
     if (!["GET", "HEAD"].includes(request.method())) writes.push(request.url());
   });
   await page.goto("/orders?view=manual");
-  await page
-    .getByRole("button", { name: "More order options", exact: true })
-    .click();
-  await page
+
+  const moreOptions = page.getByRole("button", {
+    name: "More order options",
+    exact: true,
+  });
+  await moreOptions.click();
+  let menu = page.getByRole("dialog", { name: "More options", exact: true });
+  const closeMenu = menu.getByRole("button", {
+    name: "Close More options",
+    exact: true,
+  });
+  await expect(closeMenu).toBeVisible();
+  const closeSize = await closeMenu.evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    return { width: rect.width, height: rect.height };
+  });
+  expect(closeSize.width).toBeGreaterThanOrEqual(23);
+  expect(closeSize.width).toBeLessThanOrEqual(25);
+  expect(closeSize.height).toBeGreaterThanOrEqual(23);
+  expect(closeSize.height).toBeLessThanOrEqual(25);
+  await closeMenu.click();
+  await expect(menu).not.toBeVisible();
+  await expect(moreOptions).toBeFocused();
+
+  await moreOptions.click();
+  menu = page.getByRole("dialog", { name: "More options", exact: true });
+  await menu
     .getByRole("link", { name: "Add order manually", exact: true })
     .click();
-  await expect(
-    page.getByRole("button", { name: "Add order", exact: true }),
-  ).toBeDisabled();
-  await page
-    .getByRole("button", { name: "Open email app", exact: true })
-    .click();
+
+  const fields = page.locator(".account-form > .form-field");
+  await expect(fields).toHaveCount(3);
+  const fieldGeometry = await fields.evaluateAll((nodes) =>
+    nodes.map((node) => {
+      const rect = node.getBoundingClientRect();
+      return {
+        left: rect.left,
+        right: rect.right,
+        width: rect.width,
+        height: rect.height,
+      };
+    }),
+  );
+  for (const field of fieldGeometry) {
+    expect(field.left).toBeGreaterThanOrEqual(15);
+    expect(field.right).toBeLessThanOrEqual(378);
+    expect(field.height).toBeGreaterThanOrEqual(57);
+    expect(field.height).toBeLessThanOrEqual(59);
+  }
+  expect(
+    Math.max(...fieldGeometry.map((field) => field.width)) -
+      Math.min(...fieldGeometry.map((field) => field.width)),
+  ).toBeLessThanOrEqual(1);
+
+  const addOrder = page.getByRole("button", { name: "Add order", exact: true });
+  await expect(addOrder).toBeDisabled();
+  const forwardingGeometry = await page
+    .locator(".forward-orders button, .forward-orders a")
+    .evaluateAll((nodes) =>
+      nodes.map((node) => {
+        const rect = node.getBoundingClientRect();
+        return { left: rect.left, right: rect.right };
+      }),
+    );
+  for (const control of forwardingGeometry) {
+    expect(control.left).toBeGreaterThanOrEqual(0);
+    expect(control.right).toBeLessThanOrEqual(393);
+  }
+
+  const openEmail = page.getByRole("button", {
+    name: "Open email app",
+    exact: true,
+  });
+  await openEmail.click();
   const boundary = page.getByRole("dialog", {
     name: "Email forwarding unavailable",
     exact: true,
@@ -213,6 +275,9 @@ test("manual package validates carrier selection and email forwarding remains an
   await boundary
     .getByRole("button", { name: "Back to preview", exact: true })
     .click();
+  await expect(boundary).not.toBeVisible();
+  await expect(openEmail).toBeFocused();
+
   await page.getByLabel("Tracking number", { exact: true }).fill("68448512123");
   await page
     .getByLabel("Package name", { exact: true })
@@ -221,23 +286,96 @@ test("manual package validates carrier selection and email forwarding remains an
   await expect(
     page.getByRole("heading", { name: "Recommended carriers", exact: true }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Add order", exact: true }),
-  ).not.toBeVisible();
+  await expect(addOrder).not.toBeVisible();
+
+  const carrierRows = page.locator(".carrier-search .account-row");
+  expect(await carrierRows.count()).toBeGreaterThanOrEqual(6);
+  const carrierGeometry = await carrierRows.evaluateAll((nodes) =>
+    nodes.map((node) => {
+      const rect = node.getBoundingClientRect();
+      return {
+        left: rect.left,
+        right: rect.right,
+        height: rect.height,
+      };
+    }),
+  );
+  for (const row of carrierGeometry) {
+    expect(row.left).toBeGreaterThanOrEqual(15);
+    expect(row.right).toBeLessThanOrEqual(378);
+    expect(row.height).toBeGreaterThanOrEqual(66);
+    expect(row.height).toBeLessThanOrEqual(68);
+  }
+  expect(
+    Math.max(...carrierGeometry.map((row) => row.height)) -
+      Math.min(...carrierGeometry.map((row) => row.height)),
+  ).toBeLessThanOrEqual(1);
+
+  const carrierArtwork = carrierRows.locator("img.dhl-mark");
+  expect(await carrierArtwork.count()).toBeGreaterThanOrEqual(5);
+  for (let index = 0; index < (await carrierArtwork.count()); index += 1) {
+    await expect(carrierArtwork.nth(index)).toHaveAttribute(
+      "src",
+      "/api/reference-media/widget-dhl-logo",
+    );
+    expect(
+      await carrierArtwork
+        .nth(index)
+        .evaluate((image) =>
+          image instanceof HTMLImageElement ? image.naturalWidth : 0,
+        ),
+    ).toBeGreaterThan(0);
+  }
+
   await page
     .getByRole("button", { name: "DHL eCommerce", exact: true })
     .click();
   await expect(page.getByLabel("Carrier", { exact: true })).toHaveValue(
     "DHL eCommerce",
   );
-  await expect(
-    page.getByRole("button", { name: "Add order", exact: true }),
-  ).toBeEnabled();
-  await page.getByRole("button", { name: "Add order", exact: true }).click();
+  await expect(addOrder).toBeEnabled();
+  const enabledStyle = await addOrder.evaluate((node) => {
+    const style = getComputedStyle(node);
+    return {
+      backgroundColor: style.backgroundColor,
+      color: style.color,
+    };
+  });
+  expect(enabledStyle.backgroundColor).toBe("rgb(85, 50, 235)");
+  expect(enabledStyle.color).toBe("rgb(255, 255, 255)");
+
+  await addOrder.click();
   await expect(page).toHaveURL(/\/orders\?view=manual$/);
   const first = page.locator(".tracking-card").first();
   await expect(first).toContainText("Loose Fit Printed T-Shirt");
   await expect(first).toContainText("Label created");
+  const manualCard = await first.evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    return { height: rect.height };
+  });
+  expect(manualCard.height).toBeGreaterThanOrEqual(107);
+  expect(manualCard.height).toBeLessThanOrEqual(109);
+  await expect(
+    first.locator('img[src="/api/reference-media/order-manual-parcel"]'),
+  ).toBeVisible();
+  await expect(first.locator('[data-order-phase="label"] svg')).toHaveCount(1);
+  await expect(
+    page.getByRole("button", { name: "Go back", exact: true }),
+  ).toBeVisible();
+
+  const buyAgain = page.locator(".orders-buy-again > a");
+  const buyAgainGeometry = await buyAgain.evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    return { width: rect.width, height: rect.height };
+  });
+  expect(buyAgainGeometry.width).toBeGreaterThanOrEqual(111);
+  expect(buyAgainGeometry.width).toBeLessThanOrEqual(113);
+  expect(buyAgainGeometry.height).toBeGreaterThanOrEqual(111);
+  expect(buyAgainGeometry.height).toBeLessThanOrEqual(113);
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(394);
+
   await first.click();
   await expect(page.locator(".tracking-carrier")).toContainText(
     "DHL eCommerce",
@@ -305,10 +443,9 @@ test("delivered card opens the review editor, retains local edits and supports d
   await expect(
     page.getByRole("button", { name: "5 stars", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
-  await page.getByRole("button", { name: "3 stars", exact: true }).click();
   await page
     .getByLabel("Tell us about the product", { exact: true })
-    .fill("Love it!");
+    .fill("Love it");
   await page.getByRole("button", { name: "Submit", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Edit your review", exact: true }),
@@ -316,21 +453,37 @@ test("delivered card opens the review editor, retains local edits and supports d
   await expect(page.getByRole("status")).toContainText(
     "It has not been published",
   );
+
   await page.getByRole("link", { name: "Close review", exact: true }).click();
   await page.locator(".review-invitation").click();
   await expect(
     page.getByLabel("Tell us about the product", { exact: true }),
-  ).toHaveValue("Love it!");
+  ).toHaveValue("Love it");
   await expect(
-    page.getByRole("button", { name: "4 stars", exact: true }),
-  ).toHaveAttribute("aria-pressed", "false");
-  await page
-    .getByRole("button", { name: "Review options", exact: true })
+    page.getByRole("button", { name: "5 stars", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+
+  const reviewOptions = page.getByRole("button", {
+    name: "Review options",
+    exact: true,
+  });
+  await reviewOptions.click();
+  let reviewMenu = page.getByRole("dialog", {
+    name: "Your review",
+    exact: true,
+  });
+  await reviewMenu
+    .getByRole("button", { name: "Close Your review", exact: true })
     .click();
-  await page
-    .getByRole("dialog", { name: "Your review", exact: true })
-    .getByRole("button", { name: "Delete", exact: true })
-    .click();
+  await expect(reviewMenu).not.toBeVisible();
+  await expect(reviewOptions).toBeFocused();
+
+  await reviewOptions.click();
+  reviewMenu = page.getByRole("dialog", {
+    name: "Your review",
+    exact: true,
+  });
+  await reviewMenu.getByRole("button", { name: "Delete", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Review your order", exact: true }),
   ).toBeVisible();
@@ -373,13 +526,67 @@ test("delivery history keeps all recorded events in order and closes with browse
   ).toBeFocused();
 });
 
+test("the short-height manual form keeps every required control reachable", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await useReferenceScenario(page, "orders-waiting");
+  await page.goto("/orders/new");
+
+  const requiredControls = [
+    page.getByLabel("Tracking number", { exact: true }),
+    page.getByLabel("Package name", { exact: true }),
+    page.getByLabel("Carrier", { exact: true }),
+    page.getByRole("button", { name: "Open email app", exact: true }),
+    page.getByRole("link", {
+      name: "Track orders automatically instead",
+      exact: true,
+    }),
+  ];
+  for (const control of requiredControls) {
+    await control.scrollIntoViewIfNeeded();
+    await expect(control).toBeVisible();
+    const rect = await control.evaluate((node) => {
+      const box = node.getBoundingClientRect();
+      return { top: box.top, bottom: box.bottom };
+    });
+    expect(rect.top).toBeGreaterThanOrEqual(-1);
+    expect(rect.bottom).toBeLessThanOrEqual(569);
+  }
+
+  await page.getByLabel("Tracking number", { exact: true }).fill("68448512123");
+  await page
+    .getByLabel("Package name", { exact: true })
+    .fill("Loose Fit Printed T-Shirt");
+  await page.getByLabel("Carrier", { exact: true }).fill("DHL");
+  await page
+    .getByRole("button", { name: "DHL eCommerce", exact: true })
+    .click();
+  const submit = page.getByRole("button", { name: "Add order", exact: true });
+  await submit.scrollIntoViewIfNeeded();
+  await expect(submit).toBeEnabled();
+  const submitRect = await submit.evaluate((node) => {
+    const box = node.getBoundingClientRect();
+    return { top: box.top, bottom: box.bottom };
+  });
+  expect(submitRect.top).toBeGreaterThanOrEqual(-1);
+  expect(submitRect.bottom).toBeLessThanOrEqual(569);
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(321);
+});
+
 for (const width of [320, 393, 430]) {
   test(`order and manual-entry surfaces stay within ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 793 });
     await useReferenceScenario(page, "orders-transit");
-    for (const route of ["/orders/REF-1001?state=in-transit", "/orders/new"]) {
+    for (const route of [
+      "/orders/REF-1001?state=in-transit",
+      "/orders/new",
+      "/orders?view=manual",
+    ]) {
       await page.goto(route);
       await expect(
         page.locator('[data-shop-interactive="true"]').first(),

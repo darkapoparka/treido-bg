@@ -61,14 +61,17 @@ export function OrdersPage({
     }
     return 0;
   });
-  const deals = visible.some((order) => order.status === "Delivered")
+  const roundSectionLinks = visible.some(
+    (order) => order.status === "Delivered",
+  );
+  const deals = roundSectionLinks
     ? orderGridDeals.delivered
     : orderGridDeals.transit;
   return (
     <AccountPage
-      back={archive || history}
+      back={archive || history || forcedView === "manual"}
       title={history ? "Order history" : archive ? "Archived" : "Orders"}
-      className={`${archive ? "archive-page" : "source-orders-page"} ${styles.list}`}
+      className={`${archive ? "archive-page" : "source-orders-page"} ${forcedView === "manual" ? "manual-order-result" : ""} ${styles.list}`}
       action={
         !archive && (
           <div className="order-actions">
@@ -181,7 +184,7 @@ export function OrdersPage({
         }
         return (
           <Link
-            className="account-panel tracking-card"
+            className={`account-panel tracking-card ${!p ? "manual-tracking-card" : ""}`}
             href={
               o.status === "Delivered" && p
                 ? `/orders/${o.id}/review`
@@ -223,7 +226,7 @@ export function OrdersPage({
               )}
             </div>
             <img
-              src={p ? p.images[0] : "/api/reference-media/parcel"}
+              src={p ? p.images[0] : "/api/reference-media/order-manual-parcel"}
               alt={p ? o.name : "Tracked package"}
             />
           </Link>
@@ -278,7 +281,20 @@ export function OrdersPage({
         visible.some((o) => o.status !== "Ordered") && (
           <>
             <section className="orders-deals">
-              <h2>Deals based on your orders ›</h2>
+              <h2
+                className={
+                  roundSectionLinks ? "order-section-heading" : undefined
+                }
+              >
+                Deals based on your orders
+                {roundSectionLinks ? (
+                  <span className="order-section-chevron" aria-hidden="true">
+                    &rsaquo;
+                  </span>
+                ) : (
+                  <> &rsaquo;</>
+                )}
+              </h2>
               <div className="orders-deal-grid">
                 {deals.map((entry, i) => (
                   <button
@@ -296,7 +312,20 @@ export function OrdersPage({
               </div>
             </section>
             <section className="orders-past">
-              <h2>Past orders ›</h2>
+              <h2
+                className={
+                  roundSectionLinks ? "order-section-heading" : undefined
+                }
+              >
+                Past orders
+                {roundSectionLinks ? (
+                  <span className="order-section-chevron" aria-hidden="true">
+                    &rsaquo;
+                  </span>
+                ) : (
+                  <> &rsaquo;</>
+                )}
+              </h2>
               {orders
                 .filter((o) => o.archived)
                 .map((o) => (
@@ -338,7 +367,12 @@ export function OrdersPage({
           <>
             {forcedView === "manual" && (
               <section className="orders-buy-again">
-                <h2>Buy again ›</h2>
+                <h2>
+                  Buy again
+                  <span className="order-section-chevron" aria-hidden="true">
+                    &rsaquo;
+                  </span>
+                </h2>
                 {(() => {
                   const product = catalog.products.find(
                     (entry) => entry.id === "shampoo-bag",
@@ -741,12 +775,16 @@ function ManualOrderForm({
                   }}
                 >
                   {c}
-                  <span
-                    aria-hidden="true"
-                    className={c.startsWith("DHL") ? "dhl-mark" : ""}
-                  >
-                    {c.startsWith("DHL") ? "DHL" : "›"}
-                  </span>
+                  {c.startsWith("DHL") ? (
+                    <img
+                      aria-hidden="true"
+                      className="dhl-mark"
+                      src="/api/reference-media/widget-dhl-logo"
+                      alt=""
+                    />
+                  ) : (
+                    <span aria-hidden="true">›</span>
+                  )}
                 </button>
               ))}
           </div>
@@ -917,7 +955,7 @@ export function OrderReview({ id, catalog }: { id: string; catalog: Catalog }) {
             {editing ? "Update review" : "Submit"}
           </button>
           {saved && (
-            <p role="status" className="form-note">
+            <p role="status" className={styles.reviewStatus}>
               Review saved locally. It has not been published.
             </p>
           )}

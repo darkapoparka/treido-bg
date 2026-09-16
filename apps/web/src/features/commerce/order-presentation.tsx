@@ -34,7 +34,20 @@ export function OrderAction({
 }) {
   const content = (
     <>
-      {label === "Mark as delivered" || label === "Unmark as delivered" ? (
+      {label === "View order archive" ? (
+        <svg
+          className={styles.archiveActionIcon}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M4 4.5h16v4H4zM5.5 8.5v11h13v-11M9 12h6" />
+        </svg>
+      ) : label === "Mark as delivered" || label === "Unmark as delivered" ? (
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -75,9 +88,11 @@ export function CarrierMark({ carrier }: { carrier: string }) {
       </svg>
     </span>
   ) : carrier.startsWith("DHL") ? (
-    <span className={styles.dhlMark} aria-label="DHL">
-      DHL
-    </span>
+    <img
+      className={styles.dhlMark}
+      src="/api/reference-media/widget-dhl-logo"
+      alt="DHL"
+    />
   ) : (
     <span className={styles.genericCarrier}>{carrier}</span>
   );
@@ -119,7 +134,14 @@ export function OrderProgress({
             {phase === "delivered" ? (
               <Icon name="check" />
             ) : phase === "label" ? (
-              <Icon name="orders" />
+              <svg
+                className={styles.shippingLabelMark}
+                viewBox="0 0 20 24"
+                aria-hidden="true"
+              >
+                <rect x="0.75" y="0.75" width="18.5" height="22.5" rx="1" />
+                <path d="M4 5h7M4 8h10M4 11h5M4 15v5m2-5v5m2-5v5m2-5v5m2-5v5m2-5v5m2-5v5" />
+              </svg>
             ) : (
               <img src="/api/reference-media/parcel" alt="" />
             )}
