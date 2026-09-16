@@ -1444,6 +1444,16 @@
 .tracking :global(.tracking-order-card .order-item + .muted-button) {
   margin-top: 0;
 }
+.waitingTracking :global(.tracking-order-card) {
+  margin-bottom: 14px;
+}
+.tracking :global(.delivery-preview[data-waiting="true"]) {
+  margin-top: 14px;
+  padding: 15px 16px 16px;
+}
+.tracking :global(.delivery-preview[data-waiting="true"] h2) {
+  margin-bottom: 15px;
+}
 .tracking
   :global(.delivery-preview[data-waiting="true"] .delivery-destination) {
   margin-bottom: 0;

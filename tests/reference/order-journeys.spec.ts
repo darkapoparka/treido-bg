@@ -25,6 +25,47 @@ test("source detail status yields to local delivery changes and keeps the source
   await expect(page.locator(".order-status")).toContainText(
     "Waiting for details",
   );
+  await page.locator(".order-status").click();
+  const waitingPreview = page.locator('.delivery-preview[data-waiting="true"]');
+  await expect(waitingPreview).toBeVisible();
+  const waitingGeometry = await waitingPreview.evaluate((preview) => {
+    const orderCard = document.querySelector<HTMLElement>(
+      ".tracking-order-card",
+    );
+    const panel = document.querySelector<HTMLElement>(".tracking-action-panel");
+    const heading = preview.querySelector<HTMLElement>("h2");
+    const destination = preview.querySelector<HTMLElement>(
+      ".delivery-destination",
+    );
+    if (!orderCard || !panel || !heading || !destination)
+      throw new Error("Waiting tracking continuation is incomplete");
+    const orderRect = orderCard.getBoundingClientRect();
+    const previewRect = preview.getBoundingClientRect();
+    const panelRect = panel.getBoundingClientRect();
+    return {
+      orderGap: previewRect.top - orderRect.bottom,
+      height: previewRect.height,
+      headingTop: heading.getBoundingClientRect().top - previewRect.top,
+      destinationTop: destination.getBoundingClientRect().top - previewRect.top,
+      panelGap: panelRect.top - previewRect.bottom,
+      documentWidth: document.documentElement.scrollWidth,
+    };
+  });
+  expect(waitingGeometry.orderGap).toBeGreaterThanOrEqual(13);
+  expect(waitingGeometry.orderGap).toBeLessThanOrEqual(15);
+  expect(waitingGeometry.height).toBeGreaterThanOrEqual(103);
+  expect(waitingGeometry.height).toBeLessThanOrEqual(105);
+  expect(waitingGeometry.headingTop).toBeGreaterThanOrEqual(15);
+  expect(waitingGeometry.headingTop).toBeLessThanOrEqual(17);
+  expect(waitingGeometry.destinationTop).toBeGreaterThanOrEqual(52);
+  expect(waitingGeometry.destinationTop).toBeLessThanOrEqual(54);
+  expect(waitingGeometry.panelGap).toBeGreaterThanOrEqual(11);
+  expect(waitingGeometry.panelGap).toBeLessThanOrEqual(13);
+  expect(waitingGeometry.documentWidth).toBeLessThanOrEqual(394);
+  await page.goBack();
+  await expect(page.locator(".order-status")).toContainText(
+    "Waiting for details",
+  );
   await page
     .getByRole("button", { name: "Order options", exact: true })
     .click();
