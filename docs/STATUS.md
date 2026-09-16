@@ -1,8 +1,8 @@
 # Current project status
 
-Updated 2026-09-13. This is the session entry point, not a second backlog.
+Updated 2026-09-16. This is the session entry point, not a second backlog.
 
-**Paused at the owner's request on 2026-09-13.** Do not resume implementation until the owner says continue. Main and origin contain `8a07f7878293c512ced180f6a06435297513e832`; its complete local interaction suite passed **210/210**. Six subsequent fitting files remain preserved in the working tree. Their focused journeys passed **19/19**, but their final comparison was interrupted for the pause and the new `pnpm check` failed in web lint with a process out-of-memory error. The earlier committed-source checks remain distinct. The owned preview remains available; local capture work and the remaining subagent were stopped. Exact resume details are in ignored `.qa/shop-parity/PAUSED-20260913.md`. Existing GitHub verification may finish independently; inspect its result on resume.
+**Resumed with owner authorization.** The checkout was clean on `main` at `753a1c39b16a411056ad8123740bc88626768255`, superseding the older paused working-tree description. This batch adjusts only the preferences Next spacing and adds width/keyboard/history regression coverage. The existing Edge preview on 6412 was reused; Node 22.22.0 was available, while the attempted local Node 24 path was absent. Exact focused runs and remaining differences are in [the implementation map](../shop-implementation-map.md#preferences-spacing-resume-2026-09-16). The corrected focused suite passed **4/4**, including 320/393/430 containment and the 320x568 cold-launch journey. Full application checks, production build, CI and motion review were not rerun. Earlier September 13 evidence below remains dated, not a fresh qualification of this revision.
 
 ## Working context
 

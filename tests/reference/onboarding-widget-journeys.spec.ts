@@ -34,6 +34,54 @@ test("new shopper keeps the chosen captured example through splash, email and pr
   ).toBeVisible();
 });
 
+test("preference Next keeps source spacing and remains reachable at buyer widths", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "onboarding-new");
+  await page.goto(
+    "/onboarding?step=preferences&journey=new&reference=captured",
+  );
+  const next = page.getByRole("button", { name: "Next", exact: true });
+  const hiddenNext = page.locator(".onboarding-actions button");
+  await expect(hiddenNext).toBeDisabled();
+  await expect(hiddenNext).toBeHidden();
+  const everything = page.getByRole("button", {
+    name: "Everything",
+    exact: true,
+  });
+  await everything.click();
+  await expect(everything).toHaveAttribute("aria-pressed", "true");
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    await expect(next).toBeInViewport();
+    const choiceBounds = await everything.boundingBox();
+    const nextBounds = await next.boundingBox();
+    expect(choiceBounds).not.toBeNull();
+    expect(nextBounds).not.toBeNull();
+    expect(nextBounds!.y - choiceBounds!.y - choiceBounds!.height).toBeCloseTo(
+      14,
+      0,
+    );
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width);
+  }
+  await next.focus();
+  await page.keyboard.press("Enter");
+  await expect(
+    page.getByRole("heading", {
+      name: "Track all of your orders in one place",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.goBack();
+  await expect(everything).toHaveAttribute("aria-pressed", "true");
+  await page.goForward();
+  await expect(
+    page.getByRole("link", { name: "Connect Google", exact: true }),
+  ).toBeVisible();
+});
+
 test("widget links open the corresponding local order and return to the same previews", async ({
   page,
 }) => {
