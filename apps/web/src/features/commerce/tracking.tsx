@@ -23,6 +23,7 @@ import {
   OrderRecommendations,
 } from "./order-presentation";
 import { DeliveryConfetti } from "./delivery-confetti";
+import { OrderInspiredPartial } from "./order-inspired-partial";
 import styles from "./orders-parity.module.css";
 const events = [
   ["Milpitas, CA, 95035, US · Jul 31, 6:04pm", "Successfully delivered"],
@@ -361,7 +362,10 @@ export function TrackingDetail({
           </div>
         )}
         {product && (
-          <h2 className={styles.inspiredHeading}>Inspired by your order</h2>
+          <>
+            <h2 className={styles.inspiredHeading}>Inspired by your order</h2>
+            <OrderInspiredPartial />
+          </>
         )}
         {laterManualHistory && (
           <h2 className={styles.manualPicked}>Picked for you ›</h2>

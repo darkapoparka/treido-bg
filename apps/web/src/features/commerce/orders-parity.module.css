@@ -1582,7 +1582,47 @@
   letter-spacing: -0.5px;
 }
 .tracking .inspiredHeading {
-  margin: 34px 0 14px;
+  margin: 34px 0 1px;
   font-size: 18px;
   line-height: 23px;
+}
+.inspiredPartialRail {
+  display: flex;
+  gap: 8px;
+  width: calc(100vw - 17px);
+  height: 100px;
+  margin-left: 1px;
+  overflow: hidden;
+}
+.inspiredPartialCard {
+  position: relative;
+  flex: 0 0 calc(100vw - 41px);
+  height: 100px;
+  overflow: hidden;
+  border-radius: 28px;
+  background: linear-gradient(180deg, #888984 0%, #b5b9bb 72%, #e8eaeb 100%);
+}
+.inspiredPartialCard > img,
+.inspiredPartialNext > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+.inspiredPartialRating {
+  position: absolute;
+  top: 37px;
+  right: 15px;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 400;
+  letter-spacing: -0.1px;
+  white-space: nowrap;
+}
+.inspiredPartialNext {
+  flex: 0 0 16px;
+  height: 100px;
+  overflow: hidden;
 }

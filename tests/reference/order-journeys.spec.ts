@@ -392,6 +392,74 @@ test("captured Amazon label tracking keeps a compact carrier handoff at mobile w
   });
   expect(recommendationGap).toBeGreaterThanOrEqual(8);
   expect(recommendationGap).toBeLessThanOrEqual(10);
+
+  const inspiredRail = page.locator("[data-order-inspired-rail]");
+  const inspiredCard = page.locator("[data-order-inspired-card]");
+  await expect(inspiredRail).toBeVisible();
+  await expect(inspiredCard).toContainText("★ (11.4K)");
+  await expect(inspiredCard.locator("img")).toHaveAttribute(
+    "src",
+    "/api/reference-media/order-inspired-card-photo",
+  );
+  await expect
+    .poll(() =>
+      inspiredCard
+        .locator("img")
+        .evaluate((image) =>
+          image instanceof HTMLImageElement ? image.naturalWidth : 0,
+        ),
+    )
+    .toBeGreaterThan(0);
+  const inspiredGeometry = await page.evaluate(() => {
+    const heading = [...document.querySelectorAll<HTMLElement>("h2")].find(
+      (node) => node.textContent?.includes("Inspired by your order"),
+    );
+    const rail = document.querySelector<HTMLElement>(
+      "[data-order-inspired-rail]",
+    );
+    const card = document.querySelector<HTMLElement>(
+      "[data-order-inspired-card]",
+    );
+    const next = rail?.querySelector<HTMLElement>(":scope > div:last-child");
+    const rating = card?.querySelector<HTMLElement>("span");
+    if (!heading || !rail || !card || !next || !rating)
+      throw new Error("Inspired order continuation is incomplete");
+    const headingRect = heading.getBoundingClientRect();
+    const railRect = rail.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    const nextRect = next.getBoundingClientRect();
+    const ratingRect = rating.getBoundingClientRect();
+    return {
+      headingTop: headingRect.top,
+      cardTop: cardRect.top,
+      cardLeft: cardRect.left,
+      cardWidth: cardRect.width,
+      cardHeight: cardRect.height,
+      nextLeft: nextRect.left,
+      nextWidth: nextRect.width,
+      ratingRight: cardRect.right - ratingRect.right,
+      railRight: railRect.right,
+      documentWidth: document.documentElement.scrollWidth,
+    };
+  });
+  expect(inspiredGeometry.headingTop).toBeGreaterThanOrEqual(667);
+  expect(inspiredGeometry.headingTop).toBeLessThanOrEqual(671);
+  expect(inspiredGeometry.cardTop).toBeGreaterThanOrEqual(691);
+  expect(inspiredGeometry.cardTop).toBeLessThanOrEqual(695);
+  expect(inspiredGeometry.cardLeft).toBeGreaterThanOrEqual(16);
+  expect(inspiredGeometry.cardLeft).toBeLessThanOrEqual(18);
+  expect(inspiredGeometry.cardWidth).toBeGreaterThanOrEqual(351);
+  expect(inspiredGeometry.cardWidth).toBeLessThanOrEqual(353);
+  expect(inspiredGeometry.cardHeight).toBeGreaterThanOrEqual(99);
+  expect(inspiredGeometry.cardHeight).toBeLessThanOrEqual(101);
+  expect(inspiredGeometry.nextLeft).toBeGreaterThanOrEqual(376);
+  expect(inspiredGeometry.nextLeft).toBeLessThanOrEqual(378);
+  expect(inspiredGeometry.nextWidth).toBeGreaterThanOrEqual(15);
+  expect(inspiredGeometry.nextWidth).toBeLessThanOrEqual(17);
+  expect(inspiredGeometry.ratingRight).toBeGreaterThanOrEqual(14);
+  expect(inspiredGeometry.ratingRight).toBeLessThanOrEqual(16);
+  expect(inspiredGeometry.railRight).toBeLessThanOrEqual(394);
+  expect(inspiredGeometry.documentWidth).toBeLessThanOrEqual(394);
 });
 
 test("manual package validates carrier selection and email forwarding remains an explicit boundary", async ({
