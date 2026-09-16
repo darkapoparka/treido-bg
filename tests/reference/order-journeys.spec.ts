@@ -189,6 +189,58 @@ test("captured Amazon label tracking keeps a compact carrier handoff at mobile w
   await preview.evaluate((node) =>
     window.scrollBy(0, node.getBoundingClientRect().top - 12),
   );
+  const previewGeometry = await preview.evaluate((node) => {
+    const heading = node.querySelector<HTMLElement>("h2");
+    const destination = node.querySelector<HTMLElement>(
+      ".delivery-destination",
+    );
+    const activity = node.querySelector<HTMLElement>(".source-activity");
+    if (!heading || !destination || !activity)
+      throw new Error("Label-created delivery preview is incomplete");
+    const previewRect = node.getBoundingClientRect();
+    const relativeTop = (element: HTMLElement) =>
+      element.getBoundingClientRect().top - previewRect.top;
+    return {
+      height: previewRect.height,
+      headingTop: relativeTop(heading),
+      destinationTop: relativeTop(destination),
+      activityTop: relativeTop(activity),
+    };
+  });
+  expect(previewGeometry.height).toBeGreaterThanOrEqual(161);
+  expect(previewGeometry.height).toBeLessThanOrEqual(163);
+  expect(previewGeometry.headingTop).toBeGreaterThanOrEqual(16);
+  expect(previewGeometry.headingTop).toBeLessThanOrEqual(18);
+  expect(previewGeometry.destinationTop).toBeGreaterThanOrEqual(53);
+  expect(previewGeometry.destinationTop).toBeLessThanOrEqual(55);
+  expect(previewGeometry.activityTop).toBeGreaterThanOrEqual(111);
+  expect(previewGeometry.activityTop).toBeLessThanOrEqual(113);
+
+  const productRhythm = await page
+    .locator(".product-rail .product-copy")
+    .first()
+    .evaluate((node) => {
+      const title = node.querySelector<HTMLElement>("strong");
+      const rating = node.querySelector<HTMLElement>(".rating");
+      const price = node.querySelector<HTMLElement>(":scope > span:last-child");
+      if (!title || !rating || !price)
+        throw new Error("Order recommendation copy is incomplete");
+      const titleRect = title.getBoundingClientRect();
+      const ratingRect = rating.getBoundingClientRect();
+      const priceRect = price.getBoundingClientRect();
+      return {
+        height: node.getBoundingClientRect().height,
+        titleToRating: ratingRect.top - titleRect.top,
+        ratingToPrice: priceRect.top - ratingRect.top,
+      };
+    });
+  expect(productRhythm.height).toBeGreaterThanOrEqual(59);
+  expect(productRhythm.height).toBeLessThanOrEqual(61);
+  expect(productRhythm.titleToRating).toBeGreaterThanOrEqual(16);
+  expect(productRhythm.titleToRating).toBeLessThanOrEqual(18);
+  expect(productRhythm.ratingToPrice).toBeGreaterThanOrEqual(17);
+  expect(productRhythm.ratingToPrice).toBeLessThanOrEqual(19);
+
   const recommendationGap = await page.evaluate(() => {
     const heading = [...document.querySelectorAll<HTMLElement>("h2")].find(
       (node) => node.textContent?.includes("Popular at KITSCH"),
