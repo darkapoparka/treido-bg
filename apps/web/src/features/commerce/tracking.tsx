@@ -22,6 +22,7 @@ import {
   OrderProgress,
   OrderRecommendations,
 } from "./order-presentation";
+import { DeliveryConfetti } from "./delivery-confetti";
 import styles from "./orders-parity.module.css";
 const events = [
   ["Milpitas, CA, 95035, US · Jul 31, 6:04pm", "Successfully delivered"],
@@ -106,13 +107,7 @@ export function TrackingDetail({
       className={`tracking-detail ${styles.tracking} ${labelCreated && product ? styles.labelTracking : ""} ${!product ? styles.manualTracking : ""} ${delivered ? styles.deliveredTracking : ""} ${map ? `tracking-map-view ${styles.mapView}` : ""}`}
       onBack={() => router.back()}
     >
-      {celebrate && (
-        <div className="delivery-confetti" aria-hidden="true">
-          {Array.from({ length: 18 }, (_, index) => (
-            <i key={index} />
-          ))}
-        </div>
-      )}
+      {celebrate && <DeliveryConfetti />}
       {map && (
         <div
           className={`tracking-map ${styles.sourceMap}`}

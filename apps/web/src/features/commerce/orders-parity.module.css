@@ -15,9 +15,8 @@
   }
   .tracking :global(.delivery-confetti i) {
     animation: none;
-    top: 0;
     opacity: 1;
-    transform: translate(calc(-50% + var(--x)), var(--y)) rotate(var(--r));
+    transform: rotate(var(--delivery-confetti-angle));
   }
 }
 .list {

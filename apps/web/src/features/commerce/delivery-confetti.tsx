@@ -1,0 +1,177 @@
+import type { CSSProperties } from "react";
+
+type DeliveryConfettiPiece = readonly [
+  left: number,
+  top: number,
+  width: number,
+  height: number,
+  color: string,
+  angle: number,
+  radius?: string,
+  clipPath?: string,
+];
+
+// Deterministic source-capture composition; each particle remains live DOM and
+// fades out with the same local celebration lifecycle as the delivered state.
+const deliveryConfetti: readonly DeliveryConfettiPiece[] = [
+  [
+    147,
+    97,
+    10,
+    36,
+    "#b0a2f3",
+    -14,
+    undefined,
+    "polygon(50% 0, 100% 34%, 62% 100%, 0 66%)",
+  ],
+  [228, 117, 20, 12, "#deec68", 28, "100% 0 100% 0"],
+  [
+    341,
+    141,
+    26,
+    21,
+    "#dfd7fe",
+    14,
+    undefined,
+    "polygon(10% 0, 100% 15%, 84% 100%, 0 72%)",
+  ],
+  [
+    0,
+    176,
+    30,
+    20,
+    "#56b791",
+    0,
+    undefined,
+    "polygon(0 62%, 100% 0, 72% 68%, 0 100%)",
+  ],
+  [
+    121,
+    176,
+    12,
+    21,
+    "#7157e7",
+    24,
+    undefined,
+    "polygon(50% 0, 100% 40%, 62% 100%, 0 72%)",
+  ],
+  [
+    267,
+    198,
+    14,
+    30,
+    "#f16447",
+    -8,
+    undefined,
+    "polygon(32% 0, 100% 30%, 78% 100%, 0 67%)",
+  ],
+  [187, 218, 29, 4, "#dbe969", 1, "999px"],
+  [198, 220, 2, 17, "#b8e0d2", 44, "999px"],
+  [73, 244, 33, 10, "#755be7", -29, "2px"],
+  [
+    94,
+    237,
+    20,
+    26,
+    "#d8b8f7",
+    -36,
+    undefined,
+    "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)",
+  ],
+  [
+    187,
+    242,
+    20,
+    19,
+    "#1da06d",
+    8,
+    undefined,
+    "polygon(0 0, 100% 0, 100% 100%)",
+  ],
+  [14, 243, 25, 23, "#5e41e9", -18, "70% 30% 70% 30%"],
+  [
+    308,
+    255,
+    18,
+    12,
+    "#44ae86",
+    -24,
+    undefined,
+    "polygon(0 38%, 100% 0, 18% 100%)",
+  ],
+  [62, 270, 31, 20, "#f48169", -28, "100% 0 100% 0"],
+  [90, 259, 23, 30, "#cde22b", -8, "50%"],
+  [144, 263, 24, 9, "#ea6d54", -12, "2px"],
+  [369, 264, 23, 10, "#d0e32b", 4, "999px"],
+  [154, 272, 17, 15, "#d56df9", -34, "100% 0 100% 0"],
+  [357, 283, 6, 40, "#31a87a", 45, "999px"],
+
+  [263, 300, 27, 22, "#e8affb", 20, "50% 55% 45% 50%"],
+  [263, 313, 18, 24, "#6944e9", 35, "2px"],
+  [29, 310, 4, 31, "#816de0", -28, "2px"],
+  [116, 317, 10, 25, "#e8adfc", 5, "999px"],
+  [245, 325, 21, 24, "#cde220", -40, "100% 0 100% 0"],
+  [174, 326, 6, 22, "#afa1f2", 8, "1px"],
+  [136, 333, 7, 30, "#dad2f8", -38, "2px"],
+  [
+    -2,
+    339,
+    27,
+    13,
+    "#ee684b",
+    18,
+    undefined,
+    "polygon(0 25%, 72% 0, 100% 75%, 22% 100%)",
+  ],
+  [28, 339, 30, 22, "#f0d2fd", -14, "50%"],
+  [101, 352, 2, 15, "#85c8af", -45, "1px"],
+  [
+    173,
+    363,
+    13,
+    22,
+    "#ddd5fb",
+    -38,
+    undefined,
+    "polygon(50% 0, 100% 25%, 80% 100%, 0 75%)",
+  ],
+  [360, 363, 5, 27, "#5b3de5", -6, "1px"],
+  [
+    371,
+    375,
+    22,
+    16,
+    "#7fc9ac",
+    -28,
+    undefined,
+    "polygon(20% 0, 100% 0, 80% 100%, 0 100%)",
+  ],
+  [313, 371, 14, 13, "#e8affb", 38, "100% 0 100% 0"],
+  [52, 377, 13, 13, "#d0e330", 38, "100% 0 100% 0"],
+  [149, 386, 29, 7, "#d1e435", -35, "2px"],
+];
+export function DeliveryConfetti() {
+  return (
+    <div className="delivery-confetti" aria-hidden="true">
+      {deliveryConfetti.map(
+        ([left, top, width, height, color, angle, radius, clipPath], index) => (
+          <i
+            key={`${left}-${top}-${index}`}
+            style={
+              {
+                left,
+                top,
+                width,
+                height,
+                backgroundColor: color,
+                borderRadius: radius,
+                clipPath,
+                "--delivery-confetti-angle": `${angle}deg`,
+              } as CSSProperties
+            }
+          />
+        ),
+      )}
+    </div>
+  );
+}

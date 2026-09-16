@@ -52,6 +52,38 @@ test("later captured manual delivery yields to local unmark and mark actions", a
   await page
     .getByRole("button", { name: "Mark as delivered", exact: true })
     .click();
+  const confetti = page.locator(".delivery-confetti");
+  await expect(confetti).toBeVisible();
+  await expect(confetti.locator("i")).toHaveCount(35);
+  const celebrationGeometry = await confetti.evaluate((node) => {
+    const particles = [...node.querySelectorAll("i")].map((particle) => {
+      const rect = particle.getBoundingClientRect();
+      return { top: rect.top, bottom: rect.bottom };
+    });
+    const rect = node.getBoundingClientRect();
+    const style = getComputedStyle(node);
+    return {
+      position: style.position,
+      pointerEvents: style.pointerEvents,
+      width: rect.width,
+      height: rect.height,
+      firstTop: Math.min(...particles.map((particle) => particle.top)),
+      lastBottom: Math.max(...particles.map((particle) => particle.bottom)),
+    };
+  });
+  expect(celebrationGeometry.position).toBe("fixed");
+  expect(celebrationGeometry.pointerEvents).toBe("none");
+  expect(celebrationGeometry.width).toBeGreaterThanOrEqual(392);
+  expect(celebrationGeometry.width).toBeLessThanOrEqual(394);
+  expect(celebrationGeometry.height).toBeGreaterThanOrEqual(792);
+  expect(celebrationGeometry.height).toBeLessThanOrEqual(794);
+  expect(celebrationGeometry.firstTop).toBeGreaterThanOrEqual(94);
+  expect(celebrationGeometry.firstTop).toBeLessThanOrEqual(100);
+  expect(celebrationGeometry.lastBottom).toBeGreaterThanOrEqual(396);
+  expect(celebrationGeometry.lastBottom).toBeLessThanOrEqual(405);
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(394);
   await expect(
     page.getByText("Arrived at 7:34 PM", { exact: true }),
   ).toBeVisible();
