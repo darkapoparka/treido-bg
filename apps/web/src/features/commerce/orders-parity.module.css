@@ -765,6 +765,7 @@
   top: 0;
   z-index: 2;
   background: white;
+  box-shadow: 0 -20px 0 #fff;
   padding-top: 3px;
   margin-bottom: 9px;
 }
@@ -775,12 +776,17 @@
 .activitySheet :global(.sheet-header h2) {
   font-size: 16px;
   line-height: 21px;
+  transform: translateY(1px);
 }
 .activitySheet .activity {
-  margin-top: 0;
+  margin-top: 1px;
 }
 .activitySheet .activity > div {
-  padding-bottom: 27px;
+  padding-bottom: 26px;
+}
+.activitySheet .activity > div:first-child > i,
+.activitySheet .activity > div:first-child > span {
+  transform: translateY(2px);
 }
 .activitySheet .activity > div:last-child {
   padding-bottom: 0;

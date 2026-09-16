@@ -671,14 +671,61 @@ test("delivery history keeps all recorded events in order and closes with browse
   await expect(
     page.locator(".delivery-preview .delivery-destination"),
   ).toHaveCount(0);
-  await expect(activity.locator(".source-activity > div")).toHaveCount(9);
+  const activityRows = activity.locator(".source-activity > div");
+  await expect(activityRows).toHaveCount(9);
   await expect(activity.locator(".source-activity strong").first()).toHaveText(
     "Successfully delivered",
   );
   await expect(activity.locator(".source-activity strong").last()).toHaveText(
     "Parcel data submitted to carrier",
   );
-  await activity.evaluate((node) => node.scrollTo(0, node.scrollHeight));
+  const timelineGeometry = await activity.evaluate((node) => {
+    const sheetRect = node.getBoundingClientRect();
+    const title = node.querySelector<HTMLElement>(".sheet-header h2");
+    const rows = [
+      ...node.querySelectorAll<HTMLElement>(".source-activity > div"),
+    ];
+    if (!title || rows.length !== 9)
+      throw new Error("Delivery activity timeline is incomplete");
+    const textTop = (row: HTMLElement) =>
+      row.querySelector<HTMLElement>(":scope > span")!.getBoundingClientRect()
+        .top;
+    return {
+      titleTop: title.getBoundingClientRect().top - sheetRect.top,
+      firstTextTop: textTop(rows[0]) - sheetRect.top,
+      firstStep: textTop(rows[1]) - textTop(rows[0]),
+      regularStep: textTop(rows[2]) - textTop(rows[1]),
+      maxScroll: node.scrollHeight - node.clientHeight,
+    };
+  });
+  expect(timelineGeometry.titleTop).toBeGreaterThanOrEqual(27);
+  expect(timelineGeometry.titleTop).toBeLessThanOrEqual(30);
+  expect(timelineGeometry.firstTextTop).toBeGreaterThanOrEqual(66);
+  expect(timelineGeometry.firstTextTop).toBeLessThanOrEqual(68);
+  expect(timelineGeometry.firstStep).toBeGreaterThanOrEqual(57);
+  expect(timelineGeometry.firstStep).toBeLessThanOrEqual(59);
+  expect(timelineGeometry.regularStep).toBeGreaterThanOrEqual(59);
+  expect(timelineGeometry.regularStep).toBeLessThanOrEqual(61);
+  expect(timelineGeometry.maxScroll).toBeGreaterThanOrEqual(82);
+  expect(timelineGeometry.maxScroll).toBeLessThanOrEqual(84);
+
+  await activity.evaluate((node) => node.scrollTo(0, 460));
+  const earliestGeometry = await activity.evaluate((node) => {
+    const labels = [
+      ...node.querySelectorAll<HTMLElement>(".source-activity strong"),
+    ];
+    return {
+      scrollTop: node.scrollTop,
+      thirdLabelTop: labels[2].getBoundingClientRect().top,
+      lastLabelTop: labels.at(-1)!.getBoundingClientRect().top,
+    };
+  });
+  expect(earliestGeometry.scrollTop).toBeGreaterThanOrEqual(82);
+  expect(earliestGeometry.scrollTop).toBeLessThanOrEqual(84);
+  expect(earliestGeometry.thirdLabelTop).toBeGreaterThanOrEqual(364);
+  expect(earliestGeometry.thirdLabelTop).toBeLessThanOrEqual(366);
+  expect(earliestGeometry.lastLabelTop).toBeGreaterThanOrEqual(724);
+  expect(earliestGeometry.lastLabelTop).toBeLessThanOrEqual(726);
   await expect(
     activity.getByText("Parcel data submitted to carrier", { exact: true }),
   ).toBeVisible();
