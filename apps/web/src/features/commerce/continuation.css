@@ -2325,6 +2325,10 @@
   text-align: center;
   font-size: 13px;
 }
+.order-action-toast[data-toast-kind="changes-saved"] {
+  min-width: 121px;
+  padding: 13px 18px;
+}
 .source-order-menu .account-row:last-child {
   color: #d52d12;
 }

@@ -126,7 +126,22 @@ test("tracking edit discards cancelled text, disables unchanged save and restore
     .getByRole("button", { name: "Update tracking details", exact: true })
     .click();
   await expect(editor).not.toBeVisible();
-  await expect(page.getByRole("status")).toContainText("Changes saved");
+  const savedToast = page.getByRole("status");
+  await expect(savedToast).toContainText("Changes saved");
+  const savedToastGeometry = await savedToast.evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    return {
+      width: rect.width,
+      height: rect.height,
+      bottom: innerHeight - rect.bottom,
+    };
+  });
+  expect(savedToastGeometry.width).toBeGreaterThanOrEqual(120);
+  expect(savedToastGeometry.width).toBeLessThanOrEqual(123);
+  expect(savedToastGeometry.height).toBeGreaterThanOrEqual(42);
+  expect(savedToastGeometry.height).toBeLessThanOrEqual(44);
+  expect(savedToastGeometry.bottom).toBeGreaterThanOrEqual(105);
+  expect(savedToastGeometry.bottom).toBeLessThanOrEqual(107);
   const y = await preview.evaluate((node) => node.getBoundingClientRect().top);
   expect(y).toBeGreaterThanOrEqual(20);
   expect(y).toBeLessThanOrEqual(46);

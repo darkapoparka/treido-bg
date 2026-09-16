@@ -457,7 +457,13 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
           onEdit={() => setEdit(true)}
         />
         {toast && (
-          <p className="order-action-toast" role="status">
+          <p
+            className="order-action-toast"
+            data-toast-kind={
+              toast === "Changes saved" ? "changes-saved" : undefined
+            }
+            role="status"
+          >
             {toast}
           </p>
         )}
@@ -484,7 +490,13 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
   return (
     <AccountPage className={styles.detail}>
       {toast && (
-        <p className="order-action-toast" role="status">
+        <p
+          className="order-action-toast"
+          data-toast-kind={
+            toast === "Changes saved" ? "changes-saved" : undefined
+          }
+          role="status"
+        >
           {toast}
         </p>
       )}
