@@ -289,13 +289,15 @@ export function TrackingDetail({
         {product && !manualLabel && (
           <section className="delivery-preview" data-waiting={waiting}>
             <h2>Delivery progress</h2>
-            <div className="delivery-destination">
-              <small>Delivery to</small>
-              <strong>
-                {shopSourceAddress.street}, {shopSourceAddress.city},{" "}
-                {shopSourceAddress.postalCode}
-              </strong>
-            </div>
+            {!delivered && (
+              <div className="delivery-destination">
+                <small>Delivery to</small>
+                <strong>
+                  {shopSourceAddress.street}, {shopSourceAddress.city},{" "}
+                  {shopSourceAddress.postalCode}
+                </strong>
+              </div>
+            )}
             {visible.length > 0 && (
               <Activity rows={visible} submittedParcel={labelCreated} />
             )}

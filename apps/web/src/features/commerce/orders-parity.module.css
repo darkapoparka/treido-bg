@@ -743,27 +743,45 @@
 .activitySheet.activitySheet {
   width: calc(100% - 32px);
   max-width: 480px;
-  margin: auto auto 32px;
-  max-height: min(520px, calc(100dvh - 70px));
-  padding: 20px 16px 16px;
+  margin: auto;
+  bottom: 34px;
+  max-height: min(512px, calc(100dvh - 70px));
+  padding: 20px 20px 16px;
   border-radius: 28px;
+}
+.activitySheet.activitySheet::before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  z-index: 3;
+  width: 38px;
+  height: 4px;
+  border-radius: 999px;
+  background: #e5e5e5;
+  transform: translateX(-50%);
 }
 .activitySheet :global(.sheet-header) {
   position: sticky;
-  top: -20px;
+  top: 0;
   z-index: 2;
   background: white;
-  padding-top: 2px;
+  padding-top: 3px;
+  margin-bottom: 9px;
+}
+.activitySheet :global(.sheet-header .icon-button) {
+  visibility: hidden;
+  pointer-events: none;
 }
 .activitySheet :global(.sheet-header h2) {
   font-size: 16px;
   line-height: 21px;
 }
 .activitySheet .activity {
-  margin-top: 16px;
+  margin-top: 0;
 }
 .activitySheet .activity > div {
-  padding-bottom: 28px;
+  padding-bottom: 27px;
 }
 .activitySheet .activity > div:last-child {
   padding-bottom: 0;
@@ -938,14 +956,29 @@
   margin: 0 0 12px;
 }
 .trackingEditor.trackingEditor {
+  top: 0;
+  right: 0;
+  bottom: auto;
+  left: 0;
+  width: min(100%, 500px);
+  max-width: 500px;
   min-height: 100dvh;
+  height: 100dvh;
   max-height: 100dvh;
-  margin: 0;
+  margin: 0 auto;
   padding: 40px 16px 24px;
   border-radius: 28px 28px 0 0;
+  background: #fdfdfd;
 }
 .trackingEditor :global(.sheet-header) {
   margin-bottom: 30px;
+}
+.trackingEditor :global(.sheet-header .icon-button) {
+  background: transparent;
+}
+.trackingEditor :global(.sheet-header .icon-button svg) {
+  width: 24px;
+  height: 24px;
 }
 .review {
   position: relative;

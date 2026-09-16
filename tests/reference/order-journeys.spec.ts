@@ -78,6 +78,30 @@ test("tracking edit discards cancelled text, disables unchanged save and restore
   expect(initialY).toBeGreaterThanOrEqual(20);
   expect(initialY).toBeLessThanOrEqual(46);
   let editor = await openTrackingEditor(page);
+  await editor.evaluate(async (node) => {
+    await Promise.all(
+      node
+        .getAnimations()
+        .map((animation) => animation.finished.catch(() => undefined)),
+    );
+  });
+  const editorGeometry = await editor.evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    return {
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      height: rect.height,
+    };
+  });
+  expect(editorGeometry.x).toBeGreaterThanOrEqual(-1);
+  expect(editorGeometry.x).toBeLessThanOrEqual(1);
+  expect(editorGeometry.y).toBeGreaterThanOrEqual(-1);
+  expect(editorGeometry.y).toBeLessThanOrEqual(1);
+  expect(editorGeometry.width).toBeGreaterThanOrEqual(392);
+  expect(editorGeometry.width).toBeLessThanOrEqual(394);
+  expect(editorGeometry.height).toBeGreaterThanOrEqual(792);
+  expect(editorGeometry.height).toBeLessThanOrEqual(794);
   await expect(
     editor.getByRole("button", {
       name: "Update tracking details",
@@ -508,6 +532,36 @@ test("delivery history keeps all recorded events in order and closes with browse
     name: "Delivery progress",
     exact: true,
   });
+  await activity.evaluate(async (node) => {
+    await Promise.all(
+      node
+        .getAnimations()
+        .map((animation) => animation.finished.catch(() => undefined)),
+    );
+  });
+  const activityGeometry = await activity.evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    return {
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      height: rect.height,
+    };
+  });
+  expect(activityGeometry.x).toBeGreaterThanOrEqual(15);
+  expect(activityGeometry.x).toBeLessThanOrEqual(17);
+  expect(activityGeometry.y).toBeGreaterThanOrEqual(245);
+  expect(activityGeometry.y).toBeLessThanOrEqual(249);
+  expect(activityGeometry.width).toBeGreaterThanOrEqual(360);
+  expect(activityGeometry.width).toBeLessThanOrEqual(362);
+  expect(activityGeometry.height).toBeGreaterThanOrEqual(510);
+  expect(activityGeometry.height).toBeLessThanOrEqual(514);
+  await expect(
+    activity.locator('[aria-label="Close Delivery progress"]'),
+  ).toBeHidden();
+  await expect(
+    page.locator(".delivery-preview .delivery-destination"),
+  ).toHaveCount(0);
   await expect(activity.locator(".source-activity > div")).toHaveCount(9);
   await expect(activity.locator(".source-activity strong").first()).toHaveText(
     "Successfully delivered",
