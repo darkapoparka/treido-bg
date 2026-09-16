@@ -103,7 +103,7 @@ export function TrackingDetail({
   };
   return (
     <AccountPage
-      className={`tracking-detail ${styles.tracking} ${labelCreated && product ? styles.labelTracking : ""} ${!product ? styles.manualTracking : ""} ${map ? `tracking-map-view ${styles.mapView}` : ""}`}
+      className={`tracking-detail ${styles.tracking} ${labelCreated && product ? styles.labelTracking : ""} ${!product ? styles.manualTracking : ""} ${delivered ? styles.deliveredTracking : ""} ${map ? `tracking-map-view ${styles.mapView}` : ""}`}
       onBack={() => router.back()}
     >
       {celebrate && (

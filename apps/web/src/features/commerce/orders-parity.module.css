@@ -1141,6 +1141,12 @@
 .tracking .manualDeals {
   margin-right: -16px;
 }
+.deliveredTracking .manualDeals {
+  margin-top: 8px;
+}
+.deliveredTracking .manualDeals :global(.product-media) {
+  height: 174px;
+}
 .tracking .carrierHeading > .dhlMark {
   flex: none;
   width: 32px;
@@ -1181,7 +1187,7 @@
   height: 32px;
 }
 .manualPicked {
-  margin: 36px 0 14px;
+  margin: 27px 0 14px;
 }
 
 /* Source-specific geographic raster and independently rendered map overlays. */

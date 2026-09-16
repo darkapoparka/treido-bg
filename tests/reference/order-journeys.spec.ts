@@ -338,17 +338,18 @@ test("manual package validates carrier selection and email forwarding remains an
   const carrierArtwork = carrierRows.locator("img.dhl-mark");
   expect(await carrierArtwork.count()).toBeGreaterThanOrEqual(5);
   for (let index = 0; index < (await carrierArtwork.count()); index += 1) {
-    await expect(carrierArtwork.nth(index)).toHaveAttribute(
+    const artwork = carrierArtwork.nth(index);
+    await expect(artwork).toHaveAttribute(
       "src",
       "/api/reference-media/widget-dhl-logo",
     );
-    expect(
-      await carrierArtwork
-        .nth(index)
-        .evaluate((image) =>
+    await expect
+      .poll(() =>
+        artwork.evaluate((image) =>
           image instanceof HTMLImageElement ? image.naturalWidth : 0,
         ),
-    ).toBeGreaterThan(0);
+      )
+      .toBeGreaterThan(0);
   }
 
   await page
