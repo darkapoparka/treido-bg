@@ -1173,6 +1173,22 @@
 .manualTracking :global(.tracking-carrier) {
   padding: 16px;
 }
+.manualTracking:not(.deliveredTracking) :global(.tracking-carrier) {
+  margin-bottom: 13px;
+}
+.manualTracking :global(.tracking-empty) {
+  margin-bottom: 13px;
+  padding: 16px;
+}
+.manualTracking :global(.tracking-empty h2) {
+  margin-bottom: 2px;
+}
+.manualTracking :global(.tracking-empty p) {
+  line-height: 18px;
+}
+.manualTracking :global(.tracking-empty .muted-button) {
+  margin-top: 16px;
+}
 .manualTracking :global(.tracking-action-panel) {
   padding: 0 16px;
 }
