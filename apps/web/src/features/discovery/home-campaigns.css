@@ -1,6 +1,17 @@
 .home-page {
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
 }
+/* The Home feed continues beneath the source's viewport-edge dock fade. */
+.home-page > .floating-dock::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  bottom: calc(-1 * (var(--dock-bottom) + env(safe-area-inset-bottom)));
+  width: 100vw;
+  height: calc(128px + env(safe-area-inset-bottom));
+  background: linear-gradient(to bottom, #fdfdfd00, #fdfdfd00 15%, #fdfdfde6);
+  pointer-events: none;
+}
 .home-campaigns {
   display: grid;
   gap: 16px;

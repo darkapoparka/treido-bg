@@ -201,3 +201,49 @@ test("Deals categories remain reachable after feed scrolling and category Back n
     ).toBeLessThanOrEqual(width);
   }
 });
+
+test("Home dock fade preserves navigation, feed geometry and sibling containment", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "home-recent-shops");
+  await page.goto("/?feed=recent-stores");
+  const dock = page.locator(".floating-dock");
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    await expect(dock).toBeVisible();
+    const geometry = await dock.evaluate((element) => {
+      const fade = getComputedStyle(element, "::before");
+      return {
+        bottom: element.getBoundingClientRect().bottom,
+        fadeWidth: parseFloat(fade.width),
+        fadeHeight: parseFloat(fade.height),
+        pointerEvents: fade.pointerEvents,
+        scrollWidth: document.documentElement.scrollWidth,
+      };
+    });
+    expect(geometry.bottom).toBe(761);
+    expect(geometry.fadeWidth).toBe(width);
+    expect(geometry.fadeHeight).toBe(128);
+    expect(geometry.pointerEvents).toBe("none");
+    expect(geometry.scrollWidth).toBeLessThanOrEqual(width);
+  }
+  await page.setViewportSize({ width: 393, height: 793 });
+  const panel = page.locator(".recent-stores-panel");
+  const before = await panel.boundingBox();
+  expect(before?.height).toBe(630);
+  await page.getByRole("link", { name: "Search", exact: true }).click();
+  await expect(page).toHaveURL(/\/search$/);
+  await expect
+    .poll(() =>
+      dock.evaluate((element) => getComputedStyle(element, "::before").content),
+    )
+    .toBe("none");
+  await page.goBack();
+  await expect(page).toHaveURL(/\/\?feed=recent-stores$/);
+  await expect(panel).toBeVisible();
+  expect(await panel.boundingBox()).toEqual(before);
+  await panel
+    .getByRole("link", { name: "Recently viewed", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/search\?view=recent$/);
+});
