@@ -10,6 +10,89 @@ async function settled(dialog: Locator) {
   });
 }
 
+test("recent shops cart dismisses with focus and scroll return before sibling navigation", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "home-recent-shops");
+  await page.goto("/?feed=recent-stores");
+  const trigger = page.getByRole("button", { name: "Open cart", exact: true });
+  const cart = page.getByRole("dialog", { name: "Your cart", exact: true });
+  await expect(trigger).toBeVisible();
+  await expect(trigger.locator(".dock-cart-count")).toHaveCount(0);
+  await page.evaluate(() => window.scrollTo(0, 160));
+  const scroll = await page.evaluate(() => window.scrollY);
+  for (const dismissal of ["close", "escape", "backdrop", "back"] as const) {
+    await trigger.click();
+    await settled(cart);
+    await expect(
+      cart.getByRole("heading", { name: "Your cart is empty", exact: true }),
+    ).toBeVisible();
+    if (dismissal === "close") {
+      await cart
+        .getByRole("button", { name: "Close cart", exact: true })
+        .click();
+    } else if (dismissal === "escape") {
+      await page.keyboard.press("Escape");
+    } else if (dismissal === "backdrop") {
+      const bounds = await cart.boundingBox();
+      if (!bounds || bounds.y <= 20)
+        throw new Error("Cart has no exposed backdrop");
+      await page.mouse.click(bounds.x + bounds.width / 2, bounds.y - 20);
+    } else {
+      await page.goBack();
+    }
+    await expect(cart).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+    await expect(page).toHaveURL(/\/\?feed=recent-stores$/);
+    await expect
+      .poll(() => page.evaluate(() => document.body.style.overflow))
+      .not.toBe("hidden");
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(scroll);
+    await expect
+      .poll(() => page.evaluate(() => Boolean(window.history.state?.shopSheet)))
+      .toBe(false);
+  }
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    await expect(trigger).toBeInViewport();
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width);
+  }
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Search", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/search$/);
+  await expect(trigger).toHaveCount(0);
+  await page.goBack();
+  await expect(trigger).toBeVisible();
+  await expect(cart).not.toBeVisible();
+  await page.goForward();
+  await expect(page).toHaveURL(/\/search$/);
+  await expect(trigger).toHaveCount(0);
+});
+
+for (const [scenario, route] of [
+  ["home-welcome", "/"],
+  ["home-recent-products", "/?feed=recent-products"],
+  ["returning-home", "/?feed=tracking"],
+  ["returning-home", "/?journey=returning"],
+] as const) {
+  test(`empty cart stays absent from sibling Home history ${route}`, async ({
+    page,
+  }) => {
+    await useReferenceScenario(page, scenario);
+    await page.goto(route);
+    await expect(
+      page.getByRole("navigation", { name: "Main navigation" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Open cart", exact: true }),
+    ).toHaveCount(0);
+  });
+}
+
 test("sheet padding stays open while a geometric backdrop click closes and restores focus", async ({
   page,
 }) => {

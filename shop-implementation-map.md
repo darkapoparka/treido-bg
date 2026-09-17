@@ -32,13 +32,33 @@ The source mapping confirms Mountain Goat images are small regions of `flows/8d7
 
 ### Home dock fade retained
 
-The six ordered source frames show a viewport-edge fade behind the floating navigation. `apps/web/src/features/discovery/home-campaigns.css` now supplies a Home-only, non-interactive 128px gradient behind the existing dock, including the safe-area inset. Dock position, feed height, scrolling, icons, assets and recipes are unchanged. The local DOM probe (`20260917-dock-probe.json`) reports stable y135/630px recent-panel geometry, y705 dock top and scrollY=0 before/after decoded images and settling; it does not reproduce a scroll jump. Earlier visual interpretations of a lower dock or shorter source panel were incorrect. The visible arrow belongs to the underlying Recently viewed link; the source's f002-002 cart control is still missing, not an incorrect cart glyph.
+The six ordered source frames show a viewport-edge fade behind the floating navigation. `apps/web/src/features/discovery/home-campaigns.css` now supplies a Home-only, non-interactive 128px gradient behind the existing dock, including the safe-area inset. Dock position, feed height, scrolling, icons, assets and recipes are unchanged. The local DOM probe (`20260917-dock-probe.json`) reports stable y135/630px recent-panel geometry, y705 dock top and scrollY=0 before/after decoded images and settling; it does not reproduce a scroll jump. Earlier visual interpretations of a lower dock or shorter source panel were incorrect. The visible arrow belongs to the underlying Recently viewed link; at this dock-fade checkpoint the source's f002-002 cart control was still missing. The subsequent recent-shops batch below connects it; glyph fitting remains separate.
 
 `20260917-home-dock-fade` captured all six frames at base `a805f50f386929c4f98e6916553902ec8119b0a1` plus the CSS diff, with Edge/393x793/Node 22.22.0 on the existing 6412 preview. Frame MAEs improved to **5.634, 4.764, 3.345, 7.012, 5.524, 2.975%** (mean **4.876%**), with zero browser errors. f002-004 bad-pixel-12 rose **26.851% → 27.328%** despite lower MAE; the fade profile and adjacent partial photography remain imperfect. No frame meets the unchanged 1.5% MAE threshold; this is a retained partial improvement, not 1:1 parity or acceptance.
 
 `home-discovery-continuity.spec.ts` and `home-overlays.spec.ts` passed **13/13**, including the new 320/393/430 fade/dock containment, non-interception, Search route isolation and Back geometry test. Existing campaign Back/Forward, save and overlay tests also pass. The command additionally named nonexistent `home-campaign-safety.spec.ts`; it supplied no tests and is not claimed as coverage. Prettier formatting, focused ESLint and `git diff --check` each exited 0 via installed Node entry points (`20260917-dock-checks.json`); Corepack retries did not establish a result. Full suite, production build, CI and motion review were not rerun. Logs and diagnostic scripts remain ignored under `.qa/shop-parity/`.
 
-Next: connect the source-backed empty cart control for the recent-shops history through the existing cart overlay, verify dismissal/focus and sibling histories, and refine the dock fade/profile against source pairs. Then resume full-source capture/verification; owner acceptance remains 0/97.
+### Recent-shops cart verified, 2026-09-17
+
+Tasks 3/5/6: the working diff over `72ac42a82fa012259da2859a1ec0f6995eb866f0` connects the recent-stores feed/history to the existing `CartOverlay` and `FloatingNav` in `apps/web/src/features/discovery/home.tsx`. Buyers can open an empty cart without a quantity badge and dismiss it with Close, Escape, backdrop or browser Back, restoring focus and scroll. Existing Pura behavior is retained; welcome, recent-products and returning/tracking histories do not gain an empty-cart shortcut.
+
+The existing `home-overlays.spec.ts` and `home-discovery-continuity.spec.ts` passed **18/18 (36.2s)**, including four dismissal paths, unlocked body/history cleanup, Search Back/Forward, 320/393/430 containment and sibling absence. Ignored `.qa/shop-parity/recent-cart-batch.json` records all five checks exiting 0: focused tests, flow-2 capture, test ESLint, Home ESLint and diff check; finished `2026-09-17T06:53:09.787Z`. The existing capture was confirmed from its log and report, not relaunched. Closeout checks also passed installed Prettier on all four changed files, `node scripts/check-agent-docs.mjs` (42 Markdown files / 222 relative links) and `git diff --check`; exact results are in ignored `.qa/shop-parity/recent-cart-closeout.json`. An earlier pnpm formatter attempt stopped at a Corepack download prompt and supplied no check result; installed Node entry points were used instead.
+
+Run `.qa/shop-parity/runs/20260917-home-recent-cart/` scored **6/6**, zero browser errors, at 393x793 using Edge and the existing `http://127.0.0.1:6412` preview. Node 22.22.0 remains below the declared 24.x qualification runtime. Against `20260917-home-dock-fade`, MAE percentages are:
+
+| Frame | Previous | Recent cart | Delta (percentage points) |
+| --- | ---: | ---: | ---: |
+| f002-001 | 5.634 | 5.634 | 0.000 |
+| f002-002 | 4.764 | 4.498 | -0.266 |
+| f002-003 | 3.345 | 3.342 | -0.003 |
+| f002-004 | 7.012 | 7.012 | 0.000 |
+| f002-005 | 5.524 | 5.524 | 0.000 |
+| f002-006 | 2.975 | 2.975 | 0.000 |
+| Mean | 4.876 | 4.831 | -0.045 |
+
+No measured MAE regressions. f002-002 bad-pixel decreases 19.203% -> 18.618%; f002-004 remains worst at 27.328% bad-pixel. All six frames still exceed the unchanged 1.5% MAE threshold. The new f002-002 reference/live pair confirms the bottom-right Open cart placement; the shared cart glyph shape/color and surrounding imagery remain visibly different, including the incomplete DRMTLGY tile. This inspection does not establish a link between that tile and the three original-media hash failures. Typography and dock fade fitting also remain open; placement is not 1:1 acceptance. The earlier f002-004 pair review belongs to `20260917-home-dock-fade`, not this run.
+
+Next: fit the canonical shared cart glyph and surrounding Home imagery against source pairs, with affected sibling regression, then resume full-source capture/verification. Full application suite, production build, CI and motion review were not rerun for this batch. Keep the three hash failures, 16 unverified standalone videos and owner acceptance **0/97** open. Commit locally on `main`; push remains withheld pending explicit authorization.
 
 ## Open source obligations
 

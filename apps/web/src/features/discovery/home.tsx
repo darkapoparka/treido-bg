@@ -36,6 +36,7 @@ export function Home({ catalog }: { catalog: Catalog }) {
     !returning &&
     (requestedFeed === "recent-stores" ||
       (!requestedFeed && state.recentActivity === "stores"));
+  const showCart = puraOptionsHistory || recentStores;
   const tracking =
     returning ||
     requestedFeed === "tracking" ||
@@ -299,7 +300,7 @@ export function Home({ catalog }: { catalog: Catalog }) {
           Keep going <Icon name="arrow" />
         </button>
       )}
-      {puraOptionsHistory && (
+      {showCart && (
         <CartOverlay
           catalog={catalog}
           open={cartOpen}
@@ -308,8 +309,8 @@ export function Home({ catalog }: { catalog: Catalog }) {
       )}
       <FloatingNav
         showExplore={!returning}
-        showCartWhenEmpty={puraOptionsHistory}
-        cart={puraOptionsHistory ? () => setCartOpen(true) : undefined}
+        showCartWhenEmpty={showCart}
+        cart={showCart ? () => setCartOpen(true) : undefined}
       />
     </ShopSurface>
   );
