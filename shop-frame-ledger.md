@@ -10,6 +10,8 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 
 ## SF-001 — Onboarding
 
+Frames 009/013 below use focused runs `20260916-preferences-colors-empty` / `20260916-preferences-colors-selected`, captured at `c343940` plus the preference-color working-tree diff. Other rows retain their dated evidence. Both focused frames remain REFINE; see the implementation map for checks and unresolved typography.
+
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-001:001 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/001.webp` | shop-purple-splash | Defined | 0.932 | 1.443 | NUMERICAL CANDIDATE |
@@ -20,11 +22,11 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | [ ] SF-001:006 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/006.webp` | email-code-empty | Defined | 1.592 | 3.444 | REFINE |
 | [ ] SF-001:007 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/007.webp` | email-code-pending | Defined | 1.953 | 4.381 | REFINE |
 | [ ] SF-001:008 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/008.webp` | captured-home-after-sign-in | Defined | 6.747 | 23.698 | REFINE |
-| [ ] SF-001:009 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/009.webp` | shopping-preferences-empty | Defined | 1.809 | 5.189 | REFINE |
+| [ ] SF-001:009 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/009.webp` | shopping-preferences-empty | Defined | 1.699 | 5.154 | REFINE |
 | [ ] SF-001:010 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/010.webp` | email-code-verified | Defined | 1.729 | 3.793 | REFINE |
 | [ ] SF-001:011 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/011.webp` | tracking-introduction | Defined | 6.254 | 15.356 | REFINE |
 | [ ] SF-001:012 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/012.webp` | captured-signing-in | Defined | 0.844 | 1.954 | NUMERICAL CANDIDATE |
-| [ ] SF-001:013 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/013.webp` | everything-preference-selected | Defined | 2.437 | 10.014 | REFINE |
+| [ ] SF-001:013 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/013.webp` | everything-preference-selected | Defined | 1.957 | 5.138 | REFINE |
 | [ ] SF-001:014 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/014.webp` | home-feed-loading | Defined | 0.629 | 0.398 | NUMERICAL CANDIDATE |
 | [ ] SF-001:015 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/015.webp` | tracking-updates-introduction | Defined | 2.992 | 7.078 | REFINE |
 

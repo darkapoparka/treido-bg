@@ -49,8 +49,21 @@ test("preference Next keeps source spacing and remains reachable at buyer widths
     name: "Everything",
     exact: true,
   });
+  await expect(page.locator(".onboarding-step-1 > p")).toHaveCSS(
+    "color",
+    "rgb(85, 85, 85)",
+  );
   await everything.click();
   await expect(everything).toHaveAttribute("aria-pressed", "true");
+  await expect(everything).toHaveCSS("background-color", "rgb(0, 0, 0)");
+  await expect(everything).toHaveCSS("color", "rgb(255, 255, 255)");
+  const mens = page.getByRole("button", { name: "Men's", exact: true });
+  await mens.click();
+  await expect(mens).toHaveAttribute("aria-pressed", "true");
+  await expect(mens).toHaveCSS("background-color", "rgb(0, 0, 0)");
+  await expect(everything).toHaveAttribute("aria-pressed", "false");
+  await everything.click();
+  await expect(mens).toHaveAttribute("aria-pressed", "false");
   for (const width of [320, 393, 430]) {
     await page.setViewportSize({ width, height: 793 });
     await expect(next).toBeInViewport();
