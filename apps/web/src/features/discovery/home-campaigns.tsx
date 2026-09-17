@@ -186,6 +186,8 @@ const campaignProductPhotos: Record<string, string> = {
   "home-princess-dress": "home-campaign-princess-dress",
   "home-tea-blue": "home-campaign-tea-blue",
   "home-tea-orange": "home-campaign-tea-orange",
+  "home-mountain-pink": "home-campaign-mountain-pink",
+  "home-mountain-black": "home-campaign-mountain-black",
 };
 
 export function HomeCampaigns({
@@ -440,6 +442,12 @@ export function HomeCampaigns({
                         rememberHomeCampaignReturn(event, c.id, "more-products")
                       }
                     >
+                      {c.id === "mountain" && (
+                        <img
+                          src="/api/reference-media/home-campaign-mountain-trailing"
+                          alt=""
+                        />
+                      )}
                       <span className="campaign-price">{c.trailingPrice}</span>
                     </Link>
                   )}

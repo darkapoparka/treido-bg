@@ -461,6 +461,33 @@ const media: Record<
     circularOcclusions: [[107, 107, 17]],
     photoRadius: 20,
   },
+  // Mountain tiles are full-bleed photographs with live controls over them.
+  // Price pills and the captured dock region are removed; the corresponding
+  // React controls render at the same positions.
+  "home-campaign-mountain-pink": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/004.webp",
+    rect: [32, 685, 135, 135],
+    occlusions: [
+      [9, 7, 54, 26],
+      [50, 79, 85, 56],
+    ],
+  },
+  "home-campaign-mountain-black": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/004.webp",
+    rect: [175, 685, 135, 135],
+    occlusions: [
+      [9, 7, 54, 26],
+      [0, 79, 131, 56],
+    ],
+  },
+  // Only this right sliver of the trailing photograph is captured. Its product
+  // identity is unknown, so it decorates the existing store link, not an
+  // invented product.
+  "home-campaign-mountain-trailing": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/004.webp",
+    rect: [318, 685, 75, 135],
+    occlusions: [[7, 7, 58, 26]],
+  },
   "home-campaign-mountain-header": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/004.webp",
     rect: [17, 595, 359, 89],

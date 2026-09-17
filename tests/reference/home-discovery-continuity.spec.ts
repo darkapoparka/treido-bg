@@ -208,6 +208,9 @@ test("Home dock fade preserves navigation, feed geometry and sibling containment
   await useReferenceScenario(page, "home-recent-shops");
   await page.goto("/?feed=recent-stores");
   const dock = page.locator(".floating-dock");
+  // React stages streamed Home in a hidden container before removing fallback.
+  await expect(page.locator(".home-loading")).toHaveCount(0);
+  await expect(dock).toHaveCount(1);
   for (const width of [320, 393, 430]) {
     await page.setViewportSize({ width, height: 793 });
     await expect(dock).toBeVisible();

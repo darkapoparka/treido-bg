@@ -195,6 +195,16 @@
 .campaign-partial-product img {
   object-fit: contain;
 }
+/* The trailing Mountain tile shows the captured left sliver of a photo whose
+   product was never identifiable. The link decorates with that lawful region. */
+.campaign-mountain .campaign-uncaptured img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 75px;
+  height: 135px;
+  object-fit: cover;
+}
 .campaign-price {
   position: absolute;
   left: 12px;

@@ -213,6 +213,9 @@ test("Home reflects the actual journey instead of always showing seeded history"
 }) => {
   await useReferenceScenario(page, "home-welcome");
   await page.goto("/");
+  // Wait for streamed replacement, not merely the first loading surface.
+  await expect(page.locator(".home-loading")).toHaveCount(0);
+  await expect(page.locator("main.home-page")).toHaveCount(1);
   await expect(page.locator("main.home-page")).toHaveAttribute(
     "data-feed",
     "welcome",
