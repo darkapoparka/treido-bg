@@ -441,6 +441,13 @@ function LocalPhotoPicker({
   );
 }
 
+const skinResultMedia: Record<string, string> = {
+  "skin-anua": "skin-card-anua",
+  "skin-mimi": "skin-card-mimi",
+  "skin-loretta": "skin-card-loretta",
+  "skin-harry": "skin-card-harry",
+};
+
 export function Skin({ catalog }: { catalog: Catalog }) {
   const router = useRouter();
   const { params, change } = useMiniRoute("/minis/skin");
@@ -554,7 +561,17 @@ export function Skin({ catalog }: { catalog: Catalog }) {
                     (item) => item.id === id,
                   );
                   return product
-                    ? [<ProductCard key={id} product={product} />]
+                    ? [
+                        <ProductCard
+                          key={id}
+                          product={{
+                            ...product,
+                            images: [
+                              `/api/reference-media/${skinResultMedia[id]}`,
+                            ],
+                          }}
+                        />,
+                      ]
                     : [];
                 },
               )}

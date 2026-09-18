@@ -985,6 +985,30 @@ const media: Record<
     rect: [244, 37, 70, 50],
   },
 
+  "skin-card-anua": {
+    file: "flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/007.webp",
+    rect: [16, 153, 173, 172],
+    circularOcclusions: [[144, 143, 17]],
+    photoRadius: 28,
+  },
+  "skin-card-mimi": {
+    file: "flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/007.webp",
+    rect: [205, 153, 172, 172],
+    circularOcclusions: [[143, 143, 17]],
+    photoRadius: 28,
+  },
+  "skin-card-loretta": {
+    file: "flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/007.webp",
+    rect: [16, 425, 173, 172],
+    circularOcclusions: [[144, 144, 17]],
+    photoRadius: 28,
+  },
+  "skin-card-harry": {
+    file: "flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/007.webp",
+    rect: [205, 425, 172, 172],
+    circularOcclusions: [[143, 144, 17]],
+    photoRadius: 28,
+  },
   "skin-loretta": {
     file: "flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/007.webp",
     rect: [77, 433, 65, 159],

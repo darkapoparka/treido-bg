@@ -1,6 +1,13 @@
 import { expect, test } from "@playwright/test";
 import { useReferenceScenario } from "./helpers";
 
+const skinResultMedia: Record<string, string> = {
+  "skin-anua": "skin-card-anua",
+  "skin-mimi": "skin-card-mimi",
+  "skin-loretta": "skin-card-loretta",
+  "skin-harry": "skin-card-harry",
+};
+
 test.beforeEach(async ({ page }) => {
   await page.setViewportSize({ width: 393, height: 793 });
   await useReferenceScenario(page, "home-welcome");
@@ -79,11 +86,14 @@ test("Skin's recorded flow retains products, returns by history, and never start
   expect(Math.round(cleanserBounds?.y ?? -1)).toBeGreaterThanOrEqual(408);
   expect(Math.round(cleanserBounds?.y ?? -1)).toBeLessThanOrEqual(411);
   for (const id of ["skin-anua", "skin-mimi", "skin-loretta", "skin-harry"]) {
-    await expect(
-      page.locator(
-        `.skin-results .product-card:has(a[href="/products/${id}"])`,
-      ),
-    ).toHaveCount(1);
+    const card = page.locator(
+      `.skin-results .product-card:has(a[href="/products/${id}"])`,
+    );
+    await expect(card).toHaveCount(1);
+    await expect(card.locator(".product-media > a > img")).toHaveAttribute(
+      "src",
+      `/api/reference-media/${skinResultMedia[id]}`,
+    );
   }
   await expect(page.locator(".skin-results")).toContainText(
     "no skin analysis performed",

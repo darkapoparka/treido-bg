@@ -145,6 +145,8 @@
 }
 .skinResults.skinResults {
   padding: 20px 16px 46px;
+  overflow: hidden;
+  border-radius: 28px 28px 0 0;
   background: #fffcf9;
 }
 .skinResultHeading {
@@ -230,6 +232,19 @@
 .skinResults :global(.product-copy strong) {
   font-size: 16px;
   font-weight: 400;
+  text-overflow: clip;
+}
+.skinResults
+  :global(
+    .product-card:has(img[src*="/api/reference-media/skin-card-"])
+      .product-media
+  ) {
+  border: 0;
+  background: transparent;
+}
+.skinResults
+  :global(.product-card img[src*="/api/reference-media/skin-card-"]) {
+  object-fit: fill;
 }
 .skinResults :global(.rating),
 .skinResults :global(.rating > span) {

@@ -217,6 +217,14 @@ The retained run is `.qa/shop-parity/runs/20260918-store-search-source-tail-reta
 
 The production build passed TypeScript and generated 39 routes. `storefront-journeys.spec.ts` passes **11/11 (21.2s)** across source-tail presence, exact search count, filter persistence, Back/Forward restoration, saved membership and 320/393/430 containment. Remaining residuals are card typography, antialiasing, fade finishing and other higher-ranked families; this checkpoint is not owner acceptance.
 
+### Skincare cleanser source-card checkpoint, 2026-09-18
+
+Tasks 3/5/6 continue over `40ba9e5`. Flow 57’s four identified cleanser products now receive exact bounded card regions from frame 007 rather than enlarged isolated bottle crops. Each source image retains its captured background, shadows and visible promotional artwork; the captured heart circle is removed and the existing live Save control renders over the same coordinates. Product identity, links, pricing and save membership still come from the canonical catalog/state.
+
+The results surface adds the source 28px top corners and clips product titles instead of inventing ellipses. The retained run `.qa/shop-parity/runs/20260918-skin-source-cards/` scored **7/7**, zero browser errors. Family mean improved **5.259% → 4.653%**, mean bad-pixel **19.348% → 15.265%**, f057-007 improved **7.104% → 4.558%**, and f057-006 improved **5.845% → 4.145%** with no meaningful sibling regression.
+
+The production build passed TypeScript and generated 39 routes. The full Minis photo journey file passes **5/5 (13.6s)**, covering source media selection, camera/network boundaries, replay history, local file picking, Get the Look siblings and mobile containment. Remaining residuals are the camera-permission composition, shared typography and lower source continuations; this checkpoint is not owner acceptance.
+
 ## Open source obligations
 
 All **307 standalone images** are reconciled with existing ordered flow states: **179** have exact manifest-hash matches, and **128** were visually paired with their ordered counterpart. The latter are exports with different resolution, compression and footer packaging; no additional UI state or clearer photographic asset was found. Exact local inventories are `.qa/shop-parity/standalone-reconciliation.json`, `.qa/agent-patches/standalone-checkout/inventory.json` (47 images) and `.qa/agent-patches/standalone-minis/inventory.json` (81). This reconciles image inventory, not implementation acceptance. The **16 standalone videos** received poster inspection; complete motion/transition matching remains separate.

@@ -2,6 +2,10 @@
 
 Updated 2026-09-18. This is the session entry point, not a second backlog.
 
+**Skincare cleanser source-card checkpoint over `40ba9e5`.** The recorded Cleanser grid now uses four bounded source cards with the exact product scale, neutral backgrounds, Allure/New badges and live heart controls. Product links and Save state remain canonical DOM behavior; the source cards supply photography only. The results surface also restores the captured rounded top edge and clipped, non-ellipsis titles.
+
+Run `20260918-skin-source-cards` scored **7/7** flow-57 states with zero browser errors. Family mean improved **5.259% → 4.653% MAE**, mean bad-pixel **19.348% → 15.265%**, the cleanser grid improved **7.104% → 4.558%**, and the recorded summary improved **5.845% → 4.145%**. The production build passed TypeScript and generated 39 routes; `minis-photo-journeys.spec.ts` passes **5/5 (13.6s)**. This remains measured progress, not 1:1 acceptance.
+
 **Kitsch store-search source checkpoint over `a1fba86`.** The captured shampoo results now keep their four identified live products, restore the two bounded lower-card source continuations hidden beneath the Shop dock, use an actual DOM chevron instead of corrupt text, and continue to preserve real query/filter/Back/Forward behavior. No unseen product identities or destinations were invented.
 
 Run `20260918-store-search-source-tail-retained` scored **4/4** flow-40 states with zero browser errors. Family mean improved **3.910% → 3.454% MAE**, mean bad-pixel **13.891% → 12.130%**, and the final result frame improved **7.518% → 5.420%**. The production build passed TypeScript and generated 39 routes; the full storefront suite passes **11/11 (21.2s)**. This remains measured progress, not 1:1 acceptance.
