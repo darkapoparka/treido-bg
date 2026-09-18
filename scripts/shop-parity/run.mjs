@@ -460,11 +460,17 @@ async function captureFrame(browser, frame, runDir) {
     deviceScaleFactor: 1,
     reducedMotion: "reduce",
   });
-  await context.route("**/*", (route) =>
-    new URL(route.request().url()).origin === new URL(BASE_URL).origin
-      ? route.continue()
-      : route.abort(),
-  );
+  await context.route("**/*", async (route) => {
+    try {
+      if (new URL(route.request().url()).origin === new URL(BASE_URL).origin)
+        await route.continue();
+      else await route.abort();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (!/already handled|context or browser has been closed/i.test(message))
+        throw error;
+    }
+  });
   if (scenario)
     await context.addCookies([
       {
