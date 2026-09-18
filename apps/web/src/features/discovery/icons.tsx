@@ -103,14 +103,42 @@ export function Icon({
           fillRule="evenodd"
           stroke="none"
         />
-      ) : filled && name === "orders" ? (
+      ) : filled && name === "home" ? (
+        <path
+          d="M2.4 10.4 10.9 3.5a1.75 1.75 0 0 1 2.2 0l8.5 6.9c.95.77.4 2.3-.82 2.3h-1.03v6.5A2.8 2.8 0 0 1 16.95 22h-9.9a2.8 2.8 0 0 1-2.8-2.8v-6.5H3.22c-1.22 0-1.77-1.53-.82-2.3Z"
+          stroke="none"
+        />
+      ) : filled && name === "cart" ? (
         <>
           <path
-            d="M5 7h2V6a5 5 0 0 1 10 0v1h2a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Zm4 0h6V6a3 3 0 0 0-6 0v1Z"
-            fillRule="evenodd"
+            d="M2.5 4.2h3.1c.8 0 1.5.55 1.66 1.34l.48 2.28h12.02c1.05 0 1.82 1 1.54 2.02l-1.45 5.3a2.65 2.65 0 0 1-2.56 1.95h-7.04a2.65 2.65 0 0 1-2.58-2.05L5.6 6.35H2.5V4.2Z"
+            transform="matrix(1.106 0 0 1.183 -5.82 -2.91)"
             stroke="none"
           />
-          <path d="M8 9h8" stroke="white" strokeWidth="2" />
+          <circle cx="5.5" cy="21.1" r="1.75" stroke="none" />
+          <circle cx="14.9" cy="21.1" r="1.75" stroke="none" />
+        </>
+      ) : filled && name === "orders" ? (
+        <>
+          <rect x="2" y="2.5" width="18" height="17" rx="7" stroke="none" />
+          <rect
+            x="10.2"
+            y="3.2"
+            width="1.6"
+            height="5.2"
+            rx="0.3"
+            fill="white"
+            stroke="none"
+          />
+          <rect
+            x="4.2"
+            y="7.4"
+            width="13.6"
+            height="2.2"
+            rx="0.35"
+            fill="white"
+            stroke="none"
+          />
         </>
       ) : filled && name === "badge-check" ? (
         <>

@@ -109,7 +109,7 @@ export function FloatingNav({
           data-focus-return="cart"
           onClick={cart}
         >
-          <Icon name="cart" />
+          <Icon name="cart" filled />
           {cartQuantity > 0 && (
             <span className="dock-cart-count" aria-hidden="true">
               {cartQuantity > 99 ? "99+" : cartQuantity}

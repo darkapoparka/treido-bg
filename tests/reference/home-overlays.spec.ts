@@ -18,6 +18,7 @@ test("recent shops cart dismisses with focus and scroll return before sibling na
   const trigger = page.getByRole("button", { name: "Open cart", exact: true });
   const cart = page.getByRole("dialog", { name: "Your cart", exact: true });
   await expect(trigger).toBeVisible();
+  await expect(trigger.locator('svg[fill="currentColor"]')).toHaveCount(1);
   await expect(trigger.locator(".dock-cart-count")).toHaveCount(0);
   await page.evaluate(() => window.scrollTo(0, 160));
   const scroll = await page.evaluate(() => window.scrollY);
@@ -249,6 +250,15 @@ test("the returning campaign uses six real product cards and preserves saving", 
   ).toEqual(["drmtlgy", "mountain", "tea", "accessories", "kitsch", "carpe"]);
   const campaign = page.getByRole("region", { name: "DRMTLGY campaign" });
   await expect(campaign.locator(".campaign-product")).toHaveCount(6);
+  const accessories = page.getByRole("region", {
+    name: "Accessories campaign",
+  });
+  const accessoryHearts = accessories.locator(
+    '[data-campaign-source-save="accessory"]',
+  );
+  await expect(accessoryHearts).toHaveCount(2);
+  await expect(accessoryHearts.locator("svg")).toHaveCount(2);
+  await expect(accessories.getByRole("button")).toHaveCount(1);
   await expect(
     page.getByRole("navigation", { name: "Main navigation" }).getByRole("link"),
   ).toHaveCount(3);

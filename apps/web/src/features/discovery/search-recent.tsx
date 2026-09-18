@@ -14,17 +14,27 @@ const recentCover: Record<string, string> = {
   drmtlgy: "recent-drmtlgy-photo",
   "loaded-tea": "recent-loaded-logo",
 };
+const homeRecentCover: Record<string, string> = {
+  drmtlgy: "home-recent-drmtlgy-cover",
+};
+function getRecentCover(storeId: string, surface: "search" | "home") {
+  return surface === "home"
+    ? (homeRecentCover[storeId] ?? recentCover[storeId])
+    : recentCover[storeId];
+}
 
 export function RecentSearchItems({
   catalog,
   expanded = false,
   limit,
   capturedContinuation,
+  surface = "search",
 }: {
   catalog: Catalog;
   expanded?: boolean;
   limit?: number;
   capturedContinuation?: "photo" | null;
+  surface?: "search" | "home";
 }) {
   const state = useDiscovery();
   const items = state.viewedItems.flatMap((item) => {
@@ -75,22 +85,25 @@ export function RecentSearchItems({
             />
           ) : store ? (
             <Link
-              className={`${styles.store} ${recentCover[store.id] ? styles.capturedStore : ""} ${store.id === "loaded-tea" ? styles.logoStore : ""} ${store.id === "drmtlgy" ? styles.partialStore : ""}`}
+              className={`${styles.store} ${getRecentCover(store.id, surface) ? styles.capturedStore : ""} ${store.id === "loaded-tea" ? styles.logoStore : ""} ${store.id === "drmtlgy" && surface !== "home" ? styles.partialStore : ""}`}
               data-recent-store={store.id}
               href={`/stores/${store.id}`}
               aria-label={`Visit ${store.name}`}
             >
-              {(recentCover[store.id] || store.coverImage || store.logo) && (
+              {(getRecentCover(store.id, surface) ||
+                store.coverImage ||
+                store.logo) && (
                 <img
                   src={
-                    recentCover[store.id]
-                      ? `/api/reference-media/${recentCover[store.id]}`
+                    getRecentCover(store.id, surface)
+                      ? `/api/reference-media/${getRecentCover(store.id, surface)}`
                       : store.coverImage || store.logo
                   }
                   alt=""
                 />
               )}
-              {(!recentCover[store.id] || store.id === "drmtlgy") && (
+              {(!getRecentCover(store.id, surface) ||
+                (store.id === "drmtlgy" && surface !== "home")) && (
                 <span className={styles.wordmark} aria-hidden="true">
                   {store.id === "kitsch" ? <KitschWordmark /> : store.name}
                 </span>

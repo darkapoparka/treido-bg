@@ -195,9 +195,11 @@
 .campaign-partial-product img {
   object-fit: contain;
 }
-/* The trailing Mountain tile shows the captured left sliver of a photo whose
-   product was never identifiable. The link decorates with that lawful region. */
-.campaign-mountain .campaign-uncaptured img {
+/* Trailing source tiles preserve only the visible photograph sliver. Their
+   product identities are unknown, so each image decorates the existing store
+   link rather than inventing a catalog item. */
+.campaign-uncaptured img,
+.campaign-source-sliver img {
   position: absolute;
   left: 0;
   top: 0;
@@ -231,6 +233,13 @@
 .campaign-product .save-button svg {
   width: 21px;
   height: 21px;
+}
+.campaign-source-save {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  pointer-events: none;
 }
 .campaign-cta {
   position: absolute;

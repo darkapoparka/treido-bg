@@ -152,6 +152,13 @@ h2 {
 .floating-dock.has-side-controls .floating-nav {
   width: min(221px, calc(100% - var(--dock-side-width) * 2 - 20px));
 }
+.dock-cart:not(.cart-filled) {
+  color: #777;
+}
+.dock-cart svg {
+  width: 26px;
+  height: 26px;
+}
 .dock-cart.cart-filled {
   color: white;
   background: var(--color-accent);
@@ -239,8 +246,9 @@ h2 {
   height: 40px;
 }
 .home-shortcuts .pill {
+  padding: 8px 11px;
   font-size: 14px;
-  padding: 8px 13px;
+  font-weight: 500;
 }
 .delivery-card,
 .email-card {

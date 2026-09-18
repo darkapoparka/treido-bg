@@ -139,7 +139,7 @@ export function Home({ catalog }: { catalog: Catalog }) {
         >
           <p>Jump back in</p>
           <div className="recent-store-grid">
-            <RecentSearchItems catalog={catalog} limit={4} />
+            <RecentSearchItems catalog={catalog} limit={4} surface="home" />
           </div>
           <Link href="/search?view=recent" className="recent-title">
             <h1>Recently viewed</h1>

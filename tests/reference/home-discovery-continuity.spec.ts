@@ -11,9 +11,18 @@ test("Home mixed history uses the shared product save and recent-history navigat
     exact: true,
   });
   await expect(history.locator("[data-recent-id]")).toHaveCount(4);
+  const savedShortcut = page.getByRole("link", { name: "Saved", exact: true });
+  await expect(savedShortcut).toHaveCSS("font-weight", "500");
+  await expect(savedShortcut).toBeInViewport({ ratio: 1 });
   await expect(
     history.locator('[data-recent-id="shea-butter"] img'),
   ).toHaveAttribute("src", "/api/reference-media/shea");
+  const drmtlgy = history.locator('[data-recent-id="drmtlgy"]');
+  await expect(drmtlgy.locator("a > img")).toHaveAttribute(
+    "src",
+    "/api/reference-media/home-recent-drmtlgy-cover",
+  );
+  await expect(drmtlgy.locator('a > span[aria-hidden="true"]')).toHaveCount(0);
   const save = history.getByRole("button", {
     name: "Save Shea Butter Exfoliating Body Wash",
     exact: true,

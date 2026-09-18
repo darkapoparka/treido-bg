@@ -21,6 +21,9 @@ const media: Record<
       number,
       number,
     ])[];
+    // Remove dark interface ink without clearing the photograph behind it.
+    darkTextOcclusions?: readonly (readonly [number, number, number, number])[];
+    textOcclusionDilation?: number;
     // Exclude the recorded card edge while retaining only its product photograph.
     photoRadius?: number;
     // Circular native controls are removed without erasing extra photo corners.
@@ -376,11 +379,12 @@ const media: Record<
   "home-campaign-princess-header": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
     rect: [17, 194, 359, 85],
-    occlusions: [
+    lightTextOcclusions: [
       [14, 21, 162, 25],
       [221, 24, 84, 19],
+      [316, 28, 22, 10],
     ],
-    circularOcclusions: [[327, 33, 18]],
+    textOcclusionDilation: 0.25,
     photoRadius: 27,
   },
   "home-campaign-princess-wordmark": {
@@ -401,14 +405,20 @@ const media: Record<
     circularOcclusions: [[107, 107, 17]],
     photoRadius: 20,
   },
+  "home-campaign-princess-trailing": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
+    rect: [318, 280, 75, 135],
+    occlusions: [[7, 11, 58, 20]],
+  },
   "home-campaign-drmtlgy-header": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
     rect: [17, 519, 359, 67],
-    occlusions: [
-      [21, 25, 153, 22],
+    lightTextOcclusions: [[21, 25, 153, 22]],
+    darkTextOcclusions: [
       [234, 23, 73, 21],
+      [316, 28, 22, 10],
     ],
-    circularOcclusions: [[327, 33, 18]],
+    textOcclusionDilation: 0.25,
     photoRadius: 27,
   },
   "home-campaign-drmtlgy-wordmark": {
@@ -416,13 +426,10 @@ const media: Record<
     rect: [38, 544, 153, 22],
   },
   "home-campaign-drmtlgy-footer": {
-    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
-    rect: [17, 722, 359, 69],
-    occlusions: [
-      [113, 0, 133, 39],
-      [13, 21, 108, 30],
-      [64, 39, 231, 30],
-    ],
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/004.webp",
+    rect: [17, 474, 359, 69],
+    darkTextOcclusions: [[13, 21, 108, 30]],
+    textOcclusionDilation: 0.25,
     circularOcclusions: [[327, 37, 18]],
     photoRadius: 27,
   },
@@ -440,11 +447,19 @@ const media: Record<
     circularOcclusions: [[107, 100, 17]],
     photoRadius: 20,
   },
+  "home-campaign-tea-trailing": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
+    rect: [318, 195, 75, 128],
+    occlusions: [[7, 10, 61, 21]],
+  },
   "home-campaign-accessories-header": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
     rect: [17, 439, 359, 67],
-    occlusions: [[234, 24, 75, 20]],
-    circularOcclusions: [[327, 33, 18]],
+    lightTextOcclusions: [
+      [234, 24, 75, 20],
+      [316, 28, 22, 10],
+    ],
+    textOcclusionDilation: 0.25,
     photoRadius: 27,
   },
   "home-campaign-accessory-cap": {
@@ -460,6 +475,11 @@ const media: Record<
     occlusions: [[11, 11, 109, 21]],
     circularOcclusions: [[107, 107, 17]],
     photoRadius: 20,
+  },
+  "home-campaign-accessory-trailing": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
+    rect: [318, 506, 75, 135],
+    occlusions: [[7, 11, 68, 21]],
   },
   // Mountain tiles are full-bleed photographs with live controls over them.
   // Price pills and the captured dock region are removed; the corresponding
@@ -491,27 +511,30 @@ const media: Record<
   "home-campaign-mountain-header": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/004.webp",
     rect: [17, 595, 359, 89],
-    occlusions: [[65, 17, 166, 40]],
-    circularOcclusions: [
-      [37, 38, 23],
-      [327, 37, 18],
+    lightTextOcclusions: [
+      [65, 17, 166, 40],
+      [316, 32, 22, 10],
     ],
+    textOcclusionDilation: 0.25,
+    circularOcclusions: [[37, 38, 23]],
     photoRadius: 27,
   },
   "home-campaign-kitsch-header": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/006.webp",
     rect: [17, 115, 359, 59],
-    occlusions: [
+    lightTextOcclusions: [
       [11, 14, 137, 42],
       [219, 23, 95, 20],
+      [316, 28, 22, 10],
     ],
-    circularOcclusions: [[327, 33, 18]],
+    textOcclusionDilation: 0.25,
     photoRadius: 27,
   },
   "home-campaign-kitsch-footer": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/006.webp",
     rect: [17, 647, 359, 63],
-    occlusions: [[13, 18, 108, 29]],
+    lightTextOcclusions: [[13, 18, 108, 29]],
+    textOcclusionDilation: 0.25,
     circularOcclusions: [[327, 33, 18]],
     photoRadius: 27,
   },
@@ -541,6 +564,12 @@ const media: Record<
     file: "flows/1cb8d743-c728-4317-8c60-1cc3c2761f8c/002.webp",
     rect: [202, 680, 172, 80],
     circularOcclusions: [[145, 27, 17]],
+  },
+  "home-recent-drmtlgy-cover": {
+    file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/002.webp",
+    rect: [201, 503, 160, 160],
+    occlusions: [[10, 10, 60, 21]],
+    photoRadius: 19,
   },
   "recent-loaded-logo": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
@@ -1488,19 +1517,35 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
       if (
         entry.occlusions?.length ||
         entry.lightTextOcclusions?.length ||
+        entry.darkTextOcclusions?.length ||
         entry.circularOcclusions?.length ||
         entry.photoRadius
       ) {
         let cleanPhoto = await crop.ensureAlpha().png().toBuffer();
-        if (entry.lightTextOcclusions?.length) {
+        if (
+          entry.lightTextOcclusions?.length ||
+          entry.darkTextOcclusions?.length
+        ) {
           const pixels = await sharp(cleanPhoto)
             .raw()
             .toBuffer({ resolveWithObject: true });
           // At source scale, a small bounded dilation also removes the captured
           // glyph's dark antialiasing/shadow. Only alpha changes; no photo pixels
           // are synthesized and the mask cannot extend beyond the caption bounds.
-          const inkRadius = Math.max(1, Math.ceil(1.5 * scale));
-          for (const bounds of entry.lightTextOcclusions) {
+          const inkRadius = Math.max(
+            0,
+            Math.ceil((entry.textOcclusionDilation ?? 1.5) * scale),
+          );
+          for (const { bounds, dark } of [
+            ...(entry.lightTextOcclusions ?? []).map((bounds) => ({
+              bounds,
+              dark: false,
+            })),
+            ...(entry.darkTextOcclusions ?? []).map((bounds) => ({
+              bounds,
+              dark: true,
+            })),
+          ]) {
             const [x, y, w, h] = bounds.map((value) =>
               Math.round(value * scale),
             );
@@ -1525,7 +1570,10 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
                   pixels.data[offset + 1],
                   pixels.data[offset + 2],
                 );
-                if (low < 175 || high - low > 28) continue;
+                const isInk = dark
+                  ? high < 96 && high - low <= 32
+                  : low >= 175 && high - low <= 28;
+                if (!isInk) continue;
                 for (let delta = -inkRadius; delta <= inkRadius; delta += 1) {
                   const maskRow = row + delta;
                   if (maskRow < 0 || maskRow >= maskHeight) continue;

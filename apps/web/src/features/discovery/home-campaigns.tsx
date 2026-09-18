@@ -190,6 +190,12 @@ const campaignProductPhotos: Record<string, string> = {
   "home-mountain-black": "home-campaign-mountain-black",
 };
 
+const campaignTrailingPhotos: Record<string, string> = {
+  princess: "home-campaign-princess-trailing",
+  mountain: "home-campaign-mountain-trailing",
+  tea: "home-campaign-tea-trailing",
+};
+
 export function HomeCampaigns({
   catalog,
   productLayout = "rail",
@@ -442,9 +448,9 @@ export function HomeCampaigns({
                         rememberHomeCampaignReturn(event, c.id, "more-products")
                       }
                     >
-                      {c.id === "mountain" && (
+                      {campaignTrailingPhotos[c.id] && (
                         <img
-                          src="/api/reference-media/home-campaign-mountain-trailing"
+                          src={`/api/reference-media/${campaignTrailingPhotos[c.id]}`}
                           alt=""
                         />
                       )}
@@ -455,11 +461,11 @@ export function HomeCampaigns({
                     [
                       ["home-campaign-accessory-cap", "$38.50", "$99.99"],
                       ["home-campaign-accessory-glasses", "$33.50", "$786.00"],
-                      ["", "$108.50", ""],
+                      ["home-campaign-accessory-trailing", "$108.50", ""],
                     ].map(([image, price, was], index) => (
                       <Link
                         href="/search"
-                        className="campaign-product campaign-partial-product"
+                        className={`campaign-product campaign-partial-product ${index === 2 ? "campaign-source-sliver" : ""}`}
                         key={price}
                         aria-label="Browse accessories"
                         data-home-campaign-return={`accessory-${index}`}
@@ -477,6 +483,15 @@ export function HomeCampaigns({
                         <span className="campaign-price">
                           {price} {was && <del>{was}</del>}
                         </span>
+                        {index < 2 && (
+                          <span
+                            className="save-button campaign-source-save"
+                            data-campaign-source-save="accessory"
+                            aria-hidden="true"
+                          >
+                            <Icon name="heart" />
+                          </span>
+                        )}
                       </Link>
                     ))}
                   {c.id === "pura" &&

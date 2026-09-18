@@ -44,6 +44,8 @@ node_modules/
 **/node_modules/
 .next/
 **/.next/
+.next-parity/
+**/.next-parity/
 .turbo/
 **/.turbo/
 .cache/
