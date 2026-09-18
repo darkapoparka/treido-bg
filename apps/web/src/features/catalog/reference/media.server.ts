@@ -1618,6 +1618,14 @@ const media: Record<
     textOcclusionDilation: 0.25,
     photoRadius: 20,
   },
+  "store-search-shampoo-tail-left": {
+    file: "flows/1df75dd0-05f6-445c-9709-0e0bda2df3af/004.webp",
+    rect: [16, 694, 175, 71],
+  },
+  "store-search-shampoo-tail-right": {
+    file: "flows/1df75dd0-05f6-445c-9709-0e0bda2df3af/004.webp",
+    rect: [201, 694, 175, 71],
+  },
 };
 // Verified clean originals are an explicit local allowlist, never remote requests.
 const originals: Record<string, string> = {

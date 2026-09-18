@@ -3800,6 +3800,11 @@ h3 {
   color: white;
   border-color: #111;
 }
+.store-search-page .store-criteria .pill > svg {
+  width: 12px;
+  height: 12px;
+  transform: rotate(90deg);
+}
 .store-search-page .store-criteria .icon-button {
   width: 40px;
   height: 40px;
@@ -3820,6 +3825,34 @@ h3 {
 .store-search-results > .product-grid {
   column-gap: 10px;
   row-gap: 16px;
+}
+.store-search-source-tail {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+.store-search-source-card {
+  height: 175px;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid #d8d8d8;
+  background: #eee;
+}
+.store-search-source-card img {
+  width: 100%;
+  height: 71px;
+  object-fit: fill;
+}
+.store-search-results > .floating-dock::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  bottom: calc(-1 * (var(--dock-bottom) + env(safe-area-inset-bottom)));
+  width: 100vw;
+  height: calc(128px + env(safe-area-inset-bottom));
+  background: linear-gradient(to bottom, #fdfdfd00, #fdfdfd00 15%, #fdfdfde6);
+  pointer-events: none;
 }
 .store-search-results .product-copy {
   gap: 0;

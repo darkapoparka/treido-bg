@@ -209,6 +209,14 @@ Tasks 3/5/6 continue over `b527a06`. The Chemical storefront retains live catego
 
 The video rail now includes its fourth bounded continuation at the exact 367px source position. Only the visible 25px photograph fragment is recovered; its captured timestamp is removed and the live unavailable-preview control remains responsible for interaction. The retained run `.qa/shop-parity/runs/20260918-chemical-source-layout-final/` scored **8/8**, zero browser errors. f015-001 and f096-005 improved **8.101% → 6.033%**; store-video mean is **3.754%** and store-browsing mean **4.730%**. The build passed all 39 routes and the focused media suite passes **4/4**. Remaining differences include lower Featured photography hidden by the source dock, typography, fade and motion/audio assets.
 
+### Kitsch store-search source checkpoint, 2026-09-18
+
+Tasks 3/5/6 continue over `a1fba86`. The exact shampoo-result state retains four identifiable catalog products and now appends two non-interactive bounded source fragments from flow 40 frame 004. Those fragments preserve only visible product photography beneath the dock; seller, title, variants, stock and destinations remain unknown and are not fabricated. The Sort/Price affordances now use the shared live chevron SVG, eliminating the captured mojibake while preserving the filter sheets.
+
+The retained run is `.qa/shop-parity/runs/20260918-store-search-source-tail-retained/`: **4/4 scored**, zero browser errors. Against `20260918-full-a1fba86`, family mean improved **3.910% → 3.454%**, mean bad-pixel **13.891% → 12.130%**, and f040-004 improved **7.518% → 5.420%**. The final source tails sit in the same 175px two-column row beneath the four live products, and the shared dock fade owns their viewport-edge concealment.
+
+The production build passed TypeScript and generated 39 routes. `storefront-journeys.spec.ts` passes **11/11 (21.2s)** across source-tail presence, exact search count, filter persistence, Back/Forward restoration, saved membership and 320/393/430 containment. Remaining residuals are card typography, antialiasing, fade finishing and other higher-ranked families; this checkpoint is not owner acceptance.
+
 ## Open source obligations
 
 All **307 standalone images** are reconciled with existing ordered flow states: **179** have exact manifest-hash matches, and **128** were visually paired with their ordered counterpart. The latter are exports with different resolution, compression and footer packaging; no additional UI state or clearer photographic asset was found. Exact local inventories are `.qa/shop-parity/standalone-reconciliation.json`, `.qa/agent-patches/standalone-checkout/inventory.json` (47 images) and `.qa/agent-patches/standalone-minis/inventory.json` (81). This reconciles image inventory, not implementation acceptance. The **16 standalone videos** received poster inspection; complete motion/transition matching remains separate.

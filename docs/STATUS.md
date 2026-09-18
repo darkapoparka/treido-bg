@@ -2,6 +2,10 @@
 
 Updated 2026-09-18. This is the session entry point, not a second backlog.
 
+**Kitsch store-search source checkpoint over `a1fba86`.** The captured shampoo results now keep their four identified live products, restore the two bounded lower-card source continuations hidden beneath the Shop dock, use an actual DOM chevron instead of corrupt text, and continue to preserve real query/filter/Back/Forward behavior. No unseen product identities or destinations were invented.
+
+Run `20260918-store-search-source-tail-retained` scored **4/4** flow-40 states with zero browser errors. Family mean improved **3.910% → 3.454% MAE**, mean bad-pixel **13.891% → 12.130%**, and the final result frame improved **7.518% → 5.420%**. The production build passed TypeScript and generated 39 routes; the full storefront suite passes **11/11 (21.2s)**. This remains measured progress, not 1:1 acceptance.
+
 **Chemical Guys source-layout checkpoint over `b527a06`.** The storefront now uses the captured page/panel tones, source-measured category widths, and the visible fourth video continuation rather than ending the rail early. The fourth item remains an unavailable local preview with bounded source photography; no video, audio, or product identity was invented.
 
 Run `20260918-chemical-source-layout-final` scored **8/8** flow-15/96 states with zero browser errors. The Chemical products/video frame improved **8.101% → 6.033% MAE** in both owning flows; store-video family mean is now **3.754%**, and store-browsing mean is **4.730%**. The production build passed TypeScript and generated 39 routes, while `store-media-journeys.spec.ts` passes **4/4 (6.1s)**. This is another retained reduction, not full 1:1 acceptance.

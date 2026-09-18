@@ -342,6 +342,15 @@ test("store search suggestions, results, filters and browser history retain the 
   await expect(page.locator(".store-search-count")).toHaveText(
     "270 results from KITSCH",
   );
+  await expect(page.locator(".store-search-source-card")).toHaveCount(2);
+  await expect(
+    page.locator(
+      '.store-search-source-card img[src="/api/reference-media/store-search-shampoo-tail-left"]',
+    ),
+  ).toHaveCount(1);
+  await expect(
+    page.getByRole("button", { name: "Sort by", exact: false }),
+  ).not.toContainText("Ã");
   await button(page, "Price").click();
   await maximumPrice(page, 380);
   await button(page, "Done").click();

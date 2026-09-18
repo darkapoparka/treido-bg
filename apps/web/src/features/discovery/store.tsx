@@ -129,8 +129,13 @@ function StoreNavigation({ store }: { store: Store }) {
             className="store-compact-promotion"
             onClick={() => setOffers(true)}
           >
-            20% off your order <span>spring20ordeÃ¢â‚¬Â¦</span>
-            <span aria-hidden="true">Ã¢Å’â€ž</span>
+            20% off your order{" "}
+            <span>
+              spring20ordeÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦
+            </span>
+            <span aria-hidden="true">
+              ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾
+            </span>
           </button>
         )}
         <div className="category-rail">
@@ -178,7 +183,9 @@ function StoreNavigation({ store }: { store: Store }) {
         onClose={() => setOffers(false)}
       >
         <p className="sheet-copy">
-          20% off your order Ã¢â‚¬â€ the label shown in the captured storefront.
+          20% off your order
+          ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â
+          the label shown in the captured storefront.
         </p>
         <p className="form-note">
           The captured coupon label is truncated. This preview cannot validate a
@@ -199,7 +206,8 @@ function StorePromotion({ savings = 20 }: { savings?: number }) {
         onClick={() => setExpanded(!expanded)}
       >
         <span>
-          <b>Save ${expanded ? 15 : savings}</b> on orders over $50 Ã¢Å’â€ž
+          <b>Save ${expanded ? 15 : savings}</b> on orders over $50
+          ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾
         </span>
         {!expanded && <small>+ 1 more promotion</small>}
       </button>
@@ -211,7 +219,10 @@ function StorePromotion({ savings = 20 }: { savings?: number }) {
           </div>
           <div>
             <b>20% off your order</b>
-            <span> spring20orderdisÃ¢â‚¬Â¦</span>
+            <span>
+              {" "}
+              spring20orderdisÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦
+            </span>
             <p>Automatically applied at checkout</p>
           </div>
         </div>
@@ -511,7 +522,9 @@ export function Storefront({
             </span>
             {store.rating && (
               <Link href={`/stores/${store.id}/reviews`}>
-                {store.rating} Ã¢Ëœâ€¦ ({store.ratingCount})
+                {store.rating}{" "}
+                ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦
+                ({store.ratingCount})
               </Link>
             )}
           </div>
@@ -606,7 +619,7 @@ function StoreCriteria() {
         onClick={() => openStoreFilter()}
       />
       <button className="pill" onClick={() => openStoreFilter("sort")}>
-        Sort by <span aria-hidden="true">Ã¢Å’â€ž</span>
+        Sort by <Icon name="chevron" />
       </button>
       <button
         className={`pill ${filters.sale ? "selected" : ""}`}
@@ -623,7 +636,7 @@ function StoreCriteria() {
         In-stock
       </button>
       <button className="pill" onClick={() => openStoreFilter("price")}>
-        Price <span aria-hidden="true">Ã¢Å’â€ž</span>
+        Price <Icon name="chevron" />
       </button>
     </div>
   );
@@ -679,7 +692,9 @@ export function StoreCollection({
       {slug !== "best-sellers" && (
         <div className="collection-promotion">
           <b>Save $15</b> on orders over $50{" "}
-          <span aria-hidden="true">Ã¢Å’â€ž</span>
+          <span aria-hidden="true">
+            ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾
+          </span>
         </div>
       )}
       <div className="store-collection-hero">
@@ -788,7 +803,9 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
           <b>{store.name}</b>
           {store.rating && (
             <small>
-              {store.rating} Ã¢Ëœâ€¦ ({store.ratingCount})
+              {store.rating}{" "}
+              ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦
+              ({store.ratingCount})
             </small>
           )}
         </div>
@@ -801,7 +818,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
         {more && (
           <span>
             {" "}
-            Ã¢â‚¬â€{" "}
+            ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â{" "}
             <a href="https://www.mykitsch.com" target="_blank" rel="noreferrer">
               Read the full brand description online
             </a>
@@ -843,7 +860,9 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
                 src="/api/reference-media/category-hair-partial"
                 alt="Hair category, partially captured"
               />
-              <span>HairÃ¢â‚¬Â¦</span>
+              <span>
+                HairÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦
+              </span>
             </div>
           </div>
           <Link
@@ -873,7 +892,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
                   } as CSSProperties
                 }
               >
-                Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦
+                ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦
               </span>
             </div>
             <p>{store.ratingCount} ratings</p>
@@ -891,11 +910,13 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
                 className="store-review-preview"
                 key={title}
               >
-                <span>Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦</span>
+                <span>
+                  ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦
+                </span>
                 <b>{title}</b>
                 <small>
                   <i>{name[0]}</i>
-                  {name} Ã‚Â· Yesterday
+                  {name} ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· Yesterday
                 </small>
               </Link>
             ))}
@@ -1208,6 +1229,18 @@ export function StoreSearch({
             results from {store.name}
           </p>
           <StoreGrid products={products} heading={false} />
+          {capturedResults && !hasStoreFilters(filters) && (
+            <div className="store-search-source-tail" aria-hidden="true">
+              {[
+                "store-search-shampoo-tail-left",
+                "store-search-shampoo-tail-right",
+              ].map((media) => (
+                <span className="store-search-source-card" key={media}>
+                  <img src={`/api/reference-media/${media}`} alt="" />
+                </span>
+              ))}
+            </div>
+          )}
           {!products.length && (
             <button className="pill store-search-recovery" onClick={clear}>
               Clear search
@@ -1284,7 +1317,10 @@ export function StoreVideo() {
             <img src="/api/reference-media/chemical-video-item-photo" alt="" />
           </span>
           <span>
-            <b>Tire+Trim Gel Plastic and Rubber High-GloÃ¢â‚¬Â¦</b>
+            <b>
+              Tire+Trim Gel Plastic and Rubber
+              High-GloÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦
+            </b>
             <small>$24.99</small>
           </span>
           <Icon name="chevron" />
