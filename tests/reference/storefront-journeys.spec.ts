@@ -140,6 +140,45 @@ test("following Kitsch swaps to the captured followed storefront hero", async ({
     .toContain("store-kitsch-followed-hero");
 });
 
+test("reported Kitsch state keeps the source confirmation, saved bundle and cart-free dock", async ({
+  page,
+  baseURL,
+}) => {
+  await openScenario(
+    page,
+    baseURL,
+    "/stores/kitsch?reported=shea-butter#all-products",
+    "product-reported",
+  );
+  await expect(page.locator(".report-confirmation-toast")).toHaveText(
+    "This item has been reported",
+  );
+  await expect(button(page, "Open cart")).toHaveCount(0);
+  await expect(
+    button(page, "Unsave Rice Water Shampoo & Conditioner Combo"),
+  ).toBeVisible();
+  await expect(
+    page.locator(
+      '#all-products [data-product-id="shampoo-bag"] img[src="/api/reference-media/store-source-tail-left"]',
+    ),
+  ).toBeVisible();
+  await expect(
+    page.locator(
+      '#all-products [data-product-id="terracotta"] img[src="/api/reference-media/store-source-tail-right"]',
+    ),
+  ).toBeVisible();
+  await expect(
+    page.locator(
+      '#all-products [data-product-id="shea-butter"] .product-reported-mark',
+    ),
+  ).toBeVisible();
+  await expect(
+    page.locator(
+      '#all-products [data-product-id="shea-butter"] img[src="/api/reference-media/store-source-reported-shea"]',
+    ),
+  ).toBeVisible();
+});
+
 test("store filter drafts do not change committed criteria or results before Done", async ({
   page,
   baseURL,
@@ -247,6 +286,16 @@ test("nested Price Back and Forward preserve drafts, then Done consumes only the
     "shampoo-bag",
     "terracotta",
   ]);
+  await expect(
+    page.locator(
+      '#all-products [data-product-id="shampoo-bag"] img[src="/api/reference-media/store-source-tail-left"]',
+    ),
+  ).toBeVisible();
+  await expect(
+    page.locator(
+      '#all-products [data-product-id="terracotta"] img[src="/api/reference-media/store-source-tail-right"]',
+    ),
+  ).toBeVisible();
 });
 
 test("direct collection price filtering retains the collection and resets the native range", async ({

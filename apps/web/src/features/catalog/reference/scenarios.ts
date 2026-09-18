@@ -164,6 +164,18 @@ export const referenceScenarios = {
     },
   },
   "home-welcome": { account: { orders: [] }, discovery: emptyDiscovery },
+  "product-reporting": {
+    account: { orders: [] },
+    discovery: { ...emptyDiscovery, saved: ["rice-bundle"] },
+  },
+  "product-reported": {
+    account: { orders: [] },
+    discovery: {
+      ...emptyDiscovery,
+      saved: ["rice-bundle"],
+      reportedProducts: ["shea-butter"],
+    },
+  },
   // Flow 17/001-002 records a cart-free $15 snapshot and a first Shea visit.
   // Follow was not visible in this segment; do not borrow following-pair's seed.
   "kitsch-product-arrival": {

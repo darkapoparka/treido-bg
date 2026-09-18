@@ -269,7 +269,7 @@ export const productRecipes = {
     family: "product-reporting",
     owner: "apps/web/src/features/discovery/reviews.tsx",
     startUrl: shea,
-    scenario: "home-welcome",
+    scenario: "product-reporting",
     frames: [
       {
         state: "shea-more-options-before-report",
@@ -310,7 +310,7 @@ export const productRecipes = {
       {
         state: "store-reported-product-concealed-and-confirmed",
         notes:
-          "Submission only updates the isolated local preview; it does not transmit a real report. The source's returning promotion and previously saved Rice bundle remain catalog/history differences, not hidden pixels.",
+          "Submission remains local to the isolated preview. The source-visible confirmation, saved Rice bundle and cart-free dock are reconstructed without claiming a remote moderation response.",
         actions: [
           click("button", "Report"),
           {
@@ -322,7 +322,7 @@ export const productRecipes = {
             selector:
               '#all-products .product-card:has(a[href="/products/shea-butter"]) .product-reported-mark',
           },
-          anchor(".store-grid-heading", 110),
+          anchor(".store-grid-heading", 98),
         ],
       },
     ],

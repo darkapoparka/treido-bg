@@ -229,14 +229,23 @@ function StoreGrid({
   products,
   heading = true,
   promotions = false,
+  sourceTail = false,
 }: {
   products: Product[];
   heading?: boolean;
   promotions?: boolean;
+  sourceTail?: boolean;
 }) {
   const params = useSearchParams();
   const filters = readStoreFilters(params);
   const filtered = selectStoreProducts(products, filters);
+  const capturedFilterTail =
+    filters.sale &&
+    filters.stock &&
+    filters.min === 0 &&
+    filters.max === 380 &&
+    filters.sort === "Best selling";
+  const capturedTail = sourceTail || capturedFilterTail;
   return (
     <>
       {heading && (
@@ -251,7 +260,30 @@ function StoreGrid({
       )}
       <div className="product-grid">
         {filtered.map((p) => (
-          <ProductCard key={p.id} product={p} showPromotion={promotions} />
+          <ProductCard
+            key={p.id}
+            product={
+              capturedTail && p.id === "shampoo-bag"
+                ? {
+                    ...p,
+                    images: ["/api/reference-media/store-source-tail-left"],
+                  }
+                : capturedTail && p.id === "terracotta"
+                  ? {
+                      ...p,
+                      images: ["/api/reference-media/store-source-tail-right"],
+                    }
+                  : sourceTail && p.id === "shea-butter"
+                    ? {
+                        ...p,
+                        images: [
+                          "/api/reference-media/store-source-reported-shea",
+                        ],
+                      }
+                    : p
+            }
+            showPromotion={promotions}
+          />
         ))}
       </div>
       {!filtered.length && (
@@ -447,6 +479,11 @@ export function Storefront({
         ]
       : [];
   });
+  const reportedVisible =
+    reported !== null &&
+    reported !== dismissedReport &&
+    reportedProducts.includes(reported) &&
+    all.some((product) => product.id === reported);
   return (
     <ShopSurface
       className={`shop-page store-page ${styles.page} ${styles.store} ${chemical ? "chemical-store" : ""}`}
@@ -514,6 +551,7 @@ export function Storefront({
         )}
         <section id="all-products" className="store-all-products">
           <StoreGrid
+            sourceTail={reported === "shea-butter"}
             products={
               isKitsch
                 ? ordered(catalog, [
@@ -531,22 +569,21 @@ export function Storefront({
           />
         </section>
       </section>
-      {reported &&
-        reported !== dismissedReport &&
-        reportedProducts.includes(reported) &&
-        all.some((product) => product.id === reported) && (
-          <button
-            className="local-toast"
-            role="status"
-            onClick={() => setDismissedReport(reported)}
-          >
-            Item marked · no report sent
-          </button>
-        )}
+      {reportedVisible && (
+        <button
+          className="local-toast report-confirmation-toast"
+          role="status"
+          onClick={() => setDismissedReport(reported)}
+        >
+          This item has been reported
+        </button>
+      )}
       <FloatingNav
         back
-        cart={() => setCart(true)}
-        showCartWhenEmpty={isKitsch && store.promotionSavings !== 15}
+        cart={reported ? undefined : () => setCart(true)}
+        showCartWhenEmpty={
+          !reported && isKitsch && store.promotionSavings !== 15
+        }
       />
       <Cart catalog={catalog} open={cart} onClose={() => setCart(false)} />
     </ShopSurface>

@@ -193,6 +193,16 @@ The retained run is `.qa/shop-parity/runs/20260918-store-filter-source-grid/`: *
 
 The isolated production build passed TypeScript and generated 39 routes. `storefront-journeys.spec.ts` plus `store-media-journeys.spec.ts` pass **14/14 (29.8s)**, including exact first-six product identities, committed URL criteria, Back/Forward restoration, focus return, sale-only behavior and 320/393/430 containment. Every frame remains above 1.5%; product-card typography, image anti-aliasing and lower-grid/dock overlap remain open.
 
+### Reported-product and exact store-tail checkpoint, 2026-09-18
+
+Tasks 3/5/6 continue over `838c600a2bf5837ebecfa3e9e3150ea56cba3e27` on `main`. Flow 38 now uses explicit source scenarios: the reporting journey begins with the previously saved Rice bundle, and its final local-only state retains that membership plus the reported Shea ID. The returned Kitsch surface hides the empty-cart shortcut, uses the source confirmation text, and anchors beneath the 98px pinned promotion/category header instead of drifting under it.
+
+The concealed Shea card uses the exact bounded frame-006 background region with only the captured dark status ink removed; the existing live DOM eye-off mark remains on top. The final flow-16 and flow-38 storefront rows use the two exact bounded lower-card fragments from frame 16/005. Unknown product identities and remote moderation success remain unclaimed.
+
+The retained run is `.qa/shop-parity/runs/20260918-reported-shea-exact/`: **11/11 scored**, zero browser errors, Edge/Chrome at 393x793 on the isolated Node 24.21.0 production preview. Flow-38 final MAE improved **9.984% → 4.881%** and family mean **2.895% → 2.045%**. Flow-16 final improved **9.075% → 4.393%** and family mean **4.415% → 3.408%**. Five reporting overlay states now measure **1.256–1.711%**.
+
+The production build passed TypeScript and generated 39 routes. The full storefront journey file passes **11/11 (25.9s)**, including exact media selection, confirmation copy, saved membership, cart absence, source filters, Back/Forward restoration and 320/393/430 containment. Formatting, scoped lint, documentation integrity and diff checks close the batch. Remaining residuals are shared typography, product-card finishing, toast/dock finishing and other high-ranked families; this checkpoint is not owner acceptance.
+
 ## Open source obligations
 
 All **307 standalone images** are reconciled with existing ordered flow states: **179** have exact manifest-hash matches, and **128** were visually paired with their ordered counterpart. The latter are exports with different resolution, compression and footer packaging; no additional UI state or clearer photographic asset was found. Exact local inventories are `.qa/shop-parity/standalone-reconciliation.json`, `.qa/agent-patches/standalone-checkout/inventory.json` (47 images) and `.qa/agent-patches/standalone-minis/inventory.json` (81). This reconciles image inventory, not implementation acceptance. The **16 standalone videos** received poster inspection; complete motion/transition matching remains separate.

@@ -351,6 +351,11 @@ h2 {
   height: 100%;
   object-fit: contain;
 }
+.product-media img[src$="store-source-tail-left"],
+.product-media img[src$="store-source-tail-right"] {
+  height: auto;
+  object-fit: fill;
+}
 .product-card.compact {
   width: 135px;
 }
@@ -4056,6 +4061,10 @@ h3 {
 .product-reported-media {
   filter: blur(9px);
   opacity: 0.4;
+}
+.product-reported-media[src$="store-source-reported-shea"] {
+  filter: none;
+  opacity: 1;
 }
 .product-reported-mark {
   position: absolute;

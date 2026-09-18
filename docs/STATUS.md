@@ -2,6 +2,10 @@
 
 Updated 2026-09-18. This is the session entry point, not a second backlog.
 
+**Reported-product and store-tail source-fitting checkpoint over `838c600a2bf5837ebecfa3e9e3150ea56cba3e27`.** The final report state now carries the captured saved Rice bundle, cart-free dock, exact confirmation copy, source-aligned scroll position, and a bounded source crop for the concealed Shea card while retaining the live DOM status mark. Store filtering and the reported storefront also use the exact captured lower product-card fragments rather than unrelated complete product photography.
+
+Run `20260918-reported-shea-exact` scored **11/11** flow-16/38 states with zero browser errors. Product-reporting mean improved from **2.895% to 2.045% MAE**, and its final confirmation frame improved **9.984% to 4.881%**. Store-filter mean improved from the earlier **4.415% to 3.408%**, with the final grid at **4.393%**. The production build passed TypeScript and generated 39 routes; `storefront-journeys.spec.ts` passes **11/11 (25.9s)**. These remain measured reconstruction gains, not full-app 1:1 acceptance.
+
 **Explore source-fitting checkpoint over `e92763b`.** Explore now uses recovered full source cards for Home, Menswear and Beauty shelves, the complete source hero with bounded interface-ink reconstruction, source-matched department colors, and root-Explore typography/control fitting. Product links, Save controls, category routes, Minis navigation and the Beauty-specific composition remain live; unavailable continuation identities were not invented.
 
 Run `20260918-explore-systemic-flow50` scored **4/4** Explore states with zero browser errors at 393x793 on the isolated Node 24.21.0 production preview. Mean MAE improved **5.924% -> 5.004%** and mean bad-pixel **20.820% -> 17.974%**. Frame MAEs are **4.699 / 5.435 / 5.184 / 4.698%**; the categories frame improved **6.549% -> 5.435%** and the Minis/Home-shelf frame **7.219% -> 5.184%**.

@@ -1598,6 +1598,21 @@ const media: Record<
     file: "flows/0344c453-dece-4e8d-bb54-68f6e551b83f/010.webp",
     rect: [24, 585, 133, 110],
   },
+  "store-source-tail-left": {
+    file: "flows/85a58afb-b3e8-4f69-b274-69762b09ffbf/005.webp",
+    rect: [16, 694, 175, 71],
+  },
+  "store-source-tail-right": {
+    file: "flows/85a58afb-b3e8-4f69-b274-69762b09ffbf/005.webp",
+    rect: [202, 694, 175, 71],
+  },
+  "store-source-reported-shea": {
+    file: "flows/82159116-18bf-4988-9acd-0f1bb1f76a0f/006.webp",
+    rect: [202, 462, 175, 174],
+    darkTextOcclusions: [[74, 73, 29, 29]],
+    textOcclusionDilation: 0.25,
+    photoRadius: 20,
+  },
 };
 // Verified clean originals are an explicit local allowlist, never remote requests.
 const originals: Record<string, string> = {
