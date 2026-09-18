@@ -150,7 +150,10 @@ export function ProductCard({
   const discovery = useDiscovery();
   const reported = discovery.reportedProducts.includes(product.id);
   return (
-    <article className={`product-card ${compact ? "compact" : ""}`}>
+    <article
+      className={`product-card ${compact ? "compact" : ""}`}
+      data-product-id={product.id}
+    >
       <div className="product-media">
         <Link
           href={`/products/${product.id}`}

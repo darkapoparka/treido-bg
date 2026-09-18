@@ -140,6 +140,28 @@ All eight states scored with zero browser errors; mean bad-pixel is **13.302%**.
 
 The complete `20260918-full-current` run scored **424/424** states, zero browser errors, **3.555% mean MAE**, **11.218% mean bad-pixel** and **9.984% worst-frame MAE** at the preceding checkpoint. It supplies the current global priority ranking but predates this retained card/deskew batch. Remaining Get the Look work is concentrated in the terms/photo-choice states, hotspot/selected typography and panel/background residuals. Every flow-58 frame remains above the unchanged 1.5% threshold; no owner acceptance is inferred.
 
+### Explore source-fitting checkpoint, 2026-09-18
+
+Tasks 3/5/6, flows 50-51, extend `e92763b` on `main`. The media handler recovers the complete flow-specific summer hero, removes only captured title/subtitle/control ink with bounded reconstruction, and supplies six exact 172/173px shelf-card photo regions. Rounded price and circular Save occlusions are removed from those photos while the shared ProductCard continues to render the corresponding live controls. The generic ProductCard now exposes a stable product ID attribute for source-specific fitting without duplicating the component.
+
+Root Explore uses the measured source department colors, a root-only Segoe Variable Text treatment for category/Minis/shelf copy, and the measured 36px hero arrow control. Beauty retains its separate calibrated composition and type. The shelf mappings select root-flow photographs only on root Explore; Beauty keeps its own distinct flow media. Product routes, shared Save state, Minis visit history, category navigation, cart behavior and responsive containment are unchanged.
+
+The retained root run is `.qa/shop-parity/runs/20260918-explore-systemic-flow50/`, Chromium/Edge at 393x793 against `http://127.0.0.1:6441`:
+
+| Frame | Complete baseline | Current | Delta (percentage points) |
+| --- | ---: | ---: | ---: |
+| f050-001 | 4.699 | 4.699 | 0.000 |
+| f050-002 | 6.549 | 5.435 | -1.114 |
+| f050-003 | 7.219 | 5.184 | -2.035 |
+| f050-004 | 5.229 | 4.698 | -0.531 |
+| Mean | 5.924 | 5.004 | -0.920 |
+
+The companion `20260918-explore-systemic-flow51` run scored six Beauty states with zero browser errors and family mean **5.349%**, versus **5.533%** in the complete baseline. Its frame MAEs are **5.435 / 4.002 / 6.292 / 5.029 / 4.422 / 6.913%**. The root category-state improvement carries into f051-001; Beauty-only states remain structurally unchanged.
+
+Rejected probes: applying Segoe to the complete Explore page worsened f050-002; applying root shelf typography to Beauty caused a severe capture/layout regression; 11px root top padding and 500-weight category labels also worsened comparison. Exact source colors, root-only type and the 36px arrow were retained from complete-frame measurements rather than isolated screenshots.
+
+The isolated production build passed TypeScript and generated 39 routes. `explore-entry-journeys.spec.ts` passes **6/6 (33.9s)**, covering source cards, source badge tone, Mini/Beauty navigation, shared Save state, Back history, cart interaction and 320/393/430 containment. All ten Explore/Beauty states remain above the unchanged 1.5% threshold. Remaining work is concentrated in Beauty editorial/brand/deal sections, native-font residuals, shared badges/Save glyphs and the pending post-batch full-corpus rerun; owner acceptance remains **0/97**.
+
 ## Open source obligations
 
 All **307 standalone images** are reconciled with existing ordered flow states: **179** have exact manifest-hash matches, and **128** were visually paired with their ordered counterpart. The latter are exports with different resolution, compression and footer packaging; no additional UI state or clearer photographic asset was found. Exact local inventories are `.qa/shop-parity/standalone-reconciliation.json`, `.qa/agent-patches/standalone-checkout/inventory.json` (47 images) and `.qa/agent-patches/standalone-minis/inventory.json` (81). This reconciles image inventory, not implementation acceptance. The **16 standalone videos** received poster inspection; complete motion/transition matching remains separate.

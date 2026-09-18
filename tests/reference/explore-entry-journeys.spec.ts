@@ -48,6 +48,14 @@ test("Explore preserves the six captured departments and the ordered product she
     "New in beauty ›",
     "Top rated in womenswear ›",
   ]);
+  const citizenry = page
+    .locator('a[href="/products/citizenry-linen"]')
+    .first()
+    .locator("xpath=ancestor::article[1]");
+  await expect(citizenry.locator(".price-badge")).toHaveCSS(
+    "background-color",
+    "rgb(17, 17, 17)",
+  );
   const beautyProducts = page
     .locator(".explore-shelf")
     .nth(2)
@@ -180,7 +188,7 @@ test("Explore keeps the captured Mini and product-shelf continuation bounded", a
     .first();
   await expect(newBeautyPhoto).toHaveAttribute(
     "src",
-    "/api/reference-media/beauty-bubble-card-photo",
+    "/api/reference-media/explore-home-bubble-card",
   );
 });
 

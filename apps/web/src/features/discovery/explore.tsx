@@ -13,14 +13,14 @@ import { useDiscovery } from "./state";
 import styles from "./explore.module.css";
 
 const departments = [
-  ["Deals", "#251168", "explore-deals-art", ""],
-  ["Beauty", "#b83c59", "explore-beauty-lip", "explore-beauty-wash"],
-  ["Women", "#9fa8ad", "explore-women-shirt", "explore-women-jeans"],
-  ["Men", "#084786", "explore-men-shirt", "explore-men-jeans"],
-  ["Home", "#d76c00", "explore-home-lamp", "explore-home-pan"],
+  ["Deals", "#1c1162", "explore-deals-art", ""],
+  ["Beauty", "#bb405a", "explore-beauty-lip", "explore-beauty-wash"],
+  ["Women", "#9fa5ac", "explore-women-shirt", "explore-women-jeans"],
+  ["Men", "#013888", "explore-men-shirt", "explore-men-jeans"],
+  ["Home", "#cd6001", "explore-home-lamp", "explore-home-pan"],
   [
     "Fitness & nutrition",
-    "#9db995",
+    "#9eb898",
     "explore-fitness-tone",
     "explore-fitness-shorts",
   ],
@@ -40,6 +40,14 @@ const beautyShelfPhotos: Readonly<Record<string, string>> = {
   "bubble-sunrise": "beauty-bubble-card-photo",
   "bare-liquid": "beauty-bare-card-photo",
 };
+const homeShelfPhotos: Readonly<Record<string, string>> = {
+  "buffy-breeze": "explore-home-buffy-card",
+  "citizenry-linen": "explore-home-citizenry-card",
+  "carbon-crew": "explore-home-carbon-card",
+  "jordan-legend": "explore-home-jordan-card",
+  "bubble-sunrise": "explore-home-bubble-card",
+  "bare-liquid": "explore-home-bare-card",
+};
 
 export function Explore({
   catalog,
@@ -55,7 +63,7 @@ export function Explore({
     ids.flatMap((id) => {
       const product = catalog.products.find((value) => value.id === id);
       if (!product) return [];
-      const sourcePhoto = beautyShelfPhotos[id];
+      const sourcePhoto = beauty ? beautyShelfPhotos[id] : homeShelfPhotos[id];
       return [
         sourcePhoto
           ? { ...product, images: [`/api/reference-media/${sourcePhoto}`] }
