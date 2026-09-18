@@ -55,6 +55,10 @@ Run `20260918-filtered-jeans-final` scored **10/10** flow-48 states with zero br
 
 Run `20260918-store-filter-source-grid` scored **5/5** flow-16 states with zero browser errors. Family mean improved **4.415% -> 3.536% MAE**; the final filtered grid improved **9.075% -> 5.023%**, and the $380 slider state improved **3.182% -> 2.843%**. The production build passed TypeScript and generated 39 routes; the combined storefront/media suite passes **14/14 (29.8s)**. All frames remain above 1.5%, so further product-card typography/media fitting remains open.
 
+**Skincare permission-source checkpoint over `325e7eb`.** The camera-permission state now uses the captured warm-to-mint surface, source heading face, symbol spacing and Analyze-button placement only while that local permission sheet is open. The camera/network boundary remains explicit and no device permission is requested.
+
+Run `20260918-skin-permission-final` scored **7/7** flow-57 states with zero browser errors. The permission frame improved **6.561% → 3.275% MAE** and family mean improved **4.653% → 4.183%**, with no sibling regression. The production build passed TypeScript and generated 39 routes; `minis-photo-journeys.spec.ts` passes **5/5 (14.5s)**. This remains measured progress, not 1:1 acceptance.
+
 ## Working context
 
 Use the existing `J:\treido-bg` checkout of `darkapoparka/treido-bg`, canonical **main**, with one writer. This integration extends **`4d0539f2d0cd70f884941cc83f05ff075365542d`**. Subagents reviewed source pairs and supplied ignored patch proposals; the local writer reviewed, integrated and verified them. [AGENTS.md](../AGENTS.md) and [Codex setup](agents/codex.md) own branch policy, runtime ownership and synchronization.

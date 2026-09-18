@@ -30,6 +30,18 @@ test("Skin's recorded flow retains products, returns by history, and never start
     exact: true,
   });
   await expect(permission).toContainText("No camera access is requested");
+  const permissionSurface = page.locator('[data-skin-phase="welcome"]');
+  await expect(permissionSurface).toHaveAttribute(
+    "data-camera-permission",
+    "true",
+  );
+  await expect
+    .poll(() =>
+      permissionSurface
+        .locator(".skin-heading h1")
+        .evaluate((heading) => getComputedStyle(heading).fontFamily),
+    )
+    .toContain("Times New Roman");
   await expect
     .poll(async () => {
       const bounds = await permission.boundingBox();

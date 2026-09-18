@@ -110,6 +110,21 @@
   height: 41px;
   margin: 0 auto 10px;
 }
+.skinPermissionOpen.skinPermissionOpen {
+  background:
+    radial-gradient(ellipse at 0 0, #ffab96, transparent 80%),
+    radial-gradient(ellipse at 100% 0, #dbb7ba, transparent 72%),
+    linear-gradient(#dfd2c5, #d0f8ec);
+}
+.skinPermissionOpen.skinPermissionOpen :global(.skin-heading img) {
+  margin-bottom: -3px;
+}
+.skinPermissionOpen.skinPermissionOpen :global(.skin-heading h1) {
+  font-family: "Times New Roman", Times, serif;
+}
+.skinPermissionOpen.skinPermissionOpen :global(.skin-analyze) {
+  margin-top: 42px;
+}
 .skin :global(.skin-heading h1) {
   font:
     italic 48px/1.2 Georgia,

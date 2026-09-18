@@ -481,8 +481,9 @@ export function Skin({ catalog }: { catalog: Catalog }) {
       menuLabel="Skincare AI preview controls"
     >
       <section
-        className={`skin-surface ${styles.skin} ${phase === "results" ? `skin-results ${styles.skinResults}` : ""}`}
+        className={`skin-surface ${styles.skin} ${cameraAccess ? styles.skinPermissionOpen : ""} ${phase === "results" ? `skin-results ${styles.skinResults}` : ""}`}
         data-skin-phase={phase}
+        data-camera-permission={cameraAccess || undefined}
       >
         {phase !== "results" ? (
           <>
