@@ -148,6 +148,16 @@ test("campaign following and not-interested undo retain the full card", async ({
   await useReferenceScenario(page, "home-pura-options");
   await page.goto("/?feed=pura-options");
   const card = page.getByRole("region", { name: "Pura campaign" });
+  await expect(
+    page.locator('[data-shop-interactive="true"]').first(),
+  ).toBeAttached();
+  await expect
+    .poll(() =>
+      card.evaluate((element) =>
+        Math.round(element.getBoundingClientRect().height),
+      ),
+    )
+    .toBe(630);
   await card.getByRole("button", { name: "More options for Pura" }).click();
   const dialog = page.getByRole("dialog", { name: "Pura", exact: true });
   await settled(dialog);
@@ -156,9 +166,25 @@ test("campaign following and not-interested undo retain the full card", async ({
   await expect(
     dialog.getByRole("button", { name: "Following", exact: true }),
   ).toBeVisible();
+  await expect(card.locator(".campaign-photo-partial")).toHaveAttribute(
+    "src",
+    "/api/reference-media/home-pura-photo",
+  );
   await dialog
     .getByRole("button", { name: "Not interested", exact: true })
     .click();
+  await expect(card.locator(".campaign-photo-partial")).toHaveAttribute(
+    "src",
+    "/api/reference-media/home-pura-reason-photo",
+  );
+  await expect(card.locator(".campaign-header-photo")).toHaveAttribute(
+    "src",
+    "/api/reference-media/home-pura-reason-header",
+  );
+  await expect(card.locator(".campaign-wordmark-image")).toHaveAttribute(
+    "src",
+    "/api/reference-media/home-pura-reason-wordmark",
+  );
   await page
     .getByRole("button", { name: "Want to see less of Pura", exact: true })
     .click();

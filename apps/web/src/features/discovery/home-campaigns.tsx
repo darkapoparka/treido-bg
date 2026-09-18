@@ -281,7 +281,16 @@ export function HomeCampaigns({
       <div className="home-campaigns" data-campaign-history={history}>
         {orderedCampaigns.map((c) => {
           const store = catalog.stores.find((s) => s.id === c.store),
-            concealed = hidden.includes(c.id);
+            concealed = hidden.includes(c.id),
+            puraReason =
+              c.id === "pura" && menu?.id === c.id && stage === "reason",
+            campaignPhoto = puraReason ? "home-pura-reason-photo" : c.photo,
+            campaignHeaderPhoto = puraReason
+              ? "home-pura-reason-header"
+              : c.headerPhoto,
+            campaignWordmark = puraReason
+              ? "home-pura-reason-wordmark"
+              : c.wordmark;
           const href = c.store ? `/stores/${c.store}` : "/search";
           const rating =
             c.id === "drmtlgy" && productOrder === "welcome"
@@ -292,17 +301,17 @@ export function HomeCampaigns({
               key={c.id}
               data-campaign={c.id}
               aria-label={`${store?.name ?? "Accessories"} campaign`}
-              className={`home-campaign campaign-${c.tone} ${c.tall || (c.id === "drmtlgy" && productLayout === "grid") ? "campaign-tall" : ""} ${c.continuation ? "campaign-continuation" : ""} ${c.id === "drmtlgy" && productLayout === "grid" ? "campaign-product-grid" : ""} ${concealed ? "campaign-concealed" : ""}`}
+              className={`home-campaign campaign-${c.tone} ${c.tall || (c.id === "drmtlgy" && productLayout === "grid") ? "campaign-tall" : ""} ${c.continuation ? "campaign-continuation" : ""} ${c.id === "drmtlgy" && productLayout === "grid" ? "campaign-product-grid" : ""} ${puraReason ? "campaign-pura-reason" : ""} ${concealed ? "campaign-concealed" : ""}`}
             >
               <div
                 className="campaign-art"
                 inert={concealed}
                 aria-hidden={concealed || undefined}
               >
-                {c.headerPhoto && (
+                {campaignHeaderPhoto && (
                   <img
                     className="campaign-header-photo"
-                    src={`/api/reference-media/${c.headerPhoto}`}
+                    src={`/api/reference-media/${campaignHeaderPhoto}`}
                     alt=""
                   />
                 )}
@@ -314,14 +323,14 @@ export function HomeCampaigns({
                       alt=""
                     />
                   )}
-                {c.photo && (
+                {campaignPhoto && (
                   <img
                     className={
                       c.partialPhoto
                         ? "campaign-photo-partial"
                         : "campaign-photo"
                     }
-                    src={`/api/reference-media/${c.photo}`}
+                    src={`/api/reference-media/${campaignPhoto}`}
                     alt=""
                   />
                 )}
@@ -335,10 +344,10 @@ export function HomeCampaigns({
                       rememberHomeCampaignReturn(event, c.id, "brand")
                     }
                   >
-                    {c.wordmark ? (
+                    {campaignWordmark ? (
                       <img
                         className="campaign-wordmark-image"
-                        src={`/api/reference-media/${c.wordmark}`}
+                        src={`/api/reference-media/${campaignWordmark}`}
                         alt={c.title ?? store?.name ?? ""}
                       />
                     ) : c.title ? (

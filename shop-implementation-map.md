@@ -231,6 +231,12 @@ Tasks 3/5/6 continue over `325e7eb`. The local camera-permission state now adds 
 
 The retained run `.qa/shop-parity/runs/20260918-skin-permission-final/` scored **7/7**, zero browser errors. f057-003 improved **6.561% → 3.275%**, family mean **4.653% → 4.183%**, and mean bad-pixel is **10.737%**. The build passed all 39 routes and the full Minis photo suite passes **5/5**. Remaining flow-57 residuals are welcome typography, picker finishing and shared product-card text; this is not owner acceptance.
 
+### Pura reason-stage source checkpoint, 2026-09-18
+
+Tasks 3/5/6 continue over `d19c914`. The Not interested stage now owns source-bounded Pura media for the changing video still, header and wordmark, plus the measured sheet position. Existing Follow, hide, Undo, focus restoration and empty-cart behavior remain live.
+
+The retained run `.qa/shop-parity/runs/20260918-pura-source-final/` scored **4/4**, zero browser errors. f042-003 improved **6.817% → 4.111%**, family mean **4.811% → 4.134%**. The build passed all 39 routes and the Home overlay suite passes **13/13**. Remaining residual is shared Home typography/control finishing and the source video's uncaptured motion; this is not owner acceptance.
+
 ## Open source obligations
 
 All **307 standalone images** are reconciled with existing ordered flow states: **179** have exact manifest-hash matches, and **128** were visually paired with their ordered counterpart. The latter are exports with different resolution, compression and footer packaging; no additional UI state or clearer photographic asset was found. Exact local inventories are `.qa/shop-parity/standalone-reconciliation.json`, `.qa/agent-patches/standalone-checkout/inventory.json` (47 images) and `.qa/agent-patches/standalone-minis/inventory.json` (81). This reconciles image inventory, not implementation acceptance. The **16 standalone videos** received poster inspection; complete motion/transition matching remains separate.

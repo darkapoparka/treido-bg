@@ -59,6 +59,10 @@ Run `20260918-store-filter-source-grid` scored **5/5** flow-16 states with zero 
 
 Run `20260918-skin-permission-final` scored **7/7** flow-57 states with zero browser errors. The permission frame improved **6.561% → 3.275% MAE** and family mean improved **4.653% → 4.183%**, with no sibling regression. The production build passed TypeScript and generated 39 routes; `minis-photo-journeys.spec.ts` passes **5/5 (14.5s)**. This remains measured progress, not 1:1 acceptance.
 
+**Pura not-interested source checkpoint over `d19c914`.** The reason stage now switches to its own captured video still, dark header region and Pura wordmark while preserving the real Follow, hide and Undo interactions. The reason sheet is aligned to the captured vertical position; no unseen motion or merchant data is fabricated.
+
+Run `20260918-pura-source-final` scored **4/4** flow-42 states with zero browser errors. The reason frame improved **6.817% → 4.111% MAE** and family mean improved **4.811% → 4.134%**. The production build passed TypeScript and generated 39 routes; `home-overlays.spec.ts` passes **13/13 (16.8s)**. This remains measured progress, not 1:1 acceptance.
+
 ## Working context
 
 Use the existing `J:\treido-bg` checkout of `darkapoparka/treido-bg`, canonical **main**, with one writer. This integration extends **`4d0539f2d0cd70f884941cc83f05ff075365542d`**. Subagents reviewed source pairs and supplied ignored patch proposals; the local writer reviewed, integrated and verified them. [AGENTS.md](../AGENTS.md) and [Codex setup](agents/codex.md) own branch policy, runtime ownership and synchronization.

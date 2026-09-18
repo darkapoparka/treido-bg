@@ -863,6 +863,18 @@ const media: Record<
     file: "flows/5f25f0ee-f19a-49a8-8f9d-ca2f3259c3c6/002.webp",
     rect: [17, 174, 359, 332],
   },
+  "home-pura-reason-photo": {
+    file: "flows/5f25f0ee-f19a-49a8-8f9d-ca2f3259c3c6/003.webp",
+    rect: [17, 174, 359, 332],
+  },
+  "home-pura-reason-header": {
+    file: "flows/5f25f0ee-f19a-49a8-8f9d-ca2f3259c3c6/003.webp",
+    rect: [17, 115, 359, 59],
+  },
+  "home-pura-reason-wordmark": {
+    file: "flows/5f25f0ee-f19a-49a8-8f9d-ca2f3259c3c6/003.webp",
+    rect: [35, 130, 95, 38],
+  },
   "search-x721-photo": {
     file: "flows/4d0f0532-ce38-49b5-a94b-32e8ace4716c/006.webp",
     rect: [26, 397, 132, 132],
