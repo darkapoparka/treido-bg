@@ -2,6 +2,10 @@
 
 Updated 2026-09-18. This is the session entry point, not a second backlog.
 
+**Chemical Guys source-layout checkpoint over `b527a06`.** The storefront now uses the captured page/panel tones, source-measured category widths, and the visible fourth video continuation rather than ending the rail early. The fourth item remains an unavailable local preview with bounded source photography; no video, audio, or product identity was invented.
+
+Run `20260918-chemical-source-layout-final` scored **8/8** flow-15/96 states with zero browser errors. The Chemical products/video frame improved **8.101% → 6.033% MAE** in both owning flows; store-video family mean is now **3.754%**, and store-browsing mean is **4.730%**. The production build passed TypeScript and generated 39 routes, while `store-media-journeys.spec.ts` passes **4/4 (6.1s)**. This is another retained reduction, not full 1:1 acceptance.
+
 **Reported-product and store-tail source-fitting checkpoint over `838c600a2bf5837ebecfa3e9e3150ea56cba3e27`.** The final report state now carries the captured saved Rice bundle, cart-free dock, exact confirmation copy, source-aligned scroll position, and a bounded source crop for the concealed Shea card while retaining the live DOM status mark. Store filtering and the reported storefront also use the exact captured lower product-card fragments rather than unrelated complete product photography.
 
 Run `20260918-reported-shea-exact` scored **11/11** flow-16/38 states with zero browser errors. Product-reporting mean improved from **2.895% to 2.045% MAE**, and its final confirmation frame improved **9.984% to 4.881%**. Store-filter mean improved from the earlier **4.415% to 3.408%**, with the final grid at **4.393%**. The production build passed TypeScript and generated 39 routes; `storefront-journeys.spec.ts` passes **11/11 (25.9s)**. These remain measured reconstruction gains, not full-app 1:1 acceptance.

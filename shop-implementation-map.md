@@ -203,6 +203,12 @@ The retained run is `.qa/shop-parity/runs/20260918-reported-shea-exact/`: **11/1
 
 The production build passed TypeScript and generated 39 routes. The full storefront journey file passes **11/11 (25.9s)**, including exact media selection, confirmation copy, saved membership, cart absence, source filters, Back/Forward restoration and 320/393/430 containment. Formatting, scoped lint, documentation integrity and diff checks close the batch. Remaining residuals are shared typography, product-card finishing, toast/dock finishing and other high-ranked families; this checkpoint is not owner acceptance.
 
+### Chemical Guys source-layout checkpoint, 2026-09-18
+
+Tasks 3/5/6 continue over `b527a06`. The Chemical storefront retains live category navigation, product links, playable-boundary messaging and Featured controls while matching the frozen source more closely. The store background now follows the source transition from the dark photographic header into the mauve storefront, recommendation panels use the captured neutral tone, and the category pills use measured 109/79/104/96px widths with the source 7px gaps.
+
+The video rail now includes its fourth bounded continuation at the exact 367px source position. Only the visible 25px photograph fragment is recovered; its captured timestamp is removed and the live unavailable-preview control remains responsible for interaction. The retained run `.qa/shop-parity/runs/20260918-chemical-source-layout-final/` scored **8/8**, zero browser errors. f015-001 and f096-005 improved **8.101% → 6.033%**; store-video mean is **3.754%** and store-browsing mean **4.730%**. The build passed all 39 routes and the focused media suite passes **4/4**. Remaining differences include lower Featured photography hidden by the source dock, typography, fade and motion/audio assets.
+
 ## Open source obligations
 
 All **307 standalone images** are reconciled with existing ordered flow states: **179** have exact manifest-hash matches, and **128** were visually paired with their ordered counterpart. The latter are exports with different resolution, compression and footer packaging; no additional UI state or clearer photographic asset was found. Exact local inventories are `.qa/shop-parity/standalone-reconciliation.json`, `.qa/agent-patches/standalone-checkout/inventory.json` (47 images) and `.qa/agent-patches/standalone-minis/inventory.json` (81). This reconciles image inventory, not implementation acceptance. The **16 standalone videos** received poster inspection; complete motion/transition matching remains separate.

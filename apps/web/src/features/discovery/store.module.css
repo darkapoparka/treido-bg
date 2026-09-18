@@ -352,7 +352,7 @@
   background:
     url("/api/reference-media/chemical-store-header-photo") center top / 100%
       145px no-repeat,
-    linear-gradient(#939098, #a6a5a1);
+    linear-gradient(#939098 0, #b2aab2 145px, #beb6be 300px, #beb6be 100%);
 }
 .store:global(.chemical-store) :global(.store-actions),
 .chemicalPinned :global(.store-actions) {
@@ -360,13 +360,33 @@
 }
 .store:global(.chemical-store) :global(.category-rail),
 .chemicalPinned :global(.category-rail) {
-  gap: 8px;
+  gap: 7px;
 }
 .store:global(.chemical-store) :global(.category-rail .pill),
 .chemicalPinned :global(.category-rail .pill) {
   font-weight: 500;
   padding-right: 13px;
   gap: 6px;
+}
+.store:global(.chemical-store) :global(.category-rail .pill:nth-of-type(1)),
+.chemicalPinned :global(.category-rail .pill:nth-of-type(1)) {
+  flex-basis: 109px;
+  width: 109px;
+}
+.store:global(.chemical-store) :global(.category-rail .pill:nth-of-type(2)),
+.chemicalPinned :global(.category-rail .pill:nth-of-type(2)) {
+  flex-basis: 79px;
+  width: 79px;
+}
+.store:global(.chemical-store) :global(.category-rail .pill:nth-of-type(3)),
+.chemicalPinned :global(.category-rail .pill:nth-of-type(3)) {
+  flex-basis: 104px;
+  width: 104px;
+}
+.store:global(.chemical-store) :global(.category-rail .pill:nth-of-type(4)),
+.chemicalPinned :global(.category-rail .pill:nth-of-type(4)) {
+  flex-basis: 96px;
+  width: 96px;
 }
 .chemicalPinned {
   position: fixed;
@@ -402,7 +422,7 @@
 }
 .store:global(.chemical-store) :global(.store-recommendations) {
   padding-bottom: 13px;
-  background: #cfd0c9;
+  background: #d6d3d6;
 }
 .store:global(.chemical-store) :global(.store-recommendations h1),
 .store:global(.chemical-store) :global(.store-recommendations h2) {
@@ -449,6 +469,10 @@
   width: 109px;
   height: 160px;
   object-fit: fill;
+}
+.store:global(.chemical-store)
+  :global(.store-video-rail img[src$="chemical-store-clip-four-partial"]) {
+  width: 25px;
 }
 .store:global(.chemical-store) :global(.store-video-rail span) {
   left: 12px;

@@ -164,6 +164,11 @@ const media: Record<
     occlusions: [[9, 130, 48, 20]],
     photoRadius: 19,
   },
+  "chemical-store-clip-four-partial": {
+    file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
+    rect: [368, 477, 25, 158],
+    occlusions: [[0, 130, 25, 20]],
+  },
   "chemical-featured-one-partial": {
     file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
     rect: [35, 710, 129, 52],

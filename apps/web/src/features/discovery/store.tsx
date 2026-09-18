@@ -129,8 +129,8 @@ function StoreNavigation({ store }: { store: Store }) {
             className="store-compact-promotion"
             onClick={() => setOffers(true)}
           >
-            20% off your order <span>spring20orde…</span>
-            <span aria-hidden="true">⌄</span>
+            20% off your order <span>spring20ordeÃ¢â‚¬Â¦</span>
+            <span aria-hidden="true">Ã¢Å’â€ž</span>
           </button>
         )}
         <div className="category-rail">
@@ -178,7 +178,7 @@ function StoreNavigation({ store }: { store: Store }) {
         onClose={() => setOffers(false)}
       >
         <p className="sheet-copy">
-          20% off your order — the label shown in the captured storefront.
+          20% off your order Ã¢â‚¬â€ the label shown in the captured storefront.
         </p>
         <p className="form-note">
           The captured coupon label is truncated. This preview cannot validate a
@@ -199,7 +199,7 @@ function StorePromotion({ savings = 20 }: { savings?: number }) {
         onClick={() => setExpanded(!expanded)}
       >
         <span>
-          <b>Save ${expanded ? 15 : savings}</b> on orders over $50 ⌄
+          <b>Save ${expanded ? 15 : savings}</b> on orders over $50 Ã¢Å’â€ž
         </span>
         {!expanded && <small>+ 1 more promotion</small>}
       </button>
@@ -211,7 +211,7 @@ function StorePromotion({ savings = 20 }: { savings?: number }) {
           </div>
           <div>
             <b>20% off your order</b>
-            <span> spring20orderdis…</span>
+            <span> spring20orderdisÃ¢â‚¬Â¦</span>
             <p>Automatically applied at checkout</p>
           </div>
         </div>
@@ -342,11 +342,12 @@ function StoreCategoryRail({ store }: { store: Store }) {
 }
 function ChemicalMediaShelves() {
   const [notice, setNotice] = useState(false);
-  const clipNames = ["one", "two", "three"];
+  const videoClipNames = ["one", "two", "three", "four-partial"];
+  const featuredClipNames = ["one", "two", "three"];
   return (
     <>
       <div className="store-video-rail">
-        {clipNames.map((name, index) => {
+        {videoClipNames.map((name, index) => {
           const contents = (
             <>
               <img
@@ -378,7 +379,7 @@ function ChemicalMediaShelves() {
       <section className={`store-recommendations ${styles.chemicalFeatured}`}>
         <h2>Featured</h2>
         <div className="product-rail">
-          {clipNames.map((name, index) => (
+          {featuredClipNames.map((name, index) => (
             <button
               key={name}
               aria-label={`Open Chemical Guys featured video ${index + 1}`}
@@ -510,7 +511,7 @@ export function Storefront({
             </span>
             {store.rating && (
               <Link href={`/stores/${store.id}/reviews`}>
-                {store.rating} ★ ({store.ratingCount})
+                {store.rating} Ã¢Ëœâ€¦ ({store.ratingCount})
               </Link>
             )}
           </div>
@@ -605,7 +606,7 @@ function StoreCriteria() {
         onClick={() => openStoreFilter()}
       />
       <button className="pill" onClick={() => openStoreFilter("sort")}>
-        Sort by <span aria-hidden="true">⌄</span>
+        Sort by <span aria-hidden="true">Ã¢Å’â€ž</span>
       </button>
       <button
         className={`pill ${filters.sale ? "selected" : ""}`}
@@ -622,7 +623,7 @@ function StoreCriteria() {
         In-stock
       </button>
       <button className="pill" onClick={() => openStoreFilter("price")}>
-        Price <span aria-hidden="true">⌄</span>
+        Price <span aria-hidden="true">Ã¢Å’â€ž</span>
       </button>
     </div>
   );
@@ -677,7 +678,8 @@ export function StoreCollection({
     >
       {slug !== "best-sellers" && (
         <div className="collection-promotion">
-          <b>Save $15</b> on orders over $50 <span aria-hidden="true">⌄</span>
+          <b>Save $15</b> on orders over $50{" "}
+          <span aria-hidden="true">Ã¢Å’â€ž</span>
         </div>
       )}
       <div className="store-collection-hero">
@@ -786,7 +788,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
           <b>{store.name}</b>
           {store.rating && (
             <small>
-              {store.rating} ★ ({store.ratingCount})
+              {store.rating} Ã¢Ëœâ€¦ ({store.ratingCount})
             </small>
           )}
         </div>
@@ -799,7 +801,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
         {more && (
           <span>
             {" "}
-            —{" "}
+            Ã¢â‚¬â€{" "}
             <a href="https://www.mykitsch.com" target="_blank" rel="noreferrer">
               Read the full brand description online
             </a>
@@ -841,7 +843,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
                 src="/api/reference-media/category-hair-partial"
                 alt="Hair category, partially captured"
               />
-              <span>Hair…</span>
+              <span>HairÃ¢â‚¬Â¦</span>
             </div>
           </div>
           <Link
@@ -871,7 +873,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
                   } as CSSProperties
                 }
               >
-                ★★★★★
+                Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦
               </span>
             </div>
             <p>{store.ratingCount} ratings</p>
@@ -889,11 +891,11 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
                 className="store-review-preview"
                 key={title}
               >
-                <span>★★★★★</span>
+                <span>Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦</span>
                 <b>{title}</b>
                 <small>
                   <i>{name[0]}</i>
-                  {name} · Yesterday
+                  {name} Ã‚Â· Yesterday
                 </small>
               </Link>
             ))}
@@ -1282,7 +1284,7 @@ export function StoreVideo() {
             <img src="/api/reference-media/chemical-video-item-photo" alt="" />
           </span>
           <span>
-            <b>Tire+Trim Gel Plastic and Rubber High-Glo…</b>
+            <b>Tire+Trim Gel Plastic and Rubber High-GloÃ¢â‚¬Â¦</b>
             <small>$24.99</small>
           </span>
           <Icon name="chevron" />

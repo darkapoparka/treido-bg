@@ -50,8 +50,17 @@ test("unknown Chemical clips and the partial product do not borrow unrelated pla
   page,
 }) => {
   await openChemical(page);
+  await expect(page.locator(".store-video-rail > :is(a, button)")).toHaveCount(
+    4,
+  );
+  await expect(
+    page.locator(
+      '.store-video-rail img[src="/api/reference-media/chemical-store-clip-four-partial"]',
+    ),
+  ).toHaveCount(1);
   for (const name of [
     "Open Chemical Guys clip 2",
+    "Open Chemical Guys clip 4",
     "Open Chemical Guys featured video 1",
   ]) {
     const trigger = page.getByRole("button", { name, exact: true });
