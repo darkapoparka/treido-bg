@@ -71,6 +71,10 @@ Run `20260918-search-history-fade-final` scored **2/2** flow-49 states with zero
 
 Run `20260918-store-info-layout` scored **5/5** flow-97 states with zero browser errors. The broken category frame improved **14.448% → 5.878% MAE** and family mean improved **5.928% → 4.206%**. The production build passed TypeScript and generated 39 routes; `storefront-journeys.spec.ts` passes **12/12 (28.2s)**. This remains measured progress, not 1:1 acceptance.
 
+**Storefront text-integrity checkpoint over `fffaa63`.** Corrupted promotion codes, chevrons, rating stars, review separators, description punctuation and video ellipsis in the shared storefront owner were replaced with the intended source text. No offer validation, external merchant data or playable media was added.
+
+Retained runs `20260918-store-text-f14`, `-f15`, `-f96` and `-f97` scored **16/16** frames with zero browser errors. KITSCH expanded promotions improved **6.125% → 5.032% MAE**; the collection promotion frame improved **5.011% → 4.468%**; information siblings f097-001/003/004 improved to **3.418% / 2.720% / 3.078%**. The production build passed 39 routes and the combined storefront/media suites pass **16/16 (31.3s)**. This is not 1:1 acceptance.
+
 ## Working context
 
 Use the existing `J:\treido-bg` checkout of `darkapoparka/treido-bg`, canonical **main**, with one writer. This integration extends **`4d0539f2d0cd70f884941cc83f05ff075365542d`**. Subagents reviewed source pairs and supplied ignored patch proposals; the local writer reviewed, integrated and verified them. [AGENTS.md](../AGENTS.md) and [Codex setup](agents/codex.md) own branch policy, runtime ownership and synchronization.
