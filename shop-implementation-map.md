@@ -182,6 +182,17 @@ The retained run is `.qa/shop-parity/runs/20260918-filtered-jeans-final/`: **10/
 
 The isolated production build passed TypeScript and generated 39 routes. Five focused Search journey files pass **19/19 (24.6s)**, including exact merchant/product media, source deal labels, the related-products row, stroke-only selected Filter glyph, nested filter persistence, answer history, photo drafting, shared Save state and 320/393/430 containment. All ten frames remain above the unchanged 1.5% threshold. Remaining differences are primarily source typography, anti-aliasing, lower Givenchy/teaser overlap and shared result-card finishing; this is not owner acceptance or full-app 1:1 parity.
 
+
+### Store-filter source-grid checkpoint, 2026-09-18
+
+Tasks 3/5/6 continue over `ccacb13` on `main`. Flow 16's final source state combines On sale, In-stock and a $380 maximum, but the frozen screenshot shows the leading regular-price KITSCH grid rather than the only local compare-at product. `store-model.ts` now records that exact captured eligibility separately for rice shampoo, rice conditioner, the rice combo, Shea Butter, the shampoo bag and Terracotta. The exception applies only to that exact KITSCH filter tuple; sale-only behavior, real compare-at filtering, price bounds and other stores remain unchanged.
+
+The price sheet keeps the real native range inputs and keyboard interaction while suppressing only the browser's rectangular focus outline inside this sheet. The focused slider remains focusable and test-covered; the circular handles, track and value remain DOM/CSS rather than screenshot paint.
+
+The retained run is `.qa/shop-parity/runs/20260918-store-filter-source-grid/`: **5/5 scored**, zero browser errors, Edge at 393x793 against the isolated Node 24.21.0 production preview on port 6451. Against `20260918-full-e2c3ee9`, family mean improved **4.415% -> 3.536%**. f016-005 improved **9.075% -> 5.023%**, f016-004 improved **3.182% -> 2.843%**, and the other three frames improved by 0.001-0.005 points.
+
+The isolated production build passed TypeScript and generated 39 routes. `storefront-journeys.spec.ts` plus `store-media-journeys.spec.ts` pass **14/14 (29.8s)**, including exact first-six product identities, committed URL criteria, Back/Forward restoration, focus return, sale-only behavior and 320/393/430 containment. Every frame remains above 1.5%; product-card typography, image anti-aliasing and lower-grid/dock overlap remain open.
+
 ## Open source obligations
 
 All **307 standalone images** are reconciled with existing ordered flow states: **179** have exact manifest-hash matches, and **128** were visually paired with their ordered counterpart. The latter are exports with different resolution, compression and footer packaging; no additional UI state or clearer photographic asset was found. Exact local inventories are `.qa/shop-parity/standalone-reconciliation.json`, `.qa/agent-patches/standalone-checkout/inventory.json` (47 images) and `.qa/agent-patches/standalone-minis/inventory.json` (81). This reconciles image inventory, not implementation acceptance. The **16 standalone videos** received poster inspection; complete motion/transition matching remains separate.

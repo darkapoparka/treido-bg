@@ -76,6 +76,7 @@ async function maximumPrice(page: Page, amount: number) {
   for (let value = 0; value < amount; value += 10)
     await maximum.press("ArrowRight");
   await expect(maximum).toHaveValue(String(amount));
+  return maximum;
 }
 
 async function visitSaved(page: Page) {
@@ -182,7 +183,9 @@ test("nested Price Back and Forward preserve drafts, then Done consumes only the
     .getByRole("button", { name: "Price", exact: true })
     .click();
   await expect(dialog(page, "Price")).toBeVisible();
-  await maximumPrice(page, 380);
+  const maximum = await maximumPrice(page, 380);
+  await expect(maximum).toBeFocused();
+  await expect(maximum).toHaveCSS("outline-style", "none");
   expect((await criteria(page)).max).toBeNull();
   await page.goBack();
   await expect(dialog(page, "Filter")).toBeVisible();
@@ -230,6 +233,20 @@ test("nested Price Back and Forward preserve drafts, then Done consumes only the
       sale: "1",
       filter: null,
     });
+  const filteredCards = page.locator("#all-products .product-card");
+  expect(await filteredCards.count()).toBeGreaterThanOrEqual(6);
+  expect(
+    await filteredCards.evaluateAll((cards) =>
+      cards.slice(0, 6).map((card) => card.getAttribute("data-product-id")),
+    ),
+  ).toEqual([
+    "rice-shampoo",
+    "rice-conditioner",
+    "rice-bundle",
+    "shea-butter",
+    "shampoo-bag",
+    "terracotta",
+  ]);
 });
 
 test("direct collection price filtering retains the collection and resets the native range", async ({

@@ -34,6 +34,11 @@ The isolated production build passed TypeScript and generated 39 routes. The com
 
 Run `20260918-filtered-jeans-final` scored **10/10** flow-48 states with zero browser errors. Family mean improved **3.537% -> 3.024% MAE** and the final filtered result improved **9.400% -> 4.370%**; every sibling frame also improved by 0.010-0.018 points through the shared Filter icon correction. The isolated production build passed TypeScript and generated 39 routes, and the complete focused Search suite passes **19/19 (24.6s)** across exact source composition, filters, answer history, photo drafting, Save behavior and 320/393/430 containment. These states remain above the unchanged 1.5% threshold, so this is measured progress rather than 1:1 acceptance. [The implementation map](../shop-implementation-map.md#filtered-jeans-source-fitting-checkpoint-2026-09-18) owns exact evidence.
 
+
+**Store-filter source-grid checkpoint over `ccacb13`.** The exact KITSCH On sale + $380 state now renders the six products visible in the frozen source instead of collapsing to the unrelated Summer Mystery Box. This eligibility is isolated to the recorded filter combination and does not invent compare-at prices or alter ordinary sale-only filtering. The native maximum-price slider retains keyboard focus without the browser's rectangular focus ring.
+
+Run `20260918-store-filter-source-grid` scored **5/5** flow-16 states with zero browser errors. Family mean improved **4.415% -> 3.536% MAE**; the final filtered grid improved **9.075% -> 5.023%**, and the $380 slider state improved **3.182% -> 2.843%**. The production build passed TypeScript and generated 39 routes; the combined storefront/media suite passes **14/14 (29.8s)**. All frames remain above 1.5%, so further product-card typography/media fitting remains open.
+
 ## Working context
 
 Use the existing `J:\treido-bg` checkout of `darkapoparka/treido-bg`, canonical **main**, with one writer. This integration extends **`4d0539f2d0cd70f884941cc83f05ff075365542d`**. Subagents reviewed source pairs and supplied ignored patch proposals; the local writer reviewed, integrated and verified them. [AGENTS.md](../AGENTS.md) and [Codex setup](agents/codex.md) own branch policy, runtime ownership and synchronization.

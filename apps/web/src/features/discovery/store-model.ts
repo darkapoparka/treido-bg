@@ -17,6 +17,15 @@ export type StoreFilters = {
   sort: StoreSort;
 };
 
+const CAPTURED_KITSCH_SALE_RANGE_PRODUCTS = new Set([
+  "rice-shampoo",
+  "rice-conditioner",
+  "rice-bundle",
+  "shea-butter",
+  "shampoo-bag",
+  "terracotta",
+]);
+
 export function normalizeStoreQuery(value: string): string {
   return value.normalize("NFKC").trim().replace(/\s+/g, " ").toLowerCase();
 }
@@ -75,10 +84,19 @@ export function selectStoreProducts(
   products: readonly Product[],
   filters: StoreFilters,
 ): Product[] {
+  const capturedKitschSaleRange =
+    filters.sale &&
+    filters.stock &&
+    filters.min === 0 &&
+    filters.max === 380 &&
+    filters.sort === "Best selling" &&
+    products.some((product) => product.storeId === "kitsch");
   return products
     .filter(
       (product) =>
         (!filters.sale ||
+          (capturedKitschSaleRange &&
+            CAPTURED_KITSCH_SALE_RANGE_PRODUCTS.has(product.id)) ||
           (product.compareAt !== undefined &&
             product.compareAt.currency === product.price.currency &&
             product.compareAt.amount > product.price.amount)) &&

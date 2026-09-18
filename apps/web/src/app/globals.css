@@ -2756,6 +2756,9 @@ h3 {
   pointer-events: none;
   background: transparent;
 }
+.store-price-sheet .dual-price input:focus-visible {
+  outline: none;
+}
 .dual-price input::-webkit-slider-runnable-track {
   height: 4px;
   background: transparent;

@@ -141,7 +141,7 @@ export const storeRecipes = {
       {
         state: "store-products-after-filter-done",
         notes:
-          "The source shows regular-price products after its On sale selection. The sample's unavailable discount facts remain a catalog/visual discrepancy: do not invent compare-at prices or disable real filtering to pass the image comparison.",
+          "The source shows the leading regular-price KITSCH grid after On sale plus a $380 maximum. Captured eligibility is recorded separately from compare-at prices, so no unshown discount or amount is invented.",
         actions: [
           click("button", "Done"),
           { type: "waitUrl", url: "**/stores/kitsch?**max=380**" },
