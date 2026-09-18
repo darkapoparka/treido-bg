@@ -508,6 +508,8 @@
   height: 100%;
   overflow-y: auto;
   overscroll-behavior: contain;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, Helvetica, sans-serif;
 }
 .answerBody > h1 {
   font-size: 24px;
@@ -520,6 +522,12 @@
   line-height: 22px;
   margin: 0 0 20px;
   letter-spacing: -0.25px;
+}
+.embeddedAnswer > h1 {
+  letter-spacing: -0.5px;
+}
+.embeddedAnswer > p {
+  letter-spacing: 0;
 }
 .answerBody > p a {
   text-decoration: underline;
@@ -537,6 +545,13 @@
   font-size: 12px;
   line-height: 16px;
   color: #777;
+}
+.embeddedAnswer > h2 {
+  letter-spacing: -0.3px;
+  margin: 16px 0 1px;
+}
+.embeddedAnswer > :global(.form-note) {
+  margin-bottom: 13px;
 }
 .answerBody :global(.assistant-edit) {
   position: sticky;
@@ -560,11 +575,41 @@
 .answerBody :global(.assistant-product-rail) {
   margin: 16px -16px 24px 0;
 }
+.embeddedAnswer :global(.assistant-product-rail) {
+  margin: 12px -16px 22px 0;
+}
+.embeddedAnswer :global(.assistant-wide-rail) {
+  margin-top: 15px;
+}
+.embeddedAnswer :global(.assistant-wide-rail) article > span {
+  visibility: hidden;
+}
+.embeddedAnswer > :global(.assistant-wide-continuation) {
+  height: 22px;
+  margin: 0;
+  overflow: hidden;
+  color: #c8c8c8;
+  font-size: 16px;
+  line-height: 22px;
+  white-space: nowrap;
+}
 .answerBody :global(.assistant-product-rail) :global(.product-media) {
   background: #ddd5e9;
   border-radius: 20px;
   border: 1px solid #cfc8da;
   overflow: hidden;
+}
+.embeddedAnswer :global(.assistant-partial-product) img {
+  width: 51px;
+  height: 149px;
+  margin-left: 4px;
+  object-fit: cover;
+}
+.embeddedAnswer :global(.assistant-wide-partial) :global(.product-media) img {
+  width: 52px;
+  height: 88px;
+  margin-left: 4px;
+  object-fit: cover;
 }
 .answerBody :global(.assistant-product-rail) strong,
 .answerBody :global(.assistant-product-rail) article > span,
@@ -662,6 +707,11 @@
   height: 56px;
   flex: none;
   background: #fff;
+}
+.embeddedAnswer :global(.assistant-composer) > :global(.icon-button) {
+  border: 1px solid #f1f1f1;
+  background: #ffffffed;
+  box-shadow: 0 6px 22px #00000012;
 }
 .feedbackSheet:global(.assistant-feedback-sheet) {
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;

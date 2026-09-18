@@ -163,3 +163,54 @@ test("saving an answer recommendation updates the shared Saved library", async (
     page.locator('.saved-grid [data-product-id="city-duaa-denim"]'),
   ).toBeVisible();
 });
+
+test("captured answer rails preserve their source continuations without replacing live controls", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "home-welcome");
+  await page.goto("/search?q=Jeans");
+  await page
+    .getByRole("button", { name: "View answer for Jeans", exact: true })
+    .click();
+  const answer = page.getByRole("dialog", {
+    name: "Jeans answer",
+    exact: true,
+  });
+  await expect(
+    answer.locator(".assistant-partial-product img"),
+  ).toHaveAttribute("src", "/api/reference-media/assistant-blue-partial");
+  await expect(answer.locator(".assistant-wide-partial img")).toHaveAttribute(
+    "src",
+    "/api/reference-media/assistant-wide-partial",
+  );
+  await expect(
+    answer.locator(".assistant-wide-rail article > span"),
+  ).toHaveCount(2);
+  expect(
+    await answer
+      .locator(".assistant-wide-rail article > span")
+      .evaluateAll((labels) =>
+        labels.every(
+          (label) => getComputedStyle(label).visibility === "hidden",
+        ),
+      ),
+  ).toBe(true);
+  await answer.locator(".assistant-page").evaluate((element) => {
+    element.scrollTo({ top: element.scrollHeight });
+  });
+  await expect(
+    answer.getByText("keep you comfortable through a long day.", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    answer
+      .getByRole("link", { name: "Edit search", exact: true })
+      .locator("path"),
+  ).toHaveCount(2);
+  expect(
+    await answer
+      .getByRole("button", { name: "Close assistant", exact: true })
+      .evaluate((element) => getComputedStyle(element).boxShadow),
+  ).not.toBe("none");
+});

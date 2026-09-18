@@ -54,7 +54,9 @@ export function JeansAnswer({
         ? "assistant-white-square"
         : id === "assistant-urban-straight"
           ? "assistant-black-square"
-          : null;
+          : id === "assistant-blue-skinny"
+            ? "assistant-blue-partial"
+            : null;
     return p
       ? [
           {
@@ -99,7 +101,9 @@ export function JeansAnswer({
       <div className="assistant-product-rail">
         {products.map((p) => (
           <article key={p.id}>
-            <div className="product-media">
+            <div
+              className={`product-media ${p.id === "assistant-blue-skinny" ? "assistant-partial-product" : ""}`}
+            >
               <Link href={`/products/${p.id}`}>
                 <img src={p.images[0]} alt={p.title} />
               </Link>
@@ -127,7 +131,15 @@ export function JeansAnswer({
             <span>Jeans Warehouse</span>
           </article>
         ))}
+        <article className="assistant-wide-partial" aria-hidden="true">
+          <div className="product-media">
+            <img src="/api/reference-media/assistant-wide-partial" alt="" />
+          </div>
+        </article>
       </div>
+      <p className="assistant-wide-continuation">
+        keep you comfortable through a long day.
+      </p>
       <div
         className="assistant-answer-card"
         data-answer-product="city-duaa-denim"

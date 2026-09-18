@@ -605,29 +605,27 @@ const media: Record<
   "assistant-white-square": {
     file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/002.webp",
     rect: [18, 386, 148, 148],
-    occlusions: [[105, 104, 36, 35]],
+    circularOcclusions: [[123, 121, 18]],
   },
   "assistant-black-square": {
     file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/002.webp",
     rect: [178, 386, 148, 148],
-    occlusions: [[105, 104, 36, 35]],
+    circularOcclusions: [[123, 121, 18]],
   },
   "assistant-city-square": {
     file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/003.webp",
     rect: [26, 172, 162, 162],
     occlusions: [
       [8, 8, 58, 22],
-      [118, 118, 36, 36],
       [48, 144, 56, 18],
     ],
+    circularOcclusions: [[136, 136, 18]],
   },
   "assistant-signature-square": {
     file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/003.webp",
     rect: [26, 372, 162, 162],
-    occlusions: [
-      [118, 118, 36, 36],
-      [54, 144, 48, 18],
-    ],
+    occlusions: [[54, 144, 48, 18]],
+    circularOcclusions: [[136, 136, 18]],
   },
   "profile-empty-package": {
     file: "flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/002.webp",
@@ -893,6 +891,10 @@ const media: Record<
   "assistant-wide-two": {
     file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/002.webp",
     rect: [179, 669, 148, 88],
+  },
+  "assistant-wide-partial": {
+    file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/002.webp",
+    rect: [341, 669, 52, 88],
   },
   "assistant-blue-partial": {
     file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/002.webp",

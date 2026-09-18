@@ -103,6 +103,19 @@ export function Icon({
           fillRule="evenodd"
           stroke="none"
         />
+      ) : name === "edit-search" ? (
+        <>
+          <path
+            d="M7 9.5v6.75c0 .7.55 1.25 1.25 1.25h6.5c.7 0 1.25-.55 1.25-1.25V14"
+            fill="none"
+            strokeWidth="2.6"
+          />
+          <path
+            d="m9.2 15.8.78-3.12 6.72-6.72a1.55 1.55 0 0 1 2.2 0l.14.14a1.55 1.55 0 0 1 0 2.2l-6.72 6.72-3.12.78Z"
+            fill="currentColor"
+            stroke="none"
+          />
+        </>
       ) : filled && name === "home" ? (
         <path
           d="M2.4 10.4 10.9 3.5a1.75 1.75 0 0 1 2.2 0l8.5 6.9c.95.77.4 2.3-.82 2.3h-1.03v6.5A2.8 2.8 0 0 1 16.95 22h-9.9a2.8 2.8 0 0 1-2.8-2.8v-6.5H3.22c-1.22 0-1.77-1.53-.82-2.3Z"

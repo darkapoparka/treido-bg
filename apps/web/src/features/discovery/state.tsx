@@ -25,6 +25,7 @@ type State = {
   recentActivity: "products" | "stores" | "minis" | null;
   viewedItems: ViewedItem[];
   viewedAnswers: "jeans"[];
+  newlyViewedAnswers: "jeans"[];
   viewAnswer: (id: "jeans") => void;
   viewStore: (id: string) => void;
   removeViewed: (kind: ViewedItem["kind"], id: string) => void;
@@ -95,7 +96,11 @@ export function DiscoveryProvider({
   const [viewedAnswers, setViewedAnswers] = useState<"jeans"[]>(
     () => initial?.viewedAnswers ?? [],
   );
+  const [newlyViewedAnswers, setNewlyViewedAnswers] = useState<"jeans"[]>([]);
   const viewAnswer = useCallback((id: "jeans") => {
+    setNewlyViewedAnswers((answers) =>
+      answers.includes(id) ? answers : [id, ...answers],
+    );
     setViewedAnswers((answers) =>
       answers[0] === id
         ? answers
@@ -151,6 +156,7 @@ export function DiscoveryProvider({
         viewedProducts,
         viewedItems,
         viewedAnswers,
+        newlyViewedAnswers,
         viewAnswer,
         viewStore,
         removeViewed: (kind, id) => {

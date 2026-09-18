@@ -619,7 +619,12 @@ export function Search({
                   alt=""
                 />
                 <span>
-                  Finding the right pair of jeans<small>Jul 24</small>
+                  Finding the right pair of jeans
+                  <small>
+                    {state.newlyViewedAnswers.includes("jeans")
+                      ? "Just now"
+                      : "Jul 24"}
+                  </small>
                 </span>
               </Link>
             </section>
