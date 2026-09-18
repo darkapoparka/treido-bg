@@ -2824,11 +2824,16 @@ h3 {
 }
 .store-info-categories {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px 16px;
   margin-top: 28px;
 }
+.store-info-categories > a,
+.store-info-categories > div {
+  min-width: 0;
+}
 .store-info-categories img {
+  display: block;
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;

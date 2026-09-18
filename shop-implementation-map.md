@@ -243,6 +243,12 @@ Tasks 3/5/6 continue over `e687ae6`. The expanded Recently viewed state now owns
 
 The retained run `.qa/shop-parity/runs/20260918-search-history-fade-final/` scored **2/2**, zero browser errors. f049-002 improved **6.232% → 5.695%**, family mean approximately **3.819% → 3.550%**. The build passed all 39 routes and the search-history journey suite passes **2/2**. Remaining residual is mostly source-scaled card imagery and shared text rendering; this is not owner acceptance.
 
+### Store-information source-layout checkpoint, 2026-09-18
+
+Tasks 3/5/6 continue over `61c3c12`. The information grid now constrains both columns with `minmax(0, 1fr)`, preventing source images from expanding one column and collapsing the other. Rating stars and the bounded Hair label were also repaired from corrupted text.
+
+The retained run `.qa/shop-parity/runs/20260918-store-info-layout/` scored **5/5**, zero browser errors. f097-002 improved **14.448% → 5.878%**, family mean **5.928% → 4.206%**. The build passed all 39 routes and the storefront suite passes **12/12**. Remaining residual is shared text rendering, card border finishing and lower source-bounded content; this is not owner acceptance.
+
 ## Open source obligations
 
 All **307 standalone images** are reconciled with existing ordered flow states: **179** have exact manifest-hash matches, and **128** were visually paired with their ordered counterpart. The latter are exports with different resolution, compression and footer packaging; no additional UI state or clearer photographic asset was found. Exact local inventories are `.qa/shop-parity/standalone-reconciliation.json`, `.qa/agent-patches/standalone-checkout/inventory.json` (47 images) and `.qa/agent-patches/standalone-minis/inventory.json` (81). This reconciles image inventory, not implementation acceptance. The **16 standalone videos** received poster inspection; complete motion/transition matching remains separate.

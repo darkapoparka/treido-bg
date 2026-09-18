@@ -464,6 +464,26 @@ test("Follow persists through a real information-page visit without altering the
   );
 });
 
+test("Kitsch information keeps equal source columns and clean rating text", async ({
+  page,
+  baseURL,
+}) => {
+  await openScenario(page, baseURL, store + "/info");
+  const cards = page.locator(
+    ".store-info-categories > a, .store-info-categories > div",
+  );
+  await expect(cards).toHaveCount(6);
+  const widths = await cards.evaluateAll((items) =>
+    items
+      .slice(0, 4)
+      .map((item) => Math.round(item.getBoundingClientRect().width)),
+  );
+  expect(new Set(widths).size).toBe(1);
+  await expect(page.locator(".store-info-brand small")).toHaveText(
+    "4.5 ★ (194.9K)",
+  );
+});
+
 test("store collection and filter controls remain contained at 320, 393 and 430 pixels", async ({
   page,
   baseURL,

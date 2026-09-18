@@ -522,9 +522,7 @@ export function Storefront({
             </span>
             {store.rating && (
               <Link href={`/stores/${store.id}/reviews`}>
-                {store.rating}{" "}
-                ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦
-                ({store.ratingCount})
+                {store.rating} ★ ({store.ratingCount})
               </Link>
             )}
           </div>
@@ -803,9 +801,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
           <b>{store.name}</b>
           {store.rating && (
             <small>
-              {store.rating}{" "}
-              ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦
-              ({store.ratingCount})
+              {store.rating} ★ ({store.ratingCount})
             </small>
           )}
         </div>
@@ -860,9 +856,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
                 src="/api/reference-media/category-hair-partial"
                 alt="Hair category, partially captured"
               />
-              <span>
-                HairÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦
-              </span>
+              <span>Hair…</span>
             </div>
           </div>
           <Link

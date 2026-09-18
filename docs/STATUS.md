@@ -67,6 +67,10 @@ Run `20260918-pura-source-final` scored **4/4** flow-42 states with zero browser
 
 Run `20260918-search-history-fade-final` scored **2/2** flow-49 states with zero browser errors. The expanded history frame improved **6.232% → 5.695% MAE** and family mean improved approximately **3.819% → 3.550%**. The production build passed TypeScript and generated 39 routes; `search-history-journeys.spec.ts` passes **2/2 (3.8s)**. This remains measured progress, not 1:1 acceptance.
 
+**Store-information source-layout checkpoint over `61c3c12`.** KITSCH information categories now use two equal minmax columns instead of image-intrinsic grid sizing, and the storefront/information ratings use the real star glyph instead of mojibake. All category links and lower bounded fragments remain live.
+
+Run `20260918-store-info-layout` scored **5/5** flow-97 states with zero browser errors. The broken category frame improved **14.448% → 5.878% MAE** and family mean improved **5.928% → 4.206%**. The production build passed TypeScript and generated 39 routes; `storefront-journeys.spec.ts` passes **12/12 (28.2s)**. This remains measured progress, not 1:1 acceptance.
+
 ## Working context
 
 Use the existing `J:\treido-bg` checkout of `darkapoparka/treido-bg`, canonical **main**, with one writer. This integration extends **`4d0539f2d0cd70f884941cc83f05ff075365542d`**. Subagents reviewed source pairs and supplied ignored patch proposals; the local writer reviewed, integrated and verified them. [AGENTS.md](../AGENTS.md) and [Codex setup](agents/codex.md) own branch policy, runtime ownership and synchronization.
