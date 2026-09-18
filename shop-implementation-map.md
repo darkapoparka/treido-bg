@@ -116,6 +116,30 @@ The same run scores flow 14 at **4.984 / 4.601 / 5.470%**. Other fresh storefron
 
 The isolated production build passed TypeScript and generated 39 routes. `storefront-journeys.spec.ts` passes **10/10 (18.9s)**, including exact default/followed hero switching, real Follow persistence, filter drafts, nested price history, collection filtering, store search history, first-save collection behavior and 320/393/430 containment. Prettier, correctly scoped ESLint, documentation integrity and `git diff --check` are the closeout checks for this batch. All measured storefront frames remain above the 1.5% acceptance threshold; full application suite, CI, motion review, the three original-media hash failures and owner acceptance **0/97** remain open.
 
+### Get the Look source-fitting checkpoint, 2026-09-18
+
+Tasks 3/5/6, flow 58, extend `758a96a10c36326b33974785ee359cff7dc3174c` on `main`. The media handler now supports a bounded Mini-background chroma key plus measured rotate/post-rotate extraction. The result outfit is recovered from the source scan, deskewed by -3 degrees and cropped to its measured inner photograph; the scanning state retains its distinct tilted composition. The result flow also uses complete source media regions for the first two blazer and shirt cards while the existing Save buttons, product links and price DOM remain canonical.
+
+`minis.tsx` maps only the captured complete cards to those source regions and enables their real compare-at presentation. `minis.module.css` restores the 150x200 cards, 134px media, source copy weights, bounded continuation slivers and measured section/rail alignment. The result photograph gap is 39px; the selected panel and all-matches states continue through browser history rather than disconnected screenshots. No product identity, promotion or destination was invented for the source-only boundary cards.
+
+The retained run is `.qa/shop-parity/runs/20260918-get-look-deskew/`, Chromium at 393x793 against the isolated Node 24.21.0 production preview:
+
+| Frame | Complete baseline | Current | Delta (percentage points) |
+| --- | ---: | ---: | ---: |
+| f058-001 | 4.687 | 4.687 | 0.000 |
+| f058-002 | 4.999 | 4.999 | 0.000 |
+| f058-003 | 4.872 | 4.872 | 0.000 |
+| f058-004 | 4.941 | 4.941 | 0.000 |
+| f058-005 | 3.136 | 3.136 | 0.000 |
+| f058-006 | 7.034 | 4.957 | -2.077 |
+| f058-007 | 7.260 | 5.814 | -1.446 |
+| f058-008 | 8.601 | 4.524 | -4.077 |
+| Mean | 5.691 | 4.741 | -0.950 |
+
+All eight states scored with zero browser errors; mean bad-pixel is **13.302%**. The production build passed TypeScript and generated 39 routes. `minis-photo-journeys.spec.ts`, `auxiliary.spec.ts` and `minis-catalogue-journeys.spec.ts` pass **19/19 (42.7s)**, including source-media selection, compare-at text, exact complete-card dimensions, hotspot selection, Back/Forward state, all-matches scrolling, native-photo boundaries and Minis visit history.
+
+The complete `20260918-full-current` run scored **424/424** states, zero browser errors, **3.555% mean MAE**, **11.218% mean bad-pixel** and **9.984% worst-frame MAE** at the preceding checkpoint. It supplies the current global priority ranking but predates this retained card/deskew batch. Remaining Get the Look work is concentrated in the terms/photo-choice states, hotspot/selected typography and panel/background residuals. Every flow-58 frame remains above the unchanged 1.5% threshold; no owner acceptance is inferred.
+
 ## Open source obligations
 
 All **307 standalone images** are reconciled with existing ordered flow states: **179** have exact manifest-hash matches, and **128** were visually paired with their ordered counterpart. The latter are exports with different resolution, compression and footer packaging; no additional UI state or clearer photographic asset was found. Exact local inventories are `.qa/shop-parity/standalone-reconciliation.json`, `.qa/agent-patches/standalone-checkout/inventory.json` (47 images) and `.qa/agent-patches/standalone-minis/inventory.json` (81). This reconciles image inventory, not implementation acceptance. The **16 standalone videos** received poster inspection; complete motion/transition matching remains separate.

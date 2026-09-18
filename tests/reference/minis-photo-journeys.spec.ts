@@ -146,6 +146,25 @@ test("Get the Look connects source hotspots, selected panel, all result groups a
     .getByRole("button", { name: "View captured matches", exact: true })
     .click();
   await expect(page.locator('[data-look-phase="results"]')).toBeVisible();
+  await expect(page.locator(".look-photo > img")).toHaveAttribute(
+    "src",
+    "/api/reference-media/look-outfit-results",
+  );
+  const blazerCards = page.locator("#look-blazer .product-card");
+  await expect(blazerCards).toHaveCount(2);
+  await expect(
+    blazerCards.nth(0).locator(".product-media img"),
+  ).toHaveAttribute("src", "/api/reference-media/look-blazer-one-card");
+  await expect(
+    blazerCards.nth(1).locator(".product-media img"),
+  ).toHaveAttribute("src", "/api/reference-media/look-blazer-two-card");
+  await expect(page.locator("#look-blazer")).toContainText("$188.00");
+  await expect(page.locator("#look-shirt")).toContainText("$23.00");
+  for (const card of await blazerCards.all()) {
+    const bounds = await card.boundingBox();
+    expect(Math.round(bounds?.width ?? -1)).toBe(150);
+    expect(Math.round(bounds?.height ?? -1)).toBe(200);
+  }
   const shirt = page.getByRole("button", {
     name: "Women’s Black Crew Neck T-shirt",
     exact: true,

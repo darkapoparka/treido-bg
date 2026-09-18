@@ -699,6 +699,20 @@ const outfitPieces = [
   },
 ] as const;
 
+const lookProductMedia: Partial<Record<string, string>> = {
+  "look-sculpt": "look-blazer-one-card",
+  "look-aven": "look-blazer-two-card",
+  "look-black-crew": "look-shirt-one-card",
+  "look-white-crew": "look-shirt-two-card",
+};
+
+const boundedContinuationCopy: Partial<
+  Record<(typeof outfitPieces)[number]["id"], { title: string; price: string }>
+> = {
+  blazer: { title: "White", price: "$27" },
+  shirt: { title: "Women’s", price: "$90" },
+};
+
 export function GetLook({ catalog }: { catalog: Catalog }) {
   const { params, change } = useMiniRoute("/minis/look");
   const requested = params.get("look");
@@ -750,7 +764,23 @@ export function GetLook({ catalog }: { catalog: Catalog }) {
       >
         {piece.products.flatMap((id) => {
           const product = catalog.products.find((item) => item.id === id);
-          return product ? [<ProductCard key={id} product={product} />] : [];
+          const media = lookProductMedia[id];
+          return product
+            ? [
+                <ProductCard
+                  key={id}
+                  product={
+                    media
+                      ? {
+                          ...product,
+                          images: [`/api/reference-media/${media}`],
+                        }
+                      : product
+                  }
+                  showPromotion
+                />,
+              ]
+            : [];
         })}
         {piece.id === "skirt" &&
           ["look-skirt-one-partial", "look-skirt-two-partial"].map((key) => (
@@ -767,10 +797,10 @@ export function GetLook({ catalog }: { catalog: Catalog }) {
           aria-hidden="true"
         >
           <img src={`/api/reference-media/${piece.boundedMedia}`} alt="" />
-          {piece.id !== "skirt" && (
+          {piece.id !== "skirt" && boundedContinuationCopy[piece.id] && (
             <span className={styles.lookBoundedCopy}>
-              <i />
-              <i />
+              <strong>{boundedContinuationCopy[piece.id]?.title}</strong>
+              <span>{boundedContinuationCopy[piece.id]?.price}</span>
             </span>
           )}
         </div>
@@ -846,7 +876,7 @@ export function GetLook({ catalog }: { catalog: Catalog }) {
           <>
             <div className="look-photo">
               <img
-                src="/api/reference-media/look-outfit-inner"
+                src="/api/reference-media/look-outfit-results"
                 alt="Reference outfit: white blazer, black shirt and patterned skirt"
               />
               {outfitPieces.map((piece) => (

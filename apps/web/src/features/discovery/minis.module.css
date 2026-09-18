@@ -446,28 +446,44 @@
 }
 .look[data-look-phase="scanning"] :global(.look-wordmark) {
   width: 190px;
-  margin-bottom: 54px;
+  margin-bottom: 42px;
 }
 .look[data-look-phase="scanning"] :global(.look-photo) {
   width: 212px;
   height: 316px;
-  margin-bottom: 58px;
+  margin-bottom: 50px;
   transform: rotate(3deg);
 }
 .look[data-look-phase="results"] {
   padding: 22px 0 32px;
   background: linear-gradient(140deg, #ffe8f2, #ffc3e2 45%, #ded8ff);
 }
+.look[data-look-phase="results"][data-look-match="true"] {
+  background: linear-gradient(180deg, #fdcbe5 13%, #f4e1f5 50%, #e4e0fc 95%)
+    fixed;
+}
+.look[data-look-phase="results"][data-look-match="false"] {
+  padding-top: 35px;
+}
 .look[data-look-phase="results"] :global(.look-wordmark) {
   width: 110px;
   margin: 0 auto 12px;
 }
+.look[data-look-phase="results"][data-look-match="false"]
+  :global(.look-wordmark) {
+  width: 85px;
+  margin-bottom: 20px;
+}
 .look :global(.look-photo) {
   width: calc(100% - 88px);
   height: 458px;
-  margin: 0 auto 48px;
+  margin: 0 auto 39px;
   border: 5px solid #fff;
   border-radius: 17px;
+}
+.look[data-look-phase="results"][data-look-match="false"] :global(.look-photo) {
+  width: calc(100% - 86px);
+  height: 457px;
 }
 .look :global(.look-photo > img) {
   display: block;
@@ -475,6 +491,9 @@
   height: 100%;
   border-radius: 11px;
   object-fit: cover;
+}
+.look[data-look-phase="results"] :global(.look-photo > img) {
+  object-fit: fill;
 }
 .look :global(.look-photo > button) {
   display: flex;
@@ -520,7 +539,7 @@
 .lookBack {
   position: absolute;
   top: 16px;
-  left: 20px;
+  left: 16px;
   display: grid;
   place-items: center;
   width: 48px;
@@ -545,7 +564,29 @@
   letter-spacing: -0.5px;
   text-shadow: 1px 1px white;
 }
+.look :global(#look-blazer > h2) {
+  transform: translateY(-4px);
+  letter-spacing: -0.9px;
+}
+.look :global(#look-shirt > h2) {
+  transform: translateY(-2px);
+  letter-spacing: -0.6px;
+}
+.look :global(#look-skirt > h2) {
+  transform: translateY(1px);
+  letter-spacing: -0.8px;
+}
+.look :global(#look-blazer > .product-rail) {
+  transform: translateY(-4px);
+}
+.look :global(#look-shirt > .product-rail) {
+  transform: translateY(-1px);
+}
+.look :global(#look-skirt > .product-rail) {
+  transform: translateY(2px);
+}
 .look :global(.look-results .product-rail) {
+  min-height: 203px;
   gap: 16px;
   padding: 0 20px;
 }
@@ -556,18 +597,33 @@
   border-radius: 14px;
   padding: 8px;
 }
+.look :global(.look-results .product-card) {
+  height: 200px;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
 .look :global(.look-results .product-media) {
-  height: 136px;
+  height: 134px;
   border-radius: 14px;
 }
 .look :global(.look-results .product-copy) {
-  padding: 8px 0 2px;
+  gap: 2px;
+  padding: 8px 4px 2px;
+  color: #242933;
   font-size: 14px;
   line-height: 20px;
 }
 .look :global(.look-results .product-copy strong) {
   font-size: 14px;
   line-height: 18px;
+  font-weight: 500;
+}
+.look :global(.look-results .product-copy > span:last-child) {
+  font-weight: 600;
+}
+.look :global(.look-results .product-copy del) {
+  color: #737783;
+  font-weight: 400;
 }
 .look :global(.look-results .product-copy .price) {
   white-space: nowrap;
@@ -593,23 +649,23 @@
   object-position: left top;
 }
 .lookBoundedCopy {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 33px;
-  margin-top: 8px;
-  overflow: hidden;
-}
-.lookBoundedCopy > i {
   display: block;
-  flex: 0 0 auto;
-  width: 48px;
-  height: 11px;
-  border-radius: 2px;
-  background: #202028;
+  width: 100px;
+  margin-top: 8px;
+  color: #56505c;
+  font-size: 14px;
+  line-height: 18px;
+  white-space: nowrap;
 }
-.lookBoundedCopy > i:last-child {
-  width: 30px;
+.lookBoundedCopy > strong,
+.lookBoundedCopy > span {
+  display: block;
+}
+.lookBoundedCopy > strong {
+  font-weight: 500;
+}
+.lookBoundedCopy > span {
+  font-weight: 600;
 }
 .lookBoundedCardShort {
   height: 64px;

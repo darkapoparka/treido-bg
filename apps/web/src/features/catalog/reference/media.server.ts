@@ -26,6 +26,11 @@ const media: Record<
     darkTextThreshold?: number;
     textOcclusionDilation?: number;
     textOcclusionMode?: "transparent" | "inpaint";
+    // Remove the captured Mini background while retaining its live page gradient.
+    pinkChromaKey?: boolean;
+    // Deskew a captured photograph, then retain a measured inner source region.
+    rotateDegrees?: number;
+    postRotateRect?: readonly [number, number, number, number];
     // Exclude the recorded card edge while retaining only its product photograph.
     photoRadius?: number;
     // Circular native controls are removed without erasing extra photo corners.
@@ -989,9 +994,29 @@ const media: Record<
     file: "flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/007.webp",
     rect: [253, 704, 60, 144],
   },
+  "look-blazer-one-card": {
+    file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp",
+    rect: [28, 181, 134, 134],
+    circularOcclusions: [[105, 106, 17]],
+  },
+  "look-blazer-two-card": {
+    file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp",
+    rect: [194, 181, 134, 134],
+    circularOcclusions: [[105, 106, 17]],
+  },
   "look-blazer-third-partial": {
     file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp",
     rect: [360, 181, 33, 134],
+  },
+  "look-shirt-one-card": {
+    file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp",
+    rect: [28, 492, 134, 134],
+    circularOcclusions: [[105, 106, 17]],
+  },
+  "look-shirt-two-card": {
+    file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp",
+    rect: [194, 492, 134, 134],
+    circularOcclusions: [[105, 106, 17]],
   },
   "look-shirt-third-partial": {
     file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp",
@@ -1248,6 +1273,12 @@ const media: Record<
     rect: [293, 687, 76, 76],
   },
   "look-outfit-inner": { file: "screens/201.webp", rect: [104, 375, 188, 288] },
+  "look-outfit-results": {
+    file: "screens/201.webp",
+    rect: [84, 355, 224, 328],
+    rotateDegrees: -3,
+    postRotateRect: [20, 19, 201, 304],
+  },
   "whip-mousse": { file: "screens/169.webp", rect: [86, 477, 32, 157] },
   "hanacure-cleanser": { file: "screens/169.webp", rect: [228, 505, 99, 111] },
   "bubble-sunrise": { file: "screens/168.webp", rect: [69, 506, 70, 90] },
@@ -1374,6 +1405,7 @@ const media: Record<
   "look-wordmark": {
     file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/003.webp",
     rect: [59, 198, 277, 225],
+    pinkChromaKey: true,
   },
   "assistant-cap": {
     file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/007.webp",
@@ -1574,16 +1606,56 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
       const [left, top, width, height] = entry.rect.map((value) =>
         Math.round(value * scale),
       );
-      const crop = sharp(input).extract({ left, top, width, height });
+      let crop = sharp(input).extract({ left, top, width, height });
+      if (entry.rotateDegrees) {
+        crop = crop.ensureAlpha().rotate(entry.rotateDegrees, {
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
+        });
+      }
+      if (entry.postRotateRect) {
+        const [postLeft, postTop, postWidth, postHeight] =
+          entry.postRotateRect.map((value) => Math.round(value * scale));
+        crop = crop.extract({
+          left: postLeft,
+          top: postTop,
+          width: postWidth,
+          height: postHeight,
+        });
+      }
       if (
         entry.occlusions?.length ||
         entry.lightTextOcclusions?.length ||
         entry.darkTextOcclusions?.length ||
+        entry.pinkChromaKey ||
         entry.circularOcclusions?.length ||
         entry.roundedOcclusions?.length ||
         entry.photoRadius
       ) {
         let cleanPhoto = await crop.ensureAlpha().png().toBuffer();
+        if (entry.pinkChromaKey) {
+          const pixels = await sharp(cleanPhoto)
+            .raw()
+            .toBuffer({ resolveWithObject: true });
+          for (let offset = 0; offset < pixels.data.length; offset += 4) {
+            const red = pixels.data[offset],
+              green = pixels.data[offset + 1],
+              blue = pixels.data[offset + 2],
+              value = Math.max(red, green, blue),
+              pinkness = Math.min(red - green, blue - green);
+            if (
+              value < 180 ||
+              red < blue - 12 ||
+              blue <= green ||
+              pinkness <= 2
+            )
+              continue;
+            pixels.data[offset + 3] =
+              pinkness >= 7 ? 0 : Math.round((255 * (7 - pinkness)) / 5);
+          }
+          cleanPhoto = await sharp(pixels.data, { raw: pixels.info })
+            .png()
+            .toBuffer();
+        }
         if (
           entry.lightTextOcclusions?.length ||
           entry.darkTextOcclusions?.length
