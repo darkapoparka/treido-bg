@@ -53,6 +53,17 @@ test("expanded recent history has the identified eighth brand and removal surviv
     page.locator('[data-shop-interactive="true"]').first(),
   ).toBeAttached();
   await expect(page.locator("[data-recent-id]")).toHaveCount(8);
+  const dockFade = await page.locator(".floating-dock").evaluate((dock) => {
+    const style = getComputedStyle(dock, "::before");
+    return {
+      content: style.content,
+      height: style.height,
+      background: style.backgroundImage,
+    };
+  });
+  expect(dockFade.content).not.toBe("none");
+  expect(dockFade.height).toBe("118px");
+  expect(dockFade.background).toContain("linear-gradient");
   const tea = page.locator('[data-recent-id="loaded-tea"]');
   await expect(
     tea.getByRole("link", { name: "Visit The Loaded Tea Shop", exact: true }),

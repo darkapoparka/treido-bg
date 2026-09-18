@@ -3850,8 +3850,15 @@ h3 {
   z-index: -1;
   bottom: calc(-1 * (var(--dock-bottom) + env(safe-area-inset-bottom)));
   width: 100vw;
-  height: calc(128px + env(safe-area-inset-bottom));
-  background: linear-gradient(to bottom, #fdfdfd00, #fdfdfd00 15%, #fdfdfde6);
+  height: calc(118px + env(safe-area-inset-bottom));
+  background: linear-gradient(
+    to bottom,
+    rgb(253 253 253 / 0%) 0%,
+    rgb(253 253 253 / 4%) 25%,
+    rgb(253 253 253 / 18%) 50%,
+    rgb(253 253 253 / 39%) 75%,
+    rgb(253 253 253 / 70%) 100%
+  );
   pointer-events: none;
 }
 .store-search-results .product-copy {
@@ -4703,6 +4710,23 @@ h3 {
 
 .search-history > .search-form {
   display: none;
+}
+.search-history > .floating-dock::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  bottom: calc(-1 * (var(--dock-bottom) + env(safe-area-inset-bottom)));
+  width: 100vw;
+  height: calc(118px + env(safe-area-inset-bottom));
+  background: linear-gradient(
+    to bottom,
+    rgb(253 253 253 / 0%) 0%,
+    rgb(253 253 253 / 4%) 25%,
+    rgb(253 253 253 / 18%) 50%,
+    rgb(253 253 253 / 39%) 75%,
+    rgb(253 253 253 / 70%) 100%
+  );
+  pointer-events: none;
 }
 .sol-response-stage .sol-conversation {
   margin-top: 244px;

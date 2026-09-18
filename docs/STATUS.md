@@ -63,6 +63,10 @@ Run `20260918-skin-permission-final` scored **7/7** flow-57 states with zero bro
 
 Run `20260918-pura-source-final` scored **4/4** flow-42 states with zero browser errors. The reason frame improved **6.817% → 4.111% MAE** and family mean improved **4.811% → 4.134%**. The production build passed TypeScript and generated 39 routes; `home-overlays.spec.ts` passes **13/13 (16.8s)**. This remains measured progress, not 1:1 acceptance.
 
+**Expanded search-history dock-fade checkpoint over `e687ae6`.** The full Recently viewed grid now retains the captured viewport-edge fade behind the live dock instead of exposing fully opaque lower cards. The fade is DOM/CSS presentation only; all eight cards, save/remove controls and navigation remain live.
+
+Run `20260918-search-history-fade-final` scored **2/2** flow-49 states with zero browser errors. The expanded history frame improved **6.232% → 5.695% MAE** and family mean improved approximately **3.819% → 3.550%**. The production build passed TypeScript and generated 39 routes; `search-history-journeys.spec.ts` passes **2/2 (3.8s)**. This remains measured progress, not 1:1 acceptance.
+
 ## Working context
 
 Use the existing `J:\treido-bg` checkout of `darkapoparka/treido-bg`, canonical **main**, with one writer. This integration extends **`4d0539f2d0cd70f884941cc83f05ff075365542d`**. Subagents reviewed source pairs and supplied ignored patch proposals; the local writer reviewed, integrated and verified them. [AGENTS.md](../AGENTS.md) and [Codex setup](agents/codex.md) own branch policy, runtime ownership and synchronization.

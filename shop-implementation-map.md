@@ -237,6 +237,12 @@ Tasks 3/5/6 continue over `d19c914`. The Not interested stage now owns source-bo
 
 The retained run `.qa/shop-parity/runs/20260918-pura-source-final/` scored **4/4**, zero browser errors. f042-003 improved **6.817% → 4.111%**, family mean **4.811% → 4.134%**. The build passed all 39 routes and the Home overlay suite passes **13/13**. Remaining residual is shared Home typography/control finishing and the source video's uncaptured motion; this is not owner acceptance.
 
+### Expanded search-history fade checkpoint, 2026-09-18
+
+Tasks 3/5/6 continue over `e687ae6`. The expanded Recently viewed state now owns the captured quadratic viewport fade beneath the dock without converting any product/store content or controls into a screenshot.
+
+The retained run `.qa/shop-parity/runs/20260918-search-history-fade-final/` scored **2/2**, zero browser errors. f049-002 improved **6.232% → 5.695%**, family mean approximately **3.819% → 3.550%**. The build passed all 39 routes and the search-history journey suite passes **2/2**. Remaining residual is mostly source-scaled card imagery and shared text rendering; this is not owner acceptance.
+
 ## Open source obligations
 
 All **307 standalone images** are reconciled with existing ordered flow states: **179** have exact manifest-hash matches, and **128** were visually paired with their ordered counterpart. The latter are exports with different resolution, compression and footer packaging; no additional UI state or clearer photographic asset was found. Exact local inventories are `.qa/shop-parity/standalone-reconciliation.json`, `.qa/agent-patches/standalone-checkout/inventory.json` (47 images) and `.qa/agent-patches/standalone-minis/inventory.json` (81). This reconciles image inventory, not implementation acceptance. The **16 standalone videos** received poster inspection; complete motion/transition matching remains separate.
