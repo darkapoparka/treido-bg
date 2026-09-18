@@ -310,6 +310,67 @@
 .storeDeal {
   margin-bottom: 8px;
 }
+.capturedFilterStore {
+  color: #111 !important;
+  border: 1px solid #dedede;
+  padding-bottom: 7px;
+}
+.capturedFilterStore strong {
+  font-weight: 600 !important;
+}
+.capturedFilterStore[href="/stores/arrow-twenty-two"] {
+  background: #c8c4c3;
+}
+.capturedFilterStore .storeDeal {
+  background: #5433eb;
+}
+.capturedFilterStore[href="/stores/american-blues"] {
+  background: #fff;
+}
+.capturedStoreContinuation {
+  position: relative;
+  flex: 0 0 172px;
+  width: 172px;
+  height: 191px;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #78665d;
+}
+.capturedStoreContinuation > img {
+  width: 16px;
+  height: 100%;
+  object-fit: cover;
+}
+.capturedTallResult {
+  grid-template-rows: 132px 40px;
+  row-gap: 8px;
+  min-height: 198px !important;
+}
+.capturedTallResult > div:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  padding-top: 4px;
+}
+.capturedFilterResult .resultDeal {
+  background: #5433eb;
+}
+.capturedRelatedProducts {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  border-radius: 24px;
+  background: #f1f2f3;
+  font-size: 14px;
+  font-weight: 600;
+}
+.resultsPage
+  :global([data-result-id="givenchy-wide-leg-denim"] .product-media img) {
+  height: 110px;
+  object-fit: cover;
+  object-position: top;
+}
 .resultsPage :global(.search-results) {
   gap: 12px;
 }

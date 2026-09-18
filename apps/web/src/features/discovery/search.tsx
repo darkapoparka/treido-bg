@@ -24,6 +24,7 @@ import { Filters, type SearchFilters } from "./filters";
 import {
   emptyFilters,
   hasSearchFilters,
+  isCapturedFilteredJeans,
   readSearchFilters,
   searchParameters,
   searchProducts,
@@ -38,6 +39,10 @@ import photoStyles from "./search-photo.module.css";
 import "./search-loading.css";
 
 const capturedCapPhoto = "/api/reference-media/assistant-cap";
+const filteredStoreDeals: Record<string, string> = {
+  "arrow-twenty-two": "Save $5",
+  "american-blues": "Save $15",
+};
 
 export function Search({
   catalog,
@@ -117,6 +122,7 @@ export function Search({
   const visibleFilters = filter && filterUnderlay ? filterUnderlay : filters;
   const filtered = hasSearchFilters(visibleFilters);
   const jeansQuery = query.trim().toLowerCase() === "jeans";
+  const capturedFilteredJeans = isCapturedFilteredJeans(query, visibleFilters);
   const answerOpen = params.get("answer") === "jeans";
   useEffect(() => {
     if (answerOpen) viewAnswer("jeans");
@@ -441,15 +447,17 @@ export function Search({
           {stores.length > 0 && (
             <div className="search-stores">
               {stores.map((store) => {
-                const image =
-                  store.id === "fitjeans"
+                const image = capturedFilteredJeans
+                  ? store.coverImage || store.logo
+                  : store.id === "fitjeans"
                     ? "/api/reference-media/fitjeans"
                     : store.logo;
+                const deal = filteredStoreDeals[store.id];
                 return (
                   <Link
                     key={store.id}
                     href={`/stores/${store.id}`}
-                    className={`search-store ${image ? "" : "plain"}`}
+                    className={`search-store ${image ? "" : "plain"} ${capturedFilteredJeans ? styles.capturedFilterStore : ""}`}
                   >
                     {image ? (
                       <img src={image} alt="" />
@@ -464,8 +472,10 @@ export function Search({
                               .join("")}
                       </span>
                     )}
-                    {store.id === "fitjeans" && (
-                      <span className={styles.storeDeal}>Save $30</span>
+                    {(deal || store.id === "fitjeans") && (
+                      <span className={styles.storeDeal}>
+                        {deal ?? "Save $30"}
+                      </span>
                     )}
                     <strong>{store.name}</strong>
                     {store.rating !== undefined && (
@@ -477,11 +487,32 @@ export function Search({
                   </Link>
                 );
               })}
+              {capturedFilteredJeans && (
+                <span
+                  className={styles.capturedStoreContinuation}
+                  aria-hidden="true"
+                >
+                  <img
+                    src="/api/reference-media/search-filter-store-continuation"
+                    alt=""
+                  />
+                </span>
+              )}
             </div>
           )}
           <div className="search-results">
             {displayedResults.map((p) => (
-              <article className="result-row" key={p.id} data-result-id={p.id}>
+              <article
+                className={`result-row ${
+                  capturedFilteredJeans ? styles.capturedFilterResult : ""
+                } ${
+                  capturedFilteredJeans && p.id === "valentino-blue-denim"
+                    ? styles.capturedTallResult
+                    : ""
+                }`}
+                key={p.id}
+                data-result-id={p.id}
+              >
                 <div className="product-media">
                   <Link href={`/products/${p.id}`}>
                     <img src={p.images[0]} alt={p.title} />
@@ -526,6 +557,14 @@ export function Search({
                     )}
                   </div>
                 </div>
+                {capturedFilteredJeans && p.id === "valentino-blue-denim" && (
+                  <Link
+                    className={styles.capturedRelatedProducts}
+                    href="/search?q=Valentino%20Blue%20Denim"
+                  >
+                    See related products
+                  </Link>
+                )}
               </article>
             ))}
             {!displayedResults.length && (

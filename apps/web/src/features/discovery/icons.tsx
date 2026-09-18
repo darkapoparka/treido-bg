@@ -103,6 +103,12 @@ export function Icon({
           fillRule="evenodd"
           stroke="none"
         />
+      ) : name === "filter-circles" ? (
+        <>
+          <path d="M4.5 8h5.5m5.5 0h4M4.5 16h2.5m5 0h7.5" fill="none" />
+          <circle cx="12.75" cy="8" r="2.25" fill="none" />
+          <circle cx="9.5" cy="16" r="2.25" fill="none" />
+        </>
       ) : name === "edit-search" ? (
         <>
           <path

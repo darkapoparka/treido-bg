@@ -111,6 +111,62 @@ test("nested filter choices retain the results underlay until the root filter cl
   await expect(first).not.toHaveAttribute("data-result-id", "carpenter-jeans");
 });
 
+test("the final Jeans facets render the captured merchants and leading products", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "home-welcome");
+  await page.goto(
+    "/search?q=Jeans&deals=true&sort=Highest+%E2%86%92+Lowest+Price&category=Pants",
+  );
+
+  const stores = page.locator(".search-stores");
+  await expect(
+    stores.getByRole("link", { name: /Arrow Twenty Two/ }),
+  ).toContainText("Save $5");
+  await expect(
+    stores.getByRole("link", { name: /American Blues/ }),
+  ).toContainText("Save $15");
+  await expect(
+    stores.locator(
+      'img[src="/api/reference-media/search-filter-store-continuation"]',
+    ),
+  ).toHaveCount(1);
+
+  const results = page.locator("[data-result-id]");
+  await expect(results.nth(0)).toHaveAttribute(
+    "data-result-id",
+    "valentino-blue-denim",
+  );
+  await expect(results.nth(1)).toHaveAttribute(
+    "data-result-id",
+    "givenchy-wide-leg-denim",
+  );
+  await expect(
+    results
+      .nth(0)
+      .locator('img[src="/api/reference-media/search-filter-valentino"]'),
+  ).toHaveCount(1);
+  await expect(
+    results.nth(0).getByRole("link", { name: "See related products" }),
+  ).toBeVisible();
+  await expect(
+    results.nth(0).getByText("Save $130", { exact: true }),
+  ).toBeVisible();
+
+  const filterIcon = page
+    .getByRole("button", { name: "Filter", exact: true })
+    .locator("svg");
+  await expect(filterIcon.locator("circle")).toHaveCount(2);
+  await expect(filterIcon.locator('path[fill="none"]')).toHaveCount(1);
+
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width);
+  }
+});
+
 test("Your deals toggles immediately and stays committed through quick filter reopen", async ({
   page,
 }) => {

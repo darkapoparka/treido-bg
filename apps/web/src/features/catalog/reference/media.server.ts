@@ -1561,6 +1561,43 @@ const media: Record<
     rect: [53, 365, 80, 80],
   },
   "brush-detail": { file: "screens/045.webp", rect: [0, 184, 393, 161] },
+  "search-filter-arrow-store": {
+    file: "flows/0344c453-dece-4e8d-bb54-68f6e551b83f/010.webp",
+    rect: [16, 163, 174, 190],
+    occlusions: [
+      [10, 121, 68, 23],
+      [0, 144, 174, 46],
+    ],
+    photoRadius: 22,
+  },
+  "search-filter-american-store": {
+    file: "flows/0344c453-dece-4e8d-bb54-68f6e551b83f/010.webp",
+    rect: [197, 163, 174, 190],
+    occlusions: [
+      [10, 121, 78, 23],
+      [0, 144, 174, 46],
+    ],
+    photoRadius: 22,
+  },
+  "search-filter-store-continuation": {
+    file: "flows/0344c453-dece-4e8d-bb54-68f6e551b83f/010.webp",
+    rect: [377, 163, 16, 190],
+  },
+  "search-filter-valentino": {
+    file: "flows/0344c453-dece-4e8d-bb54-68f6e551b83f/010.webp",
+    rect: [24, 376, 133, 133],
+    circularOcclusions: [[107, 107, 17]],
+    photoRadius: 20,
+  },
+  "search-filter-lusoophy": {
+    file: "flows/0344c453-dece-4e8d-bb54-68f6e551b83f/010.webp",
+    rect: [161, 466, 36, 36],
+    photoRadius: 18,
+  },
+  "search-filter-givenchy": {
+    file: "flows/0344c453-dece-4e8d-bb54-68f6e551b83f/010.webp",
+    rect: [24, 585, 133, 110],
+  },
 };
 // Verified clean originals are an explicit local allowlist, never remote requests.
 const originals: Record<string, string> = {
