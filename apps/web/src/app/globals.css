@@ -776,6 +776,7 @@ h2 {
   background: var(--color-accent);
   padding: 3px 7px;
   border-radius: 20px;
+  font-weight: 500;
 }
 .store-promotion small {
   color: #b7b7b5;
@@ -876,6 +877,17 @@ h2 {
 }
 .store-recommendations .rating > span {
   color: #000;
+}
+.store-page .product-copy {
+  gap: 0.5px;
+}
+.store-hero-kitsch > .store-recommendations + .store-recommendations {
+  margin-top: 15px;
+  margin-bottom: 16px;
+  padding-bottom: 35px;
+}
+.store-hero-kitsch > .store-all-products {
+  padding-top: 17px;
 }
 .product-page {
   padding-top: 0;
@@ -2584,7 +2596,7 @@ h3 {
 }
 .store-collection-hero h1 {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 600;
 }
 .store-collection-hero a {
   font-size: 12px;
@@ -3448,8 +3460,10 @@ h3 {
   border-radius: 20px;
   padding: 2px 7px;
 }
-.store-collection-hero > img {
-  height: 186px;
+.store-collection-page:not([data-collection="best-sellers"])
+  .store-collection-hero
+  > img {
+  height: 240px;
   object-position: top;
 }
 .store-collection-hero > div {
@@ -3458,9 +3472,13 @@ h3 {
 }
 .store-collection-hero > .icon-button {
   position: absolute;
-  right: 16px;
-  bottom: 24px;
+  right: 6px;
+  bottom: 19px;
   background: transparent;
+}
+.store-collection-hero > .icon-button svg {
+  width: 22px;
+  height: 22px;
 }
 .store-collection-hero .collection-store {
   display: flex;
@@ -3478,6 +3496,11 @@ h3 {
 .store-criteria .selected {
   background: #343431;
   color: white;
+}
+.store-criteria .pill.selected[aria-pressed="true"] {
+  background: #343431;
+  color: white;
+  border-color: #343431;
 }
 .store-criteria .icon-button {
   background: #343431;

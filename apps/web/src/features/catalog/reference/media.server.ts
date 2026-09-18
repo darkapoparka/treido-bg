@@ -23,11 +23,21 @@ const media: Record<
     ])[];
     // Remove dark interface ink without clearing the photograph behind it.
     darkTextOcclusions?: readonly (readonly [number, number, number, number])[];
+    darkTextThreshold?: number;
     textOcclusionDilation?: number;
+    textOcclusionMode?: "transparent" | "inpaint";
     // Exclude the recorded card edge while retaining only its product photograph.
     photoRadius?: number;
     // Circular native controls are removed without erasing extra photo corners.
     circularOcclusions?: readonly (readonly [number, number, number])[];
+    // Pill controls preserve surrounding photography with their measured radius.
+    roundedOcclusions?: readonly (readonly [
+      number,
+      number,
+      number,
+      number,
+      number,
+    ])[];
   }
 > = {
   "beauty-curls-photo": {
@@ -1063,7 +1073,45 @@ const media: Record<
   },
 
   "store-shop-all": { file: "screens/125.webp", rect: [22, 130, 349, 175] },
-  "collection-new-hero": { file: "screens/050.webp", rect: [0, 103, 393, 186] },
+  "store-kitsch-default-hero": {
+    file: "flows/356a3c6b-0570-47ae-b0c5-949f06a6a6f6/001.webp",
+    rect: [0, 123, 393, 302],
+    roundedOcclusions: [[233, 17, 96, 44, 22]],
+    circularOcclusions: [
+      [38, 39, 23],
+      [87, 39, 23],
+      [355, 39, 23],
+    ],
+  },
+  "store-kitsch-followed-hero": {
+    file: "flows/356a3c6b-0570-47ae-b0c5-949f06a6a6f6/002.webp",
+    rect: [0, 123, 393, 302],
+    roundedOcclusions: [[233, 17, 98, 44, 22]],
+    circularOcclusions: [
+      [38, 39, 23],
+      [87, 39, 23],
+      [355, 39, 23],
+    ],
+  },
+  "store-kitsch-terracotta-recommendation": {
+    file: "flows/e85d0150-4fe9-4ee0-bde4-de17fe6da7df/001.webp",
+    rect: [175, 193, 135, 135],
+    circularOcclusions: [[107, 107, 17]],
+    photoRadius: 20,
+  },
+  "collection-new-hero": {
+    file: "flows/e85d0150-4fe9-4ee0-bde4-de17fe6da7df/002.webp",
+    rect: [0, 103, 393, 246],
+    darkTextOcclusions: [
+      [15, 185, 145, 40],
+      [44, 222, 76, 24],
+      [348, 187, 35, 39],
+    ],
+    darkTextThreshold: 128,
+    textOcclusionDilation: 1,
+    textOcclusionMode: "inpaint",
+    circularOcclusions: [[29, 235, 15]],
+  },
   "collection-yellow-partial": {
     file: "screens/050.webp",
     rect: [20, 680, 165, 81],
@@ -1071,6 +1119,19 @@ const media: Record<
   "collection-coffee-partial": {
     file: "screens/050.webp",
     rect: [208, 680, 165, 81],
+  },
+  "collection-new-summer-card": {
+    file: "flows/e85d0150-4fe9-4ee0-bde4-de17fe6da7df/002.webp",
+    rect: [16, 425, 175, 173],
+    occlusions: [[12, 10, 52, 20]],
+    circularOcclusions: [[147, 145, 17]],
+    photoRadius: 20,
+  },
+  "collection-new-gelato-card": {
+    file: "flows/e85d0150-4fe9-4ee0-bde4-de17fe6da7df/002.webp",
+    rect: [202, 425, 175, 173],
+    circularOcclusions: [[147, 145, 17]],
+    photoRadius: 20,
   },
   "sol-welcome-left": {
     file: "flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/003.webp",
@@ -1519,6 +1580,7 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
         entry.lightTextOcclusions?.length ||
         entry.darkTextOcclusions?.length ||
         entry.circularOcclusions?.length ||
+        entry.roundedOcclusions?.length ||
         entry.photoRadius
       ) {
         let cleanPhoto = await crop.ensureAlpha().png().toBuffer();
@@ -1571,7 +1633,7 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
                   pixels.data[offset + 2],
                 );
                 const isInk = dark
-                  ? high < 96 && high - low <= 32
+                  ? high < (entry.darkTextThreshold ?? 96) && high - low <= 32
                   : low >= 175 && high - low <= 28;
                 if (!isInk) continue;
                 for (let delta = -inkRadius; delta <= inkRadius; delta += 1) {
@@ -1589,11 +1651,140 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
                 }
               }
             }
+            if (entry.textOcclusionMode !== "inpaint") {
+              for (let row = 0; row < maskHeight; row += 1) {
+                for (let column = 0; column < maskWidth; column += 1) {
+                  if (!captionInk[row * maskWidth + column]) continue;
+                  const offset = ((top + row) * width + left + column) * 4;
+                  pixels.data[offset + 3] = 0;
+                }
+              }
+              continue;
+            }
+
+            const regionSize = maskWidth * maskHeight;
+            let currentRed = new Float32Array(regionSize),
+              currentGreen = new Float32Array(regionSize),
+              currentBlue = new Float32Array(regionSize);
+            let fallbackRed = 0,
+              fallbackGreen = 0,
+              fallbackBlue = 0,
+              fallbackSamples = 0;
             for (let row = 0; row < maskHeight; row += 1) {
               for (let column = 0; column < maskWidth; column += 1) {
-                if (!captionInk[row * maskWidth + column]) continue;
+                const local = row * maskWidth + column;
                 const offset = ((top + row) * width + left + column) * 4;
-                pixels.data[offset + 3] = 0;
+                currentRed[local] = pixels.data[offset];
+                currentGreen[local] = pixels.data[offset + 1];
+                currentBlue[local] = pixels.data[offset + 2];
+                if (!captionInk[local] && pixels.data[offset + 3] > 0) {
+                  fallbackRed += pixels.data[offset];
+                  fallbackGreen += pixels.data[offset + 1];
+                  fallbackBlue += pixels.data[offset + 2];
+                  fallbackSamples += 1;
+                }
+              }
+            }
+            const fallback = [
+              fallbackSamples ? fallbackRed / fallbackSamples : 127,
+              fallbackSamples ? fallbackGreen / fallbackSamples : 127,
+              fallbackSamples ? fallbackBlue / fallbackSamples : 127,
+            ];
+            const searchLimit = Math.max(4, Math.ceil(10 * scale));
+            for (let row = 0; row < maskHeight; row += 1) {
+              for (let column = 0; column < maskWidth; column += 1) {
+                const local = row * maskWidth + column;
+                if (!captionInk[local]) continue;
+                let red = 0,
+                  green = 0,
+                  blue = 0,
+                  samples = 0;
+                for (let radius = 1; radius <= searchLimit; radius += 1) {
+                  for (let deltaY = -radius; deltaY <= radius; deltaY += 1) {
+                    for (let deltaX = -radius; deltaX <= radius; deltaX += 1) {
+                      if (
+                        Math.max(Math.abs(deltaX), Math.abs(deltaY)) !== radius
+                      )
+                        continue;
+                      const sampleRow = row + deltaY,
+                        sampleColumn = column + deltaX;
+                      if (
+                        sampleRow < 0 ||
+                        sampleRow >= maskHeight ||
+                        sampleColumn < 0 ||
+                        sampleColumn >= maskWidth
+                      )
+                        continue;
+                      const sample = sampleRow * maskWidth + sampleColumn;
+                      if (captionInk[sample]) continue;
+                      red += currentRed[sample];
+                      green += currentGreen[sample];
+                      blue += currentBlue[sample];
+                      samples += 1;
+                    }
+                  }
+                  if (samples >= 6) break;
+                }
+                currentRed[local] = samples ? red / samples : fallback[0];
+                currentGreen[local] = samples ? green / samples : fallback[1];
+                currentBlue[local] = samples ? blue / samples : fallback[2];
+              }
+            }
+
+            let nextRed = new Float32Array(currentRed),
+              nextGreen = new Float32Array(currentGreen),
+              nextBlue = new Float32Array(currentBlue);
+            const passes = Math.max(
+              20,
+              Math.min(72, Math.ceil(Math.max(maskWidth, maskHeight) * 0.7)),
+            );
+            for (let pass = 0; pass < passes; pass += 1) {
+              for (let row = 0; row < maskHeight; row += 1) {
+                for (let column = 0; column < maskWidth; column += 1) {
+                  const local = row * maskWidth + column;
+                  if (!captionInk[local]) continue;
+                  let red = 0,
+                    green = 0,
+                    blue = 0,
+                    samples = 0;
+                  for (let deltaY = -1; deltaY <= 1; deltaY += 1) {
+                    for (let deltaX = -1; deltaX <= 1; deltaX += 1) {
+                      if (deltaX === 0 && deltaY === 0) continue;
+                      const sampleRow = row + deltaY,
+                        sampleColumn = column + deltaX;
+                      if (
+                        sampleRow < 0 ||
+                        sampleRow >= maskHeight ||
+                        sampleColumn < 0 ||
+                        sampleColumn >= maskWidth
+                      )
+                        continue;
+                      const sample = sampleRow * maskWidth + sampleColumn;
+                      red += currentRed[sample];
+                      green += currentGreen[sample];
+                      blue += currentBlue[sample];
+                      samples += 1;
+                    }
+                  }
+                  if (!samples) continue;
+                  nextRed[local] = red / samples;
+                  nextGreen[local] = green / samples;
+                  nextBlue[local] = blue / samples;
+                }
+              }
+              [currentRed, nextRed] = [nextRed, currentRed];
+              [currentGreen, nextGreen] = [nextGreen, currentGreen];
+              [currentBlue, nextBlue] = [nextBlue, currentBlue];
+            }
+            for (let row = 0; row < maskHeight; row += 1) {
+              for (let column = 0; column < maskWidth; column += 1) {
+                const local = row * maskWidth + column;
+                if (!captionInk[local]) continue;
+                const offset = ((top + row) * width + left + column) * 4;
+                pixels.data[offset] = Math.round(currentRed[local]);
+                pixels.data[offset + 1] = Math.round(currentGreen[local]);
+                pixels.data[offset + 2] = Math.round(currentBlue[local]);
+                pixels.data[offset + 3] = 255;
               }
             }
           }
@@ -1623,6 +1814,14 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
           photoCutouts.push({
             input: Buffer.from(
               `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">${entry.circularOcclusions.map(([x, y, radius]) => `<circle cx="${x * scale}" cy="${y * scale}" r="${radius * scale}" fill="white"/>`).join("")}</svg>`,
+            ),
+            blend: "dest-out",
+          });
+        }
+        if (entry.roundedOcclusions?.length) {
+          photoCutouts.push({
+            input: Buffer.from(
+              `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">${entry.roundedOcclusions.map(([x, y, w, h, radius]) => `<rect x="${x * scale}" y="${y * scale}" width="${w * scale}" height="${h * scale}" rx="${radius * scale}" fill="white"/>`).join("")}</svg>`,
             ),
             blend: "dest-out",
           });

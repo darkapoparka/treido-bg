@@ -1,6 +1,6 @@
 .page,
 .filter {
-  font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 .page :global(.store-actions) {
   gap: 8px;
@@ -42,9 +42,19 @@
 }
 .store :global(.store-hero-kitsch) {
   background:
-    linear-gradient(to bottom, transparent 140px, #c2bfb5 340px),
-    url("/api/reference-media/store-hero") center -28px / 100% auto no-repeat,
+    url("/api/reference-media/store-kitsch-default-hero") center top / 100%
+      302px no-repeat,
     #c2bfb5;
+}
+.store :global(.store-hero-kitsch.store-hero-followed) {
+  background:
+    url("/api/reference-media/store-kitsch-followed-hero") center top / 100%
+      302px no-repeat,
+    #c2bfb5;
+}
+.store :global(.store-hero-kitsch .store-brand > span),
+.store :global(.store-hero-kitsch .store-brand > a) {
+  visibility: hidden;
 }
 .store :global(.store-brand) > span > svg {
   display: block;
@@ -95,7 +105,8 @@
 .collection :global(.product-copy) > strong {
   font-weight: 500;
 }
-.collection :global(.product-copy .rating) {
+.collection :global(.product-copy .rating),
+.collection :global(.product-copy .rating > span) {
   color: #080808;
 }
 .collection[data-collection="best-sellers"] :global(.store-collection-hero) {

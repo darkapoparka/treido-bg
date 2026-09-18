@@ -46,15 +46,15 @@ The existing `home-overlays.spec.ts` and `home-discovery-continuity.spec.ts` pas
 
 Run `.qa/shop-parity/runs/20260917-home-recent-cart/` scored **6/6**, zero browser errors, at 393x793 using Edge and the existing `http://127.0.0.1:6412` preview. Node 22.22.0 remains below the declared 24.x qualification runtime. Against `20260917-home-dock-fade`, MAE percentages are:
 
-| Frame | Previous | Recent cart | Delta (percentage points) |
-| --- | ---: | ---: | ---: |
-| f002-001 | 5.634 | 5.634 | 0.000 |
-| f002-002 | 4.764 | 4.498 | -0.266 |
-| f002-003 | 3.345 | 3.342 | -0.003 |
-| f002-004 | 7.012 | 7.012 | 0.000 |
-| f002-005 | 5.524 | 5.524 | 0.000 |
-| f002-006 | 2.975 | 2.975 | 0.000 |
-| Mean | 4.876 | 4.831 | -0.045 |
+| Frame    | Previous | Recent cart | Delta (percentage points) |
+| -------- | -------: | ----------: | ------------------------: |
+| f002-001 |    5.634 |       5.634 |                     0.000 |
+| f002-002 |    4.764 |       4.498 |                    -0.266 |
+| f002-003 |    3.345 |       3.342 |                    -0.003 |
+| f002-004 |    7.012 |       7.012 |                     0.000 |
+| f002-005 |    5.524 |       5.524 |                     0.000 |
+| f002-006 |    2.975 |       2.975 |                     0.000 |
+| Mean     |    4.876 |       4.831 |                    -0.045 |
 
 No measured MAE regressions. f002-002 bad-pixel decreases 19.203% -> 18.618%; f002-004 remains worst at 27.328% bad-pixel. All six frames still exceed the unchanged 1.5% MAE threshold. The new f002-002 reference/live pair confirms the bottom-right Open cart placement; the shared cart glyph shape/color and surrounding imagery remain visibly different, including the incomplete DRMTLGY tile. This inspection does not establish a link between that tile and the three original-media hash failures. Typography and dock fade fitting also remain open; placement is not 1:1 acceptance. The earlier f002-004 pair review belongs to `20260917-home-dock-fade`, not this run.
 
@@ -82,21 +82,39 @@ Tasks 3/5/6 now extend `0ce33c8452488bfc516571ff33bc49969ab35583` on `main`. The
 
 The retained comparison is `.qa/shop-parity/runs/20260918-home-polish-2-final/`: **6/6 scored**, zero browser-error rows, Chromium at 393x793 against the isolated `http://127.0.0.1:6414` production preview on Node 24.21.0. Against the documented `20260917-mountain-fullbleed-family` checkpoint:
 
-| Frame | Mountain checkpoint | Current | Delta (percentage points) |
-| --- | ---: | ---: | ---: |
-| f002-001 | 5.634 | 4.685 | -0.949 |
-| f002-002 | 4.498 | 3.572 | -0.926 |
-| f002-003 | 3.346 | 3.170 | -0.176 |
-| f002-004 | 5.351 | 4.932 | -0.419 |
-| f002-005 | 5.524 | 4.099 | -1.425 |
-| f002-006 | 2.975 | 2.669 | -0.306 |
-| Mean | 4.555 | 3.855 | -0.700 |
+| Frame    | Mountain checkpoint | Current | Delta (percentage points) |
+| -------- | ------------------: | ------: | ------------------------: |
+| f002-001 |               5.634 |   4.685 |                    -0.949 |
+| f002-002 |               4.498 |   3.572 |                    -0.926 |
+| f002-003 |               3.346 |   3.170 |                    -0.176 |
+| f002-004 |               5.351 |   4.932 |                    -0.419 |
+| f002-005 |               5.524 |   4.099 |                    -1.425 |
+| f002-006 |               2.975 |   2.669 |                    -0.306 |
+| Mean     |               4.555 |   3.855 |                    -0.700 |
 
 Rejected and reverted with complete flow-2 captures: the welcome-specific DRMTLGY footer source worsened f002-001 to **4.915%**; shortcut weight-only and 10px/12px padding variants were worse than the retained 11px fit. The accessory-heart addition improved f002-005 **4.389% -> 4.293%**; restoring the source-dark backing behind its live controls further improved it to **4.099%**. Neutral secondary and 0.01em heading letter spacing improved f002-001/002/003/004 to **4.685 / 3.572 / 3.170 / 4.932%**. Routes, catalog state and sibling frame structure remain unchanged.
 
 The isolated production build passed TypeScript and generated 39 routes. The complete focused `home-discovery-continuity` + `home-overlays` suite passes **18/18 (22.4s)**, including source-card selection, shortcut containment, filled-cart rendering, accessory visual controls, product saving, four cart dismissal paths, campaign return focus and 320/393/430 containment. Correctly scoped web/test ESLint, Prettier, documentation integrity and `git diff --check` all passed.
 
 All six frames remain above the unchanged 1.5% threshold. Remaining Home work includes DRMTLGY/Mountain photo and typography residuals, incomplete source pixels, campaign/header differences and the pending same-source full-corpus rerun. Full application suite, CI and motion review were not rerun; the three original-media hash failures, 16 video obligations and owner acceptance **0/97** remain open. Next: continue with f002-004 and f002-001, then run the outstanding full-source capture and verification.
+
+### Storefront source-fitting checkpoint, 2026-09-18
+
+Tasks 3/5/6 resumed over `f8820e98b61beccf97d1d75662be8e657b821970` on `main`. The retained storefront batch replaces the generic Kitsch hero approximation with two measured source compositions from flow 41: `store-kitsch-default-hero` from frame 1 and `store-kitsch-followed-hero` from frame 2, both using rect `[0,123,393,302]`. Rounded/circular source control regions are removed while the corresponding menu, search, Follow and share controls remain canonical live DOM. Follow state selects the second composition; navigation and account state remain connected.
+
+The media handler now supports bounded rounded-control cutouts and bounded diffusion for duplicate captured text. What's New keeps the source photograph under live title/share/store controls without the previous transparent holes, restores the source-selected In-stock badge, and aligns its share control and promotion typography. The same batch wires the recovered Terracotta recommendation and What's New source product cards, adjusts collection hero height/title weight/card typography, and preserves real filter semantics. It deliberately does not fabricate unavailable sale metadata: flow 16 frame 5 therefore still shows the real filtered sample rather than painting the source's regular-price inventory.
+
+The retained run is `20260918-store-header-badges-retained`:
+
+| Frame                        | Before | Current | Delta (percentage points) |
+| ---------------------------- | -----: | ------: | ------------------------: |
+| f041-001 default storefront  |  6.245 |   3.418 |                    -2.827 |
+| f041-002 followed storefront |  8.857 |   3.545 |                    -5.312 |
+| Mean                         |  7.551 |   3.482 |                    -4.069 |
+
+The same run scores flow 14 at **4.984 / 4.601 / 5.470%**. Other fresh storefront-family runs are `20260918-store-flow16-inpaint`, `20260918-store-flow40-inpaint`, `20260918-store-flow96-inpaint` and `20260918-store-flow97-inpaint`. Flow 16 frame 5 remains **9.073%** because the source presents products as though the drafted On sale filter did not remove them, while the available fixtures contain no lawful compare-at facts for those products. The recipe and real filtering remain unchanged rather than manufacturing a visual pass. Chemical Guys video/partial-media states and source-specific store search results remain separate high residuals.
+
+The isolated production build passed TypeScript and generated 39 routes. `storefront-journeys.spec.ts` passes **10/10 (18.9s)**, including exact default/followed hero switching, real Follow persistence, filter drafts, nested price history, collection filtering, store search history, first-save collection behavior and 320/393/430 containment. Prettier, correctly scoped ESLint, documentation integrity and `git diff --check` are the closeout checks for this batch. All measured storefront frames remain above the 1.5% acceptance threshold; full application suite, CI, motion review, the three original-media hash failures and owner acceptance **0/97** remain open.
 
 ## Open source obligations
 

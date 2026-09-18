@@ -382,7 +382,7 @@ export function Storefront({
   catalog: Catalog;
 }) {
   const [cart, setCart] = useState(false);
-  const { viewStore, reportedProducts } = useDiscovery();
+  const { viewStore, reportedProducts, followed } = useDiscovery();
   const params = useSearchParams();
   const reported = params.get("reported");
   const [dismissedReport, setDismissedReport] = useState<string | null>(null);
@@ -390,7 +390,8 @@ export function Storefront({
     viewStore(store.id);
   }, [store.id, viewStore]);
   const isKitsch = store.id === "kitsch",
-    chemical = store.id === "chemical-guys";
+    chemical = store.id === "chemical-guys",
+    followedKitsch = isKitsch && followed.includes(store.id);
   const recommendationsAnchor = useRef<HTMLElement>(null);
   const [chemicalPinned, setChemicalPinned] = useState(false);
   useEffect(() => {
@@ -429,11 +430,15 @@ export function Storefront({
           {
             ...product,
             images:
-              chemical && product.id === "chemical-clean-trim"
-                ? ["/api/reference-media/chemical-store-trim-photo"]
-                : chemical && product.id === "chemical-easy-clean"
-                  ? ["/api/reference-media/chemical-store-protect-photo"]
-                  : product.images,
+              isKitsch && product.id === "terracotta"
+                ? [
+                    "/api/reference-media/store-kitsch-terracotta-recommendation",
+                  ]
+                : chemical && product.id === "chemical-clean-trim"
+                  ? ["/api/reference-media/chemical-store-trim-photo"]
+                  : chemical && product.id === "chemical-easy-clean"
+                    ? ["/api/reference-media/chemical-store-protect-photo"]
+                    : product.images,
             ratingCount:
               "ratingCount" in item && item.ratingCount !== undefined
                 ? item.ratingCount
@@ -453,7 +458,9 @@ export function Storefront({
           <StoreCategoryRail store={store} />
         </div>
       )}
-      <section className={`store-hero${isKitsch ? " store-hero-kitsch" : ""}`}>
+      <section
+        className={`store-hero${isKitsch ? " store-hero-kitsch" : ""}${followedKitsch ? " store-hero-followed" : ""}`}
+      >
         <div
           className={styles.storeHeader}
           inert={chemical && chemicalPinned}
@@ -612,6 +619,19 @@ export function StoreCollection({
           : slug === "shampoo-conditioner-combo-packs"
             ? ordered(catalog, ["rice-bundle"])
             : [];
+  const presentedProducts = products.map((product) =>
+    slug === "whats-new" && product.id === "summer-mystery-box"
+      ? {
+          ...product,
+          images: ["/api/reference-media/collection-new-summer-card"],
+        }
+      : slug === "whats-new" && product.id === "beachy-gelato"
+        ? {
+            ...product,
+            images: ["/api/reference-media/collection-new-gelato-card"],
+          }
+        : product,
+  );
   const [notice, setNotice] = useState("");
   return (
     <ShopSurface
@@ -651,7 +671,7 @@ export function StoreCollection({
         />
       </div>
       <StoreCriteria />
-      <StoreGrid products={products} heading={false} promotions />
+      <StoreGrid products={presentedProducts} heading={false} promotions />
       {slug === "whats-new" && (
         <div
           className="collection-partial-products"

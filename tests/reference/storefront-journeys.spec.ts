@@ -84,6 +84,61 @@ async function visitSaved(page: Page) {
   await expect(page).toHaveURL(/\/saved$/);
 }
 
+test("Kitsch store and collection use the captured source media geometry", async ({
+  page,
+  baseURL,
+}) => {
+  await openScenario(page, baseURL, store);
+  const defaultHero = page.locator(".store-hero-kitsch");
+  await expect(defaultHero).toHaveCount(1);
+  await expect
+    .poll(() =>
+      defaultHero.evaluate(
+        (element) => getComputedStyle(element).backgroundImage,
+      ),
+    )
+    .toContain("store-kitsch-default-hero");
+  await expect(
+    page.locator('.store-recommendations a[href="/products/terracotta"] img'),
+  ).toHaveAttribute(
+    "src",
+    "/api/reference-media/store-kitsch-terracotta-recommendation",
+  );
+  await page.goto("/stores/kitsch/collections/whats-new");
+  const hero = page.locator(".store-collection-hero > img");
+  await expect(hero).toHaveAttribute(
+    "src",
+    "/api/reference-media/collection-new-hero",
+  );
+  await expect(hero).toHaveCSS("height", "240px");
+  await expect(
+    page.locator(".product-grid .product-card").first().locator("img"),
+  ).toHaveAttribute("src", "/api/reference-media/collection-new-summer-card");
+  await expect(page.locator(".product-grid .rating > span").first()).toHaveCSS(
+    "color",
+    "rgb(8, 8, 8)",
+  );
+});
+
+test("following Kitsch swaps to the captured followed storefront hero", async ({
+  page,
+  baseURL,
+}) => {
+  await openScenario(page, baseURL, store, "following-pair");
+  const follow = page.locator(".store-actions .follow").first();
+  await expect(follow).toBeVisible();
+  if ((await follow.getAttribute("aria-pressed")) !== "true")
+    await follow.click();
+  await expect(follow).toHaveAttribute("aria-pressed", "true");
+  const hero = page.locator(".store-hero-followed");
+  await expect(hero).toHaveCount(1);
+  await expect
+    .poll(() =>
+      hero.evaluate((element) => getComputedStyle(element).backgroundImage),
+    )
+    .toContain("store-kitsch-followed-hero");
+});
+
 test("store filter drafts do not change committed criteria or results before Done", async ({
   page,
   baseURL,
