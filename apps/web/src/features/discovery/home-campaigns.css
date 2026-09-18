@@ -241,6 +241,12 @@
   border-radius: 50%;
   pointer-events: none;
 }
+.campaign-accessory-dark {
+  background: #1f2220;
+}
+.campaign-accessory-dark .campaign-source-save {
+  background: #b3b3b3;
+}
 .campaign-cta {
   position: absolute;
   bottom: 16px;

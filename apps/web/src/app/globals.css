@@ -1214,12 +1214,12 @@ html {
 }
 .email-card > span {
   font-size: 12px;
-  letter-spacing: -0.025em;
+  letter-spacing: 0;
 }
 .email-card strong {
   font-weight: 600;
   font-size: 14px;
-  letter-spacing: -0.035em;
+  letter-spacing: 0.01em;
   white-space: nowrap;
 }
 .email-card > img {

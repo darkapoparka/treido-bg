@@ -258,6 +258,7 @@ test("the returning campaign uses six real product cards and preserves saving", 
   );
   await expect(accessoryHearts).toHaveCount(2);
   await expect(accessoryHearts.locator("svg")).toHaveCount(2);
+  await expect(accessories.locator(".campaign-accessory-dark")).toHaveCount(1);
   await expect(accessories.getByRole("button")).toHaveCount(1);
   await expect(
     page.getByRole("navigation", { name: "Main navigation" }).getByRole("link"),

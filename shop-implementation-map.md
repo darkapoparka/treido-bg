@@ -76,23 +76,23 @@ Final targeted dock-fade check passed 1/1 in 2.4s with captured exit code 0 (`do
 
 ### Home source-fitting checkpoint, 2026-09-18
 
-Tasks 3/5/6 resumed over `18159a7215a79dd555cf6b64cf706fcaf7ac9536` on `main`. The retained batch keeps Home controls in canonical DOM while recovering more lawful source photography. `media.server.ts` adds trailing photo regions for Princess Polly, Loaded Tea and Accessories, a full Home-only DRMTLGY recent-store crop, and selective light/dark ink masks that preserve photograph pixels outside captured labels. The Mountain full-bleed crops remain unchanged. Unknown trailing product identities still decorate existing store/search links; no products, prices or provider results were invented.
+Tasks 3/5/6 now extend `0ce33c8452488bfc516571ff33bc49969ab35583` on `main`. The retained batch keeps Home controls in canonical DOM while recovering more lawful source photography. `media.server.ts` adds trailing photo regions for Princess Polly, Loaded Tea and Accessories, a full Home-only DRMTLGY recent-store crop, and selective light/dark ink masks that preserve photograph pixels outside captured labels. The Mountain full-bleed crops remain unchanged. Unknown trailing product identities still decorate existing store/search links; no products, prices or provider results were invented.
 
-`home-campaigns.tsx` shares the trailing-photo mapping, renders the recovered Accessories sliver, and restores the two visible accessory-heart controls as non-interactive DOM visuals because those source products lack trustworthy identities. `search-recent.tsx` now selects the full DRMTLGY source card only for the Home surface, leaving Search history's distinct captured continuation intact. The floating dock uses a filled source-fitted cart glyph, and the Home shortcut pills use the measured 500 weight with 11px horizontal padding. All navigation, cart dismissal, real product Save behavior and campaign return state remain connected.
+`home-campaigns.tsx` shares the trailing-photo mapping, renders the recovered Accessories sliver, and restores the two visible accessory-heart controls as non-interactive DOM visuals because those source products lack trustworthy identities. `search-recent.tsx` now selects the full DRMTLGY source card only for the Home surface, leaving Search history's distinct captured continuation intact. The floating dock uses a filled source-fitted cart glyph, the Home shortcut pills use the measured 500 weight with 11px horizontal padding, the captured sunglasses card restores its dark backing behind the live price/heart controls, and the email card uses the measured neutral/0.01em letter spacing. All navigation, cart dismissal, real product Save behavior and campaign return state remain connected.
 
-The retained comparison is `.qa/shop-parity/runs/20260918-accessory-hearts/`: **6/6 scored**, zero browser-error rows, Chromium at 393x793 against the isolated `http://127.0.0.1:6414` production preview on Node 24.21.0. Against the documented `20260917-mountain-fullbleed-family` checkpoint:
+The retained comparison is `.qa/shop-parity/runs/20260918-home-polish-2-final/`: **6/6 scored**, zero browser-error rows, Chromium at 393x793 against the isolated `http://127.0.0.1:6414` production preview on Node 24.21.0. Against the documented `20260917-mountain-fullbleed-family` checkpoint:
 
 | Frame | Mountain checkpoint | Current | Delta (percentage points) |
 | --- | ---: | ---: | ---: |
-| f002-001 | 5.634 | 4.717 | -0.917 |
-| f002-002 | 4.498 | 3.590 | -0.908 |
-| f002-003 | 3.346 | 3.185 | -0.161 |
-| f002-004 | 5.351 | 4.947 | -0.404 |
-| f002-005 | 5.524 | 4.293 | -1.231 |
+| f002-001 | 5.634 | 4.685 | -0.949 |
+| f002-002 | 4.498 | 3.572 | -0.926 |
+| f002-003 | 3.346 | 3.170 | -0.176 |
+| f002-004 | 5.351 | 4.932 | -0.419 |
+| f002-005 | 5.524 | 4.099 | -1.425 |
 | f002-006 | 2.975 | 2.669 | -0.306 |
-| Mean | 4.555 | 3.900 | -0.655 |
+| Mean | 4.555 | 3.855 | -0.700 |
 
-Rejected and reverted with complete flow-2 captures: the welcome-specific DRMTLGY footer source worsened f002-001 to **4.915%**; shortcut weight-only and 10px/12px padding variants were worse than the retained 11px fit. The final accessory-heart addition improved f002-005 **4.389% -> 4.293%** without changing routes, catalog state or sibling frame structure.
+Rejected and reverted with complete flow-2 captures: the welcome-specific DRMTLGY footer source worsened f002-001 to **4.915%**; shortcut weight-only and 10px/12px padding variants were worse than the retained 11px fit. The accessory-heart addition improved f002-005 **4.389% -> 4.293%**; restoring the source-dark backing behind its live controls further improved it to **4.099%**. Neutral secondary and 0.01em heading letter spacing improved f002-001/002/003/004 to **4.685 / 3.572 / 3.170 / 4.932%**. Routes, catalog state and sibling frame structure remain unchanged.
 
 The isolated production build passed TypeScript and generated 39 routes. The complete focused `home-discovery-continuity` + `home-overlays` suite passes **18/18 (22.4s)**, including source-card selection, shortcut containment, filled-cart rendering, accessory visual controls, product saving, four cart dismissal paths, campaign return focus and 320/393/430 containment. Correctly scoped web/test ESLint, Prettier, documentation integrity and `git diff --check` all passed.
 

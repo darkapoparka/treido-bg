@@ -465,7 +465,7 @@ export function HomeCampaigns({
                     ].map(([image, price, was], index) => (
                       <Link
                         href="/search"
-                        className={`campaign-product campaign-partial-product ${index === 2 ? "campaign-source-sliver" : ""}`}
+                        className={`campaign-product campaign-partial-product ${index === 1 ? "campaign-accessory-dark" : ""} ${index === 2 ? "campaign-source-sliver" : ""}`}
                         key={price}
                         aria-label="Browse accessories"
                         data-home-campaign-return={`accessory-${index}`}
