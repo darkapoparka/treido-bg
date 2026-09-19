@@ -679,6 +679,29 @@ const media: Record<
     rect: [192, 513, 108, 72],
     occlusions: [[99, 65, 9, 7]],
   },
+  // Feedback uses a different photographic crop from the answer shelf.
+  // Native vote controls are removed; the clean shelf photo fills only those
+  // covered pixels, and both voting controls remain live DOM elements.
+  "assistant-feedback-signature": {
+    file: "flows/2e218159-702e-4708-b9aa-270dbca77f0b/002.webp",
+    rect: [36, 481, 140, 141],
+    photoRadius: 8,
+    circularOcclusions: [
+      [109, 59, 23],
+      [109, 109, 23],
+    ],
+    underlayKey: "assistant-white-square",
+  },
+  "assistant-feedback-urban": {
+    file: "flows/2e218159-702e-4708-b9aa-270dbca77f0b/002.webp",
+    rect: [188, 481, 140, 141],
+    photoRadius: 8,
+    circularOcclusions: [
+      [109, 59, 23],
+      [109, 109, 23],
+    ],
+    underlayKey: "assistant-black-square",
+  },
   "assistant-white-square": {
     file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/002.webp",
     rect: [18, 386, 148, 148],
@@ -703,6 +726,7 @@ const media: Record<
     rect: [26, 372, 162, 162],
     occlusions: [[54, 144, 48, 18]],
     circularOcclusions: [[136, 136, 18]],
+    underlayKey: "assistant-white-square",
   },
   "profile-empty-package": {
     file: "flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/002.webp",

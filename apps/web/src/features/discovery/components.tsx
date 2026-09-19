@@ -2,7 +2,13 @@
 /* eslint-disable @next/next/no-img-element -- Local allowlisted reference crops. */
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useId, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useId,
+  type ReactNode,
+  type PointerEvent,
+} from "react";
 import { Icon, type IconName } from "./icons";
 import { ReviewStars } from "./rating-stars";
 import { useDiscovery } from "./state";
@@ -306,6 +312,7 @@ export function Sheet({
   children,
   className = "",
   headerless = false,
+  dragHandle = false,
   initialFocus,
   manageHistory = true,
 }: {
@@ -315,6 +322,7 @@ export function Sheet({
   children: ReactNode;
   className?: string;
   headerless?: boolean;
+  dragHandle?: boolean;
   initialFocus?: string;
   // URL-owned stages already have an entry; only local overlays add one.
   manageHistory?: boolean;
@@ -324,10 +332,57 @@ export function Sheet({
   const router = useRouter();
   const navigating = useRef(false);
   const titleId = useId();
-  const drag = useRef<{ y: number; time: number; distance: number } | null>(
-    null,
-  );
+  const drag = useRef<{
+    pointerId: number;
+    y: number;
+    time: number;
+    distance: number;
+  } | null>(null);
   const closeRef = useRef(onClose);
+  const resetDrag = () => {
+    drag.current = null;
+    if (ref.current) ref.current.style.transform = "";
+  };
+  const dragHandlers = {
+    onPointerDown(e: PointerEvent<HTMLDivElement>) {
+      if (
+        e.button !== 0 ||
+        drag.current ||
+        (e.target as HTMLElement).closest("button,a,input,textarea,select")
+      )
+        return;
+      drag.current = {
+        pointerId: e.pointerId,
+        y: e.clientY,
+        time: performance.now(),
+        distance: 0,
+      };
+      e.currentTarget.setPointerCapture(e.pointerId);
+      if (ref.current) ref.current.style.animation = "none";
+    },
+    onPointerMove(e: PointerEvent<HTMLDivElement>) {
+      if (drag.current?.pointerId !== e.pointerId || !ref.current) return;
+      drag.current.distance = Math.max(0, e.clientY - drag.current.y);
+      ref.current.style.transform = `translateY(${drag.current.distance}px)`;
+    },
+    onPointerUp(e: PointerEvent<HTMLDivElement>) {
+      const gesture = drag.current;
+      if (!gesture || gesture.pointerId !== e.pointerId) return;
+      resetDrag();
+      if (e.currentTarget.hasPointerCapture(e.pointerId))
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      const velocity =
+        gesture.distance / Math.max(1, performance.now() - gesture.time);
+      if (gesture.distance > 80 || (gesture.distance > 35 && velocity > 0.6))
+        closeRef.current();
+    },
+    onPointerCancel(e: PointerEvent<HTMLDivElement>) {
+      if (drag.current?.pointerId === e.pointerId) resetDrag();
+    },
+    onLostPointerCapture(e: PointerEvent<HTMLDivElement>) {
+      if (drag.current?.pointerId === e.pointerId) resetDrag();
+    },
+  };
   useEffect(() => {
     closeRef.current = onClose;
   }, [onClose]);
@@ -335,6 +390,7 @@ export function Sheet({
     const el = ref.current;
     if (!el || !ready) return;
     if (!open) {
+      drag.current = null;
       if (el.open) el.close();
       el.style.transform = "";
       el.style.animation = "";
@@ -481,53 +537,22 @@ export function Sheet({
       }}
     >
       {headerless ? (
-        <h2 id={titleId} className="sr-only">
-          {title}
-        </h2>
+        <>
+          <h2 id={titleId} className="sr-only">
+            {title}
+          </h2>
+          {dragHandle && (
+            <div
+              className="sheet-drag-handle"
+              aria-hidden="true"
+              {...dragHandlers}
+            >
+              <span />
+            </div>
+          )}
+        </>
       ) : (
-        <div
-          className="sheet-header"
-          onPointerDown={(e) => {
-            if (
-              e.button !== 0 ||
-              (e.target as HTMLElement).closest("button,a,input")
-            )
-              return;
-            drag.current = {
-              y: e.clientY,
-              time: performance.now(),
-              distance: 0,
-            };
-            e.currentTarget.setPointerCapture(e.pointerId);
-            if (ref.current) ref.current.style.animation = "none";
-          }}
-          onPointerMove={(e) => {
-            if (!drag.current || !ref.current) return;
-            drag.current.distance = Math.max(0, e.clientY - drag.current.y);
-            ref.current.style.transform = `translateY(${drag.current.distance}px)`;
-          }}
-          onPointerUp={(e) => {
-            const gesture = drag.current;
-            drag.current = null;
-            if (!gesture) return;
-            e.currentTarget.releasePointerCapture(e.pointerId);
-            if (ref.current) {
-              ref.current.style.transform = "";
-              ref.current.style.animation = "none";
-            }
-            const velocity =
-              gesture.distance / Math.max(1, performance.now() - gesture.time);
-            if (
-              gesture.distance > 80 ||
-              (gesture.distance > 35 && velocity > 0.6)
-            )
-              closeRef.current();
-          }}
-          onPointerCancel={() => {
-            drag.current = null;
-            if (ref.current) ref.current.style.transform = "";
-          }}
-        >
+        <div className="sheet-header" {...dragHandlers}>
           <h2 id={titleId}>{title}</h2>
           <IconButton icon="close" label={`Close ${title}`} onClick={onClose} />
         </div>

@@ -745,6 +745,7 @@ export function Search({
         open={answerOpen}
         title="Jeans answer"
         headerless
+        dragHandle
         className={styles.answerSheet}
         onClose={closeAnswer}
         manageHistory={false}

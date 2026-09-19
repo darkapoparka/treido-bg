@@ -544,17 +544,27 @@
   padding: 0;
   overflow: hidden;
 }
-.answerSheet::before {
-  content: "";
+.answerSheet::backdrop {
+  background: rgb(0 0 0 / 51%);
+}
+.answerSheet > :global(.sheet-drag-handle) {
   position: absolute;
-  top: 10px;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
+  width: 96px;
+  height: 32px;
+  touch-action: none;
+  user-select: none;
+  z-index: 5;
+}
+.answerSheet > :global(.sheet-drag-handle) > span {
+  display: block;
   width: 36px;
   height: 4px;
+  margin: 8px auto 0;
   border-radius: 4px;
   background: #e6e6e6;
-  z-index: 2;
 }
 .assistantStandalone {
   padding: 0;
@@ -565,7 +575,7 @@
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
 }
 .embeddedAnswer:global(.assistant-page) {
-  padding-top: 40px;
+  padding-top: 39px;
   height: 100%;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -596,7 +606,7 @@
   text-underline-offset: 4px;
 }
 .answerBody > h2 {
-  font-size: 20px;
+  font-size: 19px;
   line-height: 24px;
   letter-spacing: -0.5px;
   margin: 20px 0 2px;
@@ -613,6 +623,9 @@
 }
 .embeddedAnswer > :global(.form-note) {
   margin-bottom: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
 }
 .answerBody :global(.assistant-edit) {
   position: sticky;
@@ -676,7 +689,7 @@
 .answerBody :global(.assistant-product-rail) article > span,
 .answerBody :global(.assistant-product-rail) b {
   font-size: 12px;
-  line-height: 15px;
+  line-height: 16px;
   margin: 0 4px;
   font-weight: 400;
 }
@@ -769,6 +782,9 @@
   flex: none;
   background: #fff;
 }
+.embeddedAnswer :global(.assistant-composer) {
+  bottom: calc(36px + env(safe-area-inset-bottom));
+}
 .embeddedAnswer :global(.assistant-composer) > :global(.icon-button) {
   border: 1px solid #f1f1f1;
   background: #ffffffed;
@@ -777,22 +793,66 @@
 .feedbackSheet:global(.assistant-feedback-sheet) {
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
   padding: 20px 16px 16px;
+  bottom: 34px;
+}
+.feedbackSheet > :global(.sheet-header) {
+  min-height: 32px;
+  align-items: flex-start;
+}
+.feedbackSheet > :global(.sheet-header) > :global(.icon-button) {
+  width: 24px;
+  height: 24px;
+  margin-top: 4px;
+  padding: 5px;
+  background: #f0f1f2;
+  color: #74787b;
+}
+.feedbackSheet > :global(.sheet-header) > :global(.icon-button) svg {
+  width: 14px;
+  height: 14px;
+}
+.feedbackSheet > p,
+.feedbackSheet > label,
+.feedbackSheet > :global(.sheet-actions) {
+  margin-inline: 4px;
+}
+.feedbackSheet > p,
+.feedbackSheet > label {
+  line-height: 19px;
+}
+.feedbackSheet > :global(.sheet-actions) > button {
+  height: 46px;
+  font-size: 16px;
+  line-height: 20px;
 }
 .feedbackSheet :global(.feedback-products) {
   flex: none;
+  margin-left: 4px;
+  margin-right: -16px;
 }
 .feedbackSheet :global(.feedback-products) img {
   width: 140px;
   height: 140px;
   object-fit: contain;
+  border-radius: 8px;
   background: #ded7eb;
 }
 .feedbackSheet :global(.feedback-products) button {
-  right: 12px;
+  right: 8px;
   top: 36px;
+  color: white;
+  background: #8b8d90ad;
+}
+.feedbackSheet :global(.feedback-products) button[aria-pressed="true"] {
+  background: #008b56;
 }
 .feedbackSheet :global(.feedback-products) button + button {
   top: 86px;
+}
+.feedbackSheet :global(.feedback-products) button svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.8;
 }
 .feedbackSheet textarea {
   display: block;
@@ -801,6 +861,15 @@
   margin-top: 8px;
   padding: 12px;
   font: inherit;
+  font-size: 16px;
+  line-height: 20px;
+  border-color: #ddd;
+  resize: none;
+}
+.feedbackSheet textarea:focus-visible {
+  outline: none;
+  border-color: #ddd;
+  box-shadow: none;
 }
 .feedbackToast:global(.local-toast) {
   z-index: 7;
@@ -1264,8 +1333,12 @@
   border-radius: 50%;
   background: #bdbdbd;
 }
-.photoPagination i:first-child {
+.photoPagination i[data-current="true"] {
   background: #797979;
+}
+.answerPagination {
+  left: calc(50% - 4px);
+  transform: translateX(-50%);
 }
 .photoAnswer :global(.assistant-composer) {
   bottom: calc(36px + env(safe-area-inset-bottom));

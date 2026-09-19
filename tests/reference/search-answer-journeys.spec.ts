@@ -232,6 +232,19 @@ test("captured answer rails preserve their source continuations without replacin
     name: "Jeans answer",
     exact: true,
   });
+  const cityIndicators = answer.locator(
+    '[data-answer-product="city-duaa-denim"] .product-media > span[aria-hidden="true"]',
+  );
+  const signatureIndicators = answer.locator(
+    '[data-answer-product="assistant-signature-straight"] .product-media > span[aria-hidden="true"]',
+  );
+  await expect(cityIndicators.locator("i")).toHaveCount(4);
+  await expect(signatureIndicators.locator("i")).toHaveCount(2);
+  await expect(signatureIndicators.locator("i").nth(1)).toHaveAttribute(
+    "data-current",
+    "true",
+  );
+  await expect(cityIndicators.locator("button,a")).toHaveCount(0);
   await expect(
     answer.locator(".assistant-partial-product img"),
   ).toHaveAttribute("src", "/api/reference-media/assistant-blue-partial");
@@ -269,4 +282,224 @@ test("captured answer rails preserve their source continuations without replacin
       .getByRole("button", { name: "Close assistant", exact: true })
       .evaluate((element) => getComputedStyle(element).boxShadow),
   ).not.toBe("none");
+});
+
+test("feedback keeps source geometry, white vote glyphs and nested focus at mobile widths", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "home-welcome");
+  await page.goto("/search?q=Jeans");
+  await page
+    .getByRole("button", { name: "View answer for Jeans", exact: true })
+    .click();
+  const positive = page.getByRole("button", {
+    name: "Give positive feedback",
+    exact: true,
+  });
+  await positive.click();
+  const feedback = page.getByRole("dialog", { name: "Feedback", exact: true });
+  const vote = feedback.getByRole("button", { name: /^Like URBAN STRAIGHT/ });
+  const note = feedback.getByRole("textbox", {
+    name: "Share any thoughts about the entire response",
+    exact: true,
+  });
+  await vote.focus();
+  await page.keyboard.press("Enter");
+  await expect(vote).toHaveAttribute("aria-pressed", "true");
+  await expect(vote).toHaveCSS("color", "rgb(255, 255, 255)");
+  await note.fill("Nice response");
+  await expect(note).toHaveCSS("outline-style", "none");
+  await expect(note).toHaveCSS("border-top-color", "rgb(221, 221, 221)");
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    await expect(
+      feedback.getByRole("button", { name: "Submit", exact: true }),
+    ).toBeInViewport();
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width);
+    await expect
+      .poll(async () => {
+        const sheet = (await feedback.boundingBox())!;
+        return sheet.y + sheet.height;
+      })
+      .toBeCloseTo(759, 0);
+  }
+  await page.keyboard.press("Escape");
+  await expect(feedback).not.toBeVisible();
+  await expect(positive).toBeFocused();
+  await positive.click();
+  await expect(vote).toHaveAttribute("aria-pressed", "true");
+  await expect(note).toHaveValue("Nice response");
+  await expect(
+    feedback.locator(".feedback-products img").nth(0),
+  ).toHaveAttribute("src", "/api/reference-media/assistant-feedback-signature");
+  await expect(
+    feedback.locator(".feedback-products img").nth(1),
+  ).toHaveAttribute("src", "/api/reference-media/assistant-feedback-urban");
+  await feedback.getByRole("button", { name: "Submit", exact: true }).click();
+  await expect(feedback).not.toBeVisible();
+  await expect(
+    page.getByRole("dialog", { name: "Jeans answer", exact: true }),
+  ).toBeVisible();
+  await expect(positive).toBeFocused();
+});
+
+test("answer captions keep the source rail rhythm without wrapping or moving the composer", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "search-entry");
+  await page.goto("/search?q=Jeans");
+  await page
+    .getByRole("button", { name: "View answer for Jeans", exact: true })
+    .click();
+  const answer = page.getByRole("dialog", {
+    name: "Jeans answer",
+    exact: true,
+  });
+  const body = answer.locator(".assistant-page");
+  const caption = body.locator(":scope > .form-note").first();
+  const rail = body.locator(".assistant-product-rail").first();
+  await expect(body.locator(":scope > h2").first()).toHaveCSS(
+    "font-size",
+    "19px",
+  );
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    await expect(caption).toHaveCSS("white-space", "nowrap");
+    expect((await caption.boundingBox())!.height).toBe(16);
+    await expect(rail.locator("article > b").first()).toHaveCSS(
+      "line-height",
+      "16px",
+    );
+    await expect
+      .poll(async () => {
+        const composer = (await answer
+          .locator(".assistant-composer")
+          .boundingBox())!;
+        return composer.y + composer.height;
+      })
+      .toBeCloseTo(757, 0);
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width);
+  }
+  await answer
+    .getByRole("button", { name: "Close assistant", exact: true })
+    .click();
+  await expect(answer).not.toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "View answer for Jeans", exact: true }),
+  ).toBeFocused();
+});
+
+test("answer grabber drags the real sheet, cancels short pulls and restores query and focus", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "search-entry");
+  await page.goto("/search?q=Jeans");
+  const trigger = page.getByRole("button", {
+    name: "View answer for Jeans",
+    exact: true,
+  });
+  await trigger.click();
+  const answer = page.getByRole("dialog", {
+    name: "Jeans answer",
+    exact: true,
+  });
+  const handle = answer.locator(".sheet-drag-handle");
+  await expect(answer).toHaveCSS("transform", "none");
+  const box = (await handle.boundingBox())!;
+  const x = box.x + box.width / 2,
+    y = box.y + box.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x, y + 20, { steps: 4 });
+  await expect(answer).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 20)");
+  await page.mouse.up();
+  await expect(answer).toBeVisible();
+  await expect(answer).toHaveCSS("transform", "none");
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x, y + 110, { steps: 8 });
+  await page.mouse.up();
+  await expect(answer).not.toBeVisible();
+  await expect(page).toHaveURL(/\/search\?q=Jeans$/);
+  await expect(trigger).toBeFocused();
+  await page.goForward();
+  await expect(answer).toBeVisible();
+  await expect(answer).toHaveCSS("transform", "none");
+  const positive = answer.getByRole("button", {
+    name: "Give positive feedback",
+    exact: true,
+  });
+  await positive.click();
+  const feedback = page.getByRole("dialog", { name: "Feedback", exact: true });
+  await expect(feedback).toHaveCSS("transform", "none");
+  const header = (await feedback.locator(".sheet-header h2").boundingBox())!;
+  await page.mouse.move(header.x + 10, header.y + 10);
+  await page.mouse.down();
+  await page.mouse.move(header.x + 10, header.y + 120, { steps: 8 });
+  await page.mouse.up();
+  await expect(feedback).not.toBeVisible();
+  await expect(answer).toBeVisible();
+  await expect(positive).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(answer).not.toBeVisible();
+  await expect(trigger).toBeFocused();
+});
+
+test("touch cancellation releases the answer grabber before the next mobile swipe", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "search-entry");
+  await page.goto("/search?q=Jeans");
+  const trigger = page.getByRole("button", {
+    name: "View answer for Jeans",
+    exact: true,
+  });
+  await trigger.click();
+  const answer = page.getByRole("dialog", {
+    name: "Jeans answer",
+    exact: true,
+  });
+  await expect(answer).toHaveCSS("transform", "none");
+  const box = (await answer.locator(".sheet-drag-handle").boundingBox())!;
+  const x = box.x + box.width / 2,
+    y = box.y + box.height / 2;
+  const touch = await page.context().newCDPSession(page);
+  try {
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [{ x, y, id: 1 }],
+    });
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: [{ x, y: y + 45, id: 1 }],
+    });
+    await expect(answer).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 45)");
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchCancel",
+      touchPoints: [],
+    });
+    await expect(answer).toBeVisible();
+    await expect(answer).toHaveCSS("transform", "none");
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [{ x, y, id: 2 }],
+    });
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: [{ x, y: y + 110, id: 2 }],
+    });
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
+    });
+    await expect(answer).not.toBeVisible();
+    await expect(page).toHaveURL(/\/search\?q=Jeans$/);
+    await expect(trigger).toBeFocused();
+  } finally {
+    await touch.detach();
+  }
 });

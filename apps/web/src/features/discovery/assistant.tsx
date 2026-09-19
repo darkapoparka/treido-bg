@@ -14,6 +14,28 @@ import { capturedCapQuestion } from "./search-model";
 import styles from "./search-entry.module.css";
 import photoStyles from "./search-photo.module.css";
 
+// Recorded gallery position only: uncaptured images are not invented.
+function CapturedPagination({
+  count,
+  current = 0,
+  centered = false,
+}: {
+  count: number;
+  current?: number;
+  centered?: boolean;
+}) {
+  return (
+    <span
+      className={`${styles.photoPagination} ${centered ? styles.answerPagination : ""}`}
+      aria-hidden="true"
+    >
+      {Array.from({ length: count }, (_, index) => (
+        <i key={index} data-current={index === current || undefined} />
+      ))}
+    </span>
+  );
+}
+
 export function Assistant({ catalog }: { catalog: Catalog }) {
   const params = useSearchParams();
   const { viewAnswer } = useDiscovery();
@@ -64,6 +86,14 @@ export function JeansAnswer({
           {
             ...p,
             images: artwork ? [`/api/reference-media/${artwork}`] : p.images,
+            feedbackImage:
+              id === "assistant-signature-straight"
+                ? "/api/reference-media/assistant-feedback-signature"
+                : id === "assistant-urban-straight"
+                  ? "/api/reference-media/assistant-feedback-urban"
+                  : artwork
+                    ? `/api/reference-media/${artwork}`
+                    : p.images[0],
           },
         ]
       : [];
@@ -154,6 +184,7 @@ export function JeansAnswer({
             />
           </Link>
           {cityProduct && <SaveButton product={cityProduct} />}
+          <CapturedPagination count={4} centered />
           <span className={`price-badge deal ${styles.answerCardDeal}`}>
             Save $10
           </span>
@@ -193,6 +224,7 @@ export function JeansAnswer({
             />
           </Link>
           {signatureProduct && <SaveButton product={signatureProduct} />}
+          <CapturedPagination count={2} current={1} centered />
         </div>
         <div>
           <Link className={styles.answerSeller} href="/stores/jeans-warehouse">
@@ -284,7 +316,7 @@ export function JeansAnswer({
         <div className="feedback-products">
           {products.map((p) => (
             <div key={p.id}>
-              <img src={p.images[0]} alt={p.title} />
+              <img src={p.feedbackImage} alt={p.title} />
               <button
                 aria-label={`Like ${p.title}`}
                 aria-pressed={votes[p.id] === true}
@@ -406,11 +438,7 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
     return (
       <div className={`product-media ${styles.photoCardMedia}`}>
         {imageKey === "assistant-armor-comparison-photo" && (
-          <span className={styles.photoPagination} aria-hidden="true">
-            {Array.from({ length: 9 }, (_, index) => (
-              <i key={index} />
-            ))}
-          </span>
+          <CapturedPagination count={9} />
         )}
         {product ? (
           <Link href={`/products/${product.id}`}>{photograph}</Link>
