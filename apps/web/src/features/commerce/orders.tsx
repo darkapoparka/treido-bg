@@ -848,8 +848,9 @@ function ManualOrderForm({
   );
 }
 export function NewOrder() {
-  const { saveOrder } = useAccount();
+  const { orders, saveOrder } = useAccount();
   const router = useRouter();
+  const pending = useRef<{ key: string; id: string } | null>(null);
   return (
     <AccountPage
       title="Add order manually"
@@ -869,7 +870,21 @@ export function NewOrder() {
           review: "",
         }}
         onSave={(o) => {
-          const id = `REF-${crypto.randomUUID().slice(0, 8)}`;
+          const key = `${o.carrier.trim().toLowerCase()}:${o.tracking.trim()}`;
+          const existing = orders.find(
+            (order) =>
+              !order.productId &&
+              `${order.carrier.trim().toLowerCase()}:${order.tracking.trim()}` ===
+                key,
+          );
+          // Re-adding a manually tracked package restores its one identity.
+          // A pending local navigation must not let a second click duplicate it.
+          const id =
+            existing?.id ??
+            (pending.current?.key === key
+              ? pending.current.id
+              : `REF-${crypto.randomUUID().slice(0, 8)}`);
+          pending.current = { key, id };
           saveOrder({ ...o, id });
           router.push("/orders?view=manual");
         }}

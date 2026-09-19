@@ -147,6 +147,11 @@ test("flows 68 and 79 create a manual package and retain source order-history co
   await expect(
     page.getByText("Loose Fit Printed T-Shirt", { exact: true }).first(),
   ).toBeVisible();
+  await expect(page.locator(".manual-tracking-card")).toHaveCount(1);
+  await expect(page.locator(".manual-tracking-card")).toHaveAttribute(
+    "href",
+    "/orders/REF-manual-shirt",
+  );
   await page.getByRole("link", { name: "Home", exact: true }).click();
   await page.getByRole("link", { name: "Profile", exact: true }).click();
   await page

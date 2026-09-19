@@ -10,6 +10,8 @@ test("reference media and hydration remain available through the canonical route
   await useReferenceScenario(page, "home-welcome");
   const failures: { path: string; status?: number; error?: string }[] = [];
   const errors: string[] = [];
+  const completedPrefetchCancellations: string[] = [];
+  const pendingChecks: Promise<void>[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("response", (response) => {
     const url = new URL(response.url());
@@ -17,12 +19,29 @@ test("reference media and hydration remain available through the canonical route
       failures.push({ path: url.pathname, status: response.status() });
   });
   page.on("requestfailed", (request) => {
-    const url = new URL(request.url());
-    if (url.hostname === "127.0.0.1")
-      failures.push({
-        path: url.pathname,
-        error: request.failure()?.errorText,
-      });
+    pendingChecks.push(
+      (async () => {
+        const url = new URL(request.url());
+        if (url.hostname !== "127.0.0.1") return;
+        const error = request.failure()?.errorText;
+        const headers = request.headers();
+        const response = await request.response();
+        // The production trace shows successful 200 RSC prefetch streams being
+        // cancelled by Next. Record these separately; never exempt a media/API
+        // request, navigation, HTTP failure, or an unlabelled network failure.
+        if (
+          error === "net::ERR_ABORTED" &&
+          response?.status() === 200 &&
+          request.resourceType() === "fetch" &&
+          !request.isNavigationRequest() &&
+          headers["next-router-prefetch"] === "1" &&
+          headers.rsc === "1" &&
+          !url.pathname.startsWith("/api/")
+        ) {
+          completedPrefetchCancellations.push(url.pathname);
+        } else failures.push({ path: url.pathname, error });
+      })(),
+    );
   });
   const media = [];
   for (const key of ["assistant-cap", "shea-gallery-shower"]) {
@@ -54,11 +73,20 @@ test("reference media and hydration remain available through the canonical route
         }),
       ),
     );
+  await page.waitForLoadState("networkidle");
+  await Promise.all(pendingChecks);
   await mkdir(".qa/shop-parity/media-review", { recursive: true });
   await writeFile(
     ".qa/shop-parity/media-review/report.json",
     JSON.stringify(
-      { commit: process.env.GITHUB_SHA, media, failures, errors, images },
+      {
+        commit: process.env.GITHUB_SHA,
+        media,
+        failures,
+        errors,
+        images,
+        completedPrefetchCancellations,
+      },
       null,
       2,
     ),
