@@ -305,7 +305,8 @@ export const miniRecipes = {
           "Each recorded rail exposes two complete recommendations and only a bounded third-card continuation. Preserve that continuation without inventing an unseen product identity, destination, or lower skirt-card extent.",
         actions: [
           click("button", "View all matching pieces"),
-          anchor("#look-blazer", 70),
+          { type: "waitUrl", url: "**/minis/look?look=results&matches=shirt" },
+          visible("#look-blazer"),
         ],
       },
     ],

@@ -117,15 +117,21 @@
 }
 .skin.skin {
   padding: 166px 24px 90px;
+  /* Measured unoccluded background colours, drawn as CSS rather than a frame. */
   background:
-    radial-gradient(ellipse at 0 0, #f1b9b0, transparent 80%),
-    radial-gradient(ellipse at 100% 0, #b8d0f0, transparent 72%),
-    linear-gradient(#c4dce0, #baf9e4);
+    linear-gradient(
+      #c0fde600,
+      #c0fde626 25%,
+      #c0fde664 50%,
+      #c0fde6ad 75%,
+      #c0fde6
+    ),
+    linear-gradient(90deg, #eab4ae, #b5c9ea);
 }
 .skin :global(.skin-heading img) {
   width: 40px;
   height: 41px;
-  margin: 0 auto 10px;
+  margin: 0 auto -3px;
 }
 .skinPermissionOpen.skinPermissionOpen {
   background:
@@ -140,18 +146,19 @@
   font-family: "Times New Roman", Times, serif;
 }
 .skinPermissionOpen.skinPermissionOpen :global(.skin-analyze) {
-  margin-top: 42px;
+  margin-top: 39px;
 }
 .skin :global(.skin-heading h1) {
   font:
-    italic 48px/1.2 Georgia,
+    italic 48px/1.25 "Times New Roman",
+    Times,
     serif;
   font-weight: 400;
-  letter-spacing: -1px;
+  letter-spacing: 0;
 }
 .skin :global(.skin-analyze) {
-  margin: 48px 0 14px;
-  height: 49px;
+  margin: 39px 0 14px;
+  height: 48px;
   border-radius: 16px;
   box-shadow: 0 2px 4px #0002;
   font-size: 16px;
@@ -161,6 +168,9 @@
 .skin :global(.skin-analyze) svg {
   width: 18px;
   height: 18px;
+}
+.skin[data-skin-phase="analyzing"] {
+  padding-top: 176px;
 }
 .skin :global(.skin-analyze):disabled {
   opacity: 1;
@@ -621,10 +631,23 @@
 }
 .look :global(.look-results section) {
   min-height: 0;
-  scroll-margin-top: 60px;
+  scroll-margin-top: 70px;
+}
+.shell:has([data-look-phase="results"]) > header::after {
+  content: "";
+  position: absolute;
+  inset: 100% 0 auto;
+  height: 28px;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 28px 28px, transparent 28px, #000 28.5px) left,
+    radial-gradient(circle at 0 28px, transparent 28px, #000 28.5px) right;
+  background-size: 28px 28px;
+  background-repeat: no-repeat;
 }
 .look :global(.look-results h2) {
   margin: 26px 16px 18px;
+  color: #4410ab;
   font-size: 25px;
   line-height: 30px;
   font-weight: 600;

@@ -209,24 +209,38 @@ test("Get the Look connects source hotspots, selected panel, all result groups a
   await expect(selected).toHaveCount(0);
   await page.goForward();
   await expect(shirt).toHaveAttribute("aria-pressed", "true");
-  await page
-    .getByRole("button", { name: "View all matching pieces", exact: true })
-    .click();
+  const allMatches = page.getByRole("button", {
+    name: "View all matching pieces",
+    exact: true,
+  });
+  await allMatches.focus();
+  const selectedScroll = await page.evaluate(() => scrollY);
+  await allMatches.press("Enter");
   await expect(selected).toHaveCount(0);
   await expect
     .poll(async () =>
-      Math.round((await page.locator("#look-shirt").boundingBox())?.y ?? -1),
+      Math.round((await page.locator("#look-blazer").boundingBox())?.y ?? -1),
     )
-    .toBeGreaterThanOrEqual(44);
-  await expect
-    .poll(async () =>
-      Math.round((await page.locator("#look-shirt").boundingBox())?.y ?? 999),
-    )
-    .toBeLessThan(120);
+    .toBe(70);
   await expect(page.locator(".look-results section[id]")).toHaveCount(3);
+  await expect(page.locator("#look-blazer > h2")).toBeFocused();
   await expect(
     page.locator('.look-results a[href="/products/look-black-crew"]').first(),
   ).toBeVisible();
+  await page.goBack();
+  await expect(selected).toBeVisible();
+  await expect(shirt).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    page.getByRole("button", { name: "View all matching pieces", exact: true }),
+  ).toBeFocused();
+  await expect.poll(() => page.evaluate(() => scrollY)).toBe(selectedScroll);
+  await page.goForward();
+  await expect(selected).toHaveCount(0);
+  await expect
+    .poll(async () =>
+      Math.round((await page.locator("#look-blazer").boundingBox())?.y ?? -1),
+    )
+    .toBe(70);
 
   for (const [piece, height] of [
     ["blazer", 200],
@@ -373,4 +387,55 @@ test("every photo menu choice opens a local picker and never starts a recorded a
     await expect(page).toHaveURL(/\/minis\/look$/);
   }
   expect(writes).toEqual([]);
+});
+
+test("Skin welcome retains the source action rhythm and permission focus at sibling widths", async ({
+  page,
+}) => {
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    await page.goto("/minis/skin");
+    const surface = page.locator('[data-skin-phase="welcome"]');
+    const analyze = page.getByRole("button", {
+      name: "Analyze My Skin",
+      exact: true,
+    });
+    await expect(analyze).toHaveCSS("height", "48px");
+    const before = await analyze.boundingBox();
+    expect(before).not.toBeNull();
+    if (width === 393)
+      expect(Math.abs((before?.y ?? 0) - 407)).toBeLessThanOrEqual(1);
+    expect(
+      await surface.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await analyze.focus();
+    await analyze.press("Enter");
+    const permission = page.getByRole("dialog", {
+      name: "Allow access to your camera?",
+      exact: true,
+    });
+    await expect(permission).toBeVisible();
+    const during = await analyze.boundingBox();
+    expect(Math.abs((during?.y ?? 0) - (before?.y ?? 0))).toBeLessThanOrEqual(
+      1,
+    );
+    await page.keyboard.press("Escape");
+    await expect(permission).not.toBeVisible();
+    await expect(analyze).toBeFocused();
+  }
+  await page.setViewportSize({ width: 393, height: 540 });
+  await page.goto("/minis/skin");
+  const note = page.locator(".skin-surface > small");
+  await note.scrollIntoViewIfNeeded();
+  const noteBounds = await note.boundingBox();
+  expect(
+    (noteBounds?.y ?? 540) + (noteBounds?.height ?? 1),
+  ).toBeLessThanOrEqual(540);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
 });

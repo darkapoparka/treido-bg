@@ -49,7 +49,7 @@ test("photo assistant entry retains a local preview and opens the captured answe
   await expect(page.getByText("Searched for products")).toBeVisible();
 });
 
-test("captured outfit labels scroll the complete result groups", async ({
+test("captured outfit labels open the complete results from their first group", async ({
   page,
 }) => {
   await page.goto("/minis/look");
@@ -81,25 +81,21 @@ test("captured outfit labels scroll the complete result groups", async ({
       page.getByRole("button", { name: label, exact: true }),
     ).toHaveAttribute("aria-pressed", "true");
     // f058-007 keeps the outfit in place and shows its selected-piece panel.
-    // The explicit all-matches action, not the hotspot, scrolls result groups.
+    // f058-008 opens the complete catalogue at Blazer from any selected piece.
     await page
       .getByRole("button", { name: "View all matching pieces", exact: true })
       .click();
     const section = page
       .locator(".look-results section[id]")
       .filter({ has: page.getByRole("heading", { name: label, exact: true }) });
+    await expect(section).toBeVisible();
     await expect
       .poll(async () => {
-        const rect = await section.boundingBox();
-        return Math.round(rect?.y ?? -1);
-      })
-      .toBeGreaterThanOrEqual(0);
-    await expect
-      .poll(async () => {
-        const rect = await section.boundingBox();
+        const rect = await page.locator("#look-blazer").boundingBox();
         return Math.round(rect?.y ?? 999);
       })
-      .toBeLessThan(120);
+      .toBe(70);
+    await expect(page.locator("#look-blazer > h2")).toBeFocused();
   }
   await expect(
     products.locator('a[href="/products/look-sculpt"]').first(),

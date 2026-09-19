@@ -769,13 +769,24 @@ export function GetLook({ catalog }: { catalog: Catalog }) {
   const matching = outfitPieces.find(
     (piece) => piece.id === params.get("matches"),
   );
+  const allMatchesButton = useRef<HTMLButtonElement>(null);
+  const viewedAllMatches = useRef(false);
   useEffect(() => {
-    if (phase !== "results" || selected || !matching) return;
+    if (phase !== "results") return;
+    if (selected) {
+      if (viewedAllMatches.current)
+        allMatchesButton.current?.focus({ preventScroll: true });
+      viewedAllMatches.current = false;
+      return;
+    }
+    if (!matching) return;
+    viewedAllMatches.current = true;
     const frame = requestAnimationFrame(() => {
       const target =
-        document.getElementById(`look-${matching.id}`) ??
+        document.getElementById("look-blazer") ??
         document.querySelector(".look-results");
       target?.scrollIntoView({ block: "start" });
+      target?.querySelector("h2")?.focus({ preventScroll: true });
     });
     return () => cancelAnimationFrame(frame);
   }, [phase, selected, matching]);
@@ -958,6 +969,7 @@ export function GetLook({ catalog }: { catalog: Catalog }) {
                   <h2>{selected.label}</h2>
                   {results(selected)}
                   <button
+                    ref={allMatchesButton}
                     className={styles.allMatches}
                     onClick={() => {
                       change({ piece: null, matches: selected.id });
@@ -971,7 +983,7 @@ export function GetLook({ catalog }: { catalog: Catalog }) {
                 .filter((piece) => piece.id !== "sandals")
                 .map((piece) => (
                   <section key={piece.id} id={`look-${piece.id}`}>
-                    <h2>{piece.label}</h2>
+                    <h2 tabIndex={-1}>{piece.label}</h2>
                     {results(piece)}
                   </section>
                 ))}
