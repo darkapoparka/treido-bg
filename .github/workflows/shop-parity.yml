@@ -220,20 +220,21 @@ jobs:
           print('Formatting mismatches:', ', '.join(files) or 'none')
           PY
       - name: Build the web preview without deployment
+        id: build_web
         if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.products.outcome == 'success' }}
         shell: bash
         run: |
           set -o pipefail
           pnpm --filter @treido/web build 2>&1 | tee .qa/shop-parity/build.log
       - name: Capture exact-commit reference comparisons
-        if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.products.outcome == 'success' && steps.browser.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.build_web.outcome == 'success' && steps.references.outcome == 'success' && steps.products.outcome == 'success' && steps.browser.outcome == 'success' }}
         shell: bash
         run: |
           python3 - <<'PY'
           import os, pathlib, signal, subprocess, time, urllib.request
           log_path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'shop-preview.log'
           with log_path.open('w') as log:
-              server = subprocess.Popen(['pnpm', '--filter', '@treido/web', 'exec', 'next', 'dev', '--hostname', '127.0.0.1', '--port', '6412'], stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+              server = subprocess.Popen(['pnpm', '--filter', '@treido/web', 'exec', 'next', 'start', '--hostname', '127.0.0.1', '--port', '6412'], stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
               try:
                   for attempt in range(90):
                       if server.poll() is not None:
@@ -279,9 +280,10 @@ jobs:
             cp shop-frame-ledger.md .qa/shop-parity/frame-ledger.md
           fi
       - name: Exercise every reference journey and sibling viewport
-        if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.products.outcome == 'success' && steps.browser.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.build_web.outcome == 'success' && steps.references.outcome == 'success' && steps.products.outcome == 'success' && steps.browser.outcome == 'success' }}
         env:
-          REFERENCE_DEV: "1"
+          # Use the same production build just captured, not an unqualified dev server.
+          REFERENCE_DEV: "0"
           PLAYWRIGHT_JSON_OUTPUT_NAME: .qa/shop-parity/interactions.json
         run: pnpm exec playwright test --config playwright.reference.config.ts --reporter=line,json
       - name: Preserve failed preview states and explicit interaction captures

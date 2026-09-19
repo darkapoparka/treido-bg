@@ -70,3 +70,31 @@ test("visible filter sheets own history before immediate Back, including reopen 
     await page.evaluate(() => window.history.state?.shopSheet),
   ).toBeUndefined();
 });
+
+test("one held Escape dismisses only the top sheet and a new Escape closes its parent", async ({
+  page,
+}) => {
+  await page.goto("/search?q=Jeans");
+  const trigger = page.getByRole("button", { name: "Filter", exact: true });
+  const root = page.getByRole("dialog", { name: "Filter", exact: true });
+  const child = page.getByRole("dialog", { name: "Sort by", exact: true });
+  await trigger.click();
+  const sort = root.getByRole("button", { name: /Sort by/ });
+  await sort.click();
+  await expect(child).toBeVisible();
+  await page.keyboard.down("Escape");
+  await expect(child).not.toBeVisible();
+  await expect(root).toBeVisible();
+  await expect(sort).toBeFocused();
+  await page.keyboard.down("Escape");
+  await expect(root).toBeVisible();
+  await page.keyboard.up("Escape");
+  await page.keyboard.press("Escape");
+  await expect(root).not.toBeVisible();
+  await expect(trigger).toBeFocused();
+  await expect(page).toHaveURL(/\/search\?q=Jeans$/);
+  await trigger.click();
+  await root.dispatchEvent("cancel");
+  await expect(root).not.toBeVisible();
+  await expect(trigger).toBeFocused();
+});

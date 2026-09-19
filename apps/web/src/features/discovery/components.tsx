@@ -520,6 +520,20 @@ export function Sheet({
           `${destination.pathname}${destination.search}${destination.hash}`,
         );
       }}
+      onKeyDown={(event) => {
+        if (
+          event.key !== "Escape" ||
+          event.defaultPrevented ||
+          event.nativeEvent.isComposing
+        )
+          return;
+        // Handle each physical Escape once at the top dialog. Native cancel
+        // remains available for other dismissal requests; a child cannot
+        // bubble the same key into its parent or depend on close-watcher timing.
+        event.preventDefault();
+        event.stopPropagation();
+        if (!event.repeat) closeRef.current();
+      }}
       onCancel={(e) => {
         e.preventDefault();
         closeRef.current();

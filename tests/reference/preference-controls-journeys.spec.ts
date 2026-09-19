@@ -28,6 +28,17 @@ for (const width of [320, 393, 430]) {
     expect(
       Math.abs(after.y + after.height - before.y - before.height),
     ).toBeLessThanOrEqual(2);
+    const firstPaintBottom = await skin.evaluate(
+      (element) =>
+        new Promise<number>((resolve) => {
+          requestAnimationFrame(() =>
+            resolve(element.getBoundingClientRect().bottom),
+          );
+        }),
+    );
+    expect(
+      Math.abs(firstPaintBottom - before.y - before.height),
+    ).toBeLessThanOrEqual(2);
     await page
       .getByRole("button", { name: "Pink/Yellow", exact: true })
       .click();

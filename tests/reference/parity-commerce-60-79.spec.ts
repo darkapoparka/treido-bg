@@ -99,7 +99,16 @@ test("flows 62, 66, and 67 preserve order actions, archive, and local review edi
     .getByRole("button", { name: "Order options", exact: true })
     .click();
   await page.getByRole("button", { name: "Archive order" }).click();
+  await expect(
+    page.getByRole("dialog", { name: "Your order", exact: true }),
+  ).not.toBeVisible();
+  // Closing the overlay retires its own asynchronous browser-history entry.
+  // Verify that transition before issuing the separate page-level Back.
+  await expect
+    .poll(() => page.evaluate(() => Boolean(window.history.state?.shopSheet)))
+    .toBe(false);
   await page.goBack();
+  await expect(page).toHaveURL(/\/orders\?view=waiting$/);
   await page.getByRole("button", { name: "More order options" }).click();
   await page.getByRole("link", { name: "View order archive" }).click();
   await expect(

@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useAccount } from "./state";
 import { Icon } from "../discovery/icons";
 const sizes = {
@@ -59,12 +59,27 @@ export function Preferences({ personId }: { personId?: string }) {
   const sizePanel = useRef<HTMLDivElement>(null);
   const skinPanel = useRef<HTMLDivElement>(null);
 
+  const pendingAlignment = useRef<{
+    panel: { current: HTMLDivElement | null };
+    edge: "top" | "bottom";
+    position: number;
+  } | null>(null);
+
+  // Commit the new accordion geometry and its scroll anchor before paint.
+  // A deferred animation frame briefly exposed a shifted panel on macOS.
+  useLayoutEffect(() => {
+    const alignment = pendingAlignment.current;
+    pendingAlignment.current = null;
+    const panel = alignment?.panel.current;
+    if (alignment && panel)
+      window.scrollBy(
+        0,
+        panel.getBoundingClientRect()[alignment.edge] - alignment.position,
+      );
+  }, [expanded, skin]);
+
   function alignPanel(panel: { current: HTMLDivElement | null }, top: number) {
-    requestAnimationFrame(() => {
-      const current = panel.current;
-      if (!current) return;
-      window.scrollBy(0, current.getBoundingClientRect().top - top);
-    });
+    pendingAlignment.current = { panel, edge: "top", position: top };
   }
 
   function row(
@@ -89,14 +104,11 @@ export function Preferences({ personId }: { personId?: string }) {
               bottom !== undefined &&
               ["skinType", "undertone", "tone"].includes(key)
             ) {
-              requestAnimationFrame(() => {
-                const panel = skinPanel.current;
-                if (panel)
-                  window.scrollBy(
-                    0,
-                    panel.getBoundingClientRect().bottom - bottom,
-                  );
-              });
+              pendingAlignment.current = {
+                panel: skinPanel,
+                edge: "bottom",
+                position: bottom,
+              };
             }
           }}
         >
