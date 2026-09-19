@@ -224,6 +224,18 @@ test("photo comparison boundaries remain keyboard accessible without inventing p
     await expect(boundary).not.toBeVisible();
     await expect(trigger).toBeFocused();
     await expect(steps).toHaveAttribute("aria-expanded", "true");
+    if (title === "Mob Armor Snapback") {
+      // The source splits this inline action after "Mob", not before its whole title.
+      expect(await trigger.evaluate((el) => el.getClientRects().length)).toBe(
+        2,
+      );
+      await trigger.press("Space");
+      await expect(boundary).toBeVisible();
+      await page.goBack();
+      await expect(boundary).not.toBeVisible();
+      await expect(trigger).toBeFocused();
+      await expect(steps).toHaveAttribute("aria-expanded", "true");
+    }
   }
   await expect(
     page.locator('.photo-assistant a[href^="/products/assistant-"]'),
@@ -328,16 +340,14 @@ test("structured photo continuations retain only their captured pixels and leave
   await useReferenceScenario(page, "search-photo");
   await page.goto("/assistant?example=photo");
   const fragments = page.locator('[data-source-boundary^="structured-"]');
-  await expect(fragments).toHaveCount(2);
+  await expect(fragments).toHaveCount(3);
   await expect(fragments.locator("a,button,input")).toHaveCount(0);
-  await expect(fragments.nth(0).locator("img")).toHaveAttribute(
-    "src",
-    "/api/reference-media/assistant-structured-second-fragment",
-  );
-  await expect(fragments.nth(1).locator("img")).toHaveAttribute(
-    "src",
-    "/api/reference-media/assistant-structured-third-fragment",
-  );
+  for (const [index, position] of ["first", "second", "third"].entries())
+    await expect(fragments.nth(index).locator("img")).toHaveAttribute(
+      "src",
+      `/api/reference-media/assistant-structured-${position}-fragment`,
+    );
+  await expect(fragments.locator("strong,b")).toHaveCount(0);
   for (const width of [320, 393, 430]) {
     await page.setViewportSize({ width, height: 793 });
     const geometry = await fragments.evaluateAll((elements) => ({
@@ -349,8 +359,10 @@ test("structured photo continuations retain only their captured pixels and leave
       })),
     }));
     expect(geometry.overflow).toBe(false);
-    expect(geometry.cards.map((card) => card.width)).toEqual([152, 56]);
-    expect(geometry.cards.map((card) => card.imageHeight)).toEqual([86, 86]);
+    expect(geometry.cards.map((card) => card.width)).toEqual([152, 152, 56]);
+    expect(geometry.cards.map((card) => card.imageHeight)).toEqual([
+      86, 86, 86,
+    ]);
     await page
       .getByRole("textbox", { name: "Ask a follow-up", exact: true })
       .fill("Keep this draft");
@@ -366,5 +378,5 @@ test("structured photo continuations retain only their captured pixels and leave
   await expect(page).toHaveURL(/\/search$/);
   await page.goBack();
   await expect(page).toHaveURL(/\/assistant\?example=photo$/);
-  await expect(fragments).toHaveCount(2);
+  await expect(fragments).toHaveCount(3);
 });

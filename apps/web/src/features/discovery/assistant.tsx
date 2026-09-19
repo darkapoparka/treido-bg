@@ -468,8 +468,29 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
   function productLink(
     card: { productId: string; title: string },
     children: ReactNode,
+    inline = false,
   ) {
     const product = catalog.products.find((item) => item.id === card.productId);
+    // Native buttons are atomic inline boxes: they cannot split a product
+    // name across lines as the captured paragraph does. Keep this local
+    // disclosure as a focusable inline action, with both button activation keys.
+    if (!product && inline)
+      return (
+        <span
+          role="button"
+          tabIndex={0}
+          className={styles.photoProductLink}
+          onClick={() => setBoundary("Product details unavailable")}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              setBoundary("Product details unavailable");
+            }
+          }}
+        >
+          {children}
+        </span>
+      );
     return product ? (
       <Link
         className={styles.photoProductLink}
@@ -597,13 +618,7 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
         Higher-profile options with similar monochrome branding
       </p>
       <div className="assistant-product-rail">
-        <article data-photo-recommendation={cards[1].id}>
-          {productMedia(cards[1])}
-          <span>{cards[1].seller}</span>
-          <strong>{productLink(cards[1], cards[1].title)}</strong>
-          <b>{cards[1].price}</b>
-        </article>
-        {["second", "third"].map((position) => (
+        {["first", "second", "third"].map((position) => (
           <article
             key={position}
             className={photoStyles.structuredFragment}
@@ -618,13 +633,13 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
         ))}
       </div>
       <p className={styles.photoComparisonCopy}>
-        The {productLink(cards[0], "Mobbin Dad Hat")} is the hero here at just
-        under $20. It&apos;s built from bio-washed chino twill, which gives it
-        that soft, unstructured crown that sits close to the head for a cleaner,
-        more casual profile. If you want something with a bit more
-        &quot;teeth,&quot; the {productLink(cards[1], "Mob Armor Snapback")}{" "}
-        offers a structured crown and a more rigid visor that keeps its shape
-        even after heavy use.
+        The {productLink(cards[0], "Mobbin Dad Hat", true)} is the hero here at
+        just under $20. It&apos;s built from bio-washed chino twill, which gives
+        it that soft, unstructured crown that sits close to the head for a
+        cleaner, more casual profile. If you want something with a bit more
+        &quot;teeth,&quot; the{" "}
+        {productLink(cards[1], "Mob Armor Snapback", true)} offers a structured
+        crown and a more rigid visor that keeps its shape even after heavy use.
       </p>
       {cards.map((card) => (
         <article

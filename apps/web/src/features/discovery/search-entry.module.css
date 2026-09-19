@@ -1010,8 +1010,12 @@
 .photoAnswer :global(.assistant-product-rail) article > span {
   line-height: 16px;
 }
+.photoAnswer .photoComparisonCopy {
+  letter-spacing: -0.12px;
+}
 .photoAnswer .photoComparisonCopy > a,
-.photoAnswer .photoComparisonCopy > button {
+.photoAnswer .photoComparisonCopy > [role="button"] {
+  cursor: pointer;
   display: inline;
   text-decoration: underline;
   text-decoration-color: #aaa;
@@ -1309,6 +1313,10 @@
 }
 .photoAnswer :global(.assistant-answer-card) {
   margin: 20px 0;
+  box-shadow: 0 4px 18px #0002;
+}
+.photoAnswer :global(.assistant-answer-card) strong {
+  font-weight: 600;
 }
 .photoAnswer > :global(.assistant-answer-card):first-of-type {
   margin-bottom: 16px;

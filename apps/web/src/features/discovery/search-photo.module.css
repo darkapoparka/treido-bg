@@ -93,6 +93,7 @@
    Keep their source dimensions; do not invent product text or destinations. */
 .structuredFragment[data-source-boundary] {
   flex: 0 0 152px;
+  min-height: 152px;
   overflow: hidden;
 }
 .structuredFragment[data-source-boundary="structured-third"] {

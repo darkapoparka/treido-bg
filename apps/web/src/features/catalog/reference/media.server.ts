@@ -327,6 +327,14 @@ const media: Record<
       [115, 152, 3],
     ],
   },
+  // Only the exposed continuation photograph is known; the comparison
+  // card does not establish this cropped recommendation's product identity.
+  "assistant-structured-first-fragment": {
+    file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/005.webp",
+    rect: [17, 766, 150, 86],
+    photoRadius: 20,
+    roundedOcclusions: [[-5, -6, 305, 56, 28]],
+  },
   "assistant-structured-second-fragment": {
     file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/005.webp",
     rect: [177, 766, 150, 86],
