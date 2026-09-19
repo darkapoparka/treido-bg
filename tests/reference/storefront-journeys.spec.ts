@@ -159,12 +159,12 @@ test("reported Kitsch state keeps the source confirmation, saved bundle and cart
   ).toBeVisible();
   await expect(
     page.locator(
-      '#all-products [data-product-id="shampoo-bag"] img[src="/api/reference-media/store-source-tail-left"]',
+      '#all-products [data-source-boundary="unidentified-store-product"] img[src="/api/reference-media/store-arrival-tail-left"]',
     ),
   ).toBeVisible();
   await expect(
     page.locator(
-      '#all-products [data-product-id="terracotta"] img[src="/api/reference-media/store-source-tail-right"]',
+      '#all-products [data-source-boundary="unidentified-store-product"] img[src="/api/reference-media/store-arrival-tail-right"]',
     ),
   ).toBeVisible();
   await expect(
@@ -273,27 +273,25 @@ test("nested Price Back and Forward preserve drafts, then Done consumes only the
       filter: null,
     });
   const filteredCards = page.locator("#all-products .product-card");
-  expect(await filteredCards.count()).toBeGreaterThanOrEqual(6);
+  const fragments = page.locator(
+    '#all-products [data-source-boundary="unidentified-store-product"]',
+  );
+  await expect(fragments).toHaveCount(2);
+  await expect(fragments.locator("a,button,strong")).toHaveCount(0);
+  expect(await filteredCards.count()).toBeGreaterThanOrEqual(4);
   expect(
     await filteredCards.evaluateAll((cards) =>
-      cards.slice(0, 6).map((card) => card.getAttribute("data-product-id")),
+      cards.slice(0, 4).map((card) => card.getAttribute("data-product-id")),
     ),
-  ).toEqual([
-    "rice-shampoo",
-    "rice-conditioner",
-    "rice-bundle",
-    "shea-butter",
-    "shampoo-bag",
-    "terracotta",
-  ]);
+  ).toEqual(["rice-shampoo", "rice-conditioner", "rice-bundle", "shea-butter"]);
   await expect(
     page.locator(
-      '#all-products [data-product-id="shampoo-bag"] img[src="/api/reference-media/store-source-tail-left"]',
+      '#all-products [data-source-boundary="unidentified-store-product"] img[src="/api/reference-media/store-arrival-tail-left"]',
     ),
   ).toBeVisible();
   await expect(
     page.locator(
-      '#all-products [data-product-id="terracotta"] img[src="/api/reference-media/store-source-tail-right"]',
+      '#all-products [data-source-boundary="unidentified-store-product"] img[src="/api/reference-media/store-arrival-tail-right"]',
     ),
   ).toBeVisible();
 });

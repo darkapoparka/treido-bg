@@ -1791,6 +1791,23 @@ const media: Record<
     file: "flows/0344c453-dece-4e8d-bb54-68f6e551b83f/010.webp",
     rect: [24, 585, 133, 110],
   },
+  // These are photograph interiors from the longer source entry. Captured
+  // navigation is removed, never painted as interface or assigned to a SKU.
+  "store-arrival-tail-left": {
+    file: "flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/001.webp",
+    rect: [16, 692, 175, 160],
+    photoRadius: 20,
+    roundedOcclusions: [
+      [1, 72, 56, 57, 28],
+      [70, 72, 222, 57, 28],
+    ],
+  },
+  "store-arrival-tail-right": {
+    file: "flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/001.webp",
+    rect: [203, 692, 175, 160],
+    photoRadius: 20,
+    roundedOcclusions: [[-117, 72, 222, 57, 28]],
+  },
   "store-source-tail-left": {
     file: "flows/85a58afb-b3e8-4f69-b274-69762b09ffbf/005.webp",
     rect: [16, 694, 175, 71],

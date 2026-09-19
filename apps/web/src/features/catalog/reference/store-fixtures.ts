@@ -56,6 +56,22 @@ export function storefrontProjection(
       store.id === "kitsch"
         ? {
             ...store,
+            ...(scenario === "kitsch-product-arrival"
+              ? {
+                  capturedGrid: {
+                    productIds: [
+                      "rice-shampoo",
+                      "rice-conditioner",
+                      "rice-bundle",
+                      "shea-butter",
+                    ],
+                    unidentifiedPhotos: [
+                      "/api/reference-media/store-arrival-tail-left",
+                      "/api/reference-media/store-arrival-tail-right",
+                    ],
+                  },
+                }
+              : {}),
             promotionSavings: scenario === "kitsch-product-arrival" ? 15 : 20,
             ratingCount:
               scenario === "kitsch-product-arrival" ? "194.9K" : "195K",

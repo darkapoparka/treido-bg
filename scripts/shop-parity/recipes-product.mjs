@@ -45,7 +45,7 @@ export const productRecipes = {
           "The initial source has no compact coupon strip or side cart. This named $15 snapshot retains the real store-to-product transition without asserting its unrecorded Follow state.",
         actions: [
           { type: "waitVisible", selector: "#all-products" },
-          anchor(".store-grid-heading", 79),
+          anchor(".store-grid-heading", 77),
         ],
       },
       {

@@ -238,10 +238,10 @@ export const storeRecipes = {
       },
       {
         state: "kitsch-pinned-all-products",
-        entry: returning,
+        entry: { startUrl: store, scenario: "kitsch-product-arrival" },
         notes:
-          "The source returns to the Kitsch all-products position without an intervening recorded navigation.",
-        actions: [heading("For you"), allProducts],
+          "This distinct entry repeats the exact captured all-products snapshot in f017-001, including its unidentified lower photographs; no intervening navigation or product identity is inferred.",
+        actions: [heading("For you"), anchor(".store-grid-heading", 77)],
       },
     ],
   },

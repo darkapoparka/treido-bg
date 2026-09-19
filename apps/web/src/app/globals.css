@@ -2567,9 +2567,10 @@ h3 {
   scroll-margin-top: 78px;
 }
 .store-hero-kitsch .store-grid-heading {
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 .store-hero-kitsch .store-grid-heading .icon-button {
+  margin-right: 4px;
   width: 40px;
   height: 40px;
 }

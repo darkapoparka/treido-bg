@@ -225,16 +225,32 @@ function ordered(catalog: Catalog, ids: string[]) {
     return p ? [p] : [];
   });
 }
+function UnidentifiedStorePhoto({ source }: { source: string }) {
+  return (
+    <figure
+      className={styles.unidentifiedGridPhoto}
+      data-source-boundary="unidentified-store-product"
+    >
+      <img src={source} alt="Partially captured product photograph" />
+      <figcaption className="sr-only">
+        The product identity and remaining photograph were not captured. No
+        price, inventory or product link is inferred.
+      </figcaption>
+    </figure>
+  );
+}
 function StoreGrid({
   products,
   heading = true,
   promotions = false,
   sourceTail = false,
+  unidentifiedPhotos = [],
 }: {
   products: Product[];
   heading?: boolean;
   promotions?: boolean;
   sourceTail?: boolean;
+  unidentifiedPhotos?: readonly string[];
 }) {
   const params = useSearchParams();
   const filters = readStoreFilters(params);
@@ -259,32 +275,33 @@ function StoreGrid({
         </div>
       )}
       <div className="product-grid">
-        {filtered.map((p) => (
-          <ProductCard
-            key={p.id}
-            product={
-              capturedTail && p.id === "shampoo-bag"
-                ? {
-                    ...p,
-                    images: ["/api/reference-media/store-source-tail-left"],
-                  }
-                : capturedTail && p.id === "terracotta"
+        {filtered.map((p) =>
+          capturedTail && ["shampoo-bag", "terracotta"].includes(p.id) ? (
+            <UnidentifiedStorePhoto
+              key={`source-fragment-${p.id === "shampoo-bag" ? "left" : "right"}`}
+              source={`/api/reference-media/store-arrival-tail-${p.id === "shampoo-bag" ? "left" : "right"}`}
+            />
+          ) : (
+            <ProductCard
+              key={p.id}
+              product={
+                sourceTail && p.id === "shea-butter"
                   ? {
                       ...p,
-                      images: ["/api/reference-media/store-source-tail-right"],
+                      images: [
+                        "/api/reference-media/store-source-reported-shea",
+                      ],
                     }
-                  : sourceTail && p.id === "shea-butter"
-                    ? {
-                        ...p,
-                        images: [
-                          "/api/reference-media/store-source-reported-shea",
-                        ],
-                      }
-                    : p
-            }
-            showPromotion={promotions}
-          />
-        ))}
+                  : p
+              }
+              showPromotion={promotions}
+            />
+          ),
+        )}
+        {!hasStoreFilters(filters) &&
+          unidentifiedPhotos.map((source) => (
+            <UnidentifiedStorePhoto key={source} source={source} />
+          ))}
       </div>
       {!filtered.length && (
         <div className="empty-state" role="status">
@@ -553,17 +570,20 @@ export function Storefront({
         <section id="all-products" className="store-all-products">
           <StoreGrid
             sourceTail={reported === "shea-butter"}
+            unidentifiedPhotos={store.capturedGrid?.unidentifiedPhotos}
             products={
               isKitsch
                 ? ordered(catalog, [
-                    "rice-shampoo",
-                    "rice-conditioner",
-                    "rice-bundle",
-                    "shea-butter",
-                    "shampoo-bag",
-                    "terracotta",
-                    "summer-mystery-box",
-                    "beachy-gelato",
+                    ...(store.capturedGrid?.productIds ?? [
+                      "rice-shampoo",
+                      "rice-conditioner",
+                      "rice-bundle",
+                      "shea-butter",
+                      "shampoo-bag",
+                      "terracotta",
+                      "summer-mystery-box",
+                      "beachy-gelato",
+                    ]),
                   ])
                 : all
             }

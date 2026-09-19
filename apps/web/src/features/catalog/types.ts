@@ -62,6 +62,12 @@ export type Store = Readonly<{
     productId: string;
     ratingCount?: string;
   }>[];
+  /** A source snapshot can expose photo fragments without enough evidence to
+   * identify or sell the items. Keep them separate from confirmed products. */
+  capturedGrid?: Readonly<{
+    productIds: readonly string[];
+    unidentifiedPhotos: readonly string[];
+  }>;
   promotionSavings?: number;
 }>;
 export type Catalog = Readonly<{

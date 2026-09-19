@@ -18,6 +18,22 @@ test("the captured arrival entry keeps its offer after the real first-visit tip 
       images.map((image) => (image as HTMLImageElement).decode()),
     );
   });
+  const fragments = page.locator(
+    '[data-source-boundary="unidentified-store-product"]',
+  );
+  await expect(fragments).toHaveCount(2);
+  await expect(fragments.locator("a,button,strong")).toHaveCount(0);
+  await expect(page.locator(".store-all-products .product-card")).toHaveCount(
+    4,
+  );
+  await expect(fragments.first().locator("img")).toHaveAttribute(
+    "src",
+    "/api/reference-media/store-arrival-tail-left",
+  );
+  await expect(fragments.last().locator("img")).toHaveAttribute(
+    "src",
+    "/api/reference-media/store-arrival-tail-right",
+  );
   await page.locator(".store-grid-heading").evaluate((element) =>
     window.scrollTo({
       top: element.getBoundingClientRect().top + scrollY - 79,

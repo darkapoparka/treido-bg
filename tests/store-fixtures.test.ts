@@ -28,6 +28,22 @@ describe("recorded KITSCH product-entry snapshots", () => {
         ...kitsch,
         promotionSavings: savings,
         ratingCount,
+        ...(name === "kitsch-product-arrival"
+          ? {
+              capturedGrid: {
+                productIds: [
+                  "rice-shampoo",
+                  "rice-conditioner",
+                  "rice-bundle",
+                  "shea-butter",
+                ],
+                unidentifiedPhotos: [
+                  "/api/reference-media/store-arrival-tail-left",
+                  "/api/reference-media/store-arrival-tail-right",
+                ],
+              },
+            }
+          : {}),
       });
       expect(projected[0]?.recommendations).toBeUndefined();
       expect(projected[1]).toBe(other);
