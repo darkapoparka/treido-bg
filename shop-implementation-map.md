@@ -4,6 +4,12 @@ Current checkout/branch policy is owned by [AGENTS.md](AGENTS.md); use [single-s
 
 ## Current source checkpoint
 
+Application **5664953** continues main from b49226d with the source-fitted Jeans answer/Feedback family and working headerless sheet drag dismissal. The existing [current status](docs/STATUS.md) owns exact verification and continuation; dated fitting sections below are history, not additional queues. The complete run **20260919-assistant-final-mobile** scores all **424/424** states without browser/replay errors: **3.146873% mean MAE**, **9.829613% mean bad pixels**, **41 numerical candidates**, and no frame regression above 0.15 MAE percentage points against 20260919-identity-final-mobile. Source acceptance remains **0/97**.
+
+Frame 46/002 improves 6.220 -> 5.390%, 46/003 improves 3.957 -> 3.372%, and populated Feedback 47/004 improves 5.176 -> 2.943% MAE. Pointer tests exercise short-drag recovery, cancellation followed by a real touch swipe, nested feedback closure, browser Forward and source-trigger focus. The same application source passes 279/279 Windows production journeys and 106/106 unit tests. macOS CI and physical-device acceptance remain distinct from these Windows source comparisons; read the current status rather than inferring 1:1 or release readiness.
+
+### September 13 historical integration
+
 Updated 2026-09-19. The dock/Orders and local account/onboarding stage repair extends `18e5b29` on main. [Current status](docs/STATUS.md#active-repair-checkpoint) owns this integration and pending final run; the final reports use `20260919-repair-verified-*`. Do not use the older 210-test count or a previous capture as final-source proof. The frozen scope remains 97 flows / 424 ordered states, with 0/97 owner acceptance.
 
 Canonical repair owners are `discovery/icons.tsx`, `discovery/components.tsx`, `app/globals.css`, `account/forms.tsx`, `commerce/orders.tsx`, `commerce/order-presentation.tsx`, `commerce/orders-parity.module.css`, and `account/stage-history.ts` with its account/onboarding consumers. Six tests in `tests/reference/dock-source-journeys.spec.ts` cover real cart access, glyph bounds, source Orders composition and responsive/focus/history behavior.
