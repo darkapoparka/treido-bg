@@ -1123,7 +1123,7 @@ export function OrderConfirmation({
   const product = catalog.products.find((p) => p.id === order?.productId);
   const money = (amount: number) => formatMoney({ amount, currency: "USD" });
   return (
-    <AccountPage className="order-confirmation-page" back={false}>
+    <AccountPage className="order-confirmation-page" back={false} dockFade>
       <Link
         className="review-close"
         href={`/orders/${id}`}
@@ -1178,8 +1178,25 @@ export function OrderConfirmation({
               .map((p) => (
                 <ProductCard
                   key={p.id}
+                  ratingStars={
+                    p.id === "black-conditioner-bag" ? 4.5 : undefined
+                  }
                   product={{
                     ...p,
+                    images:
+                      p.id === "black-conditioner-bag"
+                        ? [
+                            "/api/reference-media/confirmation-black-conditioner-photo",
+                          ]
+                        : p.id === "chocolate-body-bag"
+                          ? [
+                              "/api/reference-media/confirmation-chocolate-body-photo",
+                            ]
+                          : p.images,
+                    title:
+                      p.id === "chocolate-body-bag"
+                        ? "Chocolate Body Wash Bar B…"
+                        : p.title,
                     ratingCount:
                       p.id === "black-conditioner-bag"
                         ? "2.8K"

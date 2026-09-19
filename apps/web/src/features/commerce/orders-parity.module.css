@@ -1090,9 +1090,10 @@
 }
 .manualDeals :global(.product-copy) {
   padding: 8px 4px 0;
+  gap: 0;
   color: #111;
   font-size: 12px;
-  line-height: 17px;
+  line-height: 16px;
 }
 .manualDeals :global(.product-copy strong) {
   display: block;
@@ -1100,7 +1101,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 12px;
-  line-height: 17px;
+  line-height: 16px;
   font-weight: 600;
 }
 .manualDeals :global(.product-seller) {
@@ -1122,7 +1123,7 @@
   height: 33px;
 }
 .manualDeals :global(.rating) {
-  display: block;
+  display: flex;
   margin: 1px 0;
   color: #111;
 }
@@ -1208,7 +1209,8 @@
   height: 32px;
 }
 .manualPicked {
-  margin: 27px 0 14px;
+  margin: 37px 0 12px;
+  line-height: 24px;
 }
 
 /* Source-specific geographic raster and independently rendered map overlays. */
@@ -1570,7 +1572,7 @@
   font-weight: 600;
 }
 .orderRecommendations :global(.rating) {
-  display: block;
+  display: flex;
   margin: 0;
 }
 .orderRecommendations :global(.product-copy > span:last-child) {
@@ -1625,4 +1627,44 @@
   flex: 0 0 16px;
   height: 100px;
   overflow: hidden;
+}
+
+.manualRecommendationLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 24px;
+  vertical-align: top;
+}
+.manualRecommendationLabel > svg {
+  width: 24px;
+  height: 24px;
+  padding: 5px;
+  border-radius: 50%;
+  background: #f1f4f5;
+  stroke-width: 3;
+}
+.manualPickedPreview {
+  width: calc(100% - 1px);
+  height: 74px;
+  margin-left: 1px;
+  overflow: hidden;
+  border-radius: 20px 20px 0 0;
+  background: linear-gradient(#e9e9e9, #f1f0ed);
+}
+.manualPickedPreview > img {
+  display: block;
+  width: 100%;
+  height: 74px;
+  object-fit: fill;
+}
+.manualDeals
+  :global(
+    .product-card:has(a[href="/products/order-peach-bee"]) .product-media
+  ) {
+  background: #edca5d;
+}
+.manualDeals :global(.save-button svg) {
+  width: 20px;
+  height: 20px;
 }

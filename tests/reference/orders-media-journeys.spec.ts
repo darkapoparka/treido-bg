@@ -10,6 +10,11 @@ test("manual order recommendations open their canonical products and retain a sa
     has: page.locator('a.product-copy[href="/products/order-tire-trim"]'),
   });
   await expect(tire).toContainText("Chemical Guys");
+  const ratingHeight = await tire
+    .locator(".rating")
+    .evaluate((rating) => rating.getBoundingClientRect().height);
+  expect(ratingHeight).toBeGreaterThanOrEqual(15);
+  expect(ratingHeight).toBeLessThanOrEqual(17);
   await tire.getByRole("button", { name: /^Save Tire\+Trim/ }).click();
   await expect(
     tire.getByRole("button", { name: /^Unsave Tire\+Trim/ }),
@@ -170,4 +175,41 @@ test("tracking map follows delivery state and returns through its connected hide
     "/api/reference-media/order-tracking-map-transit",
   );
   await expect(map.locator(":scope > svg")).toHaveCount(0);
+});
+
+test("manual delivery keeps its recommendation continuation through deals and Back", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "orders-manual");
+  await page.goto("/orders/REF-manual-shirt");
+  await expect(page.locator("[data-manual-picked-photo]")).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Mark as delivered", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Delivered today", exact: true }),
+  ).toBeVisible();
+  const preview = page.locator("[data-manual-picked-photo]");
+  await expect(preview).toBeVisible();
+  await expect(preview.locator("img")).toHaveAttribute(
+    "src",
+    "/api/reference-media/order-manual-picked-photo",
+  );
+  const deals = page.getByRole("link", { name: "Your deals", exact: true });
+  await expect(deals).toHaveAttribute("href", "/deals");
+  await deals.focus();
+  await deals.press("Enter");
+  await expect(page).toHaveURL(/\/deals$/);
+  await page.goBack();
+  await expect(
+    page.getByRole("heading", { name: "Delivered today", exact: true }),
+  ).toBeVisible();
+  await expect(preview).toBeVisible();
+  await page
+    .getByRole("button", { name: "Unmark as delivered", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Label created", exact: true }),
+  ).toBeVisible();
+  await expect(preview).toHaveCount(0);
 });

@@ -255,6 +255,7 @@ export function Explore({
         </section>
       )}
       <FloatingNav
+        fade
         back={!!category}
         cart={() => setCart(true)}
         showCartWhenEmpty={!beauty}

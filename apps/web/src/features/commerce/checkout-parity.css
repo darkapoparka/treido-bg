@@ -31,8 +31,23 @@
   grid-template-columns: 88px minmax(0, 1fr) 18px;
   min-height: 65px;
 }
-.source-checkout .checkout-section:nth-child(4) .checkout-section-toggle {
-  min-height: 54px;
+.source-checkout
+  .checkout-section:first-child
+  .checkout-section-toggle[aria-expanded="false"] {
+  min-height: 82px;
+  padding-block: 12px;
+}
+.source-checkout
+  .checkout-section:nth-child(3)
+  .checkout-section-toggle[aria-expanded="false"] {
+  min-height: 64px;
+  padding-block: 13px;
+}
+.source-checkout
+  .checkout-section:nth-child(4)
+  .checkout-section-toggle[aria-expanded="false"] {
+  min-height: 52px;
+  padding-block: 13px;
 }
 .source-checkout
   .checkout-section
@@ -40,6 +55,9 @@
   min-height: 41px;
   padding-top: 12px;
   padding-bottom: 9px;
+}
+.source-checkout .checkout-shipping-status {
+  color: #8b8b8b;
 }
 .source-checkout .checkout-section-caret {
   grid-column: 3;
@@ -129,6 +147,7 @@
   padding: 16px 16px 53px;
 }
 .source-checkout .checkout-pay button {
+  padding-left: 14px;
   font-weight: 600;
   background: #5b2df5;
 }
@@ -160,13 +179,14 @@
 }
 .source-checkout .checkout-recommendations article {
   gap: 14px;
-  margin: 8px 0 16px;
+  margin: 8px 0 14px;
 }
 .source-checkout .checkout-recommendations article > div {
   min-width: 0;
 }
 .source-checkout .checkout-recommendations article p {
   white-space: normal;
+  margin-top: 0;
 }
 .source-checkout .checkout-recommendations article em {
   white-space: nowrap;
@@ -174,10 +194,10 @@
 .source-checkout .checkout-recommendation-rating {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 8px;
 }
 .source-checkout .checkout-recommendation-rating .review-rating-stars {
-  --review-star-size: 18.5px;
+  --review-star-size: 18px;
   color: #111;
 }
 .source-checkout .checkout-recommendation-rating em {
@@ -186,6 +206,39 @@
 }
 .source-checkout .checkout-recommendations article > button {
   flex: none;
+}
+.source-checkout .checkout-recommendations header button {
+  width: 46px;
+  height: 46px;
+}
+.source-checkout .add-discount-pill > svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.source-checkout .source-total-value > small > svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  margin-right: 2px;
+  color: #161616;
+}
+.source-checkout .source-total-caret {
+  display: grid;
+  place-items: center;
+  width: 12px;
+  height: 22px;
+}
+.source-checkout .source-total-caret svg {
+  width: 12px;
+  height: 12px;
+  transform: rotate(90deg);
+}
+.source-checkout
+  .source-total-row[aria-expanded="true"]
+  .source-total-caret
+  svg {
+  transform: rotate(-90deg);
 }
 .source-checkout .source-total-row[aria-expanded="true"] {
   display: flex;
@@ -197,11 +250,11 @@
 .source-checkout .source-total-row[aria-expanded="true"] small,
 .source-checkout
   .source-total-row[aria-expanded="true"]
-  .source-total-value
+  .source-total-price
   > b,
 .source-checkout
   .source-total-row[aria-expanded="true"]
-  .source-total-value
+  .source-total-price
   > strong {
   display: none;
 }

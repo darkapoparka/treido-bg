@@ -20,7 +20,7 @@ export function HomeLoading() {
         <i />
       </div>
       <div className="home-loading-campaign" aria-hidden="true" />
-      <FloatingNav />
+      <FloatingNav fade />
     </ShopSurface>
   );
 }

@@ -308,6 +308,7 @@ export function Home({ catalog }: { catalog: Catalog }) {
         />
       )}
       <FloatingNav
+        fade
         showExplore={!returning}
         showCartWhenEmpty={showCart}
         cart={showCart ? () => setCartOpen(true) : undefined}

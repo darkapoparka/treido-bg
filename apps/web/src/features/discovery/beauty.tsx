@@ -181,7 +181,7 @@ export function BeautySections({ catalog }: { catalog: Catalog }) {
         <Editorial
           title="Vacation-ready nails"
           copy="Shop quick-dry polish, gel-like top coats, press-…"
-          image="beauty-nails-upper"
+          image="beauty-nails-photo"
         />
         <span className="beauty-editorial-continuation" aria-hidden="true" />
       </div>

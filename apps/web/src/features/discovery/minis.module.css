@@ -27,6 +27,7 @@
   min-width: 0;
   padding: 8px;
   border-radius: 28px;
+  box-shadow: 0 20px 44px #0002;
 }
 .catalog :global(.mini-feature > img) {
   height: auto;
@@ -52,8 +53,8 @@
 .catalog :global(.mini-feature strong),
 .catalog :global(.mini-list strong) {
   display: block;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
   line-height: 16px;
 }
 .catalog :global(.mini-feature p),
@@ -66,7 +67,7 @@
   line-height: 16px;
 }
 .catalog h2 {
-  margin: 36px 0 11px;
+  margin: 36px 0 13px;
   font-size: 18px;
   line-height: 22px;
   letter-spacing: -0.4px;
@@ -79,6 +80,22 @@
   width: 100%;
   min-width: 0;
   text-align: left;
+}
+.catalog :global(.mini-list-pages > .mini-list) {
+  flex-basis: min(326px, calc(100vw - 67px));
+}
+.catalog :global(.mini-list > :last-child) {
+  margin-bottom: 0;
+}
+.catalog :global(.mini-list-pages) > .catalogFragments {
+  flex: 0 0 31px;
+  overflow: hidden;
+}
+.catalog .catalogFragments img {
+  width: 31px;
+  height: 44px;
+  object-fit: cover;
+  object-position: left;
 }
 .shell > header {
   position: sticky;
@@ -494,6 +511,10 @@
 }
 .look[data-look-phase="results"][data-look-match="false"] {
   padding-top: 35px;
+  background:
+    linear-gradient(90deg, #ffffff00, #ffffff50),
+    linear-gradient(180deg, #ffeaf6, #ffbddd 62%, #ffd5eb);
+  background-attachment: fixed;
 }
 .look[data-look-phase="results"] :global(.look-wordmark) {
   width: 110px;
@@ -502,7 +523,7 @@
 .look[data-look-phase="results"][data-look-match="false"]
   :global(.look-wordmark) {
   width: 85px;
-  margin-bottom: 20px;
+  margin-bottom: 19px;
 }
 .look :global(.look-photo) {
   width: calc(100% - 88px);
@@ -513,7 +534,8 @@
 }
 .look[data-look-phase="results"][data-look-match="false"] :global(.look-photo) {
   width: calc(100% - 86px);
-  height: 457px;
+  height: 458px;
+  border-width: 4px;
 }
 .look :global(.look-photo > img) {
   display: block;
@@ -529,7 +551,8 @@
   display: flex;
   align-items: center;
   max-width: 66%;
-  height: 31px;
+  height: 24px;
+  transform: translateY(-50%);
   padding: 0;
   background: #9a59b8bd;
   font-size: 12px;
@@ -543,10 +566,9 @@
   text-overflow: ellipsis;
   padding: 0 8px 0 0;
 }
-.look :global(.look-photo > button):hover,
-.look :global(.look-photo > button):focus-visible,
-.look :global(.look-photo > button[aria-pressed="true"]) {
-  background: #571298cb;
+.look :global(.look-photo > button):focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
 }
 .look[data-look-piece]:not([data-look-piece=""])
   :global(.look-photo > button[aria-pressed="false"]) {
@@ -554,11 +576,26 @@
 }
 .hotspot {
   flex: none;
-  width: 29px;
-  height: 29px;
-  border: 3px solid white;
+  width: 24px;
+  height: 24px;
+  border: 2px solid white;
   border-radius: 50%;
   background: #6314a9;
+}
+.look[data-look-piece]:not([data-look-piece=""])
+  :global(.look-photo > button[aria-pressed="false"])
+  .hotspot {
+  background: transparent;
+}
+.selectedShirtOutline {
+  position: absolute;
+  top: 29.3%;
+  left: 42.3%;
+  width: 11.4%;
+  height: 13.1%;
+  border: 2px solid white;
+  border-radius: 12px;
+  pointer-events: none;
 }
 .look :global(.look-photo) .pointAtEnd {
   flex-direction: row-reverse;
@@ -704,11 +741,11 @@
   height: 48px;
 }
 .look .selectedOutfit {
-  margin: -22px 8px 26px;
+  margin: -17px 8px 26px;
   padding: 20px 0;
   border: 4px solid #fff;
   border-radius: 14px;
-  background: #cd89cab3;
+  background: #dfb2df;
 }
 .selectedOutfit > small {
   color: #4306a9;

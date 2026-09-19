@@ -31,6 +31,9 @@ const media: Record<
     // Deskew a captured photograph, then retain a measured inner source region.
     rotateDegrees?: number;
     postRotateRect?: readonly [number, number, number, number];
+    // Fill removed native annotations with a clean capture of the same photo.
+    // Only one underlay level is allowed; interface pixels are never retained.
+    underlayKey?: string;
     // Exclude the recorded card edge while retaining only its product photograph.
     photoRadius?: number;
     // Circular native controls are removed without erasing extra photo corners.
@@ -120,7 +123,12 @@ const media: Record<
   "chemical-store-header-photo": {
     file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
     rect: [1, 68, 391, 144],
-    occlusions: [[14, 82, 377, 44]],
+    roundedOcclusions: [
+      [14, 83, 111, 42, 21],
+      [127, 83, 84, 42, 21],
+      [213, 83, 110, 42, 21],
+      [325, 83, 67, 42, 21],
+    ],
     circularOcclusions: [
       [37, 37, 23],
       [85, 37, 23],
@@ -149,25 +157,29 @@ const media: Record<
   "chemical-store-clip-one": {
     file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
     rect: [17, 477, 108, 158],
-    occlusions: [[9, 130, 48, 20]],
+    lightTextOcclusions: [[9, 130, 48, 20]],
+    textOcclusionMode: "inpaint",
     photoRadius: 19,
   },
   "chemical-store-clip-two": {
     file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
     rect: [134, 477, 108, 158],
-    occlusions: [[9, 130, 48, 20]],
+    lightTextOcclusions: [[9, 130, 48, 20]],
+    textOcclusionMode: "inpaint",
     photoRadius: 19,
   },
   "chemical-store-clip-three": {
     file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
     rect: [251, 477, 108, 158],
-    occlusions: [[9, 130, 48, 20]],
+    lightTextOcclusions: [[9, 130, 48, 20]],
+    textOcclusionMode: "inpaint",
     photoRadius: 19,
   },
   "chemical-store-clip-four-partial": {
     file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
     rect: [368, 477, 25, 158],
-    occlusions: [[0, 130, 25, 20]],
+    lightTextOcclusions: [[0, 130, 25, 20]],
+    textOcclusionMode: "inpaint",
   },
   "chemical-featured-one-partial": {
     file: "flows/154e77d4-6ee5-4215-9dd4-2688a0035e16/001.webp",
@@ -237,26 +249,26 @@ const media: Record<
   "beauty-athena-header": {
     file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp",
     rect: [17, 125, 175, 118],
-    photoRadius: 23,
-    occlusions: [[30, 73, 118, 42]],
+    lightTextOcclusions: [[30, 73, 118, 42]],
+    textOcclusionMode: "inpaint",
   },
   "beauty-crown-header": {
     file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp",
     rect: [202, 125, 174, 118],
-    photoRadius: 23,
-    occlusions: [[30, 73, 118, 42]],
+    lightTextOcclusions: [[30, 73, 118, 42]],
+    textOcclusionMode: "inpaint",
   },
   "beauty-starface-header": {
     file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp",
     rect: [17, 422, 175, 118],
-    photoRadius: 23,
-    occlusions: [[24, 67, 130, 43]],
+    lightTextOcclusions: [[24, 67, 130, 43]],
+    textOcclusionMode: "inpaint",
   },
   "beauty-necessaire-header": {
     file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp",
     rect: [202, 422, 174, 118],
-    photoRadius: 23,
-    occlusions: [[24, 67, 126, 43]],
+    darkTextOcclusions: [[24, 67, 126, 43]],
+    textOcclusionMode: "inpaint",
   },
   "beauty-athena-card-photo": {
     file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp",
@@ -280,17 +292,69 @@ const media: Record<
     photoRadius: 21,
     occlusions: [[10, 10, 59, 19]],
   },
+  "confirmation-black-conditioner-photo": {
+    file: "flows/c61e4d3b-629f-48b5-a322-5472f46e9b1b/001.webp",
+    rect: [17, 550, 171, 171],
+    photoRadius: 19,
+    circularOcclusions: [[144, 144, 16]],
+  },
+  "confirmation-chocolate-body-photo": {
+    file: "flows/c61e4d3b-629f-48b5-a322-5472f46e9b1b/001.webp",
+    rect: [198, 550, 171, 171],
+    photoRadius: 19,
+    circularOcclusions: [[143, 144, 16]],
+  },
+  "assistant-dad-comparison-photo": {
+    file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/007.webp",
+    rect: [24, 303, 166, 166],
+    photoRadius: 24,
+    circularOcclusions: [[137, 137, 16]],
+  },
+  "assistant-armor-comparison-photo": {
+    file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/007.webp",
+    rect: [24, 501, 166, 166],
+    photoRadius: 24,
+    circularOcclusions: [
+      [137, 138, 16],
+      [51, 152, 3],
+      [59, 152, 3],
+      [67, 152, 3],
+      [75, 152, 3],
+      [83, 152, 3],
+      [91, 152, 3],
+      [99, 152, 3],
+      [107, 152, 3],
+      [115, 152, 3],
+    ],
+  },
+  "assistant-structured-second-fragment": {
+    file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/005.webp",
+    rect: [177, 766, 150, 86],
+    photoRadius: 20,
+    roundedOcclusions: [[-165, -6, 305, 56, 28]],
+    circularOcclusions: [[176, 22, 29]],
+  },
+  "assistant-structured-third-fragment": {
+    file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/005.webp",
+    rect: [337, 766, 55, 86],
+    circularOcclusions: [[16, 22, 29]],
+  },
+  "assistant-armor-logo": {
+    file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/007.webp",
+    rect: [201, 508, 24, 24],
+    photoRadius: 12,
+  },
   "assistant-dad-photo": {
     file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/005.webp",
-    rect: [18, 468, 148, 148],
-    photoRadius: 21,
-    circularOcclusions: [[122, 123, 18]],
+    rect: [17, 467, 150, 150],
+    photoRadius: 20,
+    circularOcclusions: [[123, 123, 16]],
   },
   "assistant-merch-photo": {
     file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/005.webp",
-    rect: [178, 468, 148, 148],
-    photoRadius: 21,
-    circularOcclusions: [[122, 123, 18]],
+    rect: [177, 467, 150, 150],
+    photoRadius: 20,
+    circularOcclusions: [[123, 123, 16]],
   },
   "assistant-armor-photo": {
     file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/007.webp",
@@ -313,7 +377,7 @@ const media: Record<
     file: "flows/e6c06e9f-26c9-476e-a3e5-d34c968eaa3d/003.webp",
     rect: [198, 458, 171, 171],
     photoRadius: 21,
-    occlusions: [[10, 10, 51, 19]],
+    roundedOcclusions: [[10, 10, 51, 19, 9.5]],
     circularOcclusions: [[143, 143, 17]],
   },
   "order-drmtlgy-eye-photo": {
@@ -322,6 +386,14 @@ const media: Record<
     photoRadius: 21,
     occlusions: [[10, 10, 57, 19]],
     circularOcclusions: [[143, 143, 17]],
+  },
+  "order-manual-picked-photo": {
+    file: "flows/e6c06e9f-26c9-476e-a3e5-d34c968eaa3d/003.webp",
+    rect: [17, 778, 359, 74],
+    photoRadius: 20,
+    // Exclude the native dock; only the bounded photographic header remains.
+    roundedOcclusions: [[67, -16, 225, 60, 30]],
+    circularOcclusions: [[29, 14, 31]],
   },
   "order-inspired-card-photo": {
     file: "flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/010.webp",
@@ -1077,9 +1149,16 @@ const media: Record<
     file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp",
     rect: [360, 802, 33, 48],
   },
-  "beauty-nails-upper": {
+  "beauty-nails-photo": {
     file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/006.webp",
-    rect: [17, 497, 350, 136],
+    rect: [16, 495, 353, 198],
+    photoRadius: 28,
+    lightTextOcclusions: [
+      [19, 140, 222, 25],
+      [19, 164, 272, 18],
+    ],
+    textOcclusionMode: "inpaint",
+    circularOcclusions: [[317, 163, 17]],
   },
   "beauty-athena-product": {
     file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/004.webp",
@@ -1115,6 +1194,23 @@ const media: Record<
   "pura-cashmere": { file: "screens/025.webp", rect: [32, 549, 112, 129] },
   "pura-charcoal": { file: "screens/025.webp", rect: [218, 549, 113, 129] },
 
+  // Isolated icon fragments only; no unseen Mini name or destination is inferred.
+  "minis-snap-gem-icon-fragment": {
+    file: "flows/5fc61632-627a-4875-883e-7cfea2bae666/002.webp",
+    rect: [362, 446, 31, 44],
+  },
+  "minis-snap-cat-icon-fragment": {
+    file: "flows/5fc61632-627a-4875-883e-7cfea2bae666/002.webp",
+    rect: [362, 502, 31, 44],
+  },
+  "minis-space-script-icon-fragment": {
+    file: "flows/5fc61632-627a-4875-883e-7cfea2bae666/002.webp",
+    rect: [362, 674, 31, 44],
+  },
+  "minis-space-room-icon-fragment": {
+    file: "flows/5fc61632-627a-4875-883e-7cfea2bae666/002.webp",
+    rect: [362, 730, 31, 44],
+  },
   "category-combo-partial": {
     file: "screens/124.webp",
     rect: [23, 733, 158, 118],
@@ -1325,6 +1421,18 @@ const media: Record<
   },
   "look-outfit-inner": { file: "screens/201.webp", rect: [104, 375, 188, 288] },
   "look-outfit-results": {
+    file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/006.webp",
+    rect: [47, 230, 299, 450],
+    underlayKey: "look-outfit-results-underlay",
+    // Native labels, rings and their shadows are excluded from the photograph.
+    roundedOcclusions: [
+      [0, 177, 172, 31, 3],
+      [128, 140, 171, 31, 3],
+      [126, 217, 173, 31, 3],
+      [135, 336, 164, 31, 3],
+    ],
+  },
+  "look-outfit-results-underlay": {
     file: "screens/201.webp",
     rect: [84, 355, 224, 328],
     rotateDegrees: -3,
@@ -2056,10 +2164,33 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
             blend: "dest-in",
           });
         }
-        return sharp(cleanPhoto)
+        const foreground = await sharp(cleanPhoto)
           .composite(photoCutouts)
-          .webp({ quality: 95 })
+          .png()
           .toBuffer();
+        if (entry.underlayKey) {
+          const underlayEntry = media[entry.underlayKey];
+          if (
+            !underlayEntry ||
+            underlayEntry.underlayKey ||
+            entry.underlayKey === key
+          )
+            throw new Error(
+              "Reference photo underlays must be single-level crops",
+            );
+          const underlay = await readReferenceMedia(entry.underlayKey);
+          if (!underlay)
+            throw new Error("Reference photo underlay is unavailable");
+          const background = await sharp(underlay)
+            .resize(width, height, { fit: "fill" })
+            .png()
+            .toBuffer();
+          return sharp(background)
+            .composite([{ input: foreground }])
+            .webp({ quality: 95 })
+            .toBuffer();
+        }
+        return sharp(foreground).webp({ quality: 95 }).toBuffer();
       }
       return crop.webp({ quality: 95 }).toBuffer();
     })();

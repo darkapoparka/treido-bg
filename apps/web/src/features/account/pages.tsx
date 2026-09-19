@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useDiscovery } from "../discovery/state";
 import { Icon } from "../discovery/icons";
@@ -57,6 +57,7 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
     !profile.phone;
   return (
     <AccountPage
+      dockFade
       className={`profile-overview ${starterProfile ? "starter-profile" : "active-profile"}`}
     >
       <Link className="account-panel identity-row" href="/account">
@@ -490,7 +491,7 @@ export function AccountDetails() {
             href={`/account/people?view=profile&id=${p.id}&return=account`}
             key={p.id}
           >
-            <ProfileAvatar name={p.name} initial />
+            <ProfileAvatar src={p.avatar} name={p.name} initial />
             {p.name}
           </Link>
         ))}
@@ -666,8 +667,21 @@ export function PeoplePage() {
   const stage = ["profile", "nickname", "birthday"].includes(route.view ?? "")
     ? route.view
     : "list";
+  const [personPhoto, setPersonPhoto] = useState(false);
   const editingPerson = stage === "nickname" || stage === "birthday";
   const showAccountBackground = returnToAccount && editingPerson;
+  const wasEditingPerson = useRef(editingPerson);
+  useEffect(() => {
+    const enteringProfile = wasEditingPerson.current && stage === "profile";
+    wasEditingPerson.current = editingPerson;
+    if (!enteringProfile) return;
+    // Let the dismissed sheet restore/unlock the document before positioning
+    // the new profile. Do not reset scroll when closing its photo menu.
+    const frame = requestAnimationFrame(() =>
+      window.scrollTo({ top: 0, behavior: "instant" }),
+    );
+    return () => cancelAnimationFrame(frame);
+  }, [editingPerson, stage]);
   const [personChoice, setPersonChoice] = useState<
     "relation" | "gender" | null
   >(null);
@@ -714,10 +728,20 @@ export function PeoplePage() {
         <>
           <div className="person-profile">
             <div className="person-avatar-wrap">
-              <ProfileAvatar name={person.name} large initial />
-              <span className="avatar-edit" aria-hidden="true">
+              <ProfileAvatar
+                src={person.avatar}
+                name={person.name}
+                large
+                initial
+              />
+              <button
+                type="button"
+                className="avatar-edit"
+                aria-label="Edit person profile picture"
+                onClick={() => setPersonPhoto(true)}
+              >
                 <Icon name="edit" />
-              </span>
+              </button>
             </div>
             <input
               aria-label="Nickname"
@@ -829,6 +853,15 @@ export function PeoplePage() {
       )}
       {person && (
         <>
+          <ProfilePhotoMenu
+            open={personPhoto}
+            onClose={() => setPersonPhoto(false)}
+            onSelect={(avatar) => {
+              const next = { ...person, avatar };
+              setPerson(next);
+              savePerson(next);
+            }}
+          />
           <ProfileChoice
             open={personChoice === "relation"}
             title="Select relation"
@@ -1340,6 +1373,7 @@ export function NotificationSettings() {
   return (
     <AccountPage
       title="Notifications"
+      dockFade
       className="account-settings-page notification-settings-page"
     >
       {notificationOptions.map(([title, copy]) => (

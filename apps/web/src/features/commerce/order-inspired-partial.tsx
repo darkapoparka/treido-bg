@@ -30,3 +30,22 @@ export function OrderInspiredPartial() {
     </div>
   );
 }
+
+// Only the photographed header is visible in the captured manual-order history.
+// Keep it decorative: the source does not expose a product identity or destination.
+export function ManualPickedPreview() {
+  return (
+    <div
+      className={styles.manualPickedPreview}
+      data-manual-picked-photo
+      aria-hidden="true"
+    >
+      <img
+        src="/api/reference-media/order-manual-picked-photo"
+        alt=""
+        width="359"
+        height="74"
+      />
+    </div>
+  );
+}

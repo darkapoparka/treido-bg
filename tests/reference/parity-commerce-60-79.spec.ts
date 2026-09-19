@@ -57,7 +57,12 @@ test("flows 64-65 show source tracking activity and editable tracking details", 
   await expect(
     activity.getByText("Successfully delivered", { exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: /Close Delivery progress/ }).click();
+  // The captured activity sheet has no close glyph; Back dismisses its history entry.
+  await page.goBack();
+  await expect(activity).not.toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "View all activity", exact: true }),
+  ).toBeFocused();
   await page.getByRole("button", { name: "Edit tracking details" }).click();
   const editor = page.getByRole("dialog", { name: "Edit tracking details" });
   await expect(

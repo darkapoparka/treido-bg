@@ -3,46 +3,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Sheet } from "./components";
 import { Icon } from "./icons";
 
-function StarRow() {
-  return Array.from({ length: 5 }, (_, index) => (
-    <svg key={index} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path
-        fill="currentColor"
-        d="m12 1.8 2.8 6.7 7.2.6-5.5 4.7 1.7 7-6.2-3.8-6.2 3.8 1.7-7L2 9.1l7.2-.6Z"
-      />
-    </svg>
-  ));
-}
-
-export function ReviewStars({
-  rating,
-  label,
-}: {
-  rating: number;
-  label?: string;
-}) {
-  const fill = Math.max(0, Math.min(5, rating)) * 20;
-  return (
-    <span
-      className="review-rating-stars"
-      role="img"
-      aria-label={label ?? `${rating} out of 5 stars`}
-    >
-      <span className="review-rating-stars-empty" aria-hidden="true">
-        <StarRow />
-      </span>
-      <span
-        className="review-rating-stars-fill"
-        style={{ width: `${fill}%` }}
-        aria-hidden="true"
-      >
-        <span>
-          <StarRow />
-        </span>
-      </span>
-    </span>
-  );
-}
+export { ReviewStars } from "./rating-stars";
 
 // Whether a review needs expansion depends on rendered lines, not character
 // count. Keep its paragraph mounted while measuring and opening other sheets.

@@ -931,10 +931,14 @@
   gap: 6px;
   margin-top: 0;
 }
-.photoRating > span {
-  color: #d5b336;
-  letter-spacing: 1px;
+.photoRating > :global(.review-rating-stars) {
+  --review-star-size: 14px;
+  color: #dfbc32;
 }
+.photoAnswer :global(.assistant-product-rail) article > span {
+  line-height: 16px;
+}
+.photoAnswer .photoComparisonCopy > a,
 .photoAnswer .photoComparisonCopy > button {
   display: inline;
   text-decoration: underline;
@@ -964,7 +968,7 @@
 .photoSeller {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 .photoSellerLogo {
   display: grid;
@@ -981,6 +985,7 @@
   background: #000;
 }
 .photoSeller small {
+  display: block;
   font-size: 10px;
   line-height: 14px;
 }
@@ -994,6 +999,10 @@
   margin: 20px 0 24px;
 }
 .photoAnswer :global(.assistant-preferences) :global(.pill) {
+  height: 40px;
+  min-height: 40px;
+  padding: 10px;
+  line-height: 18px;
   margin: 0;
 }
 
@@ -1188,6 +1197,9 @@
 }
 
 /* Captured cap answer, f045-005..008; photo layout only. */
+.photoAnswer {
+  background: #fff;
+}
 .photoAnswer > h1 {
   font-size: 23px;
   letter-spacing: -0.6px;
@@ -1218,9 +1230,39 @@
 .photoAnswer :global(.assistant-product-rail) strong,
 .photoAnswer :global(.assistant-product-rail) b {
   font-weight: 500;
+  line-height: 16px;
 }
 .photoAnswer :global(.assistant-answer-card) {
   margin: 20px 0;
+}
+.photoAnswer > :global(.assistant-answer-card):first-of-type {
+  margin-bottom: 16px;
+}
+.photoAnswer
+  > :global(.assistant-answer-card)
+  + :global(.assistant-answer-card) {
+  margin-top: 16px;
+}
+.photoPagination {
+  position: absolute;
+  left: 48px;
+  bottom: 11px;
+  display: flex;
+  gap: 2px;
+  z-index: 1;
+  pointer-events: none;
+}
+.photoPagination i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #bdbdbd;
+}
+.photoPagination i:first-child {
+  background: #797979;
+}
+.photoAnswer :global(.assistant-composer) {
+  bottom: calc(36px + env(safe-area-inset-bottom));
 }
 .photoAnswer :global(.assistant-answer-card) .photoCardMedia {
   width: min(166px, 48%);
@@ -1261,4 +1303,10 @@
   mask-image: linear-gradient(transparent, #000 28%);
   pointer-events: none;
   z-index: -1;
+}
+
+.photoProductLink {
+  padding: 0;
+  font: inherit;
+  text-align: inherit;
 }

@@ -1678,7 +1678,7 @@
   font-weight: 650;
 }
 .source-checkout .checkout-recommendations {
-  margin: 48px 0 30px;
+  margin: 46px 0 47px;
 }
 .source-checkout .checkout-recommendations header {
   margin-bottom: 8px;
@@ -1687,9 +1687,13 @@
   margin: 10px 0 0;
 }
 .source-checkout .add-discount-pill {
-  min-height: 38px;
-  margin: 0 0 16px;
-  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 36px;
+  margin: 0 0 12px;
+  padding: 8px 10px;
+  line-height: 18px;
   border: 1px solid #ddd;
   border-radius: 22px;
   background: #fff;
@@ -1697,10 +1701,10 @@
 }
 .source-checkout .source-total-row {
   display: grid;
-  grid-template-columns: 42px 1fr auto;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
   align-items: center;
   width: 100%;
-  gap: 12px;
+  gap: 16px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -1725,31 +1729,42 @@
 }
 .source-checkout .source-total-row > span:nth-child(2) strong {
   font-size: 18px;
+  line-height: 22px;
 }
 .source-checkout .source-total-row small {
   color: #777;
   font-size: 14px;
+  line-height: 18px;
 }
 .source-checkout .source-total-value {
-  display: grid;
-  grid-template-columns: auto auto auto;
-  align-items: center;
-  justify-items: end;
-  column-gap: 7px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
-.source-checkout .source-total-value > b {
+.source-checkout .source-total-price {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.source-checkout .source-total-price > b {
   border-radius: 10px;
   background: #f4f4f4;
-  padding: 3px 5px;
+  padding: 2px 3px;
   color: #777;
-  font-size: 10px;
+  font-size: 9px;
+  line-height: 12px;
+  font-weight: 600;
 }
-.source-checkout .source-total-value > strong {
-  font-size: 20px;
+.source-checkout .source-total-price > strong {
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 600;
 }
 .source-checkout .source-total-value > small {
-  grid-column: 1 / -1;
-  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  padding-right: 19px;
+  white-space: nowrap;
 }
 .source-checkout .inline-order-summary {
   margin-top: 24px;
@@ -1814,7 +1829,9 @@
 }
 .source-checkout .checkout-pay button > b {
   border-left: 1px solid #ffffffaa;
-  padding-left: 16px;
+  padding-left: 14px;
+  font-weight: 600;
+  letter-spacing: -0.25px;
 }
 .source-checkout .processing-label {
   display: flex;

@@ -128,13 +128,196 @@ test("photo answer edit search and Back preserve history without horizontal over
     expect(overflow).toBe(false);
   }
   await page.getByRole("link", { name: "Edit search", exact: true }).click();
-  await expect(page).toHaveURL(/\/search$/);
+  await expect(page).toHaveURL(/\/search\?edit=photo$/);
   await expect(
-    page.locator('[data-captured-search-continuation="photo"]'),
+    page.getByRole("textbox", { name: "Search products", exact: true }),
+  ).toHaveValue("Find me a baseball cap like this");
+  await expect(
+    page.getByRole("img", { name: "Selected photo", exact: true }),
   ).toBeVisible();
   await page.goBack();
   await expect(page).toHaveURL(/\/assistant\?example=photo$/);
   await expect(
     page.locator('[data-photo-recommendation="source-bounded-third"]'),
   ).toBeVisible();
+});
+
+test("photo comparison preserves source framing and non-interactive gallery indicators", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "search-photo");
+  await page.goto("/assistant?example=photo");
+  const cards = page.locator("[data-photo-comparison]");
+  await expect(cards).toHaveCount(2);
+  await expect(
+    cards.nth(0).locator(".product-media > :is(a, button) > img"),
+  ).toHaveAttribute(
+    "src",
+    "/api/reference-media/assistant-dad-comparison-photo",
+  );
+  await expect(
+    cards.nth(1).locator(".product-media > :is(a, button) > img"),
+  ).toHaveAttribute(
+    "src",
+    "/api/reference-media/assistant-armor-comparison-photo",
+  );
+  await expect(
+    cards.nth(1).locator(".product-media > span[aria-hidden='true'] > i"),
+  ).toHaveCount(9);
+  await expect(
+    cards.nth(1).locator("img[src$='/assistant-armor-logo']"),
+  ).toHaveCount(1);
+  await expect(
+    page
+      .locator('[data-photo-recommendation="assistant-mobbin-merch-cap"]')
+      .getByRole("img", { name: "5 out of 5 stars" }),
+  ).toBeVisible();
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    await cards.first().scrollIntoViewIfNeeded();
+    const geometry = await cards.evaluateAll((elements) => {
+      const first = elements[0]!.getBoundingClientRect();
+      const second = elements[1]!.getBoundingClientRect();
+      const photos = elements.map((element) =>
+        element.querySelector(".product-media")!.getBoundingClientRect(),
+      );
+      return {
+        gap: second.top - first.bottom,
+        overflow: document.documentElement.scrollWidth > innerWidth,
+        photos: photos.map(({ width, height }) => ({ width, height })),
+      };
+    });
+    expect(geometry.gap).toBeCloseTo(16, 0);
+    expect(geometry.overflow).toBe(false);
+    if (width === 393)
+      for (const photo of geometry.photos) {
+        expect(photo.width).toBeCloseTo(166, 0);
+        expect(photo.height).toBeCloseTo(166, 0);
+      }
+  }
+});
+
+test("photo comparison boundaries remain keyboard accessible without inventing product routes", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "search-photo");
+  await page.goto("/assistant?example=photo");
+  const steps = page.getByRole("button", { name: /^Assistant steps/ });
+  await steps.click();
+  for (const title of ["Mobbin Dad Hat", "Mob Armor Snapback"]) {
+    const trigger = page
+      .locator(".photo-assistant > p")
+      .getByRole("button", { name: title, exact: true });
+    await trigger.scrollIntoViewIfNeeded();
+    await trigger.focus();
+    await trigger.press("Enter");
+    const boundary = page.getByRole("dialog", {
+      name: "Product details unavailable",
+      exact: true,
+    });
+    await expect(boundary).toBeVisible();
+    await expect(boundary).toContainText(
+      "has not been opened, saved, or added to a cart",
+    );
+    await expect(page).toHaveURL(/\/assistant\?example=photo&steps=1$/);
+    await boundary.getByRole("button", { name: /^Close / }).click();
+    await expect(boundary).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+    await expect(steps).toHaveAttribute("aria-expanded", "true");
+  }
+  await expect(
+    page.locator('.photo-assistant a[href^="/products/assistant-"]'),
+  ).toHaveCount(0);
+});
+
+test("editing the captured answer restores its photo, question and disclosure history", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "search-photo");
+  await page.goto("/assistant?example=photo");
+  const steps = button(page, "Assistant steps");
+  await steps.click();
+  await expect(steps).toHaveAttribute("aria-expanded", "true");
+  await page.getByRole("link", { name: "Edit search", exact: true }).click();
+  await expect(page).toHaveURL(/\/search\?edit=photo$/);
+  const input = page.getByRole("textbox", {
+    name: "Search products",
+    exact: true,
+  });
+  await expect(input).toHaveValue("Find me a baseball cap like this");
+  await expect(input).toBeFocused();
+  await expect(
+    page.getByRole("img", { name: "Selected photo", exact: true }),
+  ).toHaveAttribute("src", "/api/reference-media/assistant-cap");
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth > innerWidth,
+      ),
+    ).toBe(false);
+  }
+  await page.goBack();
+  await expect(page).toHaveURL(/\/assistant\?example=photo&steps=1$/);
+  await expect(steps).toHaveAttribute("aria-expanded", "true");
+  await page.goForward();
+  await expect(page).toHaveURL(/\/search\?edit=photo$/);
+  await expect(input).toHaveValue("Find me a baseball cap like this");
+  await input.press("Enter");
+  await expect(page).toHaveURL(/\/assistant\?example=photo$/);
+  await expect(steps).toHaveAttribute("aria-expanded", "false");
+});
+
+test("a different question about the example photo never receives an unrelated recorded answer", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "search-photo");
+  await page.goto("/search?edit=photo");
+  const input = page.getByRole("textbox", {
+    name: "Search products",
+    exact: true,
+  });
+  await input.fill("Find a waterproof hiking hat instead");
+  await input.press("Enter");
+  const unavailable = page.getByRole("dialog", {
+    name: "Photo search unavailable",
+    exact: true,
+  });
+  await expect(unavailable).toBeVisible();
+  expect(new URL(page.url()).pathname).toBe("/search");
+  await expect(unavailable).toContainText("different question");
+  await expect(
+    unavailable.getByRole("link", {
+      name: "View captured example",
+      exact: true,
+    }),
+  ).toHaveAttribute("href", "/assistant?example=photo");
+  await unavailable.getByRole("button", { name: /^Close / }).click();
+  await expect(input).toHaveValue("Find a waterproof hiking hat instead");
+  await expect(
+    page.getByRole("img", { name: "Selected photo", exact: true }),
+  ).toBeVisible();
+});
+
+test("captured cap title controls retain the same honest boundary and keyboard focus as their images", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "search-photo");
+  await page.goto("/assistant?example=photo");
+  const title = page
+    .locator('[data-photo-recommendation="assistant-cap"] strong')
+    .getByRole("button", { name: "Mobbin Dad Hat", exact: true });
+  await title.focus();
+  await title.press("Enter");
+  const unavailable = page.getByRole("dialog", {
+    name: "Product details unavailable",
+    exact: true,
+  });
+  await expect(unavailable).toBeVisible();
+  await expect(unavailable).toContainText(
+    "not been opened, saved, or added to a cart",
+  );
+  await unavailable.getByRole("button", { name: /^Close / }).click();
+  await expect(title).toBeFocused();
+  expect(new URL(page.url()).pathname).toBe("/assistant");
 });

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useId, type ReactNode } from "react";
 import { Icon, type IconName } from "./icons";
+import { ReviewStars } from "./rating-stars";
 import { useDiscovery } from "./state";
 import { useSurfaceReady } from "./hydration-boundary";
 import { formatMoney, type Product, type Store } from "../catalog/types";
@@ -43,12 +44,14 @@ export function FloatingNav({
   onBack,
   showCartWhenEmpty = false,
   showExplore = true,
+  fade = false,
 }: {
   back?: boolean;
   cart?: () => void;
   onBack?: () => void;
   showCartWhenEmpty?: boolean;
   showExplore?: boolean;
+  fade?: boolean;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -66,6 +69,7 @@ export function FloatingNav({
         : "/";
   return (
     <div
+      data-fade={fade || undefined}
       className={`floating-dock ${back || (cart && (showCartWhenEmpty || cartQuantity > 0)) ? "has-side-controls" : ""}`}
     >
       {back && (
@@ -139,6 +143,7 @@ export function ProductCard({
   mediaOnly = false,
   storeName,
   ratingStyle = "stars",
+  ratingStars,
 }: {
   product: Product;
   compact?: boolean;
@@ -146,6 +151,8 @@ export function ProductCard({
   mediaOnly?: boolean;
   storeName?: string;
   ratingStyle?: "stars" | "summary";
+  /** The depicted star fill when a shelf snapshot differs from product details. */
+  ratingStars?: number;
 }) {
   const discovery = useDiscovery();
   const reported = discovery.reportedProducts.includes(product.id);
@@ -195,7 +202,15 @@ export function ProductCard({
                 </>
               ) : (
                 <>
-                  <span>★★★★★</span> ({product.ratingCount})
+                  <ReviewStars
+                    rating={ratingStars ?? product.rating ?? 5}
+                    label={
+                      ratingStars === undefined && product.rating === undefined
+                        ? "Captured rating"
+                        : undefined
+                    }
+                  />{" "}
+                  ({product.ratingCount})
                 </>
               )}
             </span>

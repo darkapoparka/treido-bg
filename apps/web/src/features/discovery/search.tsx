@@ -22,6 +22,8 @@ import { Icon } from "./icons";
 import { useDiscovery } from "./state";
 import { Filters, type SearchFilters } from "./filters";
 import {
+  capturedCapQuestion,
+  isCapturedCapQuestion,
   emptyFilters,
   hasSearchFilters,
   isCapturedFilteredJeans,
@@ -58,6 +60,8 @@ export function Search({
   // An absent q after browser navigation means an empty query, not the stale
   // server prop from a previous result page. The prop only seeds the draft.
   const query = params.get("q") ?? "";
+  const editCapturedPhoto = params.get("edit") === "photo";
+  const draftEntry = JSON.stringify([query, editCapturedPhoto]);
   const filters: SearchFilters = {
     ...initialFilters,
     ...readSearchFilters(params),
@@ -66,8 +70,10 @@ export function Search({
   const formRef = useRef<HTMLFormElement>(null);
   const state = useDiscovery();
   const { viewAnswer } = state;
-  const [draft, setDraft] = useState(query || initialQuery);
-  const [draftQuery, setDraftQuery] = useState(query);
+  const [draft, setDraft] = useState(
+    editCapturedPhoto ? capturedCapQuestion : query || initialQuery,
+  );
+  const [activeDraftEntry, setActiveDraftEntry] = useState(draftEntry);
   const [filter, setFilter] = useState(false);
   const [filterUnderlay, setFilterUnderlay] = useState<SearchFilters | null>(
     null,
@@ -76,13 +82,14 @@ export function Search({
   const answerEntry = useRef(false);
   const [focused, setFocused] = useState(false);
   const [photos, setPhotos] = useState(false);
-  const [photo, setPhoto] = useState("");
+  const [photo, setPhoto] = useState(editCapturedPhoto ? capturedCapPhoto : "");
   const [photoError, setPhotoError] = useState("");
   const [photoUnavailable, setPhotoUnavailable] = useState(false);
   const [pending, startTransition] = useTransition();
-  if (draftQuery !== query) {
-    setDraftQuery(query);
-    setDraft(query);
+  if (activeDraftEntry !== draftEntry) {
+    setActiveDraftEntry(draftEntry);
+    setDraft(editCapturedPhoto ? capturedCapQuestion : query);
+    setPhoto(editCapturedPhoto ? capturedCapPhoto : "");
     setFocused(false);
   }
   useEffect(() => {
@@ -222,7 +229,11 @@ export function Search({
         e.preventDefault();
         if (!draft.trim() && !photo) return;
         closeSuggestions();
-        if (photo && photo !== capturedCapPhoto) {
+        if (
+          photo &&
+          (photo !== capturedCapPhoto ||
+            (draft.trim() && !isCapturedCapQuestion(draft)))
+        ) {
           setPhotoUnavailable(true);
           return;
         }
@@ -716,7 +727,7 @@ export function Search({
         <p className="sheet-copy">
           Photo search is not connected. Your photo stays on this device and has
           not been analyzed. The captured cap example is a separate reference
-          answer, not a result for your photo.
+          answer, not a result for another photo or a different question.
         </p>
         <div className="sheet-actions">
           <button className="pill" onClick={removePhoto}>

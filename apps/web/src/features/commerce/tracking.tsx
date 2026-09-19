@@ -23,7 +23,10 @@ import {
   OrderRecommendations,
 } from "./order-presentation";
 import { DeliveryConfetti } from "./delivery-confetti";
-import { OrderInspiredPartial } from "./order-inspired-partial";
+import {
+  ManualPickedPreview,
+  OrderInspiredPartial,
+} from "./order-inspired-partial";
 import styles from "./orders-parity.module.css";
 const events = [
   ["Milpitas, CA, 95035, US · Jul 31, 6:04pm", "Successfully delivered"],
@@ -323,7 +326,14 @@ export function TrackingDetail({
             onClick={() => setBoundary("Tracking report")}
           />
         </div>
-        {!product && <h2>Your deals ›</h2>}
+        {!product && (
+          <h2>
+            <Link href="/deals" className={styles.manualRecommendationLabel}>
+              Your deals
+              <Icon name="chevron" />
+            </Link>
+          </h2>
+        )}
         {product ? (
           <OrderRecommendations catalog={catalog} />
         ) : (
@@ -367,8 +377,16 @@ export function TrackingDetail({
             <OrderInspiredPartial />
           </>
         )}
-        {laterManualHistory && (
-          <h2 className={styles.manualPicked}>Picked for you ›</h2>
+        {!product && delivered && (
+          <>
+            <h2 className={styles.manualPicked}>
+              <span className={styles.manualRecommendationLabel}>
+                Picked for you
+                <Icon name="chevron" />
+              </span>
+            </h2>
+            <ManualPickedPreview />
+          </>
         )}
         {statusToast && (
           <p className="order-action-toast" role="status">

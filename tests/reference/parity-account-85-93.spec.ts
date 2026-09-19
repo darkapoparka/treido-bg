@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { useReferenceScenario } from "./helpers";
 
 // Exercise only the local, provider-free preview. No third-party requests are permitted.
 test.beforeEach(async ({ page }) => {
@@ -35,6 +36,8 @@ test("85 security rows keep account detail and back navigation connected", async
 test("86 notification changes survive navigation without enabling a provider", async ({
   page,
 }) => {
+  // This captured account flow starts after onboarding; cold launch is tested separately.
+  await useReferenceScenario(page, "home-welcome");
   await page.goto("/account/notifications");
   const tracking = page.getByRole("switch", { name: /Order tracking/ });
   const connections = page.getByRole("switch", { name: /Account connections/ });

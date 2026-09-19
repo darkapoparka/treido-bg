@@ -29,6 +29,7 @@ export type Profile = {
 };
 export type Person = {
   id: string;
+  avatar?: string;
   name: string;
   relation: string;
   birthday: string;

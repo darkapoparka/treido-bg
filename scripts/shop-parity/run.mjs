@@ -440,12 +440,39 @@ async function writeRgb(buffer, outputPath) {
     .png()
     .toFile(outputPath);
 }
-async function captureFrame(browser, frame, runDir) {
+export function replayStartForFrame(frames, frameNo) {
+  if (!Number.isInteger(frameNo) || frameNo < 1 || frameNo > frames.length)
+    throw new RangeError("Frame number is outside the replay recipe");
+  let start = 0;
+  for (let index = 0; index < frameNo; index += 1)
+    if (frames[index].entry) start = index;
+  return start;
+}
+
+// Reuse only consecutive states from the same recorded entry. A failed replay,
+// explicit fixture entry, skipped frame, or next flow gets a fresh context.
+export function canContinueReplay(session, frame, replayStart) {
+  return Boolean(
+    session &&
+    !session.afterCaptureAdvanced &&
+    session.flowNo === frame.flowNo &&
+    session.replayStart === replayStart &&
+    session.nextFrameIndex === frame.frameNo - 1,
+  );
+}
+
+export async function closeCaptureSession(session) {
+  try {
+    await session.loadingReplay.dispose();
+  } finally {
+    await session.context.close();
+  }
+}
+
+async function captureFrame(browser, frame, runDir, replay = null) {
   if (!frame.recipeFrame) throw new Error(`No replay recipe for ${frame.id}`);
   const recipe = flowRecipes[frame.flowNo];
-  let replayStart = 0;
-  for (let i = 0; i < frame.frameNo; i += 1)
-    if (recipe.frames[i].entry) replayStart = i;
+  const replayStart = replayStartForFrame(recipe.frames, frame.frameNo);
   const entry = recipe.frames[replayStart].entry ?? {};
   const startUrl = entry.startUrl ?? recipe.startUrl;
   const scenario = entry.scenario ?? recipe.scenario;
@@ -455,65 +482,95 @@ async function captureFrame(browser, frame, runDir) {
   ensureDir(frameDir);
   const referencePath = path.join(frameDir, "reference.png");
   const livePath = path.join(frameDir, "live.png");
-  const context = await browser.newContext({
-    viewport: { width: WIDTH, height: HEIGHT },
-    deviceScaleFactor: 1,
-    reducedMotion: "reduce",
-  });
-  await context.route("**/*", async (route) => {
-    try {
-      if (new URL(route.request().url()).origin === new URL(BASE_URL).origin)
-        await route.continue();
-      else await route.abort();
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      if (!/already handled|context or browser has been closed/i.test(message))
-        throw error;
-    }
-  });
-  if (scenario)
-    await context.addCookies([
-      {
-        name: "shop-reference-scenario",
-        value: scenario,
-        url: BASE_URL,
-        httpOnly: true,
-        sameSite: "Lax",
-      },
-    ]);
-  const page = await context.newPage();
-  const loadingReplay = createLoadingReplay(page, BASE_URL);
-  const browserErrors = [];
-  page.on("pageerror", (error) => browserErrors.push(error.message));
+  let session = canContinueReplay(replay?.session, frame, replayStart)
+    ? replay.session
+    : null;
+  if (!session) {
+    if (replay?.session) await closeCaptureSession(replay.session);
+    const context = await browser.newContext({
+      viewport: { width: WIDTH, height: HEIGHT },
+      deviceScaleFactor: 1,
+      reducedMotion: "reduce",
+    });
+    await context.route("**/*", async (route) => {
+      try {
+        if (new URL(route.request().url()).origin === new URL(BASE_URL).origin)
+          await route.continue();
+        else await route.abort();
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (
+          !/already handled|context or browser has been closed/i.test(message)
+        )
+          throw error;
+      }
+    });
+    if (scenario)
+      await context.addCookies([
+        {
+          name: "shop-reference-scenario",
+          value: scenario,
+          url: BASE_URL,
+          httpOnly: true,
+          sameSite: "Lax",
+        },
+      ]);
+    const page = await context.newPage();
+    const loadingReplay = createLoadingReplay(page, BASE_URL);
+    const browserErrors = [];
+    page.on("pageerror", (error) => browserErrors.push(error.message));
+
+    session = {
+      context,
+      page,
+      loadingReplay,
+      browserErrors,
+      flowNo: frame.flowNo,
+      replayStart,
+      nextFrameIndex: replayStart,
+      initialized: false,
+    };
+    if (replay) replay.session = session;
+  }
+  const { page, loadingReplay, browserErrors } = session;
+  let passed = false;
 
   try {
-    await loadingReplay.install();
-    page.setDefaultTimeout(10_000);
-    await page.goto(`${BASE_URL}${startUrl}`, {
-      waitUntil: "domcontentloaded",
-    });
-    await page
-      .locator('[data-shop-interactive="true"]')
-      .first()
-      .waitFor({ state: "attached" });
-    if (
-      scenario &&
-      (await page.locator("html").getAttribute("data-reference-scenario")) !==
-        scenario
-    )
-      throw new Error(
-        `Scenario not enabled by the reference server: ${scenario}`,
-      );
-    await page.addStyleTag({
-      content:
-        "html{scroll-behavior:auto!important}*{caret-color:transparent!important}" +
-        (process.env.SHOP_PARITY_INJECT_CSS || ""),
-    });
-    for (let index = replayStart; index < frame.frameNo; index += 1) {
+    if (!session.initialized) {
+      await loadingReplay.install();
+      page.setDefaultTimeout(10_000);
+      await page.goto(`${BASE_URL}${startUrl}`, {
+        waitUntil: "domcontentloaded",
+      });
+      await page
+        .locator('[data-shop-interactive="true"]')
+        .first()
+        .waitFor({ state: "attached" });
+      if (
+        scenario &&
+        (await page.locator("html").getAttribute("data-reference-scenario")) !==
+          scenario
+      )
+        throw new Error(
+          `Scenario not enabled by the reference server: ${scenario}`,
+        );
+      await page.addStyleTag({
+        content:
+          "html{scroll-behavior:auto!important}*{caret-color:transparent!important}" +
+          (process.env.SHOP_PARITY_INJECT_CSS || ""),
+      });
+      session.initialized = true;
+    }
+    for (
+      let index = session.nextFrameIndex;
+      index < frame.frameNo;
+      index += 1
+    ) {
       for (const action of recipe.frames[index].actions || []) {
         await perform(page, action, loadingReplay);
       }
     }
+    session.nextFrameIndex = frame.frameNo;
     await settle(page);
     const guard = frame.recipeFrame.captureGuard;
     const assertCaptureState = async () => {
@@ -557,6 +614,12 @@ async function captureFrame(browser, frame, runDir) {
       comparison.heat,
       path.join(frameDir, "difference-heatmap.png"),
     );
+    // Post-capture checks may release a held request. Start the next frame
+    // from its recorded entry instead of releasing that request twice.
+    session.afterCaptureAdvanced = Boolean(
+      frame.recipeFrame.afterCapture?.length,
+    );
+    passed = true;
     return {
       ...serializeFrame(frame),
       status: "scored",
@@ -590,10 +653,9 @@ async function captureFrame(browser, frame, runDir) {
     );
     throw error;
   } finally {
-    try {
-      await loadingReplay.dispose();
-    } finally {
-      await context.close();
+    if (!replay || !passed) {
+      if (replay) replay.session = null;
+      await closeCaptureSession(session);
     }
   }
 }
@@ -744,6 +806,8 @@ async function runBaseline(args) {
   if (!frames.length) throw new Error("No frames matched the requested scope.");
 
   const rows = [];
+  const replay = args.sequential ? { session: null } : null;
+  const startedAt = new Date().toISOString();
   const browser = await chromium.launch({
     channel: process.env.PLAYWRIGHT_CHANNEL || "chrome",
     headless: true,
@@ -762,7 +826,7 @@ async function runBaseline(args) {
       }
       process.stdout.write(`score ${frame.id} ${frame.title} ... `);
       try {
-        const row = await captureFrame(browser, frame, runDir);
+        const row = await captureFrame(browser, frame, runDir, replay);
         rows.push(row);
         console.log(`${row.maePct.toFixed(3)}% MAE`);
       } catch (error) {
@@ -775,11 +839,24 @@ async function runBaseline(args) {
       }
     }
   } finally {
-    await browser.close();
+    try {
+      if (replay?.session) await closeCaptureSession(replay.session);
+    } finally {
+      await browser.close();
+    }
   }
   const report = writeReports(runDir, rows, {
     run,
     createdAt: new Date().toISOString(),
+    startedAt,
+    replayMode: replay ? "continuous-flow" : "isolated-frame",
+    runtime: {
+      platform: process.platform,
+      node: process.version,
+      browser: browser.version(),
+      channel: process.env.PLAYWRIGHT_CHANNEL || "chrome",
+      deviceScaleFactor: 1,
+    },
     gitHead: execFileSync("git", ["rev-parse", "HEAD"], {
       cwd: ROOT,
       encoding: "utf8",
@@ -866,7 +943,7 @@ function printHelp() {
 
 Commands:
   enumerate
-  baseline [--flow N] [--frame N] [--family NAME] [--all] [--run NAME]
+  baseline [--flow N] [--frame N] [--family NAME] [--all] [--sequential] [--run NAME]
   compare-runs --before RUN --after RUN
 
 Examples:
@@ -886,7 +963,12 @@ async function main() {
   printHelp();
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+if (
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
+  main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}

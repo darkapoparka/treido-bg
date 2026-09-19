@@ -261,3 +261,13 @@ export function searchStores(
   }
   return stores;
 }
+
+// A recorded answer may only stand in for its recorded question. It is not a
+// generated response to a different request about the same example photo.
+export const capturedCapQuestion = "Find me a baseball cap like this";
+export function isCapturedCapQuestion(value: string): boolean {
+  return (
+    value.trim().replace(/\s+/g, " ").toLowerCase() ===
+    capturedCapQuestion.toLowerCase()
+  );
+}

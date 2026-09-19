@@ -559,7 +559,9 @@ export function Checkout({
                       · {formatMoney({ amount: fee, currency: "USD" })}
                     </strong>
                     <span>
-                      Ready to ship
+                      <span className="checkout-shipping-status">
+                        Ready to ship
+                      </span>
                       <br />
                       {shipping === 0 ? "3-5 days" : "1-3 days"}
                     </span>
@@ -832,7 +834,7 @@ export function Checkout({
                 disabled={processing}
                 onClick={() => setSummary(true)}
               >
-                ◇ Add discount
+                <Icon name="price-tag" /> Add discount
               </button>
             )}
             <button
@@ -851,14 +853,18 @@ export function Checkout({
                 </small>
               </span>
               <span className="source-total-value">
-                <b>USD</b>
-                <strong>
-                  {formatMoney({ amount: total, currency: "USD" })}
-                </strong>
-                <i>{summary ? "⌃" : "⌄"}</i>
+                <span className="source-total-price">
+                  <b>USD</b>
+                  <strong>
+                    {formatMoney({ amount: total, currency: "USD" })}
+                  </strong>
+                  <span className="source-total-caret" aria-hidden="true">
+                    <Icon name="chevron" />
+                  </span>
+                </span>
                 {savings > 0 && (
                   <small>
-                    ◇ Total savings{" "}
+                    <Icon name="price-tags" /> Total savings{" "}
                     {formatMoney({ amount: savings, currency: "USD" })}
                   </small>
                 )}

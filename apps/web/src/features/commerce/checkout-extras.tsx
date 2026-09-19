@@ -53,7 +53,7 @@ export function CheckoutExtras({
           disabled={disabled}
           onClick={() => setReverse(!reverse)}
         >
-          <Icon name="back" />
+          <Icon name="arrow" style={{ transform: "rotate(180deg)" }} />
         </button>
         <button
           aria-label="Next recommendations"

@@ -89,3 +89,77 @@ test("captured confirmation opens related products and keeps receipt sharing ava
   await share.click();
   await expect(page.getByRole("status")).toHaveText("Receipt link copied");
 });
+
+test("confirmation preserves its captured shelf, fractional rating and saved state at mobile widths", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "checkout");
+  await page.goto("/orders/REF-1001/confirmation");
+  const first = page.locator(
+    '.order-confirmation-page [data-product-id="black-conditioner-bag"]',
+  );
+  const second = page.locator(
+    '.order-confirmation-page [data-product-id="chocolate-body-bag"]',
+  );
+  await expect(first.locator(".product-media img")).toHaveAttribute(
+    "src",
+    "/api/reference-media/confirmation-black-conditioner-photo",
+  );
+  await expect(second.locator(".product-media img")).toHaveAttribute(
+    "src",
+    "/api/reference-media/confirmation-chocolate-body-photo",
+  );
+  await expect(
+    first.getByRole("img", { name: "4.5 out of 5 stars" }),
+  ).toBeVisible();
+  // SSR and hydrated DOM serialize spacing differently; assert the same fill.
+  await expect
+    .poll(() =>
+      first
+        .locator(".review-rating-stars-fill")
+        .evaluate((element) => (element as HTMLElement).style.width),
+    )
+    .toBe("90%");
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    const geometry = await page
+      .locator(".order-confirmation-page > .product-rail")
+      .evaluate((rail) => ({
+        right: rail.getBoundingClientRect().right,
+        width: rail.querySelector(".product-media")!.getBoundingClientRect()
+          .width,
+        overflow: document.documentElement.scrollWidth > innerWidth,
+      }));
+    expect(geometry.overflow).toBe(false);
+    expect(geometry.right).toBeCloseTo(width, 0);
+    expect(geometry.width).toBeCloseTo(173, 0);
+  }
+  const dockFade = await page.locator(".floating-dock").evaluate((dock) => {
+    const fade = getComputedStyle(dock, "::before");
+    return { pointerEvents: fade.pointerEvents, height: fade.height };
+  });
+  expect(dockFade).toEqual({ pointerEvents: "none", height: "128px" });
+  const save = first.getByRole("button", {
+    name: "Save Black Conditioner Bar Bag",
+    exact: true,
+  });
+  await save.focus();
+  await save.press("Enter");
+  await expect(
+    first.getByRole("button", {
+      name: "Unsave Black Conditioner Bar Bag",
+      exact: true,
+    }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await first
+    .getByRole("link", { name: "Black Conditioner Bar Bag", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/products\/black-conditioner-bag$/);
+  await page.goBack();
+  await expect(
+    first.getByRole("button", {
+      name: "Unsave Black Conditioner Bar Bag",
+      exact: true,
+    }),
+  ).toHaveAttribute("aria-pressed", "true");
+});

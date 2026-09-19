@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 import type { Catalog, Product, Store } from "../catalog/types";
 import {
+  capturedCapQuestion,
+  isCapturedCapQuestion,
   categoryValue,
   emptyFilters,
   hasSearchFilters,
@@ -216,4 +218,20 @@ test("the word men does not match women in search", () => {
 
 test("unfinished search words still match word prefixes", () => {
   assert.deepEqual(productIds("jean"), ["women", "men", "sold-out", "eu"]);
+});
+
+test("the captured photo question is exact apart from case and whitespace", () => {
+  assert.equal(isCapturedCapQuestion(capturedCapQuestion), true);
+  assert.equal(
+    isCapturedCapQuestion("  FIND ME A  BASEBALL CAP LIKE THIS  "),
+    true,
+  );
+  for (const value of [
+    "",
+    "baseball cap",
+    "Find a waterproof hiking hat instead",
+    `${capturedCapQuestion} but in red`,
+  ]) {
+    assert.equal(isCapturedCapQuestion(value), false);
+  }
 });

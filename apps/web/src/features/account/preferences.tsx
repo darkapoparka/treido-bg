@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { useAccount } from "./state";
+import { Icon } from "../discovery/icons";
 const sizes = {
   shoeSize: [
     "6",
@@ -80,13 +81,34 @@ export function Preferences({ personId }: { personId?: string }) {
           className="profile-field"
           aria-expanded={expanded === key}
           aria-label={`${label}${selected.length ? ` ${selected.join(" ")}` : ""}`}
-          onClick={() => setExpanded(expanded === key ? "" : key)}
+          onClick={() => {
+            const bottom = skinPanel.current?.getBoundingClientRect().bottom;
+            setExpanded(expanded === key ? "" : key);
+            // Keep the following controls in place when a skin group changes height.
+            if (
+              bottom !== undefined &&
+              ["skinType", "undertone", "tone"].includes(key)
+            ) {
+              requestAnimationFrame(() => {
+                const panel = skinPanel.current;
+                if (panel)
+                  window.scrollBy(
+                    0,
+                    panel.getBoundingClientRect().bottom - bottom,
+                  );
+              });
+            }
+          }}
         >
           <span>{label}</span>
           <span className="selected-preferences">
             {expanded !== key && selected.length
               ? selected.map((value) => {
-                  const swatch = colors?.[options.indexOf(value)];
+                  const swatch =
+                    colors?.[options.indexOf(value)] ??
+                    (key === "hairColor" && value === "Black"
+                      ? "#000"
+                      : undefined);
                   return (
                     <b key={value}>
                       {swatch && (
@@ -100,7 +122,7 @@ export function Preferences({ personId }: { personId?: string }) {
                 ? null
                 : `Add ${label.toLowerCase()}`}
           </span>
-          <span>{expanded === key ? "⌃" : "⌄"}</span>
+          <Icon name="chevron" />
         </button>
         {expanded === key && (
           <div className={`preference-chips ${colors ? "color-chips" : ""}`}>
@@ -122,7 +144,7 @@ export function Preferences({ personId }: { personId?: string }) {
                   })
                 }
               >
-                {colors ? (selected.includes(option) ? "✓" : "") : option}
+                {colors ? "" : option}
               </button>
             ))}
           </div>
@@ -142,7 +164,7 @@ export function Preferences({ personId }: { personId?: string }) {
                 ? "Shirt size"
                 : "Pants size";
           return (
-            <div key={key}>
+            <div key={key} className="preference-size">
               <button
                 className="profile-field"
                 aria-expanded={expanded === key}
@@ -168,7 +190,7 @@ export function Preferences({ personId }: { personId?: string }) {
                     `Add ${label.toLowerCase()}`
                   )}
                 </span>
-                <span>{expanded === key ? "⌃" : "⌄"}</span>
+                <Icon name="chevron" />
               </button>
               {expanded === key && (
                 <div className="preference-chips size-chips">
@@ -217,10 +239,10 @@ export function Preferences({ personId }: { personId?: string }) {
               "Pink",
               "Yellow",
               "Gray",
-              "Pink/Yellow",
+              "Cream",
               "Light pink",
               "Olive",
-              "Cream",
+              "Pink/Yellow",
               "Coral",
               "Hot pink",
               "Orange",
@@ -229,20 +251,20 @@ export function Preferences({ personId }: { personId?: string }) {
             ],
             false,
             [
-              "#a77655",
-              "#5889c8",
-              "#eaa0b8",
-              "#f5d05c",
-              "#aaa",
-              "#fff3b6",
-              "#f8d3da",
-              "#a6a558",
-              "#f6e9c6",
-              "#ed9f86",
-              "#ec6b98",
-              "#efad57",
-              "#f4cc41",
-              "#fff29b",
+              "#82491f",
+              "#5380b0",
+              "#ed73b0",
+              "#f9d848",
+              "#d3d3d3",
+              "#eee697",
+              "#f6c2cb",
+              "#818025",
+              "#fbe5ba",
+              "#ed6d52",
+              "#eb3892",
+              "#f2a939",
+              "#f9d848",
+              "#feff54",
             ],
           )}
           {row(
@@ -261,15 +283,15 @@ export function Preferences({ personId }: { personId?: string }) {
             ],
             false,
             [
-              "#9f6948",
-              "#734733",
-              "#49352b",
-              "#f6e2c4",
-              "#c7976a",
-              "#b98548",
-              "#e8c498",
-              "#e9b898",
-              "#b97548",
+              "#82491f",
+              "#614427",
+              "#3a2923",
+              "#f1deb7",
+              "#d9b98d",
+              "#c3884c",
+              "#cdb592",
+              "#e8a76b",
+              "#c46e33",
             ],
           )}
         </div>

@@ -210,7 +210,7 @@ export const accountRecipes = {
       state("skin-preferences-collapsed", [
         click("button", "Fair skin"),
         click("button", /^Skin tone/),
-        anchor(".profile-contact-fields + .field-panel", 64),
+        anchor(".profile-contact-fields + .field-panel", 37),
       ]),
     ],
   },
@@ -220,7 +220,7 @@ export const accountRecipes = {
     scenario: "profile-skin",
     frames: [
       state("account-before-person", [
-        anchor(".profile-contact-fields + .field-panel", 64),
+        anchor(".profile-contact-fields + .field-panel", 37),
       ]),
       {
         ...state(
@@ -272,7 +272,7 @@ export const accountRecipes = {
         { type: "waitUrl", url: "**/account" },
         anchor(
           "main.profile-editor > .field-panel:has(.preference-section)",
-          102,
+          108,
         ),
       ]),
     ],

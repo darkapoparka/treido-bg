@@ -37,37 +37,32 @@ export function Minis() {
     const mini = findMini(params.get("notice") ?? "");
     return mini && !mini.available ? mini.name : "";
   });
-  const lists = [
-    [
-      {
-        id: "sol",
-        name: "Sol: Browse by Voice",
-        description: "Your AI shopping companion you can talk to.",
-      },
-      {
-        id: "room",
-        name: "Get that room",
-        description: "Snap your inspiration, and discover items direc…",
-      },
-      {
-        id: "color",
-        name: "Infinite Color Search",
-        description: "Shop your favorite color. Powered by Hoppn.",
-      },
-    ],
-    [
-      {
-        id: "gift",
-        name: "Gift Sense",
-        description: "A new way to find the perfect gift",
-      },
-      {
-        id: "look",
-        name: "Get the Look",
-        description: "Find every piece from any outfit",
-      },
-    ],
+  const snapItems = [
+    {
+      id: "sol",
+      name: "Sol: Browse by Voice",
+      description: "Your AI shopping companion you can talk to.",
+    },
+    {
+      id: "room",
+      name: "Get that room",
+      description: "Snap your inspiration, and discover items direc…",
+    },
+    {
+      id: "color",
+      name: "Infinite Color Search",
+      description: "Shop your favorite color. Powered by Hoppn.",
+    },
   ];
+  const fragment = (media: string, label: string) => (
+    <button
+      key={media}
+      aria-label={label}
+      onClick={() => setUnavailable("Mini details unavailable")}
+    >
+      <img src={`/api/reference-media/${media}`} alt="" />
+    </button>
+  );
   const row = (m: { id: string; name: string; description: string }) => {
     const content = (
       <>
@@ -150,31 +145,62 @@ export function Minis() {
       )}
       <h2>Snap & Shop</h2>
       <div className="mini-list-pages">
-        {lists.map((list, i) => (
-          <div className="mini-list" key={i}>
-            {list.map(row)}
-          </div>
-        ))}
+        <div className="mini-list">{snapItems.map(row)}</div>
+        <div
+          className={`mini-list ${styles.catalogFragments}`}
+          aria-label="Captured Snap and Shop continuation"
+        >
+          {fragment(
+            "minis-snap-gem-icon-fragment",
+            "Additional Snap and Shop Mini 1",
+          )}
+          {fragment(
+            "minis-snap-cat-icon-fragment",
+            "Additional Snap and Shop Mini 2",
+          )}
+          <Link
+            href="/minis/look"
+            aria-label="Get the Look"
+            onClick={() => state.visitMini("look")}
+          >
+            <img src="/api/reference-media/mini-look-icon" alt="" />
+          </Link>
+        </div>
       </div>
       <h2>Design Your Space</h2>
-      <div className="mini-list">
-        {row({
-          id: "decor",
-          name: "Help Me Decor",
-          description: "AI-powered interior styling Shop Mini that help…",
-        })}
-        <button
-          onClick={() => {
-            state.visitMini("homescape");
-            setUnavailable("Homescape AI");
-          }}
+      <div className="mini-list-pages">
+        <div className="mini-list">
+          {row({
+            id: "decor",
+            name: "Help Me Decor",
+            description: "AI-powered interior styling Shop Mini that help…",
+          })}
+          <button
+            onClick={() => {
+              state.visitMini("homescape");
+              setUnavailable("Homescape AI");
+            }}
+          >
+            <img src="/api/reference-media/mini-homescape-icon" alt="" />
+            <span>
+              <strong>Homescape AI</strong>
+              <p>Home décor ideas with arts, plants & renovation</p>
+            </span>
+          </button>
+        </div>
+        <div
+          className={`mini-list ${styles.catalogFragments}`}
+          aria-label="Captured Design Your Space continuation"
         >
-          <img src="/api/reference-media/mini-homescape-icon" alt="" />
-          <span>
-            <strong>Homescape AI</strong>
-            <p>Home décor ideas with arts, plants & renovation</p>
-          </span>
-        </button>
+          {fragment(
+            "minis-space-script-icon-fragment",
+            "Additional Design Your Space Mini 1",
+          )}
+          {fragment(
+            "minis-space-room-icon-fragment",
+            "Additional Design Your Space Mini 2",
+          )}
+        </div>
       </div>
       <Sheet
         open={searching}
@@ -206,7 +232,7 @@ export function Minis() {
           reference preview.
         </p>
       </Sheet>
-      <FloatingNav back />
+      <FloatingNav back fade />
     </ShopSurface>
   );
 }
@@ -685,8 +711,8 @@ const outfitPieces = [
     label: "Women’s White Linen Blazer",
     products: ["look-sculpt", "look-aven"],
     boundedMedia: "look-blazer-third-partial",
-    top: "41.5%",
-    left: "-7%",
+    top: "42.2%",
+    left: "-6.6%",
     pointAtEnd: true,
   },
   {
@@ -694,8 +720,8 @@ const outfitPieces = [
     label: "Women’s Black Crew Neck T-shirt",
     products: ["look-black-crew", "look-white-crew"],
     boundedMedia: "look-shirt-third-partial",
-    top: "33.5%",
-    left: "43%",
+    top: "34.2%",
+    left: "43.5%",
     pointAtEnd: false,
   },
   {
@@ -703,16 +729,16 @@ const outfitPieces = [
     label: "Women’s Black and White Gingham Mini Skirt",
     products: [],
     boundedMedia: "look-skirt-three-partial",
-    top: "50.5%",
-    left: "42%",
+    top: "51.3%",
+    left: "42.6%",
     pointAtEnd: false,
   },
   {
     id: "sandals",
     label: "Women’s Gold Embellished Sandals",
     products: [],
-    top: "77%",
-    left: "45%",
+    top: "77.8%",
+    left: "45.8%",
     pointAtEnd: false,
   },
 ] as const;
@@ -897,6 +923,12 @@ export function GetLook({ catalog }: { catalog: Catalog }) {
                 src="/api/reference-media/look-outfit-results"
                 alt="Reference outfit: white blazer, black shirt and patterned skirt"
               />
+              {selected?.id === "shirt" && (
+                <span
+                  className={styles.selectedShirtOutline}
+                  aria-hidden="true"
+                />
+              )}
               {outfitPieces.map((piece) => (
                 <button
                   key={piece.id}

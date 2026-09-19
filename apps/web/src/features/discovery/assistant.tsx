@@ -3,12 +3,14 @@ import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useDiscovery } from "./state";
 import type { Catalog } from "../catalog/types";
 import { formatMoney } from "../catalog/types";
-import { Sheet, SaveButton, IconButton } from "./components";
+import { Sheet, SaveButton, IconButton, commitSheetQuery } from "./components";
 import { Icon } from "./icons";
+import { ReviewStars } from "./review-feedback";
+import { capturedCapQuestion } from "./search-model";
 import styles from "./search-entry.module.css";
 import photoStyles from "./search-photo.module.css";
 
@@ -166,7 +168,11 @@ export function JeansAnswer({
               </small>
             </span>
           </Link>
-          <strong>Men’s Duaa Neptune Denim…</strong>
+          <strong>
+            <Link href="/products/city-duaa-denim">
+              Men’s Duaa Neptune Denim…
+            </Link>
+          </strong>
           <p>$90.00</p>
           <ul>
             <li>Heavy knee distressing</li>
@@ -198,7 +204,11 @@ export function JeansAnswer({
               </small>
             </span>
           </Link>
-          <strong>SIGNATURE STRAIGHT…</strong>
+          <strong>
+            <Link href="/products/assistant-signature-straight">
+              SIGNATURE STRAIGHT…
+            </Link>
+          </strong>
           <p>$29.99</p>
           <ul>
             <li>Clean straight leg cut</li>
@@ -332,7 +342,14 @@ export function JeansAnswer({
 }
 
 function PhotoAssistant({ catalog }: { catalog: Catalog }) {
-  const [steps, setSteps] = useState(false);
+  const params = useSearchParams();
+  const steps = params.get("steps") === "1";
+  function toggleSteps() {
+    const next = new URLSearchParams(params);
+    if (steps) next.delete("steps");
+    else next.set("steps", "1");
+    commitSheetQuery(next);
+  }
   const [choice, setChoice] = useState("");
   const [boundary, setBoundary] = useState("");
   const [draft, setDraft] = useState("");
@@ -341,6 +358,7 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
     {
       id: "assistant-cap",
       imageKey: "assistant-dad-photo",
+      comparisonImageKey: "assistant-dad-comparison-photo",
       productId: "assistant-mobbin-dad-hat",
       seller: "Mobbin",
       title: "Mobbin Dad Hat",
@@ -354,6 +372,7 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
     {
       id: "assistant-armor-cap",
       imageKey: "assistant-armor-photo",
+      comparisonImageKey: "assistant-armor-comparison-photo",
       productId: "assistant-mob-armor-snapback",
       seller: "Mob Armor",
       title: "Mob Armor Snapback Hats",
@@ -376,13 +395,23 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
       price: "$45.00",
     },
   ];
-  function productMedia(card: (typeof recommendations)[number]) {
+  function productMedia(
+    card: (typeof recommendations)[number],
+    imageKey = card.imageKey,
+  ) {
     const product = catalog.products.find((item) => item.id === card.productId);
     const photograph = (
-      <img src={`/api/reference-media/${card.imageKey}`} alt={card.title} />
+      <img src={`/api/reference-media/${imageKey}`} alt={card.title} />
     );
     return (
       <div className={`product-media ${styles.photoCardMedia}`}>
+        {imageKey === "assistant-armor-comparison-photo" && (
+          <span className={styles.photoPagination} aria-hidden="true">
+            {Array.from({ length: 9 }, (_, index) => (
+              <i key={index} />
+            ))}
+          </span>
+        )}
         {product ? (
           <Link href={`/products/${product.id}`}>{photograph}</Link>
         ) : (
@@ -408,6 +437,28 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
       </div>
     );
   }
+  function productLink(
+    card: { productId: string; title: string },
+    children: ReactNode,
+  ) {
+    const product = catalog.products.find((item) => item.id === card.productId);
+    return product ? (
+      <Link
+        className={styles.photoProductLink}
+        href={`/products/${product.id}`}
+      >
+        {children}
+      </Link>
+    ) : (
+      <button
+        type="button"
+        className={styles.photoProductLink}
+        onClick={() => setBoundary("Product details unavailable")}
+      >
+        {children}
+      </button>
+    );
+  }
   function closeBoundary() {
     const restoreBoundedTrigger = boundary === "Source-bounded recommendation";
     setBoundary("");
@@ -420,17 +471,21 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
     <ShopSurface
       className={`shop-page assistant-page photo-assistant ${styles.answerBody} ${styles.photoAnswer}`}
     >
-      <Link href="/search" className="assistant-edit" aria-label="Edit search">
+      <Link
+        href="/search?edit=photo"
+        className="assistant-edit"
+        aria-label="Edit search"
+      >
         <Icon name="edit-search" />
       </Link>
-      <h1>Find me a baseball cap like this</h1>
+      <h1>{capturedCapQuestion}</h1>
       <span className="photo-tag">
         <img src="/api/reference-media/assistant-cap" alt="" />
         Photo
       </span>
       <button
         className="assistant-steps"
-        onClick={() => setSteps(!steps)}
+        onClick={toggleSteps}
         aria-expanded={steps}
       >
         Assistant steps <Icon name="chevron" />
@@ -460,14 +515,14 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
         </div>
       )}
       <p>
-        The cap in your photo is the classic <strong>Mobbin dad hat</strong>—a
-        relaxed, low-profile staple that prioritizes that broken-in, “lived-in”
-        feel right out of the box.
+        The cap in your photo is the classic <strong>Mobbin</strong> dad hat—a
+        relaxed, low-profile staple that prioritizes that broken-in,
+        &quot;lived-in&quot; feel right out of the box.
       </p>
       <p>
-        I found the exact match you’re looking for, along with a few structured
-        alternatives if you’re looking to upgrade the silhouette while keeping
-        that same urban aesthetic.
+        I found the exact match you&apos;re looking for, along with a few
+        structured alternatives if you&apos;re looking to upgrade the silhouette
+        while keeping that same urban aesthetic.
       </p>
       <h2>The Mobbin signature collection</h2>
       <p className="form-note">
@@ -478,10 +533,10 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
           <article key={card.id} data-photo-recommendation={card.id}>
             {productMedia(card)}
             <span>{card.seller}</span>
-            <strong>{card.title}</strong>
+            <strong>{productLink(card, card.title)}</strong>
             {card.id === "assistant-mobbin-merch-cap" && (
               <span className={styles.photoRating}>
-                <span aria-hidden="true">★★★★☆</span> (1)
+                <ReviewStars rating={5} /> (1)
               </span>
             )}
             <b>{card.price}</b>
@@ -517,28 +572,16 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
         <article data-photo-recommendation={cards[1].id}>
           {productMedia(cards[1])}
           <span>{cards[1].seller}</span>
-          <strong>{cards[1].title}</strong>
+          <strong>{productLink(cards[1], cards[1].title)}</strong>
           <b>{cards[1].price}</b>
         </article>
       </div>
       <p className={styles.photoComparisonCopy}>
-        The{" "}
-        <button
-          type="button"
-          onClick={() => setBoundary("Product details unavailable")}
-        >
-          Mobbin Dad Hat
-        </button>{" "}
-        is the hero here at just under $20. It&apos;s built from bio-washed
-        chino twill, which gives it that soft, unstructured crown that sits
-        close to the head for a cleaner, more casual profile. If you want
-        something with a bit more &quot;teeth,&quot; the{" "}
-        <button
-          type="button"
-          onClick={() => setBoundary("Product details unavailable")}
-        >
-          Mob Armor Snapback
-        </button>{" "}
+        The {productLink(cards[0], "Mobbin Dad Hat")} is the hero here at just
+        under $20. It&apos;s built from bio-washed chino twill, which gives it
+        that soft, unstructured crown that sits close to the head for a cleaner,
+        more casual profile. If you want something with a bit more
+        &quot;teeth,&quot; the {productLink(cards[1], "Mob Armor Snapback")}{" "}
         offers a structured crown and a more rigid visor that keeps its shape
         even after heavy use.
       </p>
@@ -548,12 +591,20 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
           key={card.id}
           data-photo-comparison={card.id}
         >
-          {productMedia(card)}
+          {productMedia(card, card.comparisonImageKey)}
           <div>
             <div className={styles.photoSeller}>
-              <span className={styles.photoSellerLogo} aria-hidden="true">
-                {card.seller === "Mobbin" ? "M" : ""}
-              </span>
+              {card.seller === "Mobbin" ? (
+                <span className={styles.photoSellerLogo} aria-hidden="true">
+                  M
+                </span>
+              ) : (
+                <img
+                  className={styles.photoSellerLogo}
+                  src="/api/reference-media/assistant-armor-logo"
+                  alt=""
+                />
+              )}
               <div>
                 <p>{card.seller}</p>
                 {card.seller === "Mob Armor" && (
@@ -563,7 +614,7 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
                 )}
               </div>
             </div>
-            <strong>{card.title}</strong>
+            <strong>{productLink(card, card.title)}</strong>
             <p>{card.price}</p>
             <ul>
               {card.details.map((detail) => (

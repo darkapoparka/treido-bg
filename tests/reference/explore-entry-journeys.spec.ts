@@ -283,6 +283,22 @@ test("Beauty exposes only the captured nails card and bounded next-card continua
   await expect(rail).toContainText("Vacation-ready nails");
   await expect(continuation).toHaveAttribute("aria-hidden", "true");
   await expect(continuation).toHaveText("");
+  const photograph = rail.locator(".beauty-editorial > img");
+  await expect(photograph).toHaveAttribute(
+    "src",
+    "/api/reference-media/beauty-nails-photo",
+  );
+  await photograph.evaluate((image) => (image as HTMLImageElement).decode());
+  const photoRatio = await photograph.evaluate((image) => {
+    const photo = image as HTMLImageElement;
+    return photo.naturalWidth / photo.naturalHeight;
+  });
+  // The complete photograph is 353 by 198, not the old enlarged top strip.
+  expect(photoRatio).toBeCloseTo(353 / 198, 2);
+  await expect(page.locator(".floating-dock")).toHaveAttribute(
+    "data-fade",
+    "true",
+  );
 
   for (const width of [320, 393, 430]) {
     await page.setViewportSize({ width, height: 793 });

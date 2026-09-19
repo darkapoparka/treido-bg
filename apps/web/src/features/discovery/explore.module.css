@@ -312,7 +312,6 @@
   width: 100%;
   height: 120px;
   object-fit: fill;
-  mask-image: linear-gradient(#000 0 52px, transparent 70px);
   z-index: -1;
 }
 .page :global(.beauty-brand) h3 {

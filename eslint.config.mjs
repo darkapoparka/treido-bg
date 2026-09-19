@@ -34,6 +34,8 @@ export default tseslint.config(
     ignores: [
       "**/node_modules/**",
       "**/.next/**",
+      "**/.next-parity/**",
+      "**/.qa/**",
       "**/.expo/**",
       "**/dist/**",
       "**/.turbo/**",

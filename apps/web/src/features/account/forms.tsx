@@ -10,6 +10,7 @@ export function AccountPage({
   children,
   action,
   dock = true,
+  dockFade = false,
   back = true,
   className = "",
   onBack,
@@ -18,6 +19,7 @@ export function AccountPage({
   children: ReactNode;
   action?: ReactNode;
   dock?: boolean;
+  dockFade?: boolean;
   back?: boolean;
   className?: string;
   onBack?: () => void;
@@ -29,7 +31,7 @@ export function AccountPage({
         {action}
       </header>
       {children}
-      {dock && <FloatingNav back={back} onBack={onBack} />}
+      {dock && <FloatingNav back={back} onBack={onBack} fade={dockFade} />}
     </ShopSurface>
   );
 }

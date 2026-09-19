@@ -68,6 +68,7 @@ export const miniRecipes = {
         state: "beauty-categories-curls-top-rated",
         actions: [
           selectorClick('.explore-categories a[href="/explore/Beauty"]'),
+          { type: "waitUrl", url: "**/explore/Beauty" },
           heading("Beauty"),
           top,
         ],

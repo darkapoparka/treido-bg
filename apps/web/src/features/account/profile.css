@@ -210,22 +210,69 @@
   border-radius: 50%;
   box-shadow: inset 0 0 0 1px #0001;
 }
-.profile-editor .preference-chips {
-  padding: 8px 0 18px;
+:is(.profile-editor, .person-profile-page) .preference-size + .preference-size {
+  border-top: 1px solid #f0f0f0;
 }
-.profile-editor .size-chips {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 7px;
+:is(.profile-editor, .person-profile-page) .selected-preferences {
+  gap: 4px;
 }
-.profile-editor .size-chips button {
+/* One geometry owner for account and person preferences (source flows 76–78). */
+:is(.profile-editor, .person-profile-page)
+  :is(.preference-section, .preference-size)
+  .profile-field {
+  height: 52px;
+  min-height: 52px;
+}
+:is(.profile-editor, .person-profile-page)
+  :is(.preference-section, .preference-size)
+  .profile-field:has(.selected-preferences b) {
+  height: auto;
+  padding: 12px 0;
+}
+:is(.preference-section, .preference-size)
+  .profile-field:has(.selected-preferences b)
+  > :first-child,
+:is(.preference-section, .preference-size)
+  .profile-field:has(.selected-preferences b)
+  > svg {
+  align-self: start;
+  margin-top: 4px;
+}
+:is(.preference-section, .preference-size) .profile-field > svg {
+  transform: rotate(90deg);
+  stroke-width: 3.6;
+}
+:is(.preference-section, .preference-size)
+  .profile-field[aria-expanded="true"]
+  > svg {
+  transform: rotate(-90deg);
+}
+:is(.profile-editor, .person-profile-page) .field-panel {
+  margin-bottom: 24px;
+}
+:is(.profile-editor, .person-profile-page) .preference-chips {
+  padding: 0 0 12px;
+  gap: 6px;
+}
+:is(.profile-editor, .person-profile-page) .preference-chips:not(.color-chips) {
+  display: flex;
+  flex-wrap: wrap;
+}
+:is(.profile-editor, .person-profile-page)
+  .preference-chips:not(.color-chips)
+  button {
+  height: 36px;
   min-height: 36px;
-  padding: 7px 4px;
+  padding: 8px 16px;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 600;
 }
-.profile-editor .color-chips {
-  grid-template-columns: repeat(7, 36px);
-  gap: 10px 8px;
+:is(.profile-editor, .person-profile-page) .color-chips {
+  grid-template-columns: repeat(auto-fill, 36px);
+  gap: 6px;
 }
-.profile-editor .color-chips button {
+:is(.profile-editor, .person-profile-page) .color-chips button {
   width: 36px;
   height: 36px;
   min-height: 36px;
@@ -233,7 +280,8 @@
 .profile-editor .preference-add,
 .person-profile-page .preference-add {
   display: inline-flex;
-  margin: 2px 8px 18px 0;
+  vertical-align: top;
+  margin: 0 4px 24px 0;
   min-height: 40px;
   align-items: center;
   border: 1px solid #dedede;
@@ -243,6 +291,50 @@
   font-size: 14px;
   font-weight: 600;
 }
+.profile-editor .people-preview {
+  border-radius: 22px;
+}
+.profile-editor .people-preview h2 {
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+.profile-editor .add-person-tile {
+  padding: 16px;
+  gap: 12px;
+  font-size: 16px;
+  line-height: 20px;
+  border-radius: 22px;
+}
+.profile-editor .add-person-tile > span {
+  flex: none;
+  border: 1px solid #e7e7e7;
+  font-size: 20px;
+}
+.profile-editor .person-chip {
+  height: 40px;
+  padding: 3px 12px 3px 4px;
+  gap: 8px;
+  border: 1px solid #e4e4e4;
+  border-radius: 22px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.profile-editor .person-chip .source-profile-avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 9px;
+}
+.profile-editor .people-preview:has(.person-chip) .add-person-tile {
+  border: 0;
+  border-top: 1px solid #f0f0f0;
+  border-radius: 0;
+  margin-top: 4px;
+  padding: 16px 4px 0;
+  font-size: 14px;
+}
+
 .profile-photo-menu {
   inset: 9px auto auto 50%;
   width: 248px;
@@ -297,14 +389,19 @@
 }
 
 .person-profile-page {
-  padding-top: 34px;
+  padding-top: 8px;
 }
 .person-profile-page .person-profile {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 22px;
-  margin-bottom: 24px;
+  gap: 24px;
+  margin: 0 0 24px;
+}
+.person-profile-page .source-profile-avatar.large {
+  width: 100px;
+  height: 100px;
+  font-size: 36px;
 }
 .person-avatar-wrap {
   position: relative;
@@ -318,6 +415,8 @@
 }
 .person-profile-page .person-profile > input {
   width: 64px;
+  height: 40px;
+  line-height: 36px;
   border: 0;
   border-bottom: 2px solid #ddd;
   padding: 0 0 3px;
@@ -329,10 +428,17 @@
 .person-profile-page .field-panel {
   border-radius: 22px;
 }
+.person-profile-page .profile-field > .profile-placeholder {
+  color: #999;
+}
+.person-core-fields .profile-field {
+  height: 52px;
+}
 .person-profile-page > .danger-text {
   width: auto;
-  margin: 24px auto 0;
-  font-size: 16px;
+  margin: 0 auto;
+  font-size: 14px;
+  line-height: 20px;
 }
 .person-editor-sheet {
   width: calc(100% - 32px);
@@ -411,7 +517,7 @@
   border-radius: 24px;
 }
 .person-profile-page > .danger-text {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 6px;
 }
@@ -937,7 +1043,13 @@
   border-radius: 12px;
 }
 .profile-overview .profile-order-panel .email-connect p {
-  margin: 3px 0 12px;
+  margin: 3px 0 8px;
+}
+.profile-overview .profile-order-panel .email-connect > div {
+  margin-top: 8px;
+}
+.profile-overview .tile-images {
+  margin-bottom: 6px;
 }
 .profile-overview .profile-order-panel .email-connect .pill {
   border: 1px solid #e2e2e2;

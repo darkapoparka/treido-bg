@@ -148,6 +148,7 @@
   line-height: 20px;
 }
 .notification-settings-page .notification-setting small {
+  max-width: 274px;
   font-size: 14.5px;
   color: #484848;
   margin-top: 4px;
