@@ -1236,31 +1236,29 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
     );
     return () => window.clearTimeout(timer);
   }, [loadingResults, change, answers]);
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      const scroller = conversation.current;
-      if (!scroller) return;
-      if (step === 0 || step === 1) scroller.scrollTo({ top: 0 });
-      else if (step === 5 || step === 6) {
-        const tailOffset = step === 6 ? 32 : loadingResults ? 64 : 0;
+  // Match the captured conversation anchor before its permission sheet paints.
+  useLayoutEffect(() => {
+    const scroller = conversation.current;
+    if (!scroller) return;
+    if (step === 0 || step === 1) scroller.scrollTo({ top: 0 });
+    else if (step === 5 || step === 6) {
+      const tailOffset = step === 6 ? 32 : loadingResults ? 64 : 0;
+      scroller.scrollTo({
+        top: scroller.scrollHeight - scroller.clientHeight - tailOffset,
+      });
+    } else {
+      const target = scroller.querySelector<HTMLElement>(
+        `[data-gift-step="${step === 4 ? 3 : step}"]`,
+      );
+      if (target) {
+        const adjustment = step === 4 ? 38 + (access ? 69 : 0) : 0;
         scroller.scrollTo({
-          top: scroller.scrollHeight - scroller.clientHeight - tailOffset,
+          top: target.offsetTop - scroller.offsetTop + adjustment,
         });
-      } else {
-        const target = scroller.querySelector<HTMLElement>(
-          `[data-gift-step="${step === 4 ? 3 : step}"]`,
-        );
-        if (target) {
-          const adjustment = step === 4 ? 38 + (access ? 69 : 0) : 0;
-          scroller.scrollTo({
-            top: target.offsetTop - scroller.offsetTop + adjustment,
-          });
-        }
       }
-      if (step === 4) composer.current?.focus({ preventScroll: true });
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [step, loadingResults, access]);
+    }
+    if (step === 4 && !access) composer.current?.focus({ preventScroll: true });
+  }, [step, loadingResults, access, notes]);
   function requestIdeas() {
     const next = { ...answers, notes: draft.trim() };
     remember(next);

@@ -1011,6 +1011,9 @@
   line-height: 16px;
 }
 .photoAnswer .photoComparisonCopy {
+  /* Keep the captured inline line break consistent across preview hosts.
+     This fallback does not establish acceptance of the unknown source font. */
+  font-family: Arial, Helvetica, sans-serif;
   letter-spacing: -0.12px;
 }
 .photoAnswer .photoComparisonCopy > a,

@@ -103,8 +103,20 @@ test("cart artwork and quantity stay inside the glyph and the same cart opens fr
   await cart.click();
   const dialog = page.getByRole("dialog", { name: "Your cart", exact: true });
   await expect(dialog).toContainText("Shampoo Bar Bag");
+  await cart.evaluate((element) =>
+    element.addEventListener(
+      "focus",
+      () => {
+        element.dataset.sheetEntryAtFocus = String(
+          Boolean(window.history.state?.shopSheet),
+        );
+      },
+      { once: true },
+    ),
+  );
   await page.keyboard.press("Escape");
   await expect(cart).toBeFocused();
+  await expect(cart).toHaveAttribute("data-sheet-entry-at-focus", "false");
   await page.goBack();
   await expect(page).toHaveURL(/\/products\/shampoo-bag$/);
   await expect(cart.locator(".dock-cart-count")).toHaveText("1");

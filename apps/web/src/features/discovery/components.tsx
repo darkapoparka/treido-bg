@@ -339,6 +339,20 @@ export function Sheet({
     distance: number;
   } | null>(null);
   const closeRef = useRef(onClose);
+  const entryMarker = useRef<string | null>(null);
+  const dismissPending = useRef(false);
+  function dismiss() {
+    const marker = entryMarker.current;
+    if (manageHistory && marker && window.history.state?.shopSheet === marker) {
+      if (!dismissPending.current) {
+        dismissPending.current = true;
+        // The popstate handler closes the DOM and restores focus only after
+        // the overlay history entry has retired. An immediate next navigation
+        // must not race a deferred cleanup back().
+        window.history.back();
+      }
+    } else closeRef.current();
+  }
   const resetDrag = () => {
     drag.current = null;
     if (ref.current) ref.current.style.transform = "";
@@ -374,7 +388,7 @@ export function Sheet({
       const velocity =
         gesture.distance / Math.max(1, performance.now() - gesture.time);
       if (gesture.distance > 80 || (gesture.distance > 35 && velocity > 0.6))
-        closeRef.current();
+        dismiss();
     },
     onPointerCancel(e: PointerEvent<HTMLDivElement>) {
       if (drag.current?.pointerId === e.pointerId) resetDrag();
@@ -408,6 +422,8 @@ export function Sheet({
     if (sheetBodyLocks === 0) sheetBodyOverflow = document.body.style.overflow;
     sheetBodyLocks += 1;
     const marker = `sheet-${crypto.randomUUID()}`;
+    entryMarker.current = marker;
+    dismissPending.current = false;
     let ownsEntry = false;
     const onBack = () => {
       restoreSheetQuery(committedSheetQueries.get(marker));
@@ -437,6 +453,8 @@ export function Sheet({
     if (!el.open) el.showModal();
     if (initialFocus) el.querySelector<HTMLElement>(initialFocus)?.focus();
     return () => {
+      if (entryMarker.current === marker) entryMarker.current = null;
+      dismissPending.current = false;
       window.removeEventListener("popstate", onBack);
       liveSheets.delete(marker);
       const committedQuery = committedSheetQueries.get(marker);
@@ -532,11 +550,11 @@ export function Sheet({
         // bubble the same key into its parent or depend on close-watcher timing.
         event.preventDefault();
         event.stopPropagation();
-        if (!event.repeat) closeRef.current();
+        if (!event.repeat) dismiss();
       }}
       onCancel={(e) => {
         e.preventDefault();
-        closeRef.current();
+        dismiss();
       }}
       onClick={(e) => {
         if (e.target !== e.currentTarget) return;
@@ -547,7 +565,7 @@ export function Sheet({
           e.clientY < bounds.top ||
           e.clientY > bounds.bottom
         )
-          closeRef.current();
+          dismiss();
       }}
     >
       {headerless ? (
@@ -568,7 +586,7 @@ export function Sheet({
       ) : (
         <div className="sheet-header" {...dragHandlers}>
           <h2 id={titleId}>{title}</h2>
-          <IconButton icon="close" label={`Close ${title}`} onClick={onClose} />
+          <IconButton icon="close" label={`Close ${title}`} onClick={dismiss} />
         </div>
       )}
       {children}

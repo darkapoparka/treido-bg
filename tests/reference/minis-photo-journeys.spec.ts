@@ -277,11 +277,30 @@ test("the native-photo boundary offers a local file, cancels cleanly, and keeps 
   const menuBounds = await chooser.boundingBox();
   expect(menuBounds?.width).toBe(250);
   expect(menuBounds?.height).toBe(146);
+  const choosePhoto = page.getByRole("button", {
+    name: "Choose Photo",
+    exact: true,
+  });
+  await choosePhoto.evaluate((element) =>
+    element.addEventListener(
+      "focus",
+      () => {
+        element.dataset.sheetEntryAtFocus = String(
+          Boolean(window.history.state?.shopSheet),
+        );
+      },
+      { once: true },
+    ),
+  );
   await page.keyboard.press("Escape");
   await expect(chooser).not.toBeVisible();
   await expect(
     page.getByRole("button", { name: "Choose Photo", exact: true }),
   ).toBeFocused();
+  await expect(choosePhoto).toHaveAttribute(
+    "data-sheet-entry-at-focus",
+    "false",
+  );
   await page.goto("/minis/look?look=results");
   for (const width of [320, 393, 430]) {
     await page.setViewportSize({ width, height: 793 });
