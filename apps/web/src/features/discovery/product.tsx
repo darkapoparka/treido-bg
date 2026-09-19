@@ -256,6 +256,11 @@ export function ProductDetail({
         return [
           {
             ...item,
+            ...(bag
+              ? {
+                  images: [`/api/reference-media/pdp-bag-${id}-recommendation`],
+                }
+              : {}),
             ...(shea ? { promotion: "$20 off order" } : {}),
             ...(shea && id === "chocolate-body-bag"
               ? { title: "Chocolate Body Wash Bar Bag", ratingCount: "748" }
@@ -271,6 +276,7 @@ export function ProductDetail({
   return (
     <ShopSurface
       className={`shop-page product-page ${cart ? "cart-visible" : ""} ${photos.length ? "" : styles.detailsOnly}`}
+      data-product-id={product.id}
       data-price-tip={priceAlertTip ? "visible" : "dismissed"}
       onPointerDownCapture={() => {
         if (priceAlertTip) setPriceAlertTip(false);
@@ -904,7 +910,7 @@ export function ProductDetail({
             <>
               {shea ? (
                 <>
-                  <ul>
+                  <ul role="list">
                     <li>
                       Super-hydrating formula moisturizes your skin (you
                       won&apos;t even need body lotion post-shower!)

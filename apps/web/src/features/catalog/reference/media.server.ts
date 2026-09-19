@@ -304,6 +304,18 @@ const media: Record<
     photoRadius: 19,
     circularOcclusions: [[143, 144, 16]],
   },
+  "pdp-bag-black-conditioner-bag-recommendation": {
+    file: "flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/009.webp",
+    rect: [17, 585, 171, 171],
+    photoRadius: 20,
+    circularOcclusions: [[143, 143, 16]],
+  },
+  "pdp-bag-chocolate-body-bag-recommendation": {
+    file: "flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/009.webp",
+    rect: [205, 585, 171, 171],
+    photoRadius: 20,
+    circularOcclusions: [[144, 143, 16]],
+  },
   "assistant-dad-comparison-photo": {
     file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/007.webp",
     rect: [24, 303, 166, 166],

@@ -200,6 +200,11 @@ export const referenceScenarios = {
       viewedItems: [{ kind: "product", id: "shea-butter" }],
     },
   },
+  // Flow 17/008 already shows Following and no cart. Its cause is not recorded.
+  "kitsch-shea-following": {
+    account: { orders: [] },
+    discovery: { ...emptyDiscovery, followed: ["kitsch"] },
+  },
   // Flow 17/009 is a separate captured bag history. The recording already
   // contains a followed Kitsch shop and one Shampoo Bar Bag in the cart; no
   // preceding product-detail action in this flow proves when either changed.

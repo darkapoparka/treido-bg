@@ -111,7 +111,9 @@ export const productRecipes = {
       },
       {
         state: "shea-store-card-and-recommendations",
-        entry: { startUrl: shea, scenario: "home-welcome" },
+        entry: { startUrl: shea, scenario: "kitsch-shea-following" },
+        notes:
+          "The source already shows Following with no cart in this distinct Shea entry. Preserve that snapshot without inventing a follow action between unrelated product entries.",
         actions: [sheaHeading, anchor(".pdp-store-card", 14)],
       },
       {
@@ -119,7 +121,7 @@ export const productRecipes = {
         entry: { startUrl: bag, scenario: "kitsch-bag-following-cart" },
         actions: [
           visible("heading", "Shampoo Bar Bag"),
-          anchor(".pdp-delivery", 20),
+          anchor(".pdp-delivery", 17),
         ],
         notes:
           "This distinct captured bag history already contains a followed Kitsch shop and one Shampoo Bar Bag in the cart. The entry reproduces only that evidenced state; it does not attribute either change to an unrecorded action in the preceding unrelated product snapshots.",

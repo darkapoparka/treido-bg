@@ -176,3 +176,92 @@ test("saving in the later captured offer entry changes membership without changi
     "20% off your order. Applied at checkout. This is a reference offer.",
   );
 });
+
+test("the captured Shea recommendation entry retains Following without inventing a cart", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "kitsch-shea-following");
+  await page.goto("/products/shea-butter");
+  const store = page.locator(".pdp-store-card");
+  const follow = store.getByRole("button", { name: "Following", exact: true });
+  await expect(follow).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    page.getByRole("button", { name: "Open cart", exact: true }),
+  ).toHaveCount(0);
+  await follow.click();
+  await expect(
+    store.getByRole("button", { name: "Follow", exact: true }),
+  ).toHaveAttribute("aria-pressed", "false");
+  await store
+    .getByRole("button", { name: "Follow", exact: true })
+    .press("Enter");
+  await expect(follow).toHaveAttribute("aria-pressed", "true");
+  await store.getByRole("link", { name: "Visit KITSCH", exact: true }).click();
+  await expect(page).toHaveURL(/\/stores\/kitsch$/);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/products\/shea-butter$/);
+  await expect(follow).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    page.getByRole("button", { name: "Open cart", exact: true }),
+  ).toHaveCount(0);
+});
+
+test("bag recommendation photography keeps canonical products, saves and mobile dock controls", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "kitsch-bag-following-cart");
+  await page.goto("/products/shampoo-bag");
+  const grid = page.locator(".product-underlay .product-grid");
+  for (const id of ["black-conditioner-bag", "chocolate-body-bag"]) {
+    const card = grid.locator(`[data-product-id="${id}"]`);
+    await expect(card.locator("img")).toHaveAttribute(
+      "src",
+      `/api/reference-media/pdp-bag-${id}-recommendation`,
+    );
+    await expect(card.locator(".product-media a")).toHaveAttribute(
+      "href",
+      `/products/${id}`,
+    );
+    const save = card.getByRole("button", { name: /^Save / });
+    await save.click();
+    await expect(
+      card.getByRole("button", { name: /^Unsave / }),
+    ).toHaveAttribute("aria-pressed", "true");
+  }
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    const surface = page.locator(
+      '.product-page[data-product-id="shampoo-bag"]',
+    );
+    expect(
+      await surface.evaluate(
+        (el) => getComputedStyle(el, "::after").pointerEvents,
+      ),
+    ).toBe("none");
+    expect(
+      await surface.evaluate((el) => getComputedStyle(el, "::after").position),
+    ).toBe("fixed");
+    expect(
+      await surface.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    const cart = page.getByRole("button", { name: "Open cart", exact: true });
+    await cart.click();
+    const overlay = page.getByRole("dialog", {
+      name: "Your cart",
+      exact: true,
+    });
+    await expect(overlay).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(overlay).not.toBeVisible();
+    await expect(cart).toBeFocused();
+  }
+  await grid
+    .locator('[data-product-id="black-conditioner-bag"] .product-media a')
+    .click();
+  await expect(page).toHaveURL(/\/products\/black-conditioner-bag$/);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/products\/shampoo-bag$/);
+  await expect(grid.getByRole("button", { name: /^Unsave / })).toHaveCount(2);
+});

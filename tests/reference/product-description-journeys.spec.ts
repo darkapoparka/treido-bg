@@ -55,6 +55,8 @@ for (const id of ["shampoo-bag", "shea-butter"] as const) {
       );
       await expect(dialog).not.toContainText("Ingredients:");
     } else {
+      await expect(dialog.getByRole("list")).toBeVisible();
+      await expect(dialog.getByRole("listitem")).toHaveCount(4);
       await expect(dialog).toContainText("Ingredients:");
       await expect(dialog).toContainText("Fragrance: Almond & Cherry");
       await expect(dialog).not.toContainText("Mesh fabric");
