@@ -252,3 +252,48 @@ test("captured Kitsch checkout retains its source-specific offers and recommenda
     boundary.getByRole("link", { name: "View captured source confirmation" }),
   ).toHaveAttribute("href", "/orders/REF-1001/confirmation");
 });
+
+test("expanded review matches the source section boundaries and keeps the address action keyboard accessible", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "checkout");
+  await page.setViewportSize({ width: 393, height: 793 });
+  await page.goto("/checkout?store=kitsch");
+  for (const name of [/^Ship to/, /^Shipping/, /^Plan/]) {
+    await page.getByRole("button", { name }).click();
+  }
+  const geometry = await page
+    .locator(".checkout-section")
+    .evaluateAll((sections) =>
+      sections.slice(0, 3).map((section) => ({
+        top: section.getBoundingClientRect().top,
+        cardHeight: section
+          .querySelector(".shipping-option,.installment-unavailable")!
+          .getBoundingClientRect().height,
+      })),
+    );
+  expect(geometry.map((section) => section.top)).toEqual([125, 304, 531]);
+  expect(geometry.map((section) => section.cardHeight)).toEqual([90, 86, 96]);
+  const address = page.getByRole("button", {
+    name: "Use a different address",
+    exact: true,
+  });
+  await expect(address.locator("svg")).toHaveCount(1);
+  await address.focus();
+  await page.keyboard.press("Enter");
+  await expect(
+    page.getByRole("dialog", { name: "Add address", exact: true }),
+  ).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(address).toBeFocused();
+  await expect(
+    page.locator('.checkout-section-toggle[aria-expanded="true"]'),
+  ).toHaveCount(3);
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width);
+    await expect(page.locator(".checkout-pay button")).toBeEnabled();
+  }
+});

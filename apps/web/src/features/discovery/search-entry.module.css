@@ -906,6 +906,9 @@
   height: 14px;
   margin: 0;
 }
+.photoAnswer :global(.assistant-product-rail) {
+  margin-top: 15px;
+}
 .photoAnswer :global(.assistant-product-rail) .photoCardMedia {
   height: 152px;
   background: #eee;
@@ -1098,6 +1101,9 @@
   border-radius: 50%;
   background: #f2f3f3;
   transform: rotate(180deg);
+}
+.page:global(.search-history) > h1 {
+  margin-bottom: 14px;
 }
 .history:global(.recent-history-grid) {
   width: calc(100% - 2px);

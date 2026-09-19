@@ -131,38 +131,24 @@ export function Icon({
           d="M2.4 10.4 10.9 3.5a1.75 1.75 0 0 1 2.2 0l8.5 6.9c.95.77.4 2.3-.82 2.3h-1.03v6.5A2.8 2.8 0 0 1 16.95 22h-9.9a2.8 2.8 0 0 1-2.8-2.8v-6.5H3.22c-1.22 0-1.77-1.53-.82-2.3Z"
           stroke="none"
         />
+      ) : filled && name === "explore" ? (
+        <g stroke="none">
+          <rect x="2.5" y="2.5" width="8.5" height="8.5" rx="1.2" />
+          <rect x="13" y="2.5" width="8.5" height="8.5" rx="1.2" />
+          <rect x="2.5" y="13" width="8.5" height="8.5" rx="1.2" />
+          <rect x="13" y="13" width="8.5" height="8.5" rx="1.2" />
+        </g>
       ) : filled && name === "cart" ? (
-        <>
-          <path
-            d="M2.5 4.2h3.1c.8 0 1.5.55 1.66 1.34l.48 2.28h12.02c1.05 0 1.82 1 1.54 2.02l-1.45 5.3a2.65 2.65 0 0 1-2.56 1.95h-7.04a2.65 2.65 0 0 1-2.58-2.05L5.6 6.35H2.5V4.2Z"
-            transform="matrix(1.106 0 0 1.183 -5.82 -2.91)"
-            stroke="none"
-          />
-          <circle cx="5.5" cy="21.1" r="1.75" stroke="none" />
-          <circle cx="14.9" cy="21.1" r="1.75" stroke="none" />
-        </>
+        <g stroke="none">
+          <path d="M2.5 1.6h3.1c.8 0 1.5.55 1.66 1.34l.48 2.28h12.52c1.05 0 1.82 1 1.54 2.02l-1.75 8a2.65 2.65 0 0 1-2.56 1.95h-6.74a2.65 2.65 0 0 1-2.58-2.05L5.6 3.75H2.5V1.6Z" />
+          <circle cx="10" cy="21.1" r="1.75" />
+          <circle cx="18.9" cy="21.1" r="1.75" />
+        </g>
       ) : filled && name === "orders" ? (
-        <>
-          <rect x="2" y="2.5" width="18" height="17" rx="7" stroke="none" />
-          <rect
-            x="10.2"
-            y="3.2"
-            width="1.6"
-            height="5.2"
-            rx="0.3"
-            fill="white"
-            stroke="none"
-          />
-          <rect
-            x="4.2"
-            y="7.4"
-            width="13.6"
-            height="2.2"
-            rx="0.35"
-            fill="white"
-            stroke="none"
-          />
-        </>
+        <g stroke="none">
+          <path d="M7.4 3.5h9.2c1.1 0 2.1.65 2.55 1.66l1.57 3.5c.19.41.28.85.28 1.3V18a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 18V9.96c0-.45.09-.89.28-1.3l1.57-3.5A2.8 2.8 0 0 1 7.4 3.5Z" />
+          <path d="M11.2 4.2h1.6v4.3h6.7v1.6h-15V8.5h6.7V4.2Z" fill="white" />
+        </g>
       ) : filled && name === "badge-check" ? (
         <>
           <path d="m12 2 3 2 4 1 1 4 2 3-2 3-1 4-4 1-3 2-3-2-4-1-1-4-2-3 2-3 1-4 4-1Z" />

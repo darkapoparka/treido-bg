@@ -94,8 +94,8 @@ test("later captured manual delivery yields to local unmark and mark actions", a
   expect(manualContinuationGeometry.copyToAction).toBeLessThanOrEqual(17);
   expect(manualContinuationGeometry.panelGap).toBeGreaterThanOrEqual(12);
   expect(manualContinuationGeometry.panelGap).toBeLessThanOrEqual(14);
-  expect(manualContinuationGeometry.dealsGap).toBeGreaterThanOrEqual(27);
-  expect(manualContinuationGeometry.dealsGap).toBeLessThanOrEqual(29);
+  expect(manualContinuationGeometry.dealsGap).toBeGreaterThanOrEqual(24);
+  expect(manualContinuationGeometry.dealsGap).toBeLessThanOrEqual(26);
   await expect(page).not.toHaveURL(/[?&]history=/);
   await expect(
     page.locator(".tracking-detail .product-copy").first(),
@@ -105,7 +105,7 @@ test("later captured manual delivery yields to local unmark and mark actions", a
     .click();
   const confetti = page.locator(".delivery-confetti");
   await expect(confetti).toBeVisible();
-  await expect(confetti.locator("i")).toHaveCount(35);
+  await expect(confetti.locator("i")).toHaveCount(42);
   const celebrationGeometry = await confetti.evaluate((node) => {
     const particles = [...node.querySelectorAll("i")].map((particle) => {
       const rect = particle.getBoundingClientRect();
@@ -130,8 +130,8 @@ test("later captured manual delivery yields to local unmark and mark actions", a
   expect(celebrationGeometry.height).toBeLessThanOrEqual(794);
   expect(celebrationGeometry.firstTop).toBeGreaterThanOrEqual(94);
   expect(celebrationGeometry.firstTop).toBeLessThanOrEqual(100);
-  expect(celebrationGeometry.lastBottom).toBeGreaterThanOrEqual(396);
-  expect(celebrationGeometry.lastBottom).toBeLessThanOrEqual(405);
+  expect(celebrationGeometry.lastBottom).toBeGreaterThanOrEqual(487);
+  expect(celebrationGeometry.lastBottom).toBeLessThanOrEqual(491);
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(394);
@@ -212,4 +212,79 @@ test("manual delivery keeps its recommendation continuation through deals and Ba
     page.getByRole("heading", { name: "Label created", exact: true }),
   ).toBeVisible();
   await expect(preview).toHaveCount(0);
+});
+
+test("rapid delivery undo cancels celebration without an old timer clearing the next status", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "orders-manual");
+  await page.goto("/orders/REF-manual-shirt");
+  await page.clock.install();
+  const mark = page.getByRole("button", {
+    name: "Mark as delivered",
+    exact: true,
+  });
+  const undo = page.getByRole("button", {
+    name: "Unmark as delivered",
+    exact: true,
+  });
+  const confetti = page.locator(".delivery-confetti");
+  const toast = page.locator(".order-action-toast");
+  await mark.click();
+  await expect(confetti).toBeVisible();
+  await page.clock.fastForward(700);
+  await undo.click();
+  await expect(confetti).toHaveCount(0);
+  await expect(toast).toHaveText("Unmarked as delivered");
+  await page.clock.fastForward(700);
+  await mark.click();
+  await page.clock.fastForward(1200);
+  await expect(confetti).toBeVisible();
+  await expect(toast).toHaveText("Marked as delivered");
+  await page.clock.fastForward(300);
+  await expect(confetti).toHaveCount(0);
+  await expect(toast).toBeVisible();
+  await page.clock.fastForward(400);
+  await expect(toast).toHaveCount(0);
+});
+
+test("manual tracking keeps carrier controls and dock fade usable at mobile widths", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "orders-manual");
+  await page.goto("/orders/REF-manual-shirt");
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    await expect(page.locator(".tracking-empty")).toHaveCSS(
+      "border-radius",
+      "16px",
+    );
+    const controls = await page
+      .locator(".tracking-carrier button")
+      .evaluateAll((elements) =>
+        elements.map((element) => {
+          const bounds = element.getBoundingClientRect();
+          const panel = element.closest("section")!.getBoundingClientRect();
+          return bounds.left >= panel.left && bounds.right <= panel.right;
+        }),
+      );
+    expect(controls.every(Boolean)).toBe(true);
+    const fade = await page.locator(".tracking-detail").evaluate((element) => {
+      const style = getComputedStyle(element, "::after");
+      return { height: style.height, pointerEvents: style.pointerEvents };
+    });
+    expect(fade).toEqual({ height: "116px", pointerEvents: "none" });
+    const carrier = page.getByRole("button", {
+      name: "Open carrier tracking",
+      exact: true,
+    });
+    await carrier.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(carrier).toBeFocused();
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width);
+  }
 });

@@ -89,3 +89,70 @@ export function savedCollectionsReducer(
     }
   }
 }
+
+// Browser storage is untrusted. Invalid or oversized tab snapshots restore the
+// explicit source seed instead of crashing or inventing collection membership.
+export function decodeSavedCollections(
+  raw: string,
+  fallback: SavedCollectionsState,
+): SavedCollectionsState {
+  const ids = (value: unknown): value is string[] =>
+    Array.isArray(value) &&
+    value.length <= 2000 &&
+    value.every(
+      (id) => typeof id === "string" && id.length > 0 && id.length <= 200,
+    );
+  try {
+    if (raw.length > 1_000_000) return fallback;
+    const value: unknown = JSON.parse(raw);
+    if (
+      !value ||
+      typeof value !== "object" ||
+      !("saved" in value) ||
+      !("collections" in value) ||
+      !ids(value.saved) ||
+      !Array.isArray(value.collections) ||
+      value.collections.length > 500
+    )
+      return fallback;
+    const collections: Collection[] = [];
+    for (const item of value.collections) {
+      if (
+        !item ||
+        typeof item !== "object" ||
+        typeof item.id !== "string" ||
+        !item.id ||
+        item.id.length > 200 ||
+        typeof item.name !== "string" ||
+        item.name.length > 500 ||
+        !["Private", "Public"].includes(item.visibility) ||
+        !ids(item.productIds) ||
+        (item.collaborationPromptDismissed !== undefined &&
+          typeof item.collaborationPromptDismissed !== "boolean")
+      )
+        return fallback;
+      if (collections.some((collection) => collection.id === item.id))
+        return fallback;
+      collections.push({
+        id: item.id,
+        name: item.name,
+        visibility: item.visibility,
+        productIds: unique(item.productIds),
+        ...(item.collaborationPromptDismissed === undefined
+          ? {}
+          : {
+              collaborationPromptDismissed: item.collaborationPromptDismissed,
+            }),
+      });
+    }
+    return {
+      saved: unique([
+        ...value.saved,
+        ...collections.flatMap((item) => item.productIds),
+      ]),
+      collections,
+    };
+  } catch {
+    return fallback;
+  }
+}

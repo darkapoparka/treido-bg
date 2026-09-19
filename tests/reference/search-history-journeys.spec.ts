@@ -88,3 +88,24 @@ test("expanded recent history has the identified eighth brand and removal surviv
   await expect(page.locator("[data-recent-id]")).toHaveCount(7);
   await expect(page.locator('[data-recent-id="loaded-tea"]')).toHaveCount(0);
 });
+
+test("expanded recent history uses the captured heading gap without overflowing narrow phones", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "search-recent");
+  await page.goto("/search?view=recent");
+  const grid = page.locator(".recent-history-grid");
+  await expect(grid.locator("[data-recent-id]")).toHaveCount(8);
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    const geometry = await grid.evaluate((element) => ({
+      top: element.getBoundingClientRect().top,
+      headingBottom:
+        element.previousElementSibling!.getBoundingClientRect().bottom,
+      overflow: document.documentElement.scrollWidth > innerWidth,
+    }));
+    expect(geometry.overflow).toBe(false);
+    expect(geometry.top - geometry.headingBottom).toBeCloseTo(14, 0);
+    expect(geometry.top).toBeCloseTo(60, 0);
+  }
+});

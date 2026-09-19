@@ -1,4 +1,5 @@
 "use client";
+import { navigateAccountStage } from "./stage-history";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
@@ -1416,20 +1417,20 @@ function useAccountStage() {
     query.set("view", view);
     if (id) query.set("id", id);
     entered.current = true;
-    router.push(`${pathname}?${query}`, { scroll: false });
+    navigateAccountStage(`${pathname}?${query}`);
   };
   const replace = (view: string, id?: string) => {
     const query = new URLSearchParams(params.toString());
     query.set("view", view);
     query.delete("new");
     if (id) query.set("id", id);
-    router.replace(`${pathname}?${query}`, { scroll: false });
+    navigateAccountStage(`${pathname}?${query}`, true);
   };
   const back = () => {
     if (entered.current) {
       entered.current = false;
       router.back();
-    } else router.replace(pathname, { scroll: false });
+    } else navigateAccountStage(pathname, true);
   };
   return {
     view: params.get("view"),
@@ -1438,6 +1439,6 @@ function useAccountStage() {
     replace,
     exit: () => router.back(),
     back,
-    overview: () => router.replace(pathname, { scroll: false }),
+    overview: () => navigateAccountStage(pathname, true),
   };
 }

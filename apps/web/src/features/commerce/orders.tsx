@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TrackingDetail } from "./tracking";
+import { CartOverlay } from "./checkout";
 import type { Catalog } from "../catalog/types";
 import { orderGridDeals } from "../catalog/reference/order-fixtures";
 import { formatMoney } from "../catalog/types";
 import { Icon } from "../discovery/icons";
+import { ReviewStars } from "../discovery/rating-stars";
 import { capturedReceipts } from "./receipt-data";
 import { shopSourceBuyer } from "./source-fixtures";
 import {
@@ -21,6 +23,7 @@ import {
   OrderBrand,
   OrderProgress,
   OrderRecommendations,
+  OrderSectionHeading,
 } from "./order-presentation";
 import styles from "./orders-parity.module.css";
 import "./confirmation-parity.css";
@@ -40,6 +43,7 @@ export function OrdersPage({
   const [menu, setMenu] = useState(false);
   const [search, setSearch] = useState(false);
   const [query, setQuery] = useState("");
+  const [cartOpen, setCartOpen] = useState(false);
   const [deal, setDeal] = useState<number | null>(null);
   const [historyConnect, setHistoryConnect] = useState(true);
   const forcedView = !archive && !history ? params.get("view") : null;
@@ -61,15 +65,21 @@ export function OrdersPage({
     }
     return 0;
   });
-  const roundSectionLinks = visible.some(
+  const hasDeliveredOrder = visible.some(
     (order) => order.status === "Delivered",
   );
-  const deals = roundSectionLinks
+  const deals = hasDeliveredOrder
     ? orderGridDeals.delivered
     : orderGridDeals.transit;
   return (
     <AccountPage
       back={archive || history || forcedView === "manual"}
+      cart={!archive && !history ? () => setCartOpen(true) : undefined}
+      showCartWhenEmpty={
+        !archive &&
+        !history &&
+        (forcedView === "empty" || !orders.some((order) => !order.archived))
+      }
       title={history ? "Order history" : archive ? "Archived" : "Orders"}
       className={`${archive ? "archive-page" : "source-orders-page"} ${forcedView === "manual" ? "manual-order-result" : ""} ${styles.list}`}
       action={
@@ -185,6 +195,7 @@ export function OrdersPage({
         return (
           <Link
             className={`account-panel tracking-card ${!p ? "manual-tracking-card" : ""}`}
+            data-order-status={o.status}
             href={
               o.status === "Delivered" && p
                 ? `/orders/${o.id}/review`
@@ -211,7 +222,9 @@ export function OrdersPage({
                       : "Arrives Jul 31–Aug 1"}
               </h2>
               {o.status === "Delivered" ? (
-                <span className="review-stars">★★★★★</span>
+                <span className="review-stars" aria-hidden="true">
+                  <ReviewStars rating={0} />
+                </span>
               ) : (
                 <OrderProgress
                   carrier={o.carrier}
@@ -281,20 +294,7 @@ export function OrdersPage({
         visible.some((o) => o.status !== "Ordered") && (
           <>
             <section className="orders-deals">
-              <h2
-                className={
-                  roundSectionLinks ? "order-section-heading" : undefined
-                }
-              >
-                Deals based on your orders
-                {roundSectionLinks ? (
-                  <span className="order-section-chevron" aria-hidden="true">
-                    &rsaquo;
-                  </span>
-                ) : (
-                  <> &rsaquo;</>
-                )}
-              </h2>
+              <OrderSectionHeading label="Deals based on your orders" />
               <div className="orders-deal-grid">
                 {deals.map((entry, i) => (
                   <button
@@ -312,25 +312,20 @@ export function OrdersPage({
               </div>
             </section>
             <section className="orders-past">
-              <h2
-                className={
-                  roundSectionLinks ? "order-section-heading" : undefined
-                }
-              >
-                Past orders
-                {roundSectionLinks ? (
-                  <span className="order-section-chevron" aria-hidden="true">
-                    &rsaquo;
-                  </span>
-                ) : (
-                  <> &rsaquo;</>
-                )}
-              </h2>
+              <OrderSectionHeading label="Past orders" />
               {orders
                 .filter((o) => o.archived)
                 .map((o) => (
                   <Link href={`/orders/${o.id}`} key={o.id}>
-                    <img src="/api/reference-media/parcel" alt="" />
+                    <img
+                      src={
+                        catalog.products.find(
+                          (product) => product.id === o.productId,
+                        )?.images[0] ??
+                        "/api/reference-media/order-manual-parcel"
+                      }
+                      alt=""
+                    />
                     <span>
                       {labelCreated
                         ? "Delivered yesterday"
@@ -342,6 +337,11 @@ export function OrdersPage({
             </section>
           </>
         )}
+      <CartOverlay
+        catalog={catalog}
+        open={cartOpen}
+        onClose={() => setCartOpen(false)}
+      />
       <Sheet
         open={deal !== null}
         title="Your deal"
@@ -367,12 +367,7 @@ export function OrdersPage({
           <>
             {forcedView === "manual" && (
               <section className="orders-buy-again">
-                <h2>
-                  Buy again
-                  <span className="order-section-chevron" aria-hidden="true">
-                    &rsaquo;
-                  </span>
-                </h2>
+                <OrderSectionHeading label="Buy again" />
                 {(() => {
                   const product = catalog.products.find(
                     (entry) => entry.id === "shampoo-bag",

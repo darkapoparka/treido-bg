@@ -321,3 +321,50 @@ test("captured cap title controls retain the same honest boundary and keyboard f
   await expect(title).toBeFocused();
   expect(new URL(page.url()).pathname).toBe("/assistant");
 });
+
+test("structured photo continuations retain only their captured pixels and leave the composer usable", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "search-photo");
+  await page.goto("/assistant?example=photo");
+  const fragments = page.locator('[data-source-boundary^="structured-"]');
+  await expect(fragments).toHaveCount(2);
+  await expect(fragments.locator("a,button,input")).toHaveCount(0);
+  await expect(fragments.nth(0).locator("img")).toHaveAttribute(
+    "src",
+    "/api/reference-media/assistant-structured-second-fragment",
+  );
+  await expect(fragments.nth(1).locator("img")).toHaveAttribute(
+    "src",
+    "/api/reference-media/assistant-structured-third-fragment",
+  );
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    const geometry = await fragments.evaluateAll((elements) => ({
+      overflow: document.documentElement.scrollWidth > innerWidth,
+      cards: elements.map((element) => ({
+        width: element.getBoundingClientRect().width,
+        imageHeight: element.querySelector("img")!.getBoundingClientRect()
+          .height,
+      })),
+    }));
+    expect(geometry.overflow).toBe(false);
+    expect(geometry.cards.map((card) => card.width)).toEqual([152, 56]);
+    expect(geometry.cards.map((card) => card.imageHeight)).toEqual([86, 86]);
+    await page
+      .getByRole("textbox", { name: "Ask a follow-up", exact: true })
+      .fill("Keep this draft");
+  }
+  const boundedCard = page.locator(
+    '[data-source-boundary="partial-third"] > button',
+  );
+  await expect(boundedCard).toHaveCSS("border-top-right-radius", "0px");
+  await expect(boundedCard).toHaveCSS("border-bottom-right-radius", "0px");
+  await page
+    .getByRole("link", { name: "Close assistant", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/search$/);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/assistant\?example=photo$/);
+  await expect(fragments).toHaveCount(2);
+});

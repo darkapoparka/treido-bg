@@ -3,11 +3,11 @@ import {
   createContext,
   useContext,
   useState,
-  useReducer,
   useCallback,
   type ReactNode,
 } from "react";
-import { savedCollectionsReducer, type Collection } from "./saved-model";
+import type { Collection } from "./saved-model";
+import { useSavedCollections } from "./saved-history";
 import { useMiniHistory } from "./mini-history";
 export type { Collection } from "./saved-model";
 export type CartLine = {
@@ -130,13 +130,10 @@ export function DiscoveryProvider({
   const [reportedProducts, setReportedProducts] = useState<string[]>(
     () => initial?.reportedProducts ?? [],
   );
-  const [{ saved, collections }, dispatchSaved] = useReducer(
-    savedCollectionsReducer,
-    {
-      saved: initial?.saved ?? ["shea-butter", "rice-bundle"],
-      collections: initial?.collections ?? [],
-    },
-  );
+  const [{ saved, collections }, dispatchSaved] = useSavedCollections({
+    saved: initial?.saved ?? ["shea-butter", "rice-bundle"],
+    collections: initial?.collections ?? [],
+  });
   const [followed, setFollowed] = useState<string[]>(
     () => initial?.followed ?? [],
   );

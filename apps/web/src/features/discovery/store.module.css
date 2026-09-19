@@ -1,6 +1,6 @@
 .page,
 .filter {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
 }
 .page :global(.store-actions) {
   gap: 8px;
@@ -141,7 +141,15 @@
   line-height: 16px;
 }
 .search :global(.product-copy) > strong {
-  font-weight: 500;
+  font-weight: 600;
+}
+.search :global(.product-grid .product-copy) {
+  row-gap: 1px;
+}
+/* Match the neutral image treatment used by the captured result cards,
+   without changing the original photograph or its provenance. */
+.search :global(.product-grid .product-media img:not([src*="/store-search-"])) {
+  filter: brightness(0.96);
 }
 .search :global(.store-search-products .product-media),
 .search :global(.product-grid .product-media) {

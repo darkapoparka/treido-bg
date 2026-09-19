@@ -49,6 +49,16 @@
   padding: 16px;
   border-radius: 24px;
   margin-bottom: 14px;
+  box-shadow: 0 5px 18px #00000008;
+}
+.list :global(.tracking-card[data-order-status="Delivered"]) {
+  height: auto;
+  min-height: 122px;
+  padding-block: 15px 17px;
+  align-items: flex-start;
+}
+.list :global(.tracking-card[data-order-status="Delivered"] h2) {
+  margin: 18px 0 0;
 }
 .list :global(.tracking-card h2) {
   font-size: 16px;
@@ -75,9 +85,15 @@
 }
 .list :global(.review-stars) {
   display: block;
-  font-size: 25px;
-  line-height: 27px;
-  letter-spacing: 4px;
+  height: 24px;
+}
+.list :global(.review-stars .review-rating-stars) {
+  --review-star-size: 24px;
+  width: 152px;
+}
+.list :global(.review-stars .review-rating-stars-empty) {
+  width: 152px;
+  justify-content: space-between;
   color: #c9cbcb;
 }
 .list :global(.order-archive-link) {
@@ -94,6 +110,9 @@
   line-height: 23px;
   font-weight: 600;
   margin-bottom: 14px;
+}
+.list :global(.orders-deals h2) {
+  margin-bottom: 10px;
 }
 .list :global(.orders-buy-again h2),
 .list :global(.order-section-heading) {
@@ -131,6 +150,8 @@
   width: 40px;
   height: 40px;
   object-fit: contain;
+  border: 1px solid #e1e2e2;
+  border-radius: 8px;
 }
 .list :global(.orders-past a) {
   gap: 12px;
@@ -1054,6 +1075,7 @@
   border-color: #e4e5e5;
   border-radius: 22px;
   background: #f4f4f4;
+  box-shadow: 0 5px 16px #00000008;
 }
 .list :global(.orders-deal-grid > button > img) {
   object-fit: cover;
@@ -1178,7 +1200,8 @@
 }
 
 .manualTracking :global(.tracking-carrier) {
-  padding: 16px;
+  padding: 16px 16px 14px;
+  box-shadow: 0 4px 20px #00000008;
 }
 .manualTracking:not(.deliveredTracking) :global(.tracking-carrier) {
   margin-bottom: 13px;
@@ -1186,6 +1209,7 @@
 .manualTracking :global(.tracking-empty) {
   margin-bottom: 13px;
   padding: 16px;
+  border-radius: 16px;
 }
 .manualTracking :global(.tracking-empty h2) {
   margin-bottom: 2px;
@@ -1198,11 +1222,14 @@
 }
 .manualTracking :global(.tracking-action-panel) {
   padding: 0 16px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 20px #00000008;
 }
-.manualTracking .action {
+.manualTracking.manualTracking :global(.tracking-action-panel) .action {
   min-height: 52px;
-  padding: 14px 0;
-  font-weight: 500;
+  padding: 14px 4px;
+  font-weight: 600;
+  gap: 10px;
 }
 .manualTracking .trackingMore {
   width: 32px;
@@ -1667,4 +1694,65 @@
 .manualDeals :global(.save-button svg) {
   width: 20px;
   height: 20px;
+}
+
+/* Manual-package geometry is independent of purchased-order tracking. */
+.manualTracking :global(.tracking-status-card) > small {
+  display: block;
+  line-height: 20px;
+  color: #444;
+}
+.manualTracking :global(.tracking-status-card p) {
+  color: #444;
+}
+.manualTracking .trackingNumber > button {
+  display: grid;
+  place-items: center;
+  position: relative;
+  left: 5px;
+}
+.manualTracking:not(.deliveredTracking) .manualDeals {
+  margin-top: 10px;
+}
+.manualTracking .progress[data-order-phase="label"] .progressFill {
+  width: 22.5%;
+}
+.manualTracking .shippingLabelMark.shippingLabelMark {
+  width: 16px;
+  height: 21px;
+  stroke-width: 0.7;
+}
+.manualTracking .progress[data-order-phase="delivered"] .progressFill {
+  width: calc(100% - 28px);
+  background: linear-gradient(90deg, #34c56e, #4ab52f);
+}
+.manualTracking .progress[data-order-phase="delivered"] .progressMarker {
+  right: 2px;
+  background: #299d21;
+}
+.manualTracking :global(.order-action-toast) {
+  min-width: 147px;
+  height: 40px;
+  bottom: 103px;
+  padding: 12px 16px;
+  font-size: 12px;
+}
+.manualTracking:not(.deliveredTracking)::after {
+  content: "";
+  position: fixed;
+  inset: auto 0 0;
+  height: 116px;
+  z-index: 9;
+  pointer-events: none;
+  background: linear-gradient(transparent, #fcfcfcd9 53%, #fcfcfc 86%);
+}
+
+.manualTracking.deliveredTracking :global(.tracking-carrier) {
+  margin-bottom: 14px;
+}
+.laterManualTracking .progress[data-order-phase="delivered"] .progressFill {
+  background: linear-gradient(90deg, #64c575, #69b243);
+}
+.laterManualTracking .progress[data-order-phase="delivered"] .progressMarker {
+  background: #579f39;
 }

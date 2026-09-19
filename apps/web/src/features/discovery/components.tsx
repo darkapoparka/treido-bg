@@ -115,7 +115,11 @@ export function FloatingNav({
         >
           <Icon name="cart" filled />
           {cartQuantity > 0 && (
-            <span className="dock-cart-count" aria-hidden="true">
+            <span
+              className="dock-cart-count"
+              data-wide={cartQuantity > 9 || undefined}
+              aria-hidden="true"
+            >
               {cartQuantity > 99 ? "99+" : cartQuantity}
             </span>
           )}

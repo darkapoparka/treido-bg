@@ -4,6 +4,12 @@ Current checkout/branch policy is owned by [AGENTS.md](AGENTS.md); use [single-s
 
 ## Current source checkpoint
 
+Updated 2026-09-19. The dock/Orders and local account/onboarding stage repair extends `18e5b29` on main. [Current status](docs/STATUS.md#active-repair-checkpoint) owns this integration and pending final run; the final reports use `20260919-repair-verified-*`. Do not use the older 210-test count or a previous capture as final-source proof. The frozen scope remains 97 flows / 424 ordered states, with 0/97 owner acceptance.
+
+Canonical repair owners are `discovery/icons.tsx`, `discovery/components.tsx`, `app/globals.css`, `account/forms.tsx`, `commerce/orders.tsx`, `commerce/order-presentation.tsx`, `commerce/orders-parity.module.css`, and `account/stage-history.ts` with its account/onboarding consumers. Six tests in `tests/reference/dock-source-journeys.spec.ts` cover real cart access, glyph bounds, source Orders composition and responsive/focus/history behavior.
+
+### Historical September 13 baseline
+
 Updated 2026-09-13. The local integration extends main at **`4d0539f2d0cd70f884941cc83f05ff075365542d`**. All **97 flows / 424 ordered states** now have executable recipes and complete ordered source inspection. The complete `20260913-complete-current` run scored **424/424 states with zero browser errors**: **31 numerical candidates**, **4.817% mean MAE**, 33 states above 10%. Later fitting changes are measured in separate named runs until the next complete comparison; retain their exact provenance. Owner acceptance remains **0/97 flows**.
 
 Connected work includes onboarding and real streamed loading states, shared Home/search history, assistant photos/feedback, checkout editors/receipts, manual orders/tracking, Minis and account continuations. Later fitting covers the Carpe continuation, distinct product arrival/settled/saving-offer source entries, Chemical Guys photo regions, Shop information, photo menus, Beauty and order panels. The full interaction run passed **206/207**; its review-text expectation was corrected and **26/26** focused regressions passed, including two new phone/address journeys. Additional final onboarding, checkout/review and product siblings passed **12/12**, **14/14** and **16/16**. The suite now contains **210** tests. [Current status](docs/STATUS.md) owns final revision/check results and the resume action.

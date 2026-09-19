@@ -11,6 +11,8 @@ export function AccountPage({
   action,
   dock = true,
   dockFade = false,
+  cart,
+  showCartWhenEmpty = false,
   back = true,
   className = "",
   onBack,
@@ -20,6 +22,8 @@ export function AccountPage({
   action?: ReactNode;
   dock?: boolean;
   dockFade?: boolean;
+  cart?: () => void;
+  showCartWhenEmpty?: boolean;
   back?: boolean;
   className?: string;
   onBack?: () => void;
@@ -31,7 +35,15 @@ export function AccountPage({
         {action}
       </header>
       {children}
-      {dock && <FloatingNav back={back} onBack={onBack} fade={dockFade} />}
+      {dock && (
+        <FloatingNav
+          back={back}
+          onBack={onBack}
+          fade={dockFade}
+          cart={cart}
+          showCartWhenEmpty={showCartWhenEmpty}
+        />
+      )}
     </ShopSurface>
   );
 }

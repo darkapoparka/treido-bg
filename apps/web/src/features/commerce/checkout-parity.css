@@ -52,9 +52,9 @@
 .source-checkout
   .checkout-section
   .checkout-section-toggle[aria-expanded="true"] {
-  min-height: 41px;
+  min-height: 42px;
   padding-top: 12px;
-  padding-bottom: 9px;
+  padding-bottom: 10px;
 }
 .source-checkout .checkout-shipping-status {
   color: #8b8b8b;
@@ -134,11 +134,12 @@
   border: 1px solid #e0e0e0;
 }
 .source-checkout .installment-unavailable {
-  padding: 14px 16px;
+  padding: 14px 16px 16px;
   background: #f7f7f7;
 }
 .source-checkout .installment-unavailable p {
-  margin-left: 27px;
+  margin-top: 10px;
+  margin-left: 28px;
 }
 .source-checkout .checkout-pay,
 .source-checkout .source-address-editor-initial .editor-actions,
@@ -1171,4 +1172,62 @@
 }
 .source-address-lookup-actions .address-lookup-continue {
   background: #5932f3;
+}
+
+/* Expanded review sections: native-sized controls without text-symbol baselines. */
+.source-checkout .checkout-addresses {
+  padding-bottom: 0;
+}
+.source-checkout .checkout-addresses .address-radio {
+  padding: 14px;
+}
+.source-checkout .checkout-addresses > .source-checkout-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px;
+  line-height: 20px;
+}
+.source-checkout .checkout-addresses > .source-checkout-link > svg {
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
+.source-checkout .checkout-section:nth-child(2) .checkout-section-body {
+  padding-bottom: 12px;
+}
+.source-checkout .checkout-section:nth-child(2) .shipping-option {
+  padding: 14px;
+  margin-bottom: 0;
+}
+.source-checkout .checkout-section:nth-child(2) .shipping-option span span {
+  line-height: 20px;
+}
+.source-checkout .installment-unavailable > strong {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+.source-checkout .installment-unavailable > strong > svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  color: #777;
+}
+.source-checkout:not(.is-setup) .checkout-header h1 {
+  position: relative;
+  top: -2px;
+  font-size: 19px;
+}
+.source-checkout .checkout-identity {
+  padding-right: 7px;
+}
+.source-checkout .checkout-identity > * {
+  position: relative;
+  top: 3px;
+}
+.source-checkout .checkout-identity > span {
+  font-size: 14.5px;
 }

@@ -121,7 +121,21 @@ export function Saved({ catalog }: { catalog: Catalog }) {
         "",
         href,
       );
-    } else (consumed ? router.replace : router.push)(href, { scroll: false });
+    } else {
+      // Collection views use the catalog already on this page. Keep their URL
+      // transition local, like item selection, so deleting a collection cannot
+      // render its missing-item state while waiting for an RSC response.
+      const historyState = { ...window.history.state };
+      delete historyState.shopSavedSelection;
+      delete historyState.__NA;
+      delete historyState._N;
+      (consumed ? window.history.replaceState : window.history.pushState).call(
+        window.history,
+        historyState,
+        "",
+        href,
+      );
+    }
   }
   function finishSelection() {
     const entry = window.history.state?.shopSavedSelection;

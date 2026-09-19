@@ -11,7 +11,7 @@
   box-shadow: 0 6px 24px #0000000d;
 }
 .reviews-page .review-card p {
-  font-size: 14.5px;
+  font-size: 14.3px;
   line-height: 18px;
 }
 .reviews-page .review-card footer {
@@ -60,4 +60,22 @@
   .review-card:has(> h2):not(:has(> .read-more))
   footer {
   margin-top: 10px;
+}
+
+.reviews-page .review-search input::placeholder {
+  color: #b9bcbc;
+  opacity: 1;
+}
+.reviews-page .helpful-count {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 400;
+}
+.reviews-page .review-card footer > .icon-button {
+  position: relative;
+  left: 5px;
+}
+.reviews-page .review-card footer > .icon-button svg {
+  width: 18px;
+  height: 18px;
 }

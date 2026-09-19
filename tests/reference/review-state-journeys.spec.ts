@@ -168,3 +168,42 @@ test("all report reasons and closing controls remain usable at 320, 393 and 430 
     await expect(options).toBeFocused();
   }
 });
+
+test("review footer controls retain source geometry and keyboard behavior at mobile widths", async ({
+  page,
+}) => {
+  await open(page, product);
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    const wes = row(page, "wes");
+    const helpful = wes.locator(".review-helpful");
+    await helpful.focus();
+    await page.keyboard.press("Space");
+    await expect(helpful).toHaveAttribute("aria-pressed", "true");
+    const count = await helpful.locator(".helpful-count").boundingBox();
+    expect(count?.width).toBe(24);
+    const controls = await wes
+      .locator("footer button")
+      .evaluateAll((elements) =>
+        elements.map((element) => {
+          const bounds = element.getBoundingClientRect();
+          const card = element.closest("article")!.getBoundingClientRect();
+          return bounds.left >= card.left && bounds.right <= card.right;
+        }),
+      );
+    expect(controls.every(Boolean)).toBe(true);
+    const options = wes.getByRole("button", {
+      name: "More options for Wes's review",
+    });
+    await options.focus();
+    await page.keyboard.press("Enter");
+    await expect(
+      page.getByRole("dialog", { name: "More options", exact: true }),
+    ).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(options).toBeFocused();
+    await helpful.focus();
+    await page.keyboard.press("Space");
+    await expect(helpful).toHaveAttribute("aria-pressed", "false");
+  }
+});

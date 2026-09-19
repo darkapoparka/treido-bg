@@ -1,6 +1,19 @@
 # Current project status
 
-Updated 2026-09-18. This is the session entry point, not a second backlog.
+Updated 2026-09-19. This is the session entry point, not a second backlog.
+
+## Active repair checkpoint
+
+The current one-writer integration extends main at `18e5b29` in `J:\treido-bg`. Remote access is restored and the owned mobile-web dev preview is serving 6412. This batch repairs the reported bottom dock and Orders regressions: bounded cart artwork and an in-basket quantity, fitted Home/Search/Explore/Orders glyphs, 44px narrow-phone targets, a real empty/filled cart on Orders, delivered review-card geometry/SVG stars, captured package thumbnails, consistent section chevrons, and the source Carpe Save $20 offer. Canonical controls, cart membership and return history remain live.
+
+The broad intermediate run `20260919-nav-orders-final-mobile` scored 424/424 states with zero browser errors, 3.178% mean MAE and 40 numerical candidates. Orders transit improved 4.190% -> 2.819% and delivered-review improved 4.999% -> 2.377%. It also exposed an address deletion remaining on its old editor; the companion full suite passed 274/275, failing the cold-launch Get Started transition. Neither run is declared clean acceptance.
+
+The subsequent account/onboarding repair uses the installed Next native-history integration for client-owned stages rather than waiting for another server render. Existing account/payment/onboarding/support journeys pass 13/13; focused source run `20260919-local-stage-source` scored 46/46 without errors and restored the deleted-address overview to 1.450% MAE. The final cart optical correction and product-aware past-order thumbnail follow that intermediate run. Six dock/Orders regressions passed on the prior isolated production build; the full current-source production suite and 424-state capture are running under `20260919-repair-verified-*` and must be read before reporting their result.
+
+The final source passed web/test ESLint, 106 unit tests and an isolated production build with TypeScript. Prior interrupted Saved persistence, checkout/manual tracking, review and search/store corrections are preserved in this integration; they were not all authored in this repair batch. No scoring masks, source hashes, diagnostic thresholds or captured acceptance were relaxed. Owner acceptance remains 0/97; this is not full 1:1. Three original-media verification mismatches (store-hero, shower-caddy, rice-shampoo), typography/photography differences and unverified source motion remain open.
+
+## Dated September 18 fitting evidence
+
 
 **Skincare cleanser source-card checkpoint over `40ba9e5`.** The recorded Cleanser grid now uses four bounded source cards with the exact product scale, neutral backgrounds, Allure/New badges and live heart controls. Product links and Save state remain canonical DOM behavior; the source cards supply photography only. The results surface also restores the captured rounded top edge and clipped, non-ellipsis titles.
 
@@ -77,11 +90,11 @@ Retained runs `20260918-store-text-f14`, `-f15`, `-f96` and `-f97` scored **16/1
 
 ## Working context
 
-Use the existing `J:\treido-bg` checkout of `darkapoparka/treido-bg`, canonical **main**, with one writer. This integration extends **`4d0539f2d0cd70f884941cc83f05ff075365542d`**. Subagents reviewed source pairs and supplied ignored patch proposals; the local writer reviewed, integrated and verified them. [AGENTS.md](../AGENTS.md) and [Codex setup](agents/codex.md) own branch policy, runtime ownership and synchronization.
+Use the existing `J:\treido-bg` checkout of `darkapoparka/treido-bg`, canonical **main**, with one writer. The historical September 13 integration extended **`4d0539f2d0cd70f884941cc83f05ff075365542d`**; the active September 19 repair is recorded above. The local writer owns all current edits. [AGENTS.md](../AGENTS.md) and [Codex setup](agents/codex.md) own branch policy, runtime ownership and synchronization.
 
 The active work remains the Shop **mobile-web** portions of Tasks 3/5/6. Finish and approve the frozen UI and connected flows, then adapt the same implementation to the producer-first food marketplace under [product.md](../product.md) and [web.md](../web.md). Backend, native, merchant/admin, food branding and release remain separate work.
 
-## Current implementation checkpoint
+## Dated September 13 implementation checkpoint
 
 All **97 flows / 424 ordered states** now have executable recipes, and every ordered source frame has been visually inspected. The complete `20260913-complete-current` run scored **424/424 states with zero browser errors**, with **31 numerical candidates**, mean **4.817% MAE** and 33 states above 10%. Subsequent fitting changes require their own comparisons; the full run is a dated baseline. Owner acceptance remains **0/97 flows**. [The implementation map](../shop-implementation-map.md) identifies canonical family owners and source gaps; the [frame ledger](../shop-frame-ledger.md) and [flow checklist](../shop-parity-checklist.md) remain the measurement and acceptance owners.
 

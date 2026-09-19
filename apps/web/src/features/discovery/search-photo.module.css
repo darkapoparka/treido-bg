@@ -66,7 +66,7 @@
   white-space: nowrap;
 }
 
-.boundedMedia.boundedMedia {
+.boundedRecommendation > button.boundedMedia:global(.product-media) {
   display: block;
   width: 55px;
   min-width: 55px;
@@ -87,4 +87,27 @@
   padding: 0;
   object-fit: cover;
   object-position: left top;
+}
+
+/* Only the exposed photographs are available for these continuation cards.
+   Keep their source dimensions; do not invent product text or destinations. */
+.structuredFragment[data-source-boundary] {
+  flex: 0 0 152px;
+  overflow: hidden;
+}
+.structuredFragment[data-source-boundary="structured-third"] {
+  flex-basis: 56px;
+}
+:global(.photo-assistant) .structuredFragment[data-source-boundary] > img {
+  width: 150px;
+  height: 86px;
+  max-width: none;
+  margin: 1px;
+  object-fit: contain;
+  object-position: left top;
+}
+:global(.photo-assistant)
+  .structuredFragment[data-source-boundary="structured-third"]
+  > img {
+  width: 55px;
 }

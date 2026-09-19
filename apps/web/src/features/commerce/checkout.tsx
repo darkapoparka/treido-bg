@@ -537,7 +537,7 @@ export function Checkout({
                       setAddressModal(true);
                     }}
                   >
-                    <span>＋</span> Use a different address
+                    <Icon name="plus" /> Use a different address
                   </button>
                 </div>
               )}
@@ -635,7 +635,7 @@ export function Checkout({
                 <div className="checkout-section-body checkout-plan-body">
                   <div className="installment-unavailable">
                     <strong>
-                      <span aria-hidden="true">ⓘ </span>
+                      <Icon name="info" />
                       <span>Installments unavailable</span>
                     </strong>
                     <p>

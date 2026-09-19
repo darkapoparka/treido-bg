@@ -575,6 +575,19 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
           <strong>{productLink(cards[1], cards[1].title)}</strong>
           <b>{cards[1].price}</b>
         </article>
+        {["second", "third"].map((position) => (
+          <article
+            key={position}
+            className={photoStyles.structuredFragment}
+            data-source-boundary={`structured-${position}`}
+            aria-label="Partially captured recommendation; product details unavailable"
+          >
+            <img
+              src={`/api/reference-media/assistant-structured-${position}-fragment`}
+              alt=""
+            />
+          </article>
+        ))}
       </div>
       <p className={styles.photoComparisonCopy}>
         The {productLink(cards[0], "Mobbin Dad Hat")} is the hero here at just

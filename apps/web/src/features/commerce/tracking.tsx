@@ -87,7 +87,10 @@ export function TrackingDetail({
         : [events[6], events.at(-1)!];
   const all = waiting ? [] : labelCreated ? [events.at(-1)!] : events;
   const mark = () => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
     const next = delivered ? (product ? "In transit" : "Ordered") : "Delivered";
+    setCelebrate(next === "Delivered");
     saveOrder({ ...order, status: next });
     consumeSheetHistory();
     const query = new URLSearchParams(params.toString());
@@ -102,14 +105,13 @@ export function TrackingDetail({
       next === "Delivered" ? "Marked as delivered" : "Unmarked as delivered",
     );
     if (next === "Delivered") {
-      setCelebrate(true);
       timers.current.push(setTimeout(() => setCelebrate(false), 1400));
     }
     timers.current.push(setTimeout(() => setStatusToast(""), 1800));
   };
   return (
     <AccountPage
-      className={`tracking-detail ${styles.tracking} ${waiting ? styles.waitingTracking : ""} ${inTransit ? styles.inTransitTracking : ""} ${labelCreated && product ? styles.labelTracking : ""} ${!product ? styles.manualTracking : ""} ${delivered ? styles.deliveredTracking : ""} ${map ? `tracking-map-view ${styles.mapView}` : ""}`}
+      className={`tracking-detail ${styles.tracking} ${waiting ? styles.waitingTracking : ""} ${inTransit ? styles.inTransitTracking : ""} ${labelCreated && product ? styles.labelTracking : ""} ${!product ? styles.manualTracking : ""} ${laterManualHistory ? styles.laterManualTracking : ""} ${delivered ? styles.deliveredTracking : ""} ${map ? `tracking-map-view ${styles.mapView}` : ""}`}
       onBack={() => router.back()}
     >
       {celebrate && <DeliveryConfetti />}
@@ -234,13 +236,24 @@ export function TrackingDetail({
                   }
                 }}
               >
-                <Icon name="copy" />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect x="8.5" y="3.5" width="11" height="12" rx="3" />
+                  <path d="M8.5 9H6a3 3 0 0 0-3 3v6a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3v-2.5" />
+                </svg>
               </button>
               <button
                 aria-label="Open carrier tracking"
                 onClick={() => setBoundary("Carrier tracking")}
               >
-                <Icon name="external-link" />
+                <ManageOrderIcon />
               </button>
             </div>
             {copied && <p role="status">Tracking number copied</p>}

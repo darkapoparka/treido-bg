@@ -1770,6 +1770,36 @@ const media: Record<
     file: "flows/1df75dd0-05f6-445c-9709-0e0bda2df3af/004.webp",
     rect: [201, 694, 175, 71],
   },
+  // Photograph interiors only. The source heart is removed and the existing
+  // clean product photograph supplies the hidden pixels behind the live control.
+  "store-search-rice-shampoo-photo": {
+    file: "flows/1df75dd0-05f6-445c-9709-0e0bda2df3af/004.webp",
+    rect: [17, 196, 173.5, 173.5],
+    photoRadius: 19,
+    circularOcclusions: [[145, 146, 18]],
+    underlayKey: "rice-shampoo",
+  },
+  "store-search-rosemary-liquid-photo": {
+    file: "flows/1df75dd0-05f6-445c-9709-0e0bda2df3af/004.webp",
+    rect: [202, 196, 173.5, 173.5],
+    photoRadius: 19,
+    circularOcclusions: [[145, 146, 18]],
+    underlayKey: "rosemary-liquid",
+  },
+  "store-search-rice-liquid-photo": {
+    file: "flows/1df75dd0-05f6-445c-9709-0e0bda2df3af/004.webp",
+    rect: [17, 446, 173.5, 173.5],
+    photoRadius: 19,
+    circularOcclusions: [[145, 146, 18]],
+    underlayKey: "rice-liquid",
+  },
+  "store-search-detox-shampoo-photo": {
+    file: "flows/1df75dd0-05f6-445c-9709-0e0bda2df3af/004.webp",
+    rect: [202, 446, 173.5, 173.5],
+    photoRadius: 19,
+    circularOcclusions: [[145, 146, 18]],
+    underlayKey: "detox-shampoo",
+  },
 };
 // Verified clean originals are an explicit local allowlist, never remote requests.
 const originals: Record<string, string> = {

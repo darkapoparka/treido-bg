@@ -23,6 +23,16 @@ const actionIcons: Record<string, IconName> = {
   "Edit tracking details": "edit",
   Delete: "trash",
 };
+export function OrderSectionHeading({ label }: { label: string }) {
+  return (
+    <h2 className="order-section-heading">
+      {label}
+      <span className="order-section-chevron" aria-hidden="true">
+        &rsaquo;
+      </span>
+    </h2>
+  );
+}
 export function OrderAction({
   label,
   href,

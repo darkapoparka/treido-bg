@@ -1016,7 +1016,10 @@ export function StoreSearch({
         "rosemary-liquid",
         "rice-liquid",
         "detox-shampoo",
-      ])
+      ]).map((product) => ({
+        ...product,
+        images: [`/api/reference-media/store-search-${product.id}-photo`],
+      }))
     : matchStoreProducts(catalog.products, store.id, q);
   const count = selectStoreProducts(products, filters).length;
   const suggestions = (

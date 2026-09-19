@@ -368,3 +368,43 @@ test("expanded collection deletion retains all saved products, not only the fina
     await expect(card(page, id)).toBeVisible();
   }
 });
+
+for (const width of [320, 393, 430]) {
+  test(`deleting a local collection returns to Saved without a route request at ${width}px`, async ({
+    page,
+    baseURL,
+  }) => {
+    await page.setViewportSize({ width, height: 793 });
+    await openScenario(
+      page,
+      baseURL,
+      "saved-collection",
+      "/saved?collection=source-favs",
+    );
+    await expect(page.locator(".saved-grid > article")).toHaveCount(2);
+    await button(page, "Collection options").click();
+    await button(page, "Delete collection").click();
+    // Collection membership and this same-page URL are local state. A slow or
+    // unavailable server must not expose the deleted-collection error screen.
+    await page.context().setOffline(true);
+    try {
+      await button(page, "Delete").click();
+      await expect(page.locator(".saved-grid > article")).toHaveCount(2);
+      await expect(page).toHaveURL(/\/saved$/);
+      await expect(page.locator(".empty-state")).toHaveCount(0);
+      await expect(page.getByRole("dialog")).not.toBeVisible();
+      await expect(button(page, "Create collection")).toBeVisible();
+      await expect(page.locator(".collection-tile")).toHaveCount(0);
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+    } finally {
+      await page.context().setOffline(false);
+    }
+    await page.reload();
+    await expect(page.locator(".saved-grid > article")).toHaveCount(2);
+    await expect(page.locator(".collection-tile")).toHaveCount(0);
+  });
+}

@@ -169,6 +169,7 @@ h2 {
 .dock-cart svg {
   width: 26px;
   height: 26px;
+  transform: translateX(-4px);
 }
 .dock-cart.cart-filled {
   color: white;
@@ -176,16 +177,17 @@ h2 {
 }
 .dock-cart-count {
   position: absolute;
-  top: 12px;
-  right: 18px;
-  min-width: 10px;
-  border-radius: 8px;
-  padding: 0 2px;
-  background: white;
+  top: calc(50% - 6px);
+  left: calc(50% - 1px);
+  transform: translateX(-50%);
+  padding: 0;
   color: var(--color-accent);
-  font-size: 9px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   line-height: 12px;
+}
+.dock-cart-count[data-wide="true"] {
+  font-size: 8px;
 }
 .floating-dock > * {
   pointer-events: auto;
@@ -223,6 +225,25 @@ h2 {
 .floating-nav svg {
   width: 25px;
   height: 25px;
+}
+/* Dock-only optical fitting; the shared action glyphs retain their own size. */
+.floating-nav a[aria-label="Home"] svg {
+  transform: translate(1px, -2px);
+}
+.floating-nav a[aria-label="Search"] svg {
+  width: 23px;
+  height: 23px;
+  stroke-width: 3.25;
+  transform: translate(1.5px, -0.5px);
+}
+.floating-nav a[aria-label="Explore"] svg {
+  width: 24px;
+  transform: translate(-0.25px, -0.5px);
+}
+.floating-nav a[aria-label="Orders"] svg {
+  width: 22.5px;
+  height: 22.5px;
+  transform: translate(-1px, -0.75px);
 }
 .home-page {
   padding-top: 0;
@@ -1202,15 +1223,14 @@ h2 {
     font-size: 11px;
   }
   .floating-dock {
-    --dock-side-width: 40px;
+    --dock-side-width: 44px;
     gap: 6px;
   }
-  .dock-cart-count {
-    top: 8px;
-    right: 10px;
+  .floating-dock.has-side-controls .floating-nav {
+    width: calc(100% - var(--dock-side-width) * 2 - 12px);
   }
   .floating-dock > .icon-button {
-    width: 40px;
+    width: 44px;
     height: 48px;
   }
   .floating-nav {

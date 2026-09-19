@@ -67,7 +67,7 @@ export const orderGridDeals = {
     { photo: "order-deal-strawberry-balm", promotion: "Save $5" },
     { photo: "order-deal-mascara", promotion: "Save $25" },
     { photo: "order-deal-hush", promotion: "Save $25" },
-    { photo: "order-deal-carpe", promotion: "Save $35" },
+    { photo: "order-deal-carpe", promotion: "Save $20" },
   ],
   delivered: [
     { photo: "order-deal-blue-bag", promotion: "Save $5" },

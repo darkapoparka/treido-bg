@@ -9,6 +9,7 @@ import { AccountIcon } from "./icons";
 import { Sheet } from "../discovery/components";
 import { AccountPage, Boundary } from "./forms";
 import { ShopSplash } from "./reference-transitions";
+import { navigateAccountStage } from "./stage-history";
 export function SupportPage() {
   return (
     <AccountPage title="Support" className="account-settings-page support-page">
@@ -175,11 +176,21 @@ export function OnboardingPage({
   initialStep?: number;
 }) {
   const params = useSearchParams();
-  const step = initialStep;
+  const stage = params.get("step");
+  const step =
+    stage === "preferences"
+      ? 1
+      : stage === "tracking"
+        ? 2
+        : stage === "updates"
+          ? 3
+          : stage
+            ? initialStep
+            : 0;
   const setStep = (next: number) => {
     const query = new URLSearchParams(params);
     query.set("step", ["intro", "preferences", "tracking", "updates"][next]);
-    router.push(`/onboarding?${query}`, { scroll: false });
+    navigateAccountStage(`/onboarding?${query}`);
   };
   const router = useRouter();
   const finishPreviewOnboarding = (href = "/") => {
@@ -332,6 +343,13 @@ export function OnboardingPage({
                   ? "/login?screen=track&reference=captured"
                   : "/login?screen=track"
             }
+            onNavigate={(event) => {
+              if (params.get("journey") !== "new") return;
+              event.preventDefault();
+              const query = new URLSearchParams(params);
+              query.set("step", "discover");
+              navigateAccountStage(`/onboarding?${query}`);
+            }}
           >
             Get Started
           </Link>
