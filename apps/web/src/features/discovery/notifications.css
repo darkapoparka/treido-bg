@@ -3,7 +3,7 @@
   position: relative;
   min-height: 100dvh;
   padding-top: 14px;
-  background: #fff;
+  background: var(--color-canvas);
 }
 .notifications-page > h1 {
   margin: 0;

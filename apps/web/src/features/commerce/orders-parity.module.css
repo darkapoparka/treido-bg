@@ -1009,7 +1009,7 @@
 .review {
   position: relative;
   padding-top: 16px;
-  background: white;
+  background: var(--color-canvas);
 }
 .review :global(.review-close) {
   margin: -16px 0 10px;
@@ -1709,6 +1709,15 @@
 .manualDeals :global(.save-button svg) {
   width: 20px;
   height: 20px;
+}
+/* The newly delivered capture has a warmer photo treatment than the
+   separately captured label-created and later-history recommendations. */
+.manualTracking.deliveredTracking:not(.laterManualTracking)
+  .manualDeals
+  :global(
+    .product-card:has(a[href="/products/order-peach-bee"]) .product-media img
+  ) {
+  filter: saturate(1.225);
 }
 
 /* Manual-package geometry is independent of purchased-order tracking. */

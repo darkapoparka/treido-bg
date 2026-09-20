@@ -1,8 +1,5 @@
 /* These metadata-only states share ProductDetail. Explicit specificity keeps
    their geometry stable when the canonical product stylesheet loads later. */
-.detailsOnly.detailsOnly :global(.product-underlay) {
-  background: #fdfdfd;
-}
 .detailsOnly.detailsOnly :global(.product-details) {
   margin-top: 12px;
 }

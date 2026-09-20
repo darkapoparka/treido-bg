@@ -2142,7 +2142,7 @@
 }
 
 .product-underlay {
-  background: white;
+  background: var(--color-canvas);
   transform-origin: center top;
   transition:
     transform 0.25s ease,

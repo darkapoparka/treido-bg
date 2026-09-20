@@ -447,6 +447,14 @@
   font-weight: 400;
   margin-right: 10px;
 }
+.source-checkout.is-setup:has(.source-phone-setup, .initial-payment),
+.source-checkout.is-setup .checkout-header,
+.source-checkout.is-setup .checkout-pay {
+  background: var(--color-canvas);
+}
+.source-checkout.is-setup .checkout-pay button {
+  background: var(--color-accent);
+}
 .source-checkout.is-setup .checkout-header {
   margin-bottom: 0;
 }
