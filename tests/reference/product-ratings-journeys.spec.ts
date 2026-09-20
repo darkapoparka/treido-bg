@@ -19,7 +19,7 @@ test("the dress ratings link never inherits a different product's review text", 
     page.getByRole("img", { name: "4.5 out of 5 stars", exact: true }),
   ).toBeVisible();
   await expect(page.getByRole("status")).toContainText(
-    "Individual reviews were not included for this product",
+    "The full review list was not captured for this product.",
   );
   await expect(page.getByText("2 ratings", { exact: false })).toBeVisible();
   await expect(page.locator(".review-item")).toHaveCount(0);
