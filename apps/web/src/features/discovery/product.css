@@ -408,6 +408,10 @@
   color: #111;
   z-index: 2;
 }
+.product-lightbox > .icon-button svg {
+  width: 14px;
+  height: 14px;
+}
 .lightbox-swipe {
   touch-action: pan-y pinch-zoom;
   user-select: none;

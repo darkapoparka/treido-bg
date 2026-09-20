@@ -256,9 +256,9 @@
   height: 18px;
 }
 .muted.muted :global(button[aria-pressed="true"]) {
-  background: #ea474f;
+  background: #bd133c;
   color: white;
-  border-color: #ea474f;
+  border-color: #bd133c;
 }
 .composer {
   display: flex;

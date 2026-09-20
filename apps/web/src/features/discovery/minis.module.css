@@ -316,7 +316,7 @@
 }
 .skinHome {
   position: fixed;
-  bottom: 73px;
+  bottom: 58px;
   right: max(24px, calc((100vw - 760px) / 2 + 24px));
   z-index: 3;
   display: grid;
@@ -650,7 +650,8 @@
   min-height: 0;
   scroll-margin-top: 70px;
 }
-.shell:has([data-look-phase="results"]) > header::after {
+.shell:has([data-look-phase="results"]) > header::after,
+.shell:has([data-skin-phase="results"]) > header::after {
   content: "";
   position: absolute;
   inset: 100% 0 auto;
@@ -936,6 +937,17 @@
   font-size: 14px;
   line-height: 21px;
   font-weight: 600;
+}
+.gift .giftWelcome > p {
+  margin: 0;
+  font: inherit;
+  color: inherit;
+}
+.gift .giftWelcome > p + p {
+  margin-top: 8px;
+}
+.gift :global(.gift-action).giftWelcomeAction {
+  margin-top: 0;
 }
 .gift :global(.gift-history) {
   opacity: 1;

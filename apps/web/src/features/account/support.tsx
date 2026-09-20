@@ -6,6 +6,7 @@ import { useState } from "react";
 import type { Catalog } from "../catalog/types";
 import { previewOnboardedCookie } from "../catalog/reference/session";
 import { AccountIcon } from "./icons";
+import { Icon } from "../discovery/icons";
 import { Sheet } from "../discovery/components";
 import { AccountPage, Boundary } from "./forms";
 import { ShopSplash } from "./reference-transitions";
@@ -15,7 +16,7 @@ export function SupportPage() {
     <AccountPage title="Support" className="account-settings-page support-page">
       <div className="support-links">
         <Link href="https://help.shop.app/en/shop">
-          <AccountIcon name="person" />
+          <AccountIcon name="person-question" />
           <div>
             Help Center
             <small>
@@ -24,7 +25,7 @@ export function SupportPage() {
           </div>
         </Link>
         <Link href="/support/chat">
-          <AccountIcon name="help" />
+          <AccountIcon name="support-chat" />
           <div>
             Support Chat
             <small>Ask questions, and get support from our AI assistant</small>
@@ -92,7 +93,6 @@ export function AboutPage() {
         Pay Better. Track Better.
         <br />
         Shop Better.
-        <br />
         <a href="https://shop.app">shop.app</a>
       </p>
       <div className="about-links">
@@ -115,11 +115,11 @@ export function AboutPage() {
             >
               <span>
                 <AccountIcon
-                  name={(["clipboard", "lock", "document"] as const)[i]}
+                  name={(["clipboard", "lock", "document-check"] as const)[i]}
                 />
                 {label}
               </span>
-              <span>›</span>
+              <Icon name="chevron" />
             </button>
           ),
         )}
@@ -133,16 +133,17 @@ export function AboutPage() {
         </a>
       </div>
       <p className="about-legal">
-        By using Shop, you agree to the
-        <br />
-        <button onClick={() => setDocument("Terms and conditions")}>
-          Terms and conditions
-        </button>{" "}
-        and{" "}
-        <button onClick={() => setDocument("Privacy policy")}>
-          Privacy policy
-        </button>
-        .
+        <span>By using Shop, you agree to the</span>
+        <span>
+          <a href="https://shop.app/terms-of-service?locale=en-US">
+            Terms and conditions
+          </a>{" "}
+          and{" "}
+          <a href="https://www.shopify.com/legal/privacy/consumers">
+            Privacy policy
+          </a>
+          .
+        </span>
       </p>
       <small className="about-version">VERSION 2.266.0-RELEASE.377556</small>
       <Sheet open={!!document} title={document} onClose={() => setDocument("")}>

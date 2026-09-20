@@ -106,9 +106,25 @@ test("90-92 support and legal surfaces retain their real navigation", async ({
   await expect(
     page.getByRole("link", { name: "shop.app", exact: true }),
   ).toBeVisible();
+  const legalFooter = page.locator(".about-legal");
+  await expect(
+    legalFooter.getByRole("link", {
+      name: "Terms and conditions",
+      exact: true,
+    }),
+  ).toHaveAttribute("href", "https://shop.app/terms-of-service?locale=en-US");
+  await expect(
+    legalFooter.getByRole("link", { name: "Privacy policy", exact: true }),
+  ).toHaveAttribute("href", "https://www.shopify.com/legal/privacy/consumers");
+  await expect(legalFooter.getByRole("button")).toHaveCount(0);
   await page.getByRole("button", { name: /Licenses/ }).click();
-  await expect(page.getByRole("dialog", { name: "Licenses" })).toBeVisible();
+  const licenses = page.getByRole("dialog", { name: "Licenses", exact: true });
+  await expect(licenses).toBeVisible();
+  await expect(licenses).toContainText(
+    "The source capture does not include the app’s license list.",
+  );
   await page.keyboard.press("Escape");
+  await expect(licenses).not.toBeVisible();
   await page.getByRole("button", { name: "Go back" }).click();
   await page.getByRole("link", { name: /Support Chat/ }).click();
   await expect(

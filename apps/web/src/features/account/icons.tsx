@@ -22,7 +22,12 @@ const paths = {
   lock: "M5 10h14v12H5ZM8 10V6a4 4 0 0 1 8 0v4",
   bell: "M5 17h14l-2-4V9A5 5 0 0 0 7 9v4ZM10 21h4",
   person: "M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM4 22v-3a8 8 0 0 1 16 0v3",
+  "person-question":
+    "M9 3a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM11 20H3v-2a6 6 0 0 1 10-4.5m2-1a2.5 2.5 0 1 1 4 2c-1.5.8-2 1.5-2 3m0 3h.01",
+  "support-chat":
+    "M12 3c5.5 0 10 3.6 10 8s-4.5 8-10 8c-1.6 0-3.2-.3-4.5-.9L3 20l1.1-4.2A7.1 7.1 0 0 1 2 11c0-4.4 4.5-8 10-8Zm-2.4 5a2.5 2.5 0 1 1 4 2c-1.1.7-1.6 1.2-1.6 2.5m0 3h.01",
   document: "M5 2h10l4 4v16H5ZM14 2v5h5M8 12h8M8 16h8",
+  "document-check": "M5 2h9l5 5v15H5ZM14 2v6h5M8 15l3 3 5-6",
 } as const;
 const solidPaths: Partial<Record<keyof typeof paths, string>> = {
   location:

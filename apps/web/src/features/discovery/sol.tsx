@@ -324,11 +324,12 @@ export function Sol({ catalog }: { catalog: Catalog }) {
               />
             )}
             <IconButton
-              icon="mic"
+              icon={muted ? "mic-off" : "mic"}
               label={
                 muted ? "Unmute microphone preview" : "Mute microphone preview"
               }
               pressed={muted}
+              filled={false}
               disabled={phase === "connecting"}
               onClick={() => change({ muted: muted ? null : "1" }, true)}
             />

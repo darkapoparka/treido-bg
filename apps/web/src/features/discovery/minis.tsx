@@ -576,7 +576,7 @@ export function Skin({ catalog }: { catalog: Catalog }) {
             </p>
             <section className="skin-summary">
               <h2>
-                <Icon name="photo-library" />
+                <Icon name="face-scan" />
                 Overall Skin Summary
               </h2>
               <p>
@@ -586,7 +586,7 @@ export function Skin({ catalog }: { catalog: Catalog }) {
             </section>
             <section className="skin-summary">
               <h2>
-                <Icon name="orders" />
+                <Icon name="shopping-bag" />
                 Recommended Products
               </h2>
               <p>
@@ -1333,18 +1333,23 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
         </div>
         <div className="gift-conversation" ref={conversation}>
           <div className={step > 0 ? "gift-history" : ""}>
-            <div className="gift-message">
-              Welcome to Gift Sense, your smart guide to finding gifts that
-              truly fit.
-              <br />
-              <br />
-              Tell us about the person, answer a few questions, and discover
-              gifts tailored perfectly to who they are.
+            <div className={`gift-message ${styles.giftWelcome}`}>
+              <p>
+                Welcome to Gift Sense, your smart guide to finding gifts that
+                truly fit.
+              </p>
+              <p>
+                Tell us about the person, answer a few questions, and discover
+                gifts tailored perfectly to who they are.
+              </p>
             </div>
           </div>
           {step === 0 && (
-            <button className="gift-action" onClick={() => advance(1)}>
-              Let’s Begin <Icon name="star" />
+            <button
+              className={`gift-action ${styles.giftWelcomeAction}`}
+              onClick={() => advance(1)}
+            >
+              Let’s Begin <Icon name="sparkles" />
             </button>
           )}
           {step >= 1 && (

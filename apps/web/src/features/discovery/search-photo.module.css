@@ -92,6 +92,9 @@
 /* Only the exposed photographs are available for these continuation cards.
    Keep their source dimensions; do not invent product text or destinations. */
 .structuredFragment[data-source-boundary] {
+  /* These bounded source photographs already include the bottom fade. */
+  position: relative;
+  z-index: 2;
   flex: 0 0 152px;
   min-height: 152px;
   overflow: hidden;
@@ -106,9 +109,11 @@
   margin: 1px;
   object-fit: contain;
   object-position: left top;
+  border-radius: 20px 20px 0 0;
 }
 :global(.photo-assistant)
   .structuredFragment[data-source-boundary="structured-third"]
   > img {
   width: 55px;
+  border-top-right-radius: 0;
 }

@@ -43,6 +43,8 @@ const media: Record<
     underlayKey?: string;
     // Exclude the recorded card edge while retaining only its product photograph.
     photoRadius?: number;
+    // A partial photograph ends at the capture edge, not at a card corner.
+    photoTopCornersOnly?: boolean;
     // Circular native controls are removed without erasing extra photo corners.
     circularOcclusions?: readonly (readonly [number, number, number])[];
     // Pill controls preserve surrounding photography with their measured radius.
@@ -354,12 +356,14 @@ const media: Record<
     file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/005.webp",
     rect: [17, 766, 150, 86],
     photoRadius: 20,
+    photoTopCornersOnly: true,
     roundedOcclusions: [[-5, -6, 305, 56, 28]],
   },
   "assistant-structured-second-fragment": {
     file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/005.webp",
     rect: [177, 766, 150, 86],
     photoRadius: 20,
+    photoTopCornersOnly: true,
     roundedOcclusions: [[-165, -6, 305, 56, 28]],
     circularOcclusions: [[176, 22, 29]],
   },
@@ -2395,9 +2399,11 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
           }
         }
         if (entry.photoRadius) {
+          const radius = entry.photoRadius * scale;
+          const maskHeight = height + (entry.photoTopCornersOnly ? radius : 0);
           photoCutouts.push({
             input: Buffer.from(
-              `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="${width}" height="${height}" rx="${entry.photoRadius * scale}" fill="white"/></svg>`,
+              `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="${width}" height="${maskHeight}" rx="${radius}" fill="white"/></svg>`,
             ),
             blend: "dest-in",
           });

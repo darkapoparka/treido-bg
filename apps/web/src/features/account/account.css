@@ -3624,8 +3624,8 @@
 }
 .payment-card-detail-page input[role="switch"] {
   appearance: none;
-  width: 62px;
-  height: 29px;
+  width: 63px;
+  height: 28px;
   flex: none;
   position: relative;
   border-radius: 20px;
@@ -3637,15 +3637,15 @@
 .payment-card-detail-page input[role="switch"]::before {
   content: "";
   position: absolute;
-  left: 3px;
-  top: 3px;
-  width: 23px;
-  height: 23px;
-  border-radius: 50%;
+  left: 2px;
+  top: 2px;
+  width: 37px;
+  height: 24px;
+  border-radius: 20px;
   background: #fff;
 }
 .payment-card-detail-page input[role="switch"]:checked::before {
-  transform: translateX(33px);
+  transform: translateX(22px);
 }
 .payment-card-detail-page > .danger-text {
   width: 100%;
@@ -3987,6 +3987,18 @@
   height: 226px;
   min-height: 226px;
   overflow: hidden;
+}
+.delete-card-confirm .sheet-header .icon-button {
+  width: 24px;
+  height: 24px;
+  align-self: flex-start;
+  margin-top: 8px;
+  color: #777;
+  background: #eef0f0;
+}
+.delete-card-confirm .sheet-header .icon-button svg {
+  width: 14px;
+  height: 14px;
 }
 .delete-card-confirm .editor-actions {
   position: absolute;

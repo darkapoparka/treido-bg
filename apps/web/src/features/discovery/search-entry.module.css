@@ -1427,6 +1427,9 @@
 .photoAnswer :global(.assistant-composer) {
   bottom: calc(36px + env(safe-area-inset-bottom));
 }
+.photoAnswer :global(.assistant-composer) > input {
+  box-shadow: 0 0 40px #0000001c;
+}
 .photoAnswer :global(.assistant-answer-card) .photoCardMedia {
   width: min(166px, 48%);
 }
@@ -1457,15 +1460,20 @@
   pointer-events: none;
   z-index: 3;
 }
-.photoAnswer :global(.assistant-composer)::before {
+.photoAnswer::after {
   content: "";
-  position: absolute;
-  inset: -12px -12px -36px;
-  background: linear-gradient(#ffffff00, #ffffff66 32%, #ffffff00 100%);
-  backdrop-filter: blur(6px);
-  mask-image: linear-gradient(transparent, #000 28%);
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 760px;
+  height: calc(104px + env(safe-area-inset-bottom));
+  background: linear-gradient(#ffffff00, #ffffffa6 73%, #ffffffe6);
+  backdrop-filter: blur(2px);
+  mask-image: linear-gradient(transparent, #000 73%);
   pointer-events: none;
-  z-index: -1;
+  z-index: 1;
 }
 
 .photoProductLink {
