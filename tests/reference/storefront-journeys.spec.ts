@@ -373,6 +373,14 @@ test("the first collection prompt is caused by a real save and dismissal keeps t
   baseURL,
 }) => {
   await openScenario(page, baseURL, collection, "saved-empty");
+  // Flow 14 shows the liquid pair beside Rice; the solid-bar pair is a
+  // different catalog product, with its own image and destination.
+  const liquidPair = page.locator('[data-product-id="idea-rosemary-liquid"]');
+  await expect(liquidPair).toBeVisible();
+  await expect(liquidPair.locator(".product-media > a")).toHaveAttribute(
+    "href",
+    "/products/idea-rosemary-liquid",
+  );
   const save = button(page, "Save Rice Water Shampoo & Conditioner Combo");
   await expect(dialog(page, "Start your first collection")).not.toBeVisible();
   await save.click();

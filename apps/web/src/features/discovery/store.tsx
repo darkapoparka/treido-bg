@@ -665,7 +665,7 @@ export function StoreCollection({
       : slug === "best-sellers"
         ? ordered(catalog, [
             "rice-bundle",
-            "idea-rosemary-bundle",
+            "idea-rosemary-liquid",
             "rice-shampoo",
             "rice-conditioner",
             "shea-butter",

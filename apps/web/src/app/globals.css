@@ -3564,6 +3564,9 @@ h3 {
 .store-collection-page > .product-grid {
   margin-top: 28px;
 }
+.store-collection-page .store-criteria .pill > svg {
+  transform: rotate(90deg);
+}
 .store-collection-page .price-badge {
   background: black;
   color: white;

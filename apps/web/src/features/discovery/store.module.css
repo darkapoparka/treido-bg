@@ -102,6 +102,13 @@
 .collection {
   background: #c2bfb5;
 }
+.collection :global(.store-criteria .icon-button) {
+  width: 40px;
+  height: 40px;
+}
+.collection > :global(.product-grid) {
+  column-gap: 12px;
+}
 .collection :global(.product-copy) > strong {
   font-weight: 500;
 }
@@ -110,7 +117,7 @@
   color: #080808;
 }
 .collection[data-collection="best-sellers"] :global(.store-collection-hero) {
-  height: 186px;
+  height: 182px;
   border-radius: 0;
 }
 .collection[data-collection="best-sellers"]
@@ -123,7 +130,7 @@
 .collection[data-collection="best-sellers"]
   :global(.store-collection-hero)
   > div {
-  bottom: 8px;
+  bottom: 4px;
 }
 .collection[data-collection="best-sellers"]
   :global(.store-collection-hero > .icon-button) {
