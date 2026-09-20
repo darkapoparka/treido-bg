@@ -5,6 +5,13 @@ import sharp, { type OverlayOptions } from "sharp";
 // Rectangles are measured on a 393px-wide reference, including its system chrome.
 // Only product photography, brand marks and decorative imagery are extracted.
 // Interface text, cards, navigation and controls are rendered by React, never screenshots.
+type RoundedOcclusion = readonly [
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number,
+];
 const media: Record<
   string,
   {
@@ -39,13 +46,10 @@ const media: Record<
     // Circular native controls are removed without erasing extra photo corners.
     circularOcclusions?: readonly (readonly [number, number, number])[];
     // Pill controls preserve surrounding photography with their measured radius.
-    roundedOcclusions?: readonly (readonly [
-      number,
-      number,
-      number,
-      number,
-      number,
-    ])[];
+    roundedOcclusions?: readonly RoundedOcclusion[];
+    // Native overlays with no clean photo beneath must remain transparent,
+    // including when separate price exclusions use edge-color filling.
+    transparentRoundedOcclusions?: readonly RoundedOcclusion[];
     // Smooth colors beneath removed native UI, sampled from the two exposed
     // edges on the selected axis. This does not reconstruct hidden detail.
     roundedOcclusionFill?: "horizontal-gradient" | "vertical-gradient";
@@ -557,7 +561,8 @@ const media: Record<
     darkTextOcclusions: [[13, 21, 108, 30]],
     textOcclusionMode: "inpaint",
     textOcclusionDilation: 1.5,
-    circularOcclusions: [[327, 37, 18]],
+    roundedOcclusions: [[309, 19, 36, 36, 18]],
+    roundedOcclusionFill: "vertical-gradient",
   },
   "home-campaign-drmtlgy-returning-photo": {
     // Only the exposed campaign photograph: remove every native product card,
@@ -656,18 +661,16 @@ const media: Record<
   "home-campaign-mountain-pink": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/004.webp",
     rect: [32, 685, 135, 135],
-    occlusions: [
-      [9, 7, 54, 26],
-      [50, 79, 85, 56],
-    ],
+    transparentRoundedOcclusions: [[54, 79, 222, 57, 28.5]],
+    roundedOcclusions: [[11, 11, 44, 19, 9.5]],
+    roundedOcclusionFill: "vertical-gradient",
   },
   "home-campaign-mountain-black": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/004.webp",
     rect: [175, 685, 135, 135],
-    occlusions: [
-      [9, 7, 54, 26],
-      [0, 79, 131, 56],
-    ],
+    transparentRoundedOcclusions: [[-89, 79, 222, 57, 28.5]],
+    roundedOcclusions: [[11, 11, 44, 19, 9.5]],
+    roundedOcclusionFill: "vertical-gradient",
   },
   // Only this right sliver of the trailing photograph is captured. Its product
   // identity is unknown, so it decorates the existing store link, not an
@@ -675,7 +678,8 @@ const media: Record<
   "home-campaign-mountain-trailing": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/004.webp",
     rect: [318, 685, 75, 135],
-    occlusions: [[7, 7, 58, 26]],
+    roundedOcclusions: [[11, 11, 49, 19, 9.5]],
+    roundedOcclusionFill: "vertical-gradient",
   },
   "home-campaign-mountain-header": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/004.webp",
@@ -705,7 +709,8 @@ const media: Record<
     lightTextOcclusions: [[13, 18, 108, 29]],
     textOcclusionMode: "inpaint",
     textOcclusionDilation: 1.5,
-    circularOcclusions: [[327, 33, 18]],
+    roundedOcclusions: [[309, 15, 36, 36, 18]],
+    roundedOcclusionFill: "vertical-gradient",
   },
   "recent-kitsch-cover": {
     file: "flows/1cb8d743-c728-4317-8c60-1cc3c2761f8c/002.webp",
@@ -2047,6 +2052,7 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
         entry.pinkChromaKey ||
         entry.circularOcclusions?.length ||
         entry.roundedOcclusions?.length ||
+        entry.transparentRoundedOcclusions?.length ||
         entry.photoRadius ||
         entry.lightWordmark
       ) {
@@ -2318,6 +2324,14 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
           })),
         );
         const photoCutouts: OverlayOptions[] = [...cutouts];
+        if (entry.transparentRoundedOcclusions?.length) {
+          photoCutouts.push({
+            input: Buffer.from(
+              `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">${entry.transparentRoundedOcclusions.map(([x, y, w, h, radius]) => `<rect x="${x * scale}" y="${y * scale}" width="${w * scale}" height="${h * scale}" rx="${radius * scale}" fill="white"/>`).join("")}</svg>`,
+            ),
+            blend: "dest-out",
+          });
+        }
         if (entry.circularOcclusions?.length) {
           photoCutouts.push({
             input: Buffer.from(

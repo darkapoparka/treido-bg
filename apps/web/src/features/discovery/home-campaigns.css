@@ -454,9 +454,6 @@
 }
 
 /* The returning capture uses the same campaign, with a two-column product layout. */
-.home-returning .home-campaigns {
-  margin-top: 15px;
-}
 .campaign-product-grid .campaign-product-rail {
   top: 62px;
   right: 16px;
@@ -615,6 +612,26 @@
 .campaign-isolated-bottle img {
   padding: 7px;
 }
+.campaign-drmtlgy:not(.campaign-product-grid)
+  [data-campaign-product="home-drmtlgy-eye"]
+  img {
+  position: absolute;
+  left: 57px;
+  top: 10px;
+  width: 27px;
+  height: 112px;
+  padding: 0;
+}
+.campaign-drmtlgy:not(.campaign-product-grid)
+  [data-campaign-product="home-drmtlgy-retinol"]
+  img {
+  position: absolute;
+  left: -1px;
+  top: -4px;
+  width: 138px;
+  max-width: none;
+  height: 138px;
+}
 .campaign-product-grid .campaign-isolated-bottle img,
 .campaign-product-grid .campaign-bundle img,
 .campaign-product-grid .campaign-eye-masks img {
@@ -661,6 +678,13 @@
 }
 .campaign-footer-photo {
   bottom: 0;
+  object-fit: cover;
+}
+.campaign-drmtlgy .campaign-footer-photo {
+  height: 69px;
+}
+.campaign-kitsch .campaign-footer-photo {
+  height: 63px;
 }
 .campaign-header {
   gap: 12px;

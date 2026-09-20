@@ -304,6 +304,9 @@ h2 {
   height: 32px;
   border-radius: 50%;
 }
+.home-page .delivery-card {
+  padding-block: 11.5px;
+}
 .delivery-card > img:last-child {
   margin-left: auto;
   border-radius: 8px;
