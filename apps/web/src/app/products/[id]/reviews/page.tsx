@@ -12,7 +12,7 @@ export default async function Page({
   const catalog = await readCatalog();
   const product = catalog.products.find((item) => item.id === id);
   if (!product) notFound();
-  return id === "shea-butter" || id === "shampoo-bag" ? (
+  return id === "shea-butter" ? (
     <Reviews productId={id} />
   ) : (
     <ProductRatings product={product} />

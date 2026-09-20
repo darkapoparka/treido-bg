@@ -331,11 +331,30 @@ async function settle(page) {
   );
   await page.evaluate(async () => {
     await document.fonts.ready;
-    await Promise.all(
-      [...document.images].map((image) =>
+    // Background photographs (including pseudo-elements) are not document.images.
+    // Decode them too: a cold request must not produce a scored blank backdrop.
+    const backgroundUrls = new Set();
+    for (const element of document.querySelectorAll("*")) {
+      if (!element.getClientRects().length) continue;
+      for (const pseudo of [null, "::before", "::after"]) {
+        const background = getComputedStyle(element, pseudo).backgroundImage;
+        for (const match of background.matchAll(
+          /url\((?:"([^"]*)"|'([^']*)'|([^)]*))\)/g,
+        )) {
+          backgroundUrls.add(match[1] ?? match[2] ?? match[3]);
+        }
+      }
+    }
+    await Promise.all([
+      ...[...document.images].map((image) =>
         image.getAttribute("src") ? image.decode() : Promise.resolve(),
       ),
-    );
+      ...[...backgroundUrls].map(async (url) => {
+        const image = new Image();
+        image.src = url;
+        await image.decode();
+      }),
+    ]);
     await new Promise((resolve) =>
       requestAnimationFrame(() => requestAnimationFrame(resolve)),
     );
@@ -647,9 +666,13 @@ async function captureFrame(browser, frame, runDir, replay = null) {
     await page
       .screenshot({ path: path.join(frameDir, "failure.png") })
       .catch(() => undefined);
+    const body = await page
+      .locator("body")
+      .innerText()
+      .catch(() => "Body unavailable during failure capture");
     fs.writeFileSync(
       path.join(frameDir, "failure.txt"),
-      `${page.url()}\n${await page.locator("body").innerText()}\n${String(error)}`,
+      `${page.url()}\n${body}\n${String(error)}\n${JSON.stringify(browserErrors)}`,
     );
     throw error;
   } finally {

@@ -394,7 +394,7 @@ export const referenceCatalog: Catalog = {
       images: [image("shampoo-bag")],
       price: { amount: 500, currency: "USD" },
       rating: 4.6,
-      ratingCount: "3.3K",
+      ratingCount: "3.8K",
     }),
     product({
       id: "rice-shampoo",

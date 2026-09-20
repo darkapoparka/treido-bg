@@ -17,6 +17,39 @@ async function open(page: Page, path: string) {
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
 }
 
+test("bag review navigation keeps its own captured aggregate and returns to its preview", async ({
+  page,
+}) => {
+  await open(page, "/products/shampoo-bag");
+  const preview = page.locator(
+    '.pdp-review-preview[data-product-id="shampoo-bag"]',
+  );
+  await expect(preview).toContainText("3.8K ratings");
+  await expect(preview).toContainText("Jessica");
+  await preview
+    .getByRole("link", { name: "Read all reviews", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/products\/shampoo-bag\/reviews$/);
+  await expect(
+    page.getByRole("heading", { name: "Shampoo Bar Bag", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("3.8K ratings", { exact: false })).toBeVisible();
+  await expect(page.getByRole("status")).toHaveText(
+    "The full review list was not captured for this product.",
+  );
+  await expect(
+    page.getByText("Girlfriend loves it and I can breathe .", { exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("searchbox", { name: "Search reviews" }),
+  ).toHaveCount(0);
+  await page.screenshot({ path: test.info().outputPath("bag-reviews.png") });
+  await page.getByRole("button", { name: "Go back", exact: true }).click();
+  await expect(page).toHaveURL(/\/products\/shampoo-bag$/);
+  await expect(preview).toContainText("Jessica");
+  await expect(preview).toContainText("Great…");
+});
+
 test("product review search sort expansion and helpful state survive a product visit and browser Back", async ({
   page,
 }) => {

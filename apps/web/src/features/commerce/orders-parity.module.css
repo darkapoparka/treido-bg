@@ -646,7 +646,7 @@
 .tracking :global(.tracking-order-card) {
   background-size: 100% 205px;
   padding: 34px 20px 18px;
-  background-color: #c5c4ba;
+  background-color: #c2bfb5;
   border-radius: 28px;
 }
 .tracking :global(.tracking-order-card > .order-store-mark) {
@@ -1454,6 +1454,21 @@
   width: calc(100% + 32px);
   margin: 0 -16px;
   height: 136px;
+}
+.trackingBrand::before {
+  background:
+    linear-gradient(
+      #c2bfb500 55%,
+      #c2bfb50d 58%,
+      #c2bfb52e 65%,
+      #c2bfb566 71%,
+      #c2bfb5ad 81%,
+      #c2bfb5cf 84%,
+      #c2bfb5f2 91%,
+      #c2bfb5 95%
+    ),
+    linear-gradient(#0000001a, #0000001a),
+    url(/api/reference-media/order-hero) center -7px / 100% auto no-repeat;
 }
 .trackingBrand .orderBrandMark {
   top: 24px;

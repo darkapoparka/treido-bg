@@ -17,7 +17,7 @@ export function ProductRatings({ product }: { product: Product }) {
         </p>
       )}
       <p className="empty-state" role="status">
-        Individual reviews were not included for this product in the reference.
+        The full review list was not captured for this product.
       </p>
       <FloatingNav back />
     </ShopSurface>
