@@ -6,8 +6,39 @@ for (const entry of ["manual", "suggested"] as const) {
   test(`phone continuation preserves one country code through ${entry} address entry and history`, async ({
     page,
   }) => {
-    await useReferenceScenario(page, "checkout");
-    await page.goto("/checkout?store=kitsch&stage=phone");
+    await useReferenceScenario(
+      page,
+      entry === "manual" ? "onboarding-new" : "profile-before-payment",
+    );
+    await page.goto("/products/shampoo-bag");
+    if (entry === "manual") {
+      await page.getByRole("button", { name: "Buy now", exact: true }).click();
+    } else {
+      await page
+        .getByRole("button", { name: "Add to cart", exact: true })
+        .click();
+      await expect(
+        page.getByRole("button", { name: "Added to cart", exact: true }),
+      ).toBeVisible();
+      await expect(
+        page.locator('.pdp-purchase-buttons [data-addition="idle"]'),
+      ).toBeVisible();
+      await page
+        .getByRole("button", { name: "Open cart", exact: true })
+        .click();
+      const offer = page.getByRole("dialog", { name: /exclusive offer/ });
+      await expect(offer).toBeVisible();
+      await offer
+        .getByRole("link", { name: "Continue to checkout", exact: true })
+        .click();
+    }
+    await expect(page).toHaveURL(/\/checkout\?store=kitsch&stage=phone$/);
+    await expect(
+      page.getByRole("heading", { name: "Add phone number", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Review & Pay", exact: true }),
+    ).not.toBeVisible();
     const phoneDraft = entry === "manual" ? "(650) 213-7552" : "6502137552";
     await page
       .getByRole("textbox", { name: "Phone number", exact: true })

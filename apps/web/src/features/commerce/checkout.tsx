@@ -10,7 +10,7 @@ import { consumeSheetHistory, Sheet } from "../discovery/components";
 import { Icon } from "../discovery/icons";
 import { AccountIcon } from "../account/icons";
 import { AccountPage } from "../account/forms";
-import type { Address } from "../account/state";
+import { useAccount, type Address } from "../account/state";
 import { CartContents } from "./cart";
 import "./cart-parity.css";
 export { CartContents } from "./cart";
@@ -1977,6 +1977,7 @@ export function CartOffer({
   onClose: () => void;
 }) {
   const state = useDiscovery();
+  const { hasPaymentProfile } = useAccount();
   const offerIds = [
     "black-conditioner-bag",
     "chocolate-body-bag",
@@ -2044,7 +2045,7 @@ export function CartOffer({
               aria-pressed={state.saved.includes(product.id)}
               onClick={() => state.toggleSaved(product.id)}
             >
-              {state.saved.includes(product.id) ? "♥" : "♡"}
+              <Icon name="heart" filled={state.saved.includes(product.id)} />
             </button>
           </article>
         ))}
@@ -2077,7 +2078,7 @@ export function CartOffer({
         <Link
           className="primary form-submit"
           onClick={onClose}
-          href={`/checkout?store=${encodeURIComponent(storeId)}`}
+          href={`/checkout?store=${encodeURIComponent(storeId)}${hasPaymentProfile ? "" : "&stage=phone"}`}
         >
           Continue to checkout
         </Link>

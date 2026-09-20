@@ -440,7 +440,9 @@ export function Saved({ catalog }: { catalog: Catalog }) {
       />
       <FloatingNav
         back
-        cart={state.cart.length ? () => setCartOpen(true) : undefined}
+        fade
+        cart={() => setCartOpen(true)}
+        showCartWhenEmpty={!products.length && !collection && !addMode}
         onBack={
           addMode
             ? finishSelection

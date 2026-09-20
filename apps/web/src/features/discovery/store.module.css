@@ -3,7 +3,11 @@
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
 }
 .page :global(.store-actions) {
-  gap: 8px;
+  gap: 4px;
+}
+.store :global(.store-actions .icon-button svg) {
+  width: 16px;
+  height: 16px;
 }
 .filter::backdrop {
   background: rgb(0 0 0 / 40%);
@@ -33,6 +37,11 @@
 .store {
   background: #c2bfb5;
 }
+.store :global(.floating-dock[data-fade="true"])::before {
+  background: transparent;
+  backdrop-filter: blur(20px);
+  mask-image: linear-gradient(transparent 15%, #000);
+}
 .store :global(.promotion-owner),
 .store :global(.store-promotion) {
   background: #393937;
@@ -41,20 +50,33 @@
   border-radius: 36px 36px 0 0;
 }
 .store :global(.store-hero-kitsch) {
+  --kitsch-hero-photo: url("/api/reference-media/store-kitsch-default-hero");
+  /* Keep photo aspect and live controls independent at every viewport width.
+     The 393px source uses the original video photo with a -43px vertical crop. */
   background:
-    url("/api/reference-media/store-kitsch-default-hero") center top / 100%
-      302px no-repeat,
+    linear-gradient(
+        #c2bfb50a 0,
+        #c2bfb517 60px,
+        #c2bfb53d 100px,
+        #c2bfb57d 150px,
+        #c2bfb5b3 200px,
+        #c2bfb5de 250px,
+        #c2bfb5 302px
+      )
+      left top / 100% 100% no-repeat,
+    var(--kitsch-hero-photo) center -43px / 100% auto no-repeat,
     #c2bfb5;
 }
 .store :global(.store-hero-kitsch.store-hero-followed) {
-  background:
-    url("/api/reference-media/store-kitsch-followed-hero") center top / 100%
-      302px no-repeat,
-    #c2bfb5;
+  --kitsch-hero-photo: url("/api/reference-media/store-kitsch-followed-hero");
 }
-.store :global(.store-hero-kitsch .store-brand > span),
+.store :global(.store-hero-kitsch .store-brand > span) {
+  top: 76px;
+}
 .store :global(.store-hero-kitsch .store-brand > a) {
-  visibility: hidden;
+  top: 166px;
+  line-height: 16px;
+  font-weight: 400;
 }
 .store :global(.store-brand) > span > svg {
   display: block;

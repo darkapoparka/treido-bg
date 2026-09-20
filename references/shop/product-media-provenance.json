@@ -85,6 +85,32 @@
       "sourceSha256": "78469e747a3cedae293ef4a09c06286619dbe76ad0035af84d4abdb7fc26dc79"
     },
     {
+      "id": "store-kitsch-brushes-clean",
+      "localFile": "reference-assets/shop/products/store-kitsch-brushes-clean.png",
+      "sourcePage": "https://shop.app/m/mykitsch",
+      "sourceUrl": "https://cdn.shopify.com/videos/c/vp/c4a836d3780f487193879ee4c17a7b44/c4a836d3780f487193879ee4c17a7b44.SD-480p-1.5Mbps-64900030.mp4",
+      "width": 442,
+      "height": 480,
+      "sha256": "ee65d695ead32fc67fa30d43690ea0d111454a9d2e9758f3304866e71c191bfc",
+      "frameSeconds": 7.5,
+      "verification": "Clean photograph extracted from the existing local merchant video at 7.5s and visually matched to flow41/001. Source photo aligns at 393px width with a -43px vertical crop. No screenshot logo, rating, control or control-shaped cutout is retained. Source approval remains separate.",
+      "pixelSha256": "576e6437a737b6f1d77fc9ccd54908e1ef79500feec20bb2661a77c3a74e19f7",
+      "sourceSha256": "78469e747a3cedae293ef4a09c06286619dbe76ad0035af84d4abdb7fc26dc79"
+    },
+    {
+      "id": "store-kitsch-woman-clean",
+      "localFile": "reference-assets/shop/products/store-kitsch-woman-clean.png",
+      "sourcePage": "https://shop.app/m/mykitsch",
+      "sourceUrl": "https://cdn.shopify.com/videos/c/vp/c4a836d3780f487193879ee4c17a7b44/c4a836d3780f487193879ee4c17a7b44.SD-480p-1.5Mbps-64900030.mp4",
+      "width": 442,
+      "height": 480,
+      "sha256": "de0702ba8b75841f14e4ee2340252ccef72332eda6ed781edd762ba55e7eb2e1",
+      "frameSeconds": 2.9,
+      "verification": "Clean photograph extracted from the existing local merchant video at 2.9s and visually matched to flow41/002. Source photo aligns at 393px width with a -43px vertical crop. No screenshot logo, rating, control or control-shaped cutout is retained. Source approval remains separate.",
+      "pixelSha256": "8589745557d932b946d00464b188db618fadc5d8c206ed84e9b95e1aa35bf57a",
+      "sourceSha256": "78469e747a3cedae293ef4a09c06286619dbe76ad0035af84d4abdb7fc26dc79"
+    },
+    {
       "id": "whip-mousse",
       "localFile": "reference-assets/shop/products/whip-original.jpeg",
       "sourcePage": "https://langehair.com/products/whip-volumizing-mousse",

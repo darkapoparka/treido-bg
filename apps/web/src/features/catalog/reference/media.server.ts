@@ -1350,26 +1350,6 @@ const media: Record<
   },
 
   "store-shop-all": { file: "screens/125.webp", rect: [22, 130, 349, 175] },
-  "store-kitsch-default-hero": {
-    file: "flows/356a3c6b-0570-47ae-b0c5-949f06a6a6f6/001.webp",
-    rect: [0, 123, 393, 302],
-    roundedOcclusions: [[233, 17, 96, 44, 22]],
-    circularOcclusions: [
-      [38, 39, 23],
-      [87, 39, 23],
-      [355, 39, 23],
-    ],
-  },
-  "store-kitsch-followed-hero": {
-    file: "flows/356a3c6b-0570-47ae-b0c5-949f06a6a6f6/002.webp",
-    rect: [0, 123, 393, 302],
-    roundedOcclusions: [[233, 17, 98, 44, 22]],
-    circularOcclusions: [
-      [38, 39, 23],
-      [87, 39, 23],
-      [355, 39, 23],
-    ],
-  },
   "store-kitsch-terracotta-recommendation": {
     file: "flows/e85d0150-4fe9-4ee0-bde4-de17fe6da7df/001.webp",
     rect: [175, 193, 135, 135],
@@ -1996,6 +1976,10 @@ const originals: Record<string, string> = {
   "carpenter-jeans": "carpenter-jeans.jpeg",
   "heritage-jeans": "heritage-jeans.jpeg",
   "store-hero": "store-hero.png",
+  // Clean stills from the already acquired merchant video: 7.5s and 2.9s.
+  // These contain photography only; the storefront owns every logo and control.
+  "store-kitsch-default-hero": "store-kitsch-brushes-clean.png",
+  "store-kitsch-followed-hero": "store-kitsch-woman-clean.png",
   "order-hero": "order-hero.png",
 };
 const pending = new Map<string, Promise<Buffer>>();
@@ -2016,6 +2000,8 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
         const picture = sharp(input);
         return (
           key === "store-hero" ||
+          key === "store-kitsch-default-hero" ||
+          key === "store-kitsch-followed-hero" ||
           key === "order-hero" ||
           key === "collection-coastal"
             ? picture

@@ -25,6 +25,7 @@ import {
 import { Icon } from "./icons";
 import { CartOverlay as Cart, CartOffer } from "../commerce/checkout";
 import { useDiscovery } from "./state";
+import { useAccount } from "../account/state";
 import styles from "./product-detail.module.css";
 import "./product.css";
 export { CartOverlay as Cart } from "../commerce/checkout";
@@ -37,6 +38,7 @@ export function ProductDetail({
 }) {
   const state = useDiscovery(),
     router = useRouter();
+  const { hasPaymentProfile } = useAccount();
   const [quantity, setQuantity] = useState(1),
     [variant, setVariant] = useState(
       product.variants.find((v) => v.availableQuantity > 0)?.id ??
@@ -175,7 +177,7 @@ export function ProductDetail({
     // Only an owned overlay entry should be replaced. Ordinary Buy now must
     // keep the product in browser history for checkout cancellation.
     (consumeSheetHistory() ? router.replace : router.push)(
-      `/checkout?store=${product.storeId}`,
+      `/checkout?store=${encodeURIComponent(store.id)}${hasPaymentProfile ? "" : "&stage=phone"}`,
     );
   }
   function closeGallery() {

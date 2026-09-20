@@ -41,19 +41,20 @@ test("cart card, save-for-later controls and continuation stay inside narrow vie
   page,
 }) => {
   await useReferenceScenario(page, "cart-bag");
-  for (const width of [320, 393, 430]) {
+  for (const width of [320, 393, 430, 472]) {
     await page.setViewportSize({ width, height: 793 });
     await page.goto("/products/shampoo-bag");
     await page.getByRole("button", { name: "Open cart", exact: true }).click();
     const cart = page.getByRole("dialog", { name: "Your cart", exact: true });
     await expect(cart).toBeVisible();
     const bounds = await cart.boundingBox();
-    expect(bounds?.x).toBe(0);
+    const cartLeft = Math.max(0, (width - 430) / 2);
+    expect(bounds?.x).toBe(cartLeft);
     expect(
       (bounds?.x ?? -1) + (bounds?.width ?? width + 1),
     ).toBeLessThanOrEqual(width);
     const seller = await cart.locator(".seller-cart").boundingBox();
-    expect(seller?.x).toBe(8);
+    expect(seller?.x).toBe(cartLeft + 8);
     expect(
       (seller?.x ?? -1) + (seller?.width ?? width + 1),
     ).toBeLessThanOrEqual(width - 8);
@@ -71,6 +72,7 @@ test("cart card, save-for-later controls and continuation stay inside narrow vie
     await expect(
       cart.getByRole("heading", { name: "Saved for later", exact: true }),
     ).toBeVisible();
+    await expect(cart.locator(".cart-later-store-logo")).toBeVisible();
     expect(
       await cart.evaluate(
         (element) => element.scrollWidth <= element.clientWidth,

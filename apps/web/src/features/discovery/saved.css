@@ -6,9 +6,27 @@
 .saved-library {
   padding-top: 12px;
 }
+/* The native keyboard covers the navigation. Keep its fade out of the
+   reduced visual viewport while the collection name editor is open. */
+.saved-library:has(.collection-editor[open]) > .floating-dock::before {
+  display: none;
+}
 .saved-library .saved-heading {
   min-height: 32px;
   margin: 0 0 16px;
+}
+/* The library's Create action floats beside its 32px heading; its 44px hit
+   target must not push the collection shelf and product grid downward. */
+.saved-library:has(.collection-rail.has-collections) > .saved-heading {
+  position: relative;
+  margin-bottom: 20px;
+}
+.saved-library:has(.collection-rail.has-collections)
+  > .saved-heading
+  > .icon-button {
+  position: absolute;
+  top: -4px;
+  right: 0;
 }
 .saved-library h1 {
   margin: 0;
@@ -143,8 +161,8 @@
   color: white;
 }
 .saved-product .save-button svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 .saved-product .save-button.saved-active {
   background: #5433eb;
@@ -169,6 +187,9 @@
   overflow-x: auto;
   scrollbar-width: none;
   margin-bottom: 32px;
+}
+.collection-rail.has-collections {
+  margin-right: 6px;
 }
 .create-collection-tile {
   position: relative;
@@ -223,32 +244,62 @@
 .has-collections .create-collection-tile > span {
   flex-direction: column;
 }
+.has-collections .create-collection-tile > div {
+  bottom: -14px;
+}
 .has-collections .create-collection-tile img {
   width: 32px;
   height: 48px;
   object-fit: contain;
 }
 .collection-tile > div {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px 8px;
+  position: absolute;
+  inset: 0 0 auto;
   height: 142px;
-  padding: 0 4px;
-  transform: rotate(7deg);
+  overflow: hidden;
 }
 .collection-tile img {
+  position: absolute;
   width: 48px;
   height: 52px;
   object-fit: contain;
   border-radius: 7px;
+  background: #fff;
   box-shadow: 0 3px 7px #00000006;
 }
-.collection-tile img:nth-child(even) {
-  transform: rotate(-13deg);
+.collection-tile img:nth-child(1) {
+  left: 16px;
+  top: -15px;
+  transform: rotate(6deg);
+}
+.collection-tile img:nth-child(2) {
+  left: 124px;
+  top: -18px;
+  transform: rotate(8deg);
+}
+.collection-tile img:nth-child(3) {
+  left: -16px;
+  top: 48px;
+  transform: rotate(1deg);
+}
+.collection-tile img:nth-child(4) {
+  left: 62px;
+  top: 45px;
+  transform: rotate(7deg);
+}
+.collection-tile img:nth-child(5) {
+  left: 147px;
+  top: 61px;
+  transform: rotate(7deg);
+}
+.collection-tile img:nth-child(6) {
+  left: 206px;
+  top: 20px;
+  transform: rotate(-6deg);
 }
 .collection-tile-copy {
   position: absolute;
-  bottom: 16px;
+  bottom: 18px;
   left: 14px;
   right: 14px;
   text-align: left;
@@ -314,6 +365,7 @@
 }
 .collection-invite-callout > .icon-button {
   position: absolute;
+  z-index: 1;
   right: 8px;
   top: 8px;
   width: 28px;
@@ -730,6 +782,7 @@
   border: 1px solid #ececec;
   border-radius: 24px;
   background: white;
+  transform: rotate(-2deg);
 }
 .saved-sock-card::before {
   content: "";
@@ -784,6 +837,25 @@
 .featured-kitsch .kitsch-wordmark {
   width: 92px;
   height: 24px;
+  transform: scaleY(0.83);
+}
+.saved-library h1,
+.saved-library > h2,
+.saved-product > span,
+.saved-product > .saved-item-title,
+.saved-product > b,
+.saved-variant,
+.collection-tile-copy,
+.create-collection-tile > span,
+.collection-invite-callout > strong,
+.collection-invite-callout > p,
+.collection-invite-callout > .primary,
+.find-ideas > span,
+.saved-empty-source h2,
+.saved-empty-source p,
+.saved-empty-source > .primary {
+  /* Match the captured grayscale text without compositing a page/overlay root. */
+  opacity: 0.999;
 }
 .saved-collection:has(.invite-collaborators) .saved-heading {
   min-height: 34px;

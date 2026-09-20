@@ -29,7 +29,7 @@
 }
 .product-page .product-heading > .icon-button {
   position: absolute;
-  top: 0;
+  top: -7px;
   width: 44px;
   height: 44px;
 }
@@ -837,6 +837,10 @@
 .product-page .product-heading > .icon-button svg {
   width: 20px;
   height: 20px;
+}
+.product-page .product-heading > .icon-button[aria-label="Save product"] svg {
+  width: 18px;
+  height: 18px;
 }
 .product-price-alert-tip {
   position: absolute;

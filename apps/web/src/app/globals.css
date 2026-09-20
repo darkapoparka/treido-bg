@@ -160,6 +160,9 @@ h2 {
   position: absolute;
   right: 0;
 }
+.floating-dock.has-side-controls {
+  max-width: 357px;
+}
 .floating-dock.has-side-controls .floating-nav {
   width: min(221px, calc(100% - var(--dock-side-width) * 2 - 20px));
 }
@@ -169,7 +172,7 @@ h2 {
 .dock-cart svg {
   width: 26px;
   height: 26px;
-  transform: translateX(-4px);
+  transform: translateX(-3px);
 }
 .dock-cart.cart-filled {
   color: white;
@@ -177,14 +180,15 @@ h2 {
 }
 .dock-cart-count {
   position: absolute;
-  top: calc(50% - 6px);
+  top: calc(50% - 7px);
   left: calc(50% - 1px);
   transform: translateX(-50%);
   padding: 0;
   color: var(--color-accent);
   font-size: 10px;
   font-weight: 700;
-  line-height: 12px;
+  line-height: 10px;
+  opacity: 0.999;
 }
 .dock-cart-count[data-wide="true"] {
   font-size: 8px;
@@ -196,6 +200,10 @@ h2 {
   width: 56px;
   height: 56px;
   box-shadow: 0 12px 32px #0000000b;
+}
+.dock-back svg {
+  width: 20px;
+  height: 20px;
 }
 .floating-nav {
   height: 56px;
@@ -228,7 +236,16 @@ h2 {
 }
 /* Dock-only optical fitting; the shared action glyphs retain their own size. */
 .floating-nav a[aria-label="Home"] svg {
-  transform: translate(1px, -2px);
+  width: 24px;
+  height: 24px;
+  transform: translate(1px, -1.5px);
+}
+.floating-nav
+  a:is([aria-label="Search"], [aria-label="Explore"]):not([aria-current]) {
+  color: #767676;
+}
+.floating-nav a[aria-label="Orders"]:not([aria-current]) {
+  color: #858585;
 }
 .floating-nav a[aria-label="Search"] svg {
   width: 23px;
@@ -241,8 +258,8 @@ h2 {
   transform: translate(-0.25px, -0.5px);
 }
 .floating-nav a[aria-label="Orders"] svg {
-  width: 22.5px;
-  height: 22.5px;
+  width: 24px;
+  height: 24px;
   transform: translate(-1px, -0.75px);
 }
 .home-page {
@@ -824,6 +841,9 @@ h2 {
   height: 64px;
   width: 100%;
   font-size: 12px;
+}
+.store-promotion > span {
+  align-self: center;
 }
 .store-promotion b {
   background: var(--color-accent);

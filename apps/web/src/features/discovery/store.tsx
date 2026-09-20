@@ -538,7 +538,7 @@ export function Storefront({
     store.recommendations ??
     (isKitsch
       ? [
-          { productId: "shampoo-bag" },
+          { productId: "shampoo-bag", ratingCount: "3.3K" },
           { productId: "shea-butter", ratingCount: "2.1K" },
           { productId: "terracotta" },
           { productId: "rice-shampoo" },
@@ -600,7 +600,7 @@ export function Storefront({
         >
           <StoreActions store={store} />
           <div className="store-brand">
-            <span aria-label={store.name}>
+            <span role={isKitsch ? "img" : undefined} aria-label={store.name}>
               {isKitsch ? <KitschWordmark /> : store.name}
             </span>
             {store.rating && (
@@ -690,6 +690,7 @@ export function Storefront({
       )}
       <FloatingNav
         back
+        fade={isKitsch}
         cart={reported ? undefined : () => setCart(true)}
         showCartWhenEmpty={
           !reported && isKitsch && store.promotionSavings !== 15

@@ -280,6 +280,7 @@ export function Following({ catalog }: { catalog: Catalog }) {
         onClose={() => setCartOpen(false)}
       />
       <FloatingNav
+        fade
         back
         cart={manage ? undefined : () => setCartOpen(true)}
         showCartWhenEmpty={!manage && !stores.length}

@@ -62,7 +62,7 @@ const paths = {
   chevron: "m9 5 7 7-7 7",
   close: "m6 6 12 12M6 18 18 6",
   arrow: "M4 12h16m-7-7 7 7-7 7",
-  share: "M12 15V2m-5 5 5-5 5 5M6 10H3v11h18V10h-3",
+  share: "M12 14V3m-4 4 4-4 4 4M5 11v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6",
   "plus-circle": "M12 8v8M8 12h8M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0",
   plus: "M12 4v16M4 12h16",
   minus: "M4 12h16",
@@ -135,14 +135,17 @@ export function Icon({
         />
       ) : filled && name === "explore" ? (
         <g stroke="none">
-          <rect x="2.5" y="2.5" width="8.5" height="8.5" rx="1.2" />
-          <rect x="13" y="2.5" width="8.5" height="8.5" rx="1.2" />
-          <rect x="2.5" y="13" width="8.5" height="8.5" rx="1.2" />
-          <rect x="13" y="13" width="8.5" height="8.5" rx="1.2" />
+          <rect x="2.5" y="1.5" width="8.5" height="9.5" rx="1.2" />
+          <rect x="13" y="1.5" width="8.5" height="9.5" rx="1.2" />
+          <rect x="2.5" y="13" width="8.5" height="9.5" rx="1.2" />
+          <rect x="13" y="13" width="8.5" height="9.5" rx="1.2" />
         </g>
       ) : filled && name === "cart" ? (
         <g stroke="none">
-          <path d="M2.5 1.6h3.1c.8 0 1.5.55 1.66 1.34l.48 2.28h12.52c1.05 0 1.82 1 1.54 2.02l-1.75 8a2.65 2.65 0 0 1-2.56 1.95h-6.74a2.65 2.65 0 0 1-2.58-2.05L5.6 3.75H2.5V1.6Z" />
+          <path
+            d="M2.5 1.6h3.1c.8 0 1.5.55 1.66 1.34l.48 2.28h12.52c1.05 0 1.82 1 1.54 2.02l-1.75 8a2.65 2.65 0 0 1-2.56 1.95h-6.74a2.65 2.65 0 0 1-2.58-2.05L5.6 3.75H2.5V1.6Z"
+            transform="translate(0 .9)"
+          />
           <circle cx="10" cy="21.1" r="1.75" />
           <circle cx="18.9" cy="21.1" r="1.75" />
         </g>

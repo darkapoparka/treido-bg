@@ -3,6 +3,20 @@
   background: #fdfdfd;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
+.following-page > .floating-dock[data-fade="true"]::before {
+  background: transparent;
+  backdrop-filter: blur(20px);
+  mask-image: linear-gradient(transparent 15%, #000);
+}
+.following-heading h1,
+.following-manage,
+.following-empty :is(h2, p, .primary),
+.following-post-identity :is(strong, small),
+.following-page .product-copy :is(strong, span),
+.following-management-row > a > span,
+.following-management-row > button {
+  opacity: 0.999;
+}
 .following-heading {
   min-height: 32px;
   margin-bottom: 16px;
@@ -171,8 +185,8 @@
   background: #999994bf;
 }
 .following-page .save-button svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   stroke-width: 1.6px;
 }
 .following-page .save-button[aria-pressed="true"] {
@@ -189,8 +203,8 @@
   left: 0;
   height: auto;
 }
-.following-partial-photo > button,
-.following-recommendation-photo > button {
+.following-partial-photo > button:not(.save-button),
+.following-recommendation-photo > button:not(.save-button) {
   position: relative;
   display: block;
   width: 100%;

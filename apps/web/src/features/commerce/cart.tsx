@@ -6,21 +6,6 @@ import { Icon } from "../discovery/icons";
 import { useDiscovery } from "../discovery/state";
 import { formatMoney, type Catalog } from "../catalog/types";
 import { capturedLineAmount } from "./pricing";
-function Trash() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
-      width="16"
-      height="16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-    >
-      <path d="M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7" />
-    </svg>
-  );
-}
 export function CartContents({
   catalog,
   onContinue,
@@ -36,7 +21,18 @@ export function CartContents({
     list.flatMap((l) => {
       const product = catalog.products.find((p) => p.id === l.productId),
         variant = product?.variants.find((v) => v.id === l.variantId);
-      return product && variant ? [{ ...l, product, variant }] : [];
+      return product && variant
+        ? [
+            {
+              ...l,
+              product,
+              variant,
+              store: catalog.stores.find(
+                (store) => store.id === product.storeId,
+              ),
+            },
+          ]
+        : [];
     });
   const resolved = resolve(state.cart),
     later = resolve(state.later);
@@ -51,7 +47,9 @@ export function CartContents({
         <div className="notification-empty">
           <h2>Your cart is empty</h2>
           <p>
-            Add products while you shop, so they’ll be ready for checkout later.
+            Add products while you shop, so
+            <br />
+            they’ll be ready for checkout later.
           </p>
           {!onContinue && (
             <Link className="primary form-submit" href="/search">
@@ -150,7 +148,7 @@ export function CartContents({
                                 )
                           }
                         >
-                          {l.quantity === 1 ? <Trash /> : <Icon name="minus" />}
+                          <Icon name={l.quantity === 1 ? "trash" : "minus"} />
                         </button>
                         <output>{l.quantity}</output>
                         <button
@@ -227,7 +225,18 @@ export function CartContents({
               className="commerce-line"
               key={`${l.productId}-${l.variantId}`}
             >
-              {l.product.images[0] && <img src={l.product.images[0]} alt="" />}
+              {l.product.images[0] && (
+                <span className="cart-later-media">
+                  <img src={l.product.images[0]} alt="" />
+                  {l.store?.logo && (
+                    <img
+                      className="cart-later-store-logo"
+                      src={l.store.logo}
+                      alt=""
+                    />
+                  )}
+                </span>
+              )}
               <div>
                 <div className="cart-line-title">
                   <strong>{l.product.title}</strong>
@@ -246,7 +255,7 @@ export function CartContents({
                     aria-label={`Remove saved ${l.product.title}`}
                     onClick={() => state.removeLater(l.productId, l.variantId)}
                   >
-                    <Trash />
+                    <Icon name="trash" />
                   </button>
                   <button
                     aria-label={`Save ${l.product.title}`}
