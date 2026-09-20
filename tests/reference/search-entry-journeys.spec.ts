@@ -49,6 +49,10 @@ test("photo drafting keeps one input and removing the photograph preserves its q
   await expect(button(page, "Submit search")).toBeDisabled();
   await chooseExample(page);
   await expect(input(page)).toHaveValue("");
+  await expect(button(page, "Cancel photo search")).toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "Main navigation" }),
+  ).toHaveCount(0);
   await expect(button(page, "Submit search")).toBeEnabled();
   await input(page).fill("Find me a baseball cap like this");
   await expect(page.locator(".search-suggestions-surface")).toHaveCount(0);

@@ -7,6 +7,8 @@ import { AccountIcon } from "../account/icons";
 import { useState } from "react";
 import { useAccount } from "../account/state";
 import { Boundary } from "../account/forms";
+import { SourceLink } from "../discovery/return-navigation";
+import { usePickupDraft } from "./pickup-draft";
 import "./pickup-parity.css";
 import {
   shopSourceAddress,
@@ -19,11 +21,9 @@ import {
 export function PickupCheckout() {
   const { paymentCards } = useAccount();
   const payment = paymentCards[0];
-  const [pickup, setPickup] = useState(false),
-    [offers, setOffers] = useState(true),
-    [discount, setDiscount] = useState(false),
-    [boundary, setBoundary] = useState(""),
-    [summary, setSummary] = useState(false);
+  const { value: draft, update } = usePickupDraft();
+  const { pickup, offers, discount, discountCode, summary } = draft;
+  const [boundary, setBoundary] = useState("");
   const total = pickup ? "3.80" : "10.83";
   return (
     <ShopSurface className="shop-page checkout-page source-checkout pickup-checkout">
@@ -41,7 +41,7 @@ export function PickupCheckout() {
         <button
           role="tab"
           aria-selected={!pickup}
-          onClick={() => setPickup(false)}
+          onClick={() => update({ pickup: false })}
         >
           <svg
             aria-hidden="true"
@@ -59,7 +59,7 @@ export function PickupCheckout() {
         <button
           role="tab"
           aria-selected={pickup}
-          onClick={() => setPickup(true)}
+          onClick={() => update({ pickup: true })}
         >
           <AccountIcon name="location" /> Pickup
         </button>
@@ -188,22 +188,22 @@ export function PickupCheckout() {
               "Add payment method"
             )}
           </strong>
-          <Link href="/account/payments" aria-label="Edit payment method">
+          <SourceLink href="/account/payments" aria-label="Edit payment method">
             <span className="pickup-caret" aria-hidden="true" />
-          </Link>
+          </SourceLink>
         </div>
       </section>
       <label className="pickup-offers">
         <input
           type="checkbox"
           checked={offers}
-          onChange={(e) => setOffers(e.target.checked)}
+          onChange={(e) => update({ offers: e.target.checked })}
         />
         Sign me up for news and offers from this store
       </label>
       <button
         className="pill"
-        onClick={() => setDiscount(!discount)}
+        onClick={() => update({ discount: !discount })}
         aria-expanded={discount}
       >
         <Icon name="tag" /> Add discount
@@ -216,13 +216,18 @@ export function PickupCheckout() {
             setBoundary("Discount validation");
           }}
         >
-          <input aria-label="Discount code" placeholder="Discount code" />
+          <input
+            aria-label="Discount code"
+            placeholder="Discount code"
+            value={discountCode}
+            onChange={(event) => update({ discountCode: event.target.value })}
+          />
           <button>Apply</button>
         </form>
       )}
       <button
         className="pickup-total"
-        onClick={() => setSummary(!summary)}
+        onClick={() => update({ summary: !summary })}
         aria-expanded={summary}
       >
         <img

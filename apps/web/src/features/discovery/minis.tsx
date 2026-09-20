@@ -1,7 +1,6 @@
 "use client";
 import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { miniCatalog, featuredMiniIds, findMini } from "./mini-model";
 import {
@@ -24,6 +23,12 @@ import {
 import { Icon } from "./icons";
 import { useDiscovery } from "./state";
 import { MiniAccess, MiniShell } from "./mini-frame";
+import {
+  bindSourceDestination,
+  rememberSourcePosition,
+  sourceReturnState,
+  SourceLink,
+} from "./return-navigation";
 import styles from "./minis.module.css";
 export { Sol } from "./sol";
 const minis = featuredMiniIds.map((id) => ({ id, ...miniCatalog[id] }));
@@ -33,6 +38,7 @@ export function Minis() {
   const params = useSearchParams();
   const [search, setSearch] = useState("");
   const [searching, setSearching] = useState(false);
+  const searchOrigin = useRef<string | null>(null);
   const [unavailable, setUnavailable] = useState(() => {
     const mini = findMini(params.get("notice") ?? "");
     return mini && !mini.available ? mini.name : "";
@@ -74,13 +80,19 @@ export function Minis() {
       </>
     );
     return minis.some((item) => item.id === m.id) ? (
-      <Link
+      <SourceLink
         key={m.id}
         href={`/minis/${m.id}`}
-        onClick={() => state.visitMini(m.id)}
+        onClick={(event) => {
+          state.visitMini(m.id);
+          // Sheet consumes this navigation before Link's onNavigate. Its
+          // stable page opener was recorded before the temporary entry.
+          if (searching && event.defaultPrevented && searchOrigin.current)
+            bindSourceDestination(searchOrigin.current, `/minis/${m.id}`);
+        }}
       >
         {content}
-      </Link>
+      </SourceLink>
     ) : (
       <button
         key={m.id}
@@ -100,12 +112,17 @@ export function Minis() {
         <IconButton
           icon="search"
           label="Search Minis"
-          onClick={() => setSearching(true)}
+          onClick={() => {
+            searchOrigin.current = rememberSourcePosition(
+              'button[aria-label="Search Minis"]',
+            );
+            setSearching(true);
+          }}
         />
       </header>
       <div className="mini-carousel" aria-label="Featured Minis" tabIndex={0}>
         {minis.map((m) => (
-          <Link
+          <SourceLink
             className="mini-feature"
             key={m.id}
             data-mini-id={m.id}
@@ -120,7 +137,7 @@ export function Minis() {
                 <p>{m.description}</p>
               </span>
             </div>
-          </Link>
+          </SourceLink>
         ))}
       </div>
       {state.visitedMinis.length > 0 && (
@@ -134,14 +151,14 @@ export function Minis() {
                 <img src={`/api/reference-media/mini-${id}-icon`} alt="" />
               );
               return mini.available ? (
-                <Link
+                <SourceLink
                   key={id}
                   href={`/minis/${id}`}
                   aria-label={mini.name}
                   onClick={() => state.visitMini(id)}
                 >
                   {icon}
-                </Link>
+                </SourceLink>
               ) : (
                 <button
                   key={id}
@@ -174,13 +191,13 @@ export function Minis() {
             "minis-snap-cat-icon-fragment",
             "Additional Snap and Shop Mini 2",
           )}
-          <Link
+          <SourceLink
             href="/minis/look"
             aria-label="Get the Look"
             onClick={() => state.visitMini("look")}
           >
             <img src="/api/reference-media/mini-look-icon" alt="" />
-          </Link>
+          </SourceLink>
         </div>
       </div>
       <h2>Design Your Space</h2>
@@ -268,8 +285,10 @@ function useMiniRoute(path: string) {
       }
       const url = `${path}${search.size ? `?${search}` : ""}`;
       const consume = consumeSheetHistory();
-      if (replace || consume) window.history.replaceState(data, "", url);
-      else window.history.pushState(data, "", url);
+      const historyState = sourceReturnState(data, consume || !replace);
+      if (replace || consume)
+        window.history.replaceState(historyState, "", url);
+      else window.history.pushState(historyState, "", url);
     },
     [path, query],
   );
@@ -786,6 +805,7 @@ export function GetLook({ catalog }: { catalog: Catalog }) {
     (piece) => piece.id === params.get("matches"),
   );
   const allMatchesButton = useRef<HTMLButtonElement>(null);
+  const choosePhotoButton = useRef<HTMLButtonElement>(null);
   const viewedAllMatches = useRef(false);
   useEffect(() => {
     if (phase !== "results") return;
@@ -918,6 +938,7 @@ export function GetLook({ catalog }: { catalog: Catalog }) {
               matching pieces from Shopify stores
             </p>
             <button
+              ref={choosePhotoButton}
               className="look-upload"
               onClick={() => {
                 setTerms(false);
@@ -1025,7 +1046,10 @@ export function GetLook({ catalog }: { catalog: Catalog }) {
             </p>
             <button
               aria-label="Dismiss Get the Look terms notice"
-              onClick={() => setTerms(false)}
+              onClick={() => {
+                setTerms(false);
+                choosePhotoButton.current?.focus({ preventScroll: true });
+              }}
             >
               <Icon name="close" />
             </button>
@@ -1521,7 +1545,7 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
                         key={product.id}
                         data-product-id={product.id}
                       >
-                        <Link href={`/products/${product.id}`}>
+                        <SourceLink href={`/products/${product.id}`}>
                           {loadingResults ? (
                             <span
                               className={styles.giftImagePlaceholder}
@@ -1548,7 +1572,7 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
                               )}
                             </strong>
                           </span>
-                        </Link>
+                        </SourceLink>
                         <button
                           aria-label={`${state.saved.includes(product.id) ? "Unsave" : "Save"} ${product.title}`}
                           aria-pressed={state.saved.includes(product.id)}

@@ -129,9 +129,21 @@
 }
 .source-checkout .checkout-context-menu {
   top: auto;
-  bottom: calc(100% - 6px);
-  right: -16px;
+  bottom: calc(100% - 9px);
+  right: -15px;
+  width: 72px;
+  min-width: 72px;
+  padding: 0;
   border: 1px solid #e0e0e0;
+}
+.source-checkout .checkout-context-menu > button {
+  min-height: 32px;
+  height: 32px;
+  padding: 6px 14px;
+  line-height: 20px;
+}
+.source-checkout .checkout-context-menu > button:not(.danger-text) {
+  color: var(--color-accent);
 }
 .source-checkout .installment-unavailable {
   padding: 14px 16px 16px;
@@ -1503,6 +1515,11 @@
 }
 .source-checkout .checkout-addresses .address-radio {
   padding: 14px;
+}
+.source-checkout
+  .checkout-addresses:not(.has-one-option)
+  .address-radio:has(.default-pill) {
+  padding-bottom: 6px;
 }
 .source-checkout .checkout-addresses > .source-checkout-link {
   display: flex;

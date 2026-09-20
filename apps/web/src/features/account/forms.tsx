@@ -4,6 +4,7 @@ import Link from "next/link";
 import { AccountIcon } from "./icons";
 import { useState, type ReactNode } from "react";
 import { FloatingNav, Sheet } from "../discovery/components";
+import { SourceLink } from "../discovery/return-navigation";
 import {
   useAccount,
   blankAddress,
@@ -83,10 +84,12 @@ export function Row({
       <span aria-hidden="true">{"\u203a"}</span>
     </>
   );
+  const RowLink =
+    href?.startsWith("/") && !href.startsWith("//") ? SourceLink : Link;
   return href ? (
-    <Link className="account-row" href={href}>
+    <RowLink className="account-row" href={href}>
       {content}
-    </Link>
+    </RowLink>
   ) : (
     <button className="account-row" onClick={onClick}>
       {content}

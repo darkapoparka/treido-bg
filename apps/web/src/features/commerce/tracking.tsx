@@ -4,11 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AccountPage, Boundary } from "../account/forms";
-import {
-  consumeSheetHistory,
-  Sheet,
-  ProductCard,
-} from "../discovery/components";
+import { commitSheetQuery, Sheet, ProductCard } from "../discovery/components";
 import { Icon } from "../discovery/icons";
 import { useAccount, type ReferenceOrder } from "../account/state";
 import type { Catalog } from "../catalog/types";
@@ -93,16 +89,11 @@ export function TrackingDetail({
     timers.current = [];
     const next = delivered ? (product ? "In transit" : "Ordered") : "Delivered";
     setCelebrate(next === "Delivered");
-    saveOrder({ ...order, status: next });
-    consumeSheetHistory();
+    saveOrder({ ...order, status: next, statusChangedLocally: true });
     const query = new URLSearchParams(params.toString());
     query.delete("state");
     query.delete("history");
-    window.history.replaceState(
-      {},
-      "",
-      `/orders/${order.id}${query.size ? `?${query}` : ""}`,
-    );
+    commitSheetQuery(query);
     setStatusToast(
       next === "Delivered" ? "Marked as delivered" : "Unmarked as delivered",
     );

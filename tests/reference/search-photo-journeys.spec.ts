@@ -85,6 +85,24 @@ test("the captured example naturally reaches the bounded photo answer", async ({
   await expect(
     page.locator('[data-photo-recommendation="source-bounded-third"]'),
   ).toBeVisible();
+  await page
+    .getByRole("link", { name: "Close assistant", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/search$/);
+  await expect(
+    page.getByRole("img", { name: "Selected photo", exact: true }),
+  ).toHaveAttribute("src", selectedSource!);
+  await expect(
+    page.getByRole("search", { name: "Search products", exact: true }),
+  ).toBeFocused();
+  await page.goForward();
+  await expect(page).toHaveURL(/\/assistant\?example=photo$/);
+  await page
+    .getByRole("link", { name: "Close assistant", exact: true })
+    .click();
+  await expect(
+    page.getByRole("search", { name: "Search products", exact: true }),
+  ).toBeFocused();
 });
 
 test("the partial third recommendation stays bounded, invents no destination, and restores focus", async ({
@@ -423,8 +441,17 @@ test("a pending local photo and question survive viewing the separate captured a
     .getByRole("link", { name: "View captured example", exact: true })
     .click();
   await expect(page).toHaveURL(/\/assistant\?example=photo$/);
-  await page.goBack();
+  await page
+    .getByRole("link", { name: "Close assistant", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/search$/);
   await expect(input).toHaveValue("Find soap in this photo");
+  await expect(
+    page.getByRole("search", { name: "Search products", exact: true }),
+  ).toBeFocused();
+  await expect(
+    page.getByRole("dialog", { name: "Photo search unavailable", exact: true }),
+  ).toHaveCount(0);
   await expect(photo).toHaveAttribute("src", original!);
   await expect
     .poll(() =>

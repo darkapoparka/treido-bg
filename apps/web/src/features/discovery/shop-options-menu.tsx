@@ -1,12 +1,16 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- Existing reference brand marks. */
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { IconButton, Sheet } from "./components";
 import { Icon } from "./icons";
 import { useDiscovery } from "./state";
 import { useSheetStages } from "./sheet-stages";
 import type { Store } from "../catalog/types";
+import {
+  bindSourceDestination,
+  rememberSourcePosition,
+} from "./return-navigation";
 import "./shop-options-menu.css";
 
 export type ShopMenuStage = "menu" | "reason" | "report" | "reported";
@@ -41,6 +45,27 @@ export function ShopOptionsMenu({
     onReopen,
     onStart: () => setReportReason(""),
   });
+  const sourceOrigin = useRef<string | null>(null);
+  const recordedOpen = useRef(false);
+  useLayoutEffect(() => {
+    if (!open) {
+      recordedOpen.current = false;
+      return;
+    }
+    if (recordedOpen.current) return;
+    recordedOpen.current = true;
+    // Capture the page button before Sheet moves focus and pushes its entry.
+    // Forward retains that origin; Deals' child-shop sheet keeps its own owner.
+    if (onVisit || flow.active) return;
+    const opener = document.activeElement;
+    const label = opener?.getAttribute("aria-label");
+    if (!(opener instanceof HTMLButtonElement) || !label) return;
+    const selector = `button[aria-label="${CSS.escape(label)}"]`;
+    sourceOrigin.current = rememberSourcePosition(
+      selector,
+      [...document.querySelectorAll(selector)].indexOf(opener),
+    );
+  }, [open, onVisit, flow.active]);
   const stage = flow.stage;
   useEffect(() => onStageChange(stage), [stage, onStageChange]);
   const previousStage = useRef(stage);
@@ -118,7 +143,16 @@ export function ShopOptionsMenu({
                 Visit shop
               </button>
             ) : (
-              <Link href={store ? `/stores/${store.id}` : "/search"}>
+              <Link
+                href={store ? `/stores/${store.id}` : "/search"}
+                onClick={(event) => {
+                  if (event.defaultPrevented && sourceOrigin.current)
+                    bindSourceDestination(
+                      sourceOrigin.current,
+                      store ? `/stores/${store.id}` : "/search",
+                    );
+                }}
+              >
                 <Icon name="storefront" />
                 Visit shop
               </Link>

@@ -1,6 +1,27 @@
 import { expect, test } from "@playwright/test";
 import { useReferenceScenario } from "./helpers";
 
+test("account information rows restore their opener through Back and contextual Cancel", async ({
+  page,
+}) => {
+  await page.goto("/account/privacy");
+  const entry = page.getByRole("link", { name: "Delete account", exact: true });
+  await entry.click();
+  await expect(page).toHaveURL(/\/account\/delete$/);
+  await page.getByRole("button", { name: "Go back", exact: true }).click();
+  await expect(entry).toBeFocused();
+  await page.goForward();
+  await expect(page).toHaveURL(/\/account\/delete$/);
+  await page.getByRole("link", { name: "Cancel", exact: true }).click();
+  await expect(entry).toBeFocused();
+  await expect(
+    page.getByRole("link", { name: "Privacy policy", exact: true }),
+  ).toHaveAttribute("href", "https://www.shopify.com/legal/privacy/consumers");
+  await page.goto("/account/delete");
+  await page.getByRole("link", { name: "Cancel", exact: true }).click();
+  await expect(page).toHaveURL(/\/account\/privacy$/);
+});
+
 test("Explore headings restore their source focus and scroll through native Back and Forward", async ({
   page,
 }) => {

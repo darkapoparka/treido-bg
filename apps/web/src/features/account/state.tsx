@@ -49,6 +49,9 @@ export type ReferenceOrder = {
   carrier: string;
   tracking: string;
   status: "Ordered" | "In transit" | "Delivered";
+  // A real local status action takes precedence over captured URL variants,
+  // including older detail entries reached through browser history.
+  statusChangedLocally?: boolean;
   archived: boolean;
   rating: number;
   review: string;

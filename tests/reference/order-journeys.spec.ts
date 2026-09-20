@@ -740,7 +740,9 @@ test("delivered card opens the review editor, retains local edits and supports d
   );
 
   await page.getByRole("link", { name: "Close review", exact: true }).click();
-  await page.locator(".review-invitation").click();
+  await expect(page).toHaveURL(/\/orders$/);
+  await expect(page.locator(".tracking-card")).toBeFocused();
+  await page.locator(".tracking-card").click();
   await expect(
     page.getByLabel("Tell us about the product", { exact: true }),
   ).toHaveValue("Love it");

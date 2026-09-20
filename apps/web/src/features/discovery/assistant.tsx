@@ -12,6 +12,7 @@ import { Icon } from "./icons";
 import { ReviewStars } from "./review-feedback";
 import { capturedCapQuestion } from "./search-model";
 import { useSearchDraft } from "./search-draft";
+import { ContextualCloseLink } from "./return-navigation";
 import styles from "./search-entry.module.css";
 import photoStyles from "./search-photo.module.css";
 
@@ -623,10 +624,10 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
         </article>
       </div>
       <h2>Structured and snapback alternatives</h2>
-      <p className="form-note">
+      <p className={`form-note ${photoStyles.structuredNote}`}>
         Higher-profile options with similar monochrome branding
       </p>
-      <div className="assistant-product-rail">
+      <div className={`assistant-product-rail ${photoStyles.structuredRail}`}>
         {["first", "second", "third"].map((position) => (
           <article
             key={position}
@@ -741,13 +742,13 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
           value={draft}
           onChange={(event) => updateDraft({ draft: event.target.value })}
         />
-        <Link
+        <ContextualCloseLink
           href="/search"
           className="icon-button"
           aria-label="Close assistant"
         >
           <Icon name="close" />
-        </Link>
+        </ContextualCloseLink>
       </form>
       <Sheet open={!!boundary} title={boundary} onClose={closeBoundary}>
         <p className="sheet-copy">

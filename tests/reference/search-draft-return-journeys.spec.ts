@@ -33,6 +33,16 @@ test("merchant suggestion return retains the Search editor, while Cancel and sub
     .getByRole("button", { name: "Close suggestions", exact: true })
     .click();
   await expect(input).toBeEmpty();
+  await expect(
+    page.getByRole("search", { name: "Search products", exact: true }),
+  ).toBeFocused();
+  await input.fill("discard this draft");
+  await input.press("Escape");
+  await expect(input).toBeEmpty();
+  await expect(
+    page.getByRole("search", { name: "Search products", exact: true }),
+  ).toBeFocused();
+  await expect(page.locator(".search-suggestions-surface")).toHaveCount(0);
   await page
     .getByRole("navigation", { name: "Main navigation" })
     .getByRole("link", { name: "Explore", exact: true })
@@ -116,6 +126,15 @@ test("StoreSearch keeps an edited committed query through product history withou
   await expect(product).toBeFocused();
   await page.getByRole("button", { name: "Cancel", exact: true }).click();
   await expect(input).toHaveValue("shampoo");
+  await expect(
+    page.getByRole("search", { name: "Search KITSCH", exact: true }),
+  ).toBeFocused();
+  await input.fill("discard this draft");
+  await input.press("Escape");
+  await expect(input).toHaveValue("shampoo");
+  await expect(
+    page.getByRole("search", { name: "Search KITSCH", exact: true }),
+  ).toBeFocused();
   await expect(page.locator("main.store-search-results")).toBeVisible();
   const result = page.locator(
     '.product-grid .product-media > a[href="/products/rice-shampoo"]',

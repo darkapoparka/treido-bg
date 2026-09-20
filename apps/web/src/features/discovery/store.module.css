@@ -227,12 +227,24 @@
 .collection {
   background: #c2bfb5;
 }
+.collection :global(.floating-dock[data-fade="true"])::before {
+  background: transparent;
+  backdrop-filter: blur(20px);
+  mask-image: linear-gradient(transparent 15%, #000);
+}
+.collection :global(.save-button) {
+  background: rgb(128 128 128 / 60%);
+  backdrop-filter: blur(12px);
+}
 .collection :global(.store-criteria .icon-button) {
   width: 40px;
   height: 40px;
 }
 .collection > :global(.product-grid) {
   column-gap: 12px;
+}
+.collection[data-collection="best-sellers"] > :global(.product-grid) {
+  column-gap: 10px;
 }
 .collection :global(.product-copy) > strong {
   font-weight: 500;
@@ -251,6 +263,7 @@
   height: 100%;
   opacity: 1;
   object-position: center;
+  mask-image: linear-gradient(#000 40%, transparent);
 }
 .collection[data-collection="best-sellers"]
   :global(.store-collection-hero)
@@ -584,6 +597,14 @@
   padding-bottom: 13px;
   background: #d6d3d6;
 }
+.chemicalCategoryLabel,
+.store:global(.chemical-store) :global(.store-recommendations h1),
+.store:global(.chemical-store) :global(.store-recommendations h2),
+.store:global(.chemical-store) :global(.product-copy),
+.store:global(.chemical-store) :global(.price-badge),
+.store:global(.chemical-store) :global(.store-video-rail span) {
+  opacity: 0.999;
+}
 .store:global(.chemical-store) :global(.store-recommendations h1),
 .store:global(.chemical-store) :global(.store-recommendations h2) {
   line-height: 29px;
@@ -637,6 +658,7 @@
 .store:global(.chemical-store) :global(.store-video-rail span) {
   left: 12px;
   bottom: 8px;
+  color: #d0d0d0;
   font-weight: 400;
   line-height: 16px;
 }
@@ -668,6 +690,7 @@
 }
 .chemicalFeatured :global(.product-rail) > button:last-child > img {
   width: 55px;
+  height: 142px;
 }
 .video {
   background: linear-gradient(#575950, #383a35 76%, #32332f);

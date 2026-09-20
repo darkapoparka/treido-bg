@@ -140,7 +140,7 @@ test("Chemical Featured keeps the captured thumbnail fragments anchored to their
         imageLeftOffset: 3,
         imageTopOffset: 3,
         imageWidth: 55,
-        imageHeight: 52,
+        imageHeight: 142,
       },
     ]);
     expect(

@@ -91,6 +91,12 @@
 
 /* Only the exposed photographs are available for these continuation cards.
    Keep their source dimensions; do not invent product text or destinations. */
+:global(.photo-assistant) .structuredNote.structuredNote {
+  margin-bottom: 12px;
+}
+.structuredRail.structuredRail:global(.assistant-product-rail) {
+  margin-top: 12px;
+}
 .structuredFragment[data-source-boundary] {
   /* These bounded source photographs already include the bottom fade. */
   position: relative;

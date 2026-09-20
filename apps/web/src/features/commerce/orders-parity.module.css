@@ -842,7 +842,7 @@
 }
 .activitySheet .activity {
   margin-top: 1px;
-  margin-left: -3px;
+  margin-left: 0;
 }
 .activitySheet .activity :global(i[data-event-kind="dot"]) {
   height: 16px;
@@ -900,6 +900,9 @@
 }
 .manualForm :global(.form-field input:placeholder-shown) {
   padding-top: 10px;
+}
+.manualForm :global(.form-field input:not(:placeholder-shown)) {
+  padding-block: 25px 4px;
 }
 .manualForm :global(.form-field input::placeholder) {
   color: #444;
@@ -981,6 +984,9 @@
 }
 .manualForm :global(.forward-orders p:not(:first-child)) {
   margin-inline: 8px;
+}
+.manualForm :global(.forward-orders p a) {
+  color: var(--color-accent);
 }
 .manualForm :global(.forward-orders p:first-child) {
   display: flex;

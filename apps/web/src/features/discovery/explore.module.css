@@ -227,6 +227,21 @@
   font-size: 12px;
   line-height: 16px;
 }
+.page:not([data-category]) :global(.explore-shelf .product-copy) {
+  gap: 0;
+  padding-bottom: 6px;
+  opacity: 0.999;
+}
+.page:not([data-category])
+  :global(.explore-shelf .product-copy > span:last-child) {
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.page :global(.explore-shelf .save-button) {
+  background: rgb(128 128 128 / 60%);
+  backdrop-filter: blur(12px);
+}
 .page :global(.explore-shelf .rating) {
   font-size: 12px;
   line-height: 16px;

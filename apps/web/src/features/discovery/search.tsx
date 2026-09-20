@@ -2,7 +2,12 @@
 import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { SourceLink } from "./return-navigation";
+import {
+  bindSourceDestination,
+  rememberSourcePosition,
+  rememberSourceReturn,
+  SourceLink,
+} from "./return-navigation";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   useEffect,
@@ -43,6 +48,7 @@ import photoStyles from "./search-photo.module.css";
 import "./search-loading.css";
 
 const capturedCapPhoto = "/api/reference-media/assistant-uploaded-cap";
+const composerSelector = 'form[role="search"][aria-label="Search products"]';
 const filteredStoreDeals: Record<string, string> = {
   "arrow-twenty-two": "Save $5",
   "american-blues": "Save $15",
@@ -90,8 +96,13 @@ export function Search({
       URL.revokeObjectURL(photo);
     setPhotoValue(value);
   }
-  function rememberComposer(nextDraft: string, nextPhoto: string) {
-    const save = () => composer.update({ draft: nextDraft, photo: nextPhoto });
+  function rememberComposer(
+    nextDraft: string,
+    nextPhoto: string,
+    editing = true,
+  ) {
+    const save = () =>
+      composer.update({ draft: nextDraft, photo: nextPhoto, editing });
     if (window.history.state?.shopSheet) {
       // The chooser/disclosure owns a temporary entry. Commit the pending
       // composer when its Back retires, so later navigation restores the page.
@@ -115,6 +126,7 @@ export function Search({
   const [photos, setPhotos] = useState(false);
   const [photoError, setPhotoError] = useState("");
   const [photoUnavailable, setPhotoUnavailable] = useState(false);
+  const photoOrigin = useRef<string | null>(null);
   const [pending, startTransition] = useTransition();
   if (activeDraftEntry !== draftEntry) {
     setActiveDraftEntry(draftEntry);
@@ -216,6 +228,9 @@ export function Search({
     composer.update({ draft: query, photo, editing: false });
     setDraft(query);
     closeSuggestions();
+    requestAnimationFrame(() =>
+      formRef.current?.focus({ preventScroll: true }),
+    );
   }
   function removePhoto() {
     setPhoto("");
@@ -259,6 +274,9 @@ export function Search({
   const searchForm = (
     <form
       ref={formRef}
+      role="search"
+      aria-label="Search products"
+      tabIndex={-1}
       className={`search-form ${resultsMode ? "top-search" : "search-composer"} ${styles.composer} ${photo ? styles.photoComposer : ""} ${resultsMode ? styles.resultComposer : ""}`}
       onSubmit={(e) => {
         e.preventDefault();
@@ -270,11 +288,13 @@ export function Search({
             (draft.trim() && !isCapturedCapQuestion(draft)))
         ) {
           composer.update({ draft, photo });
+          photoOrigin.current = rememberSourcePosition(composerSelector);
           setPhotoUnavailable(true);
           return;
         }
         if (photo === capturedCapPhoto) {
           composer.update({ draft, photo });
+          rememberSourceReturn("/assistant?example=photo", composerSelector);
           startTransition(() => router.push("/assistant?example=photo"));
         } else submitQuery(draft);
       }}
@@ -353,7 +373,7 @@ export function Search({
           onClick={() => {
             setPhoto("");
             cancelEditing();
-            rememberComposer(query, "");
+            rememberComposer(query, "", false);
           }}
         />
       )}
@@ -778,7 +798,17 @@ export function Search({
           <button className="pill" onClick={removePhoto}>
             Remove photo
           </button>
-          <Link className="primary" href="/assistant?example=photo">
+          <Link
+            className="primary"
+            href="/assistant?example=photo"
+            onClick={(event) => {
+              if (event.defaultPrevented && photoOrigin.current)
+                bindSourceDestination(
+                  photoOrigin.current,
+                  "/assistant?example=photo",
+                );
+            }}
+          >
             View captured example
           </Link>
         </div>

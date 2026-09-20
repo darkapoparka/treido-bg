@@ -8,6 +8,10 @@ import { Sheet, consumeSheetHistory } from "../discovery/components";
 import { AccountIcon } from "./icons";
 import { useAccount } from "./state";
 import { DeletionOutcomePreview } from "./reference-transitions";
+import {
+  ContextualCloseLink,
+  SourceLink,
+} from "../discovery/return-navigation";
 export function PrivacyPage() {
   return (
     <AccountPage
@@ -163,22 +167,22 @@ export function ConnectionsPage() {
       </div>
       <div className="account-panel">
         <h2>Minis</h2>
-        <Link className="account-row" href="/minis/sol">
+        <SourceLink className="account-row" href="/minis/sol">
           <img
             className="connection-mini"
             src="/api/reference-media/mini-sol-icon"
             alt=""
           />
           Sol: Browse by Voice
-        </Link>
-        <Link className="account-row" href="/minis/gift">
+        </SourceLink>
+        <SourceLink className="account-row" href="/minis/gift">
           <img
             className="connection-mini"
             src="/api/reference-media/mini-gift-icon"
             alt=""
           />
           Gift Sense
-        </Link>
+        </SourceLink>
       </div>
       <Sheet
         open={open}
@@ -278,9 +282,9 @@ export function DeleteAccount() {
           >
             Delete account
           </button>
-          <Link className="form-cancel" href="/account/privacy">
+          <ContextualCloseLink className="form-cancel" href="/account/privacy">
             Cancel
-          </Link>
+          </ContextualCloseLink>
         </>
       )}
       <Sheet

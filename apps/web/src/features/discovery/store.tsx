@@ -19,7 +19,11 @@ import { StoreFilter, openStoreFilter } from "./store-filter";
 import { Icon } from "./icons";
 import { KitschWordmark } from "./kitsch-wordmark";
 import { ReviewStars } from "./rating-stars";
-import { ContextualCloseLink, SourceLink } from "./return-navigation";
+import {
+  ContextualCloseLink,
+  SourceLink,
+  useContextualClose,
+} from "./return-navigation";
 import { useSearchDraft } from "./search-draft";
 import { Cart } from "./product";
 import { useDiscovery } from "./state";
@@ -83,13 +87,13 @@ function StoreActions({
           </SourceLink>
         )}
         {!close && (
-          <Link
+          <SourceLink
             className="icon-button"
             href={`/stores/${store.id}/search`}
             aria-label="Search store"
           >
             <Icon name="search" />
-          </Link>
+          </SourceLink>
         )}
         {!compact && (
           <button
@@ -172,21 +176,21 @@ function StoreNavigation({ store }: { store: Store }) {
         <div className="category-rail">
           {pinned && (
             <div className="store-compact-actions">
-              <Link
+              <SourceLink
                 href={`/stores/${store.id}/info`}
                 className="store-compact-menu"
                 aria-label="Store information"
               >
                 <img src={store.logo} alt="" />
                 <Icon name="menu" />
-              </Link>
-              <Link
+              </SourceLink>
+              <SourceLink
                 href={`/stores/${store.id}/search`}
                 className="icon-button"
                 aria-label="Search store"
               >
                 <Icon name="search" />
-              </Link>
+              </SourceLink>
             </div>
           )}
           {store.categories.map((category) => (
@@ -391,7 +395,11 @@ function StoreCategoryRail({ store }: { store: Store }) {
               alt=""
             />
           )}
-          {category}
+          {store.id === "chemical-guys" ? (
+            <span className={styles.chemicalCategoryLabel}>{category}</span>
+          ) : (
+            category
+          )}
         </Link>
       ))}
     </div>
@@ -881,7 +889,7 @@ export function StoreCollection({
           {notice}
         </button>
       )}
-      <FloatingNav back />
+      <FloatingNav back fade />
     </ShopSurface>
   );
 }
@@ -1093,6 +1101,7 @@ export function StoreSearch({
   store: Store;
   catalog: Catalog;
 }) {
+  const closeToSource = useContextualClose();
   const params = useSearchParams(),
     router = useRouter(),
     state = useDiscovery();
@@ -1114,6 +1123,7 @@ export function StoreSearch({
     setDraft(editor.editing ? editor.draft : null);
   }
   const input = useRef<HTMLInputElement>(null);
+  const searchForm = useRef<HTMLFormElement>(null);
   const value = draft ?? q,
     editing = draft !== null || !q;
   const query = normalizeStoreQuery(value),
@@ -1135,7 +1145,10 @@ export function StoreSearch({
     if (q) {
       setDraft(null);
       input.current?.blur();
-    } else router.push(`/stores/${store.id}`);
+      requestAnimationFrame(() =>
+        searchForm.current?.focus({ preventScroll: true }),
+      );
+    } else if (!closeToSource()) router.push(`/stores/${store.id}`);
   }
   function clear() {
     editor.update({ draft: "", editing: true });
@@ -1211,8 +1224,11 @@ export function StoreSearch({
     >
       <div className="store-search-toolbar">
         <form
+          ref={searchForm}
           className="search-form"
           role="search"
+          aria-label={`Search ${store.name}`}
+          tabIndex={-1}
           onSubmit={(event) => {
             event.preventDefault();
             submit(value);

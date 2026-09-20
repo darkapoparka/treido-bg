@@ -151,11 +151,8 @@ export function useSourceReturn(ready: boolean) {
   }, [ready, pathname]);
 }
 
-export function rememberSourceReturn(
-  destination: string,
-  selector: string,
-  index = 0,
-) {
+/** Record the page opener before a sheet takes ownership of a temporary entry. */
+export function rememberSourcePosition(selector: string, index = 0) {
   observedPath = location.pathname;
   const token = crypto.randomUUID();
   returns.set(token, {
@@ -172,15 +169,61 @@ export function rememberSourceReturn(
     "",
     location.href,
   );
+  pendingReturn = null;
+  return token;
+}
+
+/** An explicit same-page owner may restore its own control, never a sheet's. */
+export function restoreSourcePosition(selector: string) {
+  const token = window.history.state?.shopSourceReturnOrigin;
+  if (returns.get(token)?.selector === selector) restoreSourceReturn(token);
+}
+
+export function rememberSourceReturn(
+  destination: string,
+  selector: string,
+  index = 0,
+) {
+  const token = rememberSourcePosition(selector, index);
+  bindSourceDestination(token, destination);
+}
+
+/** A consumed sheet can launch from the page position recorded on opening. */
+export function bindSourceDestination(token: string, destination: string) {
+  if (!returns.has(token)) return;
   pendingReturn = {
     token,
     destination: new URL(destination, location.href).pathname,
   };
 }
 
-export function SourceLink({ href, onNavigate, ...props }: Props) {
+/** Carry only our return owner through an explicitly owned query transition. */
+export function sourceReturnState(
+  data: Record<string, unknown>,
+  advance: boolean,
+) {
+  const token = window.history.state?.shopSourceReturnToken;
+  if (!returns.has(token)) return data;
+  const depth = window.history.state?.shopSourceReturnDepth;
+  return {
+    ...data,
+    shopSourceReturnToken: token,
+    shopSourceReturnDepth:
+      (Number.isSafeInteger(depth) && depth >= 0 ? depth : 0) +
+      (advance ? 1 : 0),
+  };
+}
+
+export function SourceLink({
+  href,
+  onNavigate,
+  sourceKey,
+  ...props
+}: Props & { sourceKey?: string }) {
   const element = useRef<HTMLAnchorElement>(null);
-  const id = `${href}|${props.className ?? ""}|${props["aria-label"] ?? ""}`;
+  const id =
+    sourceKey ??
+    `${href}|${props.className ?? ""}|${props["aria-label"] ?? ""}`;
   return (
     <Link
       {...props}
@@ -200,8 +243,8 @@ export function SourceLink({ href, onNavigate, ...props }: Props) {
   );
 }
 
-/** Close returns to the actual entry point; direct URLs keep their fallback. */
-export function ContextualCloseLink({ href, onNavigate, ...props }: Props) {
+/** A route's Close action returns to its owned entry; false leaves its fallback. */
+export function useContextualClose() {
   const router = useRouter();
   const pathname = usePathname();
   useEffect(() => {
@@ -209,28 +252,40 @@ export function ContextualCloseLink({ href, onNavigate, ...props }: Props) {
     // Bind the return to this actual destination entry. Forward restores the
     // token, whereas a later unrelated visit to the same route has no token.
     window.history.replaceState(
-      { ...window.history.state, shopSourceReturnToken: pendingReturn.token },
+      {
+        ...window.history.state,
+        shopSourceReturnToken: pendingReturn.token,
+        shopSourceReturnDepth: 0,
+      },
       "",
       location.href,
     );
     pendingReturn = null;
   }, [pathname]);
+  return () => {
+    const token = window.history.state?.shopSourceReturnToken;
+    if (!returns.has(token)) return false;
+    const depth = window.history.state.shopSourceReturnDepth;
+    if (Number.isSafeInteger(depth) && depth > 0) window.history.go(-depth - 1);
+    else router.back();
+    restoreSourceReturn(token);
+    return true;
+  };
+}
+
+/** Close returns to the actual entry point; direct URLs keep their fallback. */
+export function ContextualCloseLink({ href, onNavigate, ...props }: Props) {
+  const close = useContextualClose();
   return (
     <Link
       {...props}
       href={href}
       onNavigate={(event) => {
-        const position = returns.get(
-          window.history.state?.shopSourceReturnToken,
-        );
-        if (!position) {
+        if (!close()) {
           onNavigate?.(event);
           return;
         }
         event.preventDefault();
-        const token = window.history.state.shopSourceReturnToken;
-        router.back();
-        restoreSourceReturn(token);
       }}
     />
   );

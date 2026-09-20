@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TrackingDetail } from "./tracking";
 import { CartOverlay } from "./checkout";
@@ -13,7 +13,15 @@ import { DecorativeVideo } from "../discovery/decorative-video";
 import { RatingStar, ReviewStars } from "../discovery/rating-stars";
 import { capturedReceipts } from "./receipt-data";
 import { shopSourceBuyer } from "./source-fixtures";
+import { useManualOrderDraft } from "./manual-order-draft";
 import {
+  SourceLink,
+  ContextualCloseLink,
+  rememberSourcePosition,
+  restoreSourcePosition,
+} from "../discovery/return-navigation";
+import {
+  commitSheetQuery,
   consumeSheetHistory,
   Sheet,
   ProductCard,
@@ -96,7 +104,10 @@ export function OrdersPage({
             )}
             <button
               aria-label="More order options"
-              onClick={() => setMenu(true)}
+              onClick={() => {
+                rememberSourcePosition('[aria-label="More order options"]');
+                setMenu(true);
+              }}
             >
               <Icon name="more" />
             </button>
@@ -124,10 +135,10 @@ export function OrdersPage({
       {history && historyConnect && (
         <div className="history-connect-banner">
           <img src="/api/reference-media/onboarding-package" alt="" />
-          <Link href="/account/connections">
+          <SourceLink href="/account/connections">
             <strong>Connect email to see more deliveries</strong>
             <small>Track more of your packages with Shop</small>
-          </Link>
+          </SourceLink>
           <button
             aria-label="Dismiss email connection"
             onClick={() => setHistoryConnect(false)}
@@ -139,6 +150,7 @@ export function OrdersPage({
       {visible.map((o) => {
         const p = catalog.products.find((p) => p.id === o.productId);
         const sourceWaiting =
+          !o.statusChangedLocally &&
           (forcedView === "waiting" || forcedView === "manual") &&
           o.id === "REF-1001";
         if (archive) {
@@ -148,7 +160,7 @@ export function OrdersPage({
             (store) => store.id === p?.storeId,
           );
           return (
-            <Link
+            <SourceLink
               key={o.id}
               className="archive-order-row"
               href={`/orders/${o.id}`}
@@ -163,13 +175,13 @@ export function OrdersPage({
                     : ""}
                 </small>
               </span>
-            </Link>
+            </SourceLink>
           );
         }
         if (history) {
           const kitsch = o.id === "REF-1001";
           return (
-            <Link
+            <SourceLink
               className={`order-history-row ${kitsch ? "is-kitsch" : "is-package"}`}
               key={o.id}
               href={`/orders/${o.id}`}
@@ -194,12 +206,13 @@ export function OrdersPage({
               )}
               {kitsch && <b>1 item · $10.82</b>}
               <small className="history-order-date">Jul 27</small>
-            </Link>
+            </SourceLink>
           );
         }
         return (
-          <Link
+          <SourceLink
             className={`account-panel tracking-card ${!p ? "manual-tracking-card" : ""}`}
+            sourceKey={`order-card:${o.id}`}
             data-order-status={o.status}
             href={
               o.status === "Delivered" && p
@@ -251,7 +264,7 @@ export function OrdersPage({
               src={p ? p.images[0] : "/api/reference-media/order-manual-parcel"}
               alt={p ? o.name : "Tracked package"}
             />
-          </Link>
+          </SourceLink>
         );
       })}
       {!visible.length && (
@@ -298,12 +311,15 @@ export function OrdersPage({
           </p>
           {!archive && !query && (
             <>
-              <Link className="primary form-submit" href="/account/connections">
+              <SourceLink
+                className="primary form-submit"
+                href="/account/connections"
+              >
                 Connect account
-              </Link>
-              <Link className="form-cancel" href="/orders/new">
+              </SourceLink>
+              <SourceLink className="form-cancel" href="/orders/new">
                 Add a package manually
-              </Link>
+              </SourceLink>
             </>
           )}
         </div>
@@ -337,7 +353,7 @@ export function OrdersPage({
               {orders
                 .filter((o) => o.archived)
                 .map((o) => (
-                  <Link href={`/orders/${o.id}`} key={o.id}>
+                  <SourceLink href={`/orders/${o.id}`} key={o.id}>
                     <img
                       src={
                         catalog.products.find(
@@ -353,7 +369,7 @@ export function OrdersPage({
                         : "Delivered Jul 28"}
                       <small>{o.name}</small>
                     </span>
-                  </Link>
+                  </SourceLink>
                 ))}
             </section>
           </>
@@ -394,22 +410,22 @@ export function OrdersPage({
                     (entry) => entry.id === "shampoo-bag",
                   );
                   return product ? (
-                    <Link href={`/products/${product.id}`}>
+                    <SourceLink href={`/products/${product.id}`}>
                       <img src={product.images[0]} alt="Shampoo Bar Bag" />
                       <span>
                         <Icon name="bag-add" />
                       </span>
-                    </Link>
+                    </SourceLink>
                   ) : null;
                 })()}
               </section>
             )}
-            <Link
+            <SourceLink
               className="form-cancel order-archive-link"
               href="/orders/archived"
             >
               View archived orders
-            </Link>
+            </SourceLink>
           </>
         )}
       <Sheet
@@ -436,7 +452,11 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
     params = useSearchParams();
   const progress = params.get("view") === "tracking";
   const sourceState = params.get("state");
+  useEffect(() => {
+    if (!progress) restoreSourcePosition(".order-status");
+  }, [progress]);
   const setProgress = () => {
+    rememberSourcePosition(".order-status");
     const next = new URLSearchParams(params.toString());
     next.set("view", "tracking");
     router.push(`/orders/${id}?${next}`, { scroll: false });
@@ -457,8 +477,9 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
   const displayOrderNumber = data?.displayOrderNumber ?? order.id;
   const itemAmount = data?.itemAmount ?? product?.price.amount ?? 0;
   const editOrder = order;
-  const displayOrder: ReferenceOrder =
-    sourceState === "waiting"
+  const displayOrder: ReferenceOrder = order.statusChangedLocally
+    ? order
+    : sourceState === "waiting"
       ? { ...order, status: "Ordered" }
       : sourceState === "delivered"
         ? { ...order, status: "Delivered" }
@@ -528,7 +549,7 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
         <OrderBrand number={displayOrderNumber} />
       </section>
       {displayOrder.status === "Delivered" && (
-        <Link
+        <SourceLink
           className="account-panel review-invitation"
           href={`/orders/${id}/review`}
         >
@@ -539,7 +560,7 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
           <span className="review-stars" aria-hidden="true">
             <ReviewStars rating={0} />
           </span>
-        </Link>
+        </SourceLink>
       )}
       <button
         className="account-panel order-status"
@@ -557,11 +578,9 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
           <small>
             {displayOrder.status === "Delivered"
               ? "Arrived at 8:04 AM"
-              : sourceState === "waiting"
-                ? "Waiting for details"
-                : displayOrder.status === "In transit"
-                  ? "In transit"
-                  : "Waiting for details"}
+              : displayOrder.status === "In transit"
+                ? "In transit"
+                : "Waiting for details"}
           </small>
         </span>
         {product && <img src={product.images[0]} alt="" />}
@@ -584,17 +603,17 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
             </p>
           </div>
           {product && displayOrder.status === "Delivered" && (
-            <Link className="pill" href={`/products/${product.id}`}>
+            <SourceLink className="pill" href={`/products/${product.id}`}>
               Buy again
-            </Link>
+            </SourceLink>
           )}
         </div>
         <button className="muted-button" onClick={() => setBoundary(true)}>
           <ManageOrderIcon /> Manage your order
         </button>
-        <Link className="muted-button" href={`/orders/${id}/receipt`}>
+        <SourceLink className="muted-button" href={`/orders/${id}/receipt`}>
           View receipt
-        </Link>
+        </SourceLink>
       </div>
       <OrderRecommendations catalog={catalog} />
       <Sheet
@@ -612,15 +631,10 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
           onClick={() => {
             const next =
               displayOrder.status === "Delivered" ? "In transit" : "Delivered";
-            saveOrder({ ...order, status: next });
-            consumeSheetHistory();
+            saveOrder({ ...order, status: next, statusChangedLocally: true });
             const query = new URLSearchParams(params.toString());
             query.delete("state");
-            window.history.replaceState(
-              {},
-              "",
-              `/orders/${id}${query.size ? `?${query}` : ""}`,
-            );
+            commitSheetQuery(query);
             setMenu(false);
             setToast(
               next === "Delivered"
@@ -753,7 +767,15 @@ function ManualOrderForm({
   initial: ReferenceOrder;
   onSave: (o: ReferenceOrder) => void;
 }) {
-  const [value, setValue] = useState(initial);
+  const [editValue, setEditValue] = useState(initial);
+  const draft = useManualOrderDraft(!editing);
+  const value = editing ? editValue : { ...initial, ...draft.value };
+  const setValue = (
+    change: Partial<Pick<ReferenceOrder, "tracking" | "name" | "carrier">>,
+  ) => {
+    if (editing) setEditValue((previous) => ({ ...previous, ...change }));
+    else draft.update(change);
+  };
   const [carrierQuery, setCarrierQuery] = useState("");
   const [carrierOpen, setCarrierOpen] = useState(false);
   const [emailBoundary, setEmailBoundary] = useState(false);
@@ -806,7 +828,7 @@ function ManualOrderForm({
             required
             maxLength={80}
             value={value.tracking}
-            onChange={(e) => setValue({ ...value, tracking: e.target.value })}
+            onChange={(e) => setValue({ tracking: e.target.value })}
           />
         </label>
         <label className="form-field">
@@ -817,7 +839,7 @@ function ManualOrderForm({
             required
             maxLength={100}
             value={value.name}
-            onChange={(e) => setValue({ ...value, name: e.target.value })}
+            onChange={(e) => setValue({ name: e.target.value })}
           />
         </label>
         <label className="form-field carrier-selector">
@@ -848,7 +870,7 @@ function ManualOrderForm({
                 className="account-row"
                 key={c}
                 onClick={() => {
-                  setValue({ ...value, carrier: c });
+                  setValue({ carrier: c });
                   setCarrierOpen(false);
                   carrierInput.current?.blur();
                 }}
@@ -926,7 +948,8 @@ function ManualOrderForm({
             )}
             <p>
               Copy your unique address to forward shipping emails and Shop will
-              track your orders. <Link href="/account/help">Learn more</Link>
+              track your orders.{" "}
+              <SourceLink href="/support/help">Learn more</SourceLink>
             </p>
             <button
               type="button"
@@ -935,9 +958,9 @@ function ManualOrderForm({
             >
               Open email app
             </button>
-            <Link href="/account/connections">
+            <SourceLink href="/account/connections">
               Track orders automatically instead
-            </Link>
+            </SourceLink>
           </div>
         )}
       </form>
@@ -1008,13 +1031,13 @@ export function OrderReview({ id, catalog }: { id: string; catalog: Catalog }) {
   const [identityHelp, setIdentityHelp] = useState(false);
   return (
     <AccountPage dock={false} className={`order-review-page ${styles.review}`}>
-      <Link
+      <ContextualCloseLink
         className="review-close"
         href={`/orders/${id}`}
         aria-label="Close review"
       >
         <Icon name="close" />
-      </Link>
+      </ContextualCloseLink>
       {editing && (
         <button
           className={styles.reviewMore}
@@ -1292,9 +1315,9 @@ export function OrderConfirmation({
               <span>{money(data.total)}</span>
             </p>
           </div>
-          <Link className="muted-button" href={`/orders/${id}/receipt`}>
+          <SourceLink className="muted-button" href={`/orders/${id}/receipt`}>
             View order receipt
-          </Link>
+          </SourceLink>
           <h2>
             <Link href="/stores/kitsch">
               Popular at KITSCH <span aria-hidden="true">›</span>

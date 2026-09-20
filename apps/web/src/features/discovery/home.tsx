@@ -3,17 +3,12 @@ import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { SourceLink } from "./return-navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatMoney, type Catalog } from "../catalog/types";
-import {
-  FloatingNav,
-  IconButton,
-  ProductCard,
-  Sheet,
-  StoreRow,
-} from "./components";
+import { FloatingNav, IconButton, ProductCard, StoreRow } from "./components";
 import { HomeCampaigns } from "./home-campaigns";
+import { ShopOptionsMenu, type ShopMenuStage } from "./shop-options-menu";
 import { RecentSearchItems } from "./search-recent";
 import { Icon } from "./icons";
 import { useDiscovery } from "./state";
@@ -52,8 +47,14 @@ export function Home({ catalog }: { catalog: Catalog }) {
     return () => window.removeEventListener("scroll", observeScroll);
   }, []);
   const [shopMenu, setShopMenu] = useState("");
-  const [reasonView, setReasonView] = useState(false);
+  const lastShopMenu = useRef("");
+  const [shopStage, setShopStage] = useState<ShopMenuStage>("menu");
   const [hidden, setHidden] = useState<string[]>([]);
+  const menuStore = catalog.stores.find((store) => store.id === shopMenu);
+  function closeShopMenu() {
+    setShopMenu("");
+    setShopStage("menu");
+  }
   const recent = state.viewedProducts
     .flatMap((id) => {
       const p = catalog.products.find((p) => p.id === id);
@@ -178,8 +179,9 @@ export function Home({ catalog }: { catalog: Catalog }) {
               <StoreRow
                 store={store}
                 onMore={() => {
+                  lastShopMenu.current = store.id;
                   setShopMenu(store.id);
-                  setReasonView(false);
+                  setShopStage("menu");
                 }}
               />
               {hidden.includes(store.id) ? (
@@ -222,48 +224,24 @@ export function Home({ catalog }: { catalog: Catalog }) {
               )}
             </section>
           ))}
-      <Sheet
+      <ShopOptionsMenu
         open={!!shopMenu}
-        title={
-          reasonView
-            ? "Not interested"
-            : (catalog.stores.find((s) => s.id === shopMenu)?.name ?? "Shop")
+        store={menuStore}
+        rating={
+          menuStore
+            ? `${menuStore.rating} ★ (${menuStore.ratingCount})`
+            : undefined
         }
-        onClose={() => setShopMenu("")}
-      >
-        {reasonView ? (
-          <>
-            <p>Please select a reason</p>
-            <div className="filter-options">
-              {[
-                "I just don’t like it",
-                "Products are too expensive",
-                "Want to see fewer shops like this",
-                `Want to see less of ${catalog.stores.find((s) => s.id === shopMenu)?.name}`,
-              ].map((reason) => (
-                <button
-                  key={reason}
-                  onClick={() => {
-                    setHidden((v) => [...v, shopMenu]);
-                    setShopMenu("");
-                  }}
-                >
-                  {reason}
-                </button>
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="filter-options">
-            <Link href={`/stores/${shopMenu}`}>Visit shop</Link>
-            <button onClick={() => state.toggleFollow(shopMenu)}>
-              {state.followed.includes(shopMenu) ? "Unfollow" : "Follow"}
-            </button>
-            <button onClick={() => setReasonView(true)}>Not interested</button>
-            <Link href={`/stores/${shopMenu}/info`}>Report shop</Link>
-          </div>
-        )}
-      </Sheet>
+        stage={shopStage}
+        onStageChange={setShopStage}
+        onClose={closeShopMenu}
+        onReopen={() => setShopMenu(lastShopMenu.current)}
+        onHide={() => {
+          if (shopMenu)
+            setHidden((values) => [...new Set([...values, shopMenu])]);
+          closeShopMenu();
+        }}
+      />
       <HomeCampaigns
         catalog={catalog}
         productLayout={returning ? "grid" : "rail"}

@@ -1,12 +1,12 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
-import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { useAccount } from "../account/state";
 import { AccountIcon } from "../account/icons";
 import { Sheet } from "./components";
 import { ShopSurface } from "./hydration-boundary";
 import { Icon } from "./icons";
+import { ContextualCloseLink } from "./return-navigation";
 
 export function MiniShell({
   name,
@@ -34,9 +34,9 @@ export function MiniShell({
               <Icon name="back" />
             </button>
           ) : (
-            <Link href="/minis" aria-label="Back to Minis">
+            <ContextualCloseLink href="/minis" aria-label="Back to Minis">
               <Icon name="back" />
-            </Link>
+            </ContextualCloseLink>
           )
         ) : (
           <span aria-hidden="true" />
@@ -56,9 +56,9 @@ export function MiniShell({
             <Icon name="chevron" />
           </span>
         )}
-        <Link href="/minis" aria-label={`Close ${name}`}>
+        <ContextualCloseLink href="/minis" aria-label={`Close ${name}`}>
           <Icon name="close" />
-        </Link>
+        </ContextualCloseLink>
       </header>
       {children}
     </ShopSurface>

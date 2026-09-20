@@ -2,6 +2,7 @@
 import { navigateAccountStage } from "./stage-history";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { SourceLink } from "../discovery/return-navigation";
 import { useEffect, useState, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useDiscovery } from "../discovery/state";
@@ -149,12 +150,12 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
         {!hasOrders ? (
           "Order history"
         ) : (
-          <Link href="/orders/history" aria-label="Order history ›">
+          <SourceLink href="/orders/history" aria-label="Order history ›">
             Order history
             <span aria-hidden="true">
               <Icon name="back" />
             </span>
-          </Link>
+          </SourceLink>
         )}
       </h2>
       <div className="account-panel profile-order-panel">
@@ -186,7 +187,7 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
                 (store) => store.id === product?.storeId,
               );
               return (
-                <Link
+                <SourceLink
                   className="profile-order-row"
                   key={order.id}
                   href={`/orders/${order.id}`}
@@ -221,7 +222,7 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
                       />
                     )
                   )}
-                </Link>
+                </SourceLink>
               );
             })}
             <EmailConnection />

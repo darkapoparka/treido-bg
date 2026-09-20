@@ -17,6 +17,7 @@ import {
 } from "./components";
 import { Icon } from "./icons";
 import { MiniAccess, MiniShell } from "./mini-frame";
+import { sourceReturnState } from "./return-navigation";
 import { SavedCard } from "./saved-card";
 import styles from "./sol.module.css";
 import { useReducedMotion } from "./motion-preference";
@@ -72,6 +73,7 @@ export function Sol({ catalog }: { catalog: Catalog }) {
   const [draft, setDraft] = useState("");
   const input = useRef<HTMLInputElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
+  const chosenResult = useRef(false);
   const change = useCallback(
     (next: Record<string, string | null>, replace = false) => {
       const search = new URLSearchParams(query);
@@ -83,11 +85,25 @@ export function Sol({ catalog }: { catalog: Catalog }) {
       const consume = consumeSheetHistory();
       // Next's public History API synchronizes useSearchParams without fetching
       // another page. Never copy reserved router flags into this query write.
-      if (replace || consume) window.history.replaceState({}, "", url);
-      else window.history.pushState({}, "", url);
+      const historyState = sourceReturnState({}, consume || !replace);
+      if (replace || consume)
+        window.history.replaceState(historyState, "", url);
+      else window.history.pushState(historyState, "", url);
     },
     [query],
   );
+  useEffect(() => {
+    if (phase !== "selected" && phase !== "results") {
+      chosenResult.current = false;
+      return;
+    }
+    if (phase !== "results" || !chosenResult.current) return;
+    chosenResult.current = false;
+    // A chosen tile disappears at results. Do not interrupt a shopper who
+    // has moved to the message editor (or another surviving control).
+    if (document.activeElement === document.body)
+      heading.current?.focus({ preventScroll: true });
+  }, [phase]);
   useEffect(() => {
     const onBack = (event: PopStateEvent) => {
       setDraft(
@@ -298,7 +314,11 @@ export function Sol({ catalog }: { catalog: Catalog }) {
                       key={id}
                       aria-label={label}
                       aria-pressed={phase === "selected" && choice?.[0] === id}
-                      onClick={() => change({ sol: "selected", choice: id })}
+                      onClick={() => {
+                        chosenResult.current =
+                          topic === "glasses" && id === "gold";
+                        change({ sol: "selected", choice: id });
+                      }}
                     >
                       <img src={`/api/reference-media/${artwork}`} alt="" />
                     </button>

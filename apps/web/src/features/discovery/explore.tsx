@@ -1,8 +1,7 @@
 "use client";
 import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
-import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Catalog } from "../catalog/types";
 import { FloatingNav, ProductCard } from "./components";
 import { Icon } from "./icons";
@@ -58,8 +57,21 @@ export function Explore({
   category?: string;
 }) {
   const [cart, setCart] = useState(false);
+  const categoriesRef = useRef<HTMLDivElement>(null);
+  const [categoriesPassed, setCategoriesPassed] = useState(false);
   const { visitMini } = useDiscovery();
   const beauty = category === "Beauty";
+  useEffect(() => {
+    const categories = categoriesRef.current;
+    if (!categories) return;
+    // The empty cart belongs to the category entry. A populated cart remains
+    // available through FloatingNav, including while browsing the lower shelves.
+    const observer = new IntersectionObserver(([entry]) => {
+      setCategoriesPassed(entry.boundingClientRect.bottom <= 0);
+    });
+    observer.observe(categories);
+    return () => observer.disconnect();
+  }, [category]);
   const byIds = (ids: readonly string[]) =>
     ids.flatMap((id) => {
       const product = catalog.products.find((value) => value.id === id);
@@ -178,7 +190,7 @@ export function Explore({
       {!category && (
         <>
           <h2>Browse categories</h2>
-          <div className="explore-categories">
+          <div className="explore-categories" ref={categoriesRef}>
             {departments.map(([name, color, first, second]) => (
               <SourceLink
                 key={name}
@@ -206,7 +218,7 @@ export function Explore({
             </SourceLink>
             <p>Discover more ways to shop with Minis</p>
             {(["sol", "skin", "look"] as const).map((id) => (
-              <Link
+              <SourceLink
                 key={id}
                 className={styles.miniRow}
                 href={miniHref(id)}
@@ -217,7 +229,7 @@ export function Explore({
                   <strong>{miniCatalog[id].name}</strong>
                   <small>{miniCatalog[id].description}</small>
                 </span>
-              </Link>
+              </SourceLink>
             ))}
           </section>
         </>
@@ -310,7 +322,7 @@ export function Explore({
         fade
         back={!!category}
         cart={() => setCart(true)}
-        showCartWhenEmpty={!beauty}
+        showCartWhenEmpty={!beauty && (!!category || !categoriesPassed)}
       />
       <CartOverlay
         catalog={catalog}
