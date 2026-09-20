@@ -7,12 +7,14 @@ test("checkout keeps delivery and payment expanded together and re-quotes a sele
 }) => {
   await useReferenceScenario(page, "checkout");
   await page.goto("/checkout?store=kitsch");
+  await expect(page.locator(".shop-cash-section")).toBeVisible();
   for (const name of [/^Ship to/, /^Shipping/, /^Plan/, /^Payment/]) {
     await page.getByRole("button", { name }).click();
   }
   await expect(
     page.locator('.checkout-section-toggle[aria-expanded="true"]'),
   ).toHaveCount(4);
+  await expect(page.locator(".shop-cash-section")).toHaveCount(0);
   await expect(
     page.getByText("Installments unavailable", { exact: true }),
   ).toBeVisible();
@@ -34,6 +36,11 @@ test("checkout keeps delivery and payment expanded together and re-quotes a sele
     expect(pay!.x).toBeGreaterThanOrEqual(0);
     expect(pay!.x + pay!.width).toBeLessThanOrEqual(width);
   }
+  await page
+    .locator(".checkout-section-toggle")
+    .filter({ hasText: /^Payment/ })
+    .click();
+  await expect(page.locator(".shop-cash-section")).toBeVisible();
 });
 
 test("initial checkout address has compact details, preserves edits through Back and Forward, and reaches card entry", async ({
@@ -185,12 +192,19 @@ test("Home product checkout keeps the selected seller and omits uncaptured merch
 
   await expect(page).toHaveURL(/\/checkout\?store=princess-polly$/);
   await expect(page.locator(".checkout-terms")).toContainText("PRINCESS POLLY");
-  await expect(
-    page.getByRole("link", { name: "Terms of Service", exact: true }),
-  ).toHaveAttribute("href", "/stores/princess-polly?info=terms");
-  await expect(
-    page.getByRole("link", { name: "Privacy Policy", exact: true }),
-  ).toHaveAttribute("href", "/stores/princess-polly?info=privacy");
+  for (const label of ["Terms of Service", "Privacy Policy"]) {
+    const trigger = page
+      .locator(".checkout-terms")
+      .getByRole("button", { name: label, exact: true });
+    await trigger.click();
+    const boundary = page.getByRole("dialog", { name: label, exact: true });
+    await expect(boundary).toContainText(
+      `PRINCESS POLLY’s ${label} are not included in this reference preview.`,
+    );
+    await page.goBack();
+    await expect(boundary).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+  }
   await expect(page.locator(".shop-cash-section")).toHaveCount(0);
   await expect(page.locator(".checkout-text-offers")).toHaveCount(0);
   await expect(page.locator(".checkout-recommendations")).toHaveCount(0);
@@ -227,10 +241,10 @@ test("captured Kitsch checkout retains its source-specific offers and recommenda
   await expect(page.locator(".checkout-terms")).toContainText("Kitsch");
   await expect(
     page.getByRole("link", { name: "Terms of Service", exact: true }).last(),
-  ).toHaveAttribute("href", "/stores/kitsch?info=terms");
+  ).toHaveAttribute("href", "https://www.mykitsch.com/pages/terms-of-service");
   await expect(
     page.getByRole("link", { name: "Privacy Policy", exact: true }).last(),
-  ).toHaveAttribute("href", "/stores/kitsch?info=privacy");
+  ).toHaveAttribute("href", "https://www.mykitsch.com/pages/privacy-policy");
   await expect(page.locator(".shop-cash-section")).toContainText(
     "Get $20.00 off on orders over $50.00",
   );

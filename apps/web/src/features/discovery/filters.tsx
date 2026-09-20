@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
-import { Sheet } from "./components";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Sheet, commitSheetQuery } from "./components";
+import { useSheetStages } from "./sheet-stages";
 import { Icon } from "./icons";
 import styles from "./search-entry.module.css";
 import {
@@ -8,6 +9,8 @@ import {
   emptyFilters,
   filterOptions,
   womenCategories,
+  readSearchFilters,
+  searchParameters,
   type FilterSection,
   type SearchFilters,
 } from "./search-model";
@@ -37,42 +40,154 @@ const unavailableCategoryChildren = new Set([
 type FilterProps = {
   open: boolean;
   onClose: () => void;
+  onReopen: () => void;
   value: SearchFilters;
   onChange: (value: SearchFilters) => void;
 };
 
-export function Filters({ open, ...props }: FilterProps) {
-  // Closing the root ends this navigation session. Reopening starts at Filter,
-  // not at an invisible/stale child left over from a previous visit.
-  return open ? <OpenFilters {...props} /> : null;
-}
+type FilterStage = "root" | FilterSection | "women" | `unavailable:${string}`;
+type FilterDraft = {
+  path: string;
+  query: string;
+  value: SearchFilters;
+  dirty: boolean;
+  opener: HTMLElement | null;
+};
 
-function OpenFilters({
+export function Filters({
+  open,
   onClose,
+  onReopen,
   value: initialValue,
   onChange: commit,
-}: Omit<FilterProps, "open">) {
+}: FilterProps) {
   // Keep native controlled inputs in this sheet synchronous with their event.
   // The URL remains the committed result state, but its external-store update
   // can arrive after the browser checks whether a checkbox changed.
   const [value, setValue] = useState(initialValue);
-  const onChange = (next: SearchFilters) => {
-    setValue(next);
-    commit(next);
+  const drafts = useRef(new Map<string, FilterDraft>());
+  const activeSession = useRef("");
+  const pendingFocus = useRef<{ session: string; draft: FilterDraft } | null>(
+    null,
+  );
+  const currentQuery = () =>
+    new URLSearchParams(location.search).get("q") ?? "";
+  const restoreDraft = (draft: FilterDraft) => {
+    if (draft.dirty)
+      commitSheetQuery(
+        searchParameters(
+          new URLSearchParams(location.search).get("q") ?? "",
+          draft.value,
+        ),
+      );
   };
-  const [section, setSection] = useState<FilterSection | null>(null);
-  const [categoryPath, setCategoryPath] = useState(false);
-  const [unavailableCategory, setUnavailableCategory] = useState("");
-  const closeSection = () => {
-    setUnavailableCategory("");
-    setCategoryPath(false);
-    setSection(null);
-  };
-  const choose = (key: FilterSection, option: string) =>
-    onChange({
-      ...value,
-      [key]: key === "category" ? categoryValue(option) : option,
-    });
+  const flow = useSheetStages<FilterStage>({
+    open,
+    initial: "root",
+    onStart: () => {
+      const session = crypto.randomUUID();
+      activeSession.current = session;
+      drafts.current.set(session, {
+        path: location.pathname,
+        query: currentQuery(),
+        value: initialValue,
+        dirty: false,
+        opener:
+          document.activeElement instanceof HTMLElement
+            ? document.activeElement
+            : null,
+      });
+      window.history.replaceState(
+        { ...window.history.state, shopFilterSession: session },
+        "",
+        location.href,
+      );
+      setValue(initialValue);
+    },
+    onClose: () => {
+      // A criterion belongs to the result page, not a temporary stage entry.
+      // Never carry it into an unrelated search when the closed flow is left.
+      const draft = drafts.current.get(activeSession.current);
+      pendingFocus.current = null;
+      if (
+        open &&
+        draft &&
+        window.history.state?.shopFilterSession === activeSession.current &&
+        location.pathname === draft.path &&
+        currentQuery() === draft.query
+      ) {
+        restoreDraft(draft);
+        pendingFocus.current = { session: activeSession.current, draft };
+      }
+      onClose();
+    },
+    onReopen: () => {
+      const session = window.history.state?.shopFilterSession;
+      const previous = drafts.current.get(session);
+      const draft =
+        previous?.path === location.pathname &&
+        previous.query === currentQuery()
+          ? previous
+          : {
+              path: location.pathname,
+              query: currentQuery(),
+              value: readSearchFilters(new URLSearchParams(location.search)),
+              dirty: false,
+              opener: document.querySelector<HTMLElement>(
+                'button[aria-label="Filter"]',
+              ),
+            };
+      activeSession.current = session;
+      drafts.current.set(session, draft);
+      setValue(draft.value);
+      restoreDraft(draft);
+      onReopen();
+    },
+  });
+  useEffect(() => {
+    if (open) return;
+    const pending = pendingFocus.current;
+    pendingFocus.current = null;
+    if (
+      !pending ||
+      window.history.state?.shopFilterSession !== pending.session ||
+      location.pathname !== pending.draft.path ||
+      currentQuery() !== pending.draft.query ||
+      document.querySelector("dialog[open]")
+    )
+      return;
+    // Forward may reopen from body. Keep the original logical opener after
+    // the child Sheets finish their own cleanup, without focusing another query.
+    const opener = pending.draft.opener?.isConnected
+      ? pending.draft.opener
+      : document.querySelector<HTMLElement>('button[aria-label="Filter"]');
+    opener?.focus({ preventScroll: true });
+  }, [open]);
+  const onChange = useCallback(
+    (next: SearchFilters) => {
+      const draft = drafts.current.get(activeSession.current);
+      if (draft)
+        drafts.current.set(activeSession.current, {
+          ...draft,
+          value: next,
+          dirty: true,
+        });
+      setValue(next);
+      commit(next);
+    },
+    [commit],
+  );
+  const categoryPath =
+    flow.stage === "women" || flow.stage.startsWith("unavailable:");
+  const unavailableCategory = flow.stage.startsWith("unavailable:")
+    ? flow.stage.slice(12)
+    : "";
+  const section: FilterSection | null = categoryPath
+    ? "category"
+    : flow.stage === "root"
+      ? null
+      : (flow.stage as FilterSection);
+  const closeSection = () => flow.back();
   const rows = (key: FilterSection, list: readonly string[]) =>
     list.map((option) => {
       const opensWomen = key === "category" && option === "Women";
@@ -87,6 +202,14 @@ function OpenFilters({
           type="button"
           key={option}
           aria-pressed={opensChildren ? undefined : selected}
+          data-filter-selected={
+            selected ||
+            (opensWomen &&
+              womenCategories.some(
+                (category) => categoryValue(category) === value.category,
+              )) ||
+            undefined
+          }
           aria-haspopup={opensChildren ? "dialog" : undefined}
           aria-expanded={
             opensWomen
@@ -96,9 +219,14 @@ function OpenFilters({
                 : undefined
           }
           onClick={() => {
-            if (opensWomen) setCategoryPath(true);
-            else if (unavailableChildren) setUnavailableCategory(option);
-            else choose(key, option);
+            if (opensWomen) flow.navigate("women");
+            else if (unavailableChildren)
+              flow.navigate(`unavailable:${option}`);
+            else
+              onChange({
+                ...value,
+                [key]: key === "category" ? categoryValue(option) : option,
+              });
           }}
         >
           {option}
@@ -116,10 +244,11 @@ function OpenFilters({
   return (
     <>
       <Sheet
-        open
+        open={open && flow.active}
         title="Filter"
         className={`${styles.filterSheet} filter-tall ${section ? "filter-covered" : ""}`}
-        onClose={onClose}
+        onClose={() => flow.close()}
+        manageHistory={false}
       >
         <div className="filter-options">
           <label>
@@ -136,8 +265,7 @@ function OpenFilters({
               key={key}
               aria-haspopup="dialog"
               onClick={() => {
-                setCategoryPath(false);
-                setSection(key);
+                flow.navigate(key);
               }}
             >
               {names[key]}
@@ -156,16 +284,22 @@ function OpenFilters({
           >
             Clear all
           </button>
-          <button type="button" className="primary" onClick={onClose}>
+          <button
+            type="button"
+            className="primary"
+            onClick={() => flow.close()}
+          >
             Done
           </button>
         </div>
       </Sheet>
       <Sheet
-        open={section !== null}
+        open={open && flow.active && section !== null}
         title={section ? names[section] : "Filter"}
         className={`${styles.filterSheet} ${section === "sort" ? "filter-short" : "filter-tall"} ${section === "category" && categoryPath ? "filter-covered" : ""}`}
         onClose={closeSection}
+        manageHistory={false}
+        initialFocus='.filter-options [data-filter-selected="true"]'
       >
         <div className="filter-options">
           {section && rows(section, filterOptions[section])}
@@ -188,10 +322,12 @@ function OpenFilters({
         </div>
       </Sheet>
       <Sheet
-        open={section === "category" && categoryPath}
+        open={open && flow.active && section === "category" && categoryPath}
         title="Women"
         className={`${styles.filterSheet} filter-tall ${unavailableCategory ? "filter-covered" : ""}`}
-        onClose={() => setCategoryPath(false)}
+        onClose={() => flow.back()}
+        manageHistory={false}
+        initialFocus='.filter-options [data-filter-selected="true"]'
       >
         <div className="filter-options">
           {rows("category", womenCategories)}
@@ -205,19 +341,16 @@ function OpenFilters({
           >
             Reset
           </button>
-          <button
-            type="button"
-            className="primary"
-            onClick={() => setCategoryPath(false)}
-          >
+          <button type="button" className="primary" onClick={() => flow.back()}>
             Done
           </button>
         </div>
       </Sheet>
       <Sheet
-        open={!!unavailableCategory}
+        open={open && flow.active && !!unavailableCategory}
         title={unavailableCategory}
-        onClose={() => setUnavailableCategory("")}
+        onClose={() => flow.back()}
+        manageHistory={false}
       >
         <p className="sheet-copy">
           These subcategories are not included in the captured reference. Your

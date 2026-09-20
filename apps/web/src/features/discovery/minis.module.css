@@ -479,8 +479,19 @@
   position: relative;
   padding: 94px 40px 74px;
   background:
-    radial-gradient(ellipse at 10% 20%, #ffbedd, transparent 62%),
-    radial-gradient(ellipse at 80% 85%, #d5ceff, transparent 65%), #fff;
+    radial-gradient(
+      ellipse 75% 45% at 25% 26%,
+      #ffc5e0 14%,
+      #ffe1ee 57%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 72% 43% at 80% 73%,
+      #d9d3fd 15%,
+      #eeebff 60%,
+      transparent 100%
+    ),
+    #fff;
 }
 .look :global(.look-wordmark) {
   width: min(277px, 100%);
@@ -493,15 +504,22 @@
   height: auto;
 }
 .look h1 {
-  font-size: 34px;
+  font-size: 36px;
   line-height: 40px;
   font-weight: 400;
-  letter-spacing: -1px;
+  letter-spacing: 0;
+}
+.look[data-look-terms="true"] h1 {
+  font-size: 34px;
+}
+.look[data-look-phase="welcome"] h1 {
+  transform: translateY(-2px);
 }
 .look > p {
   margin: 18px -12px 0;
   font-size: 18px;
   line-height: 26px;
+  letter-spacing: 0.3px;
 }
 .look :global(.look-upload) {
   margin-top: 66px;
@@ -746,6 +764,7 @@
   border-radius: 14px 0 0 14px;
   background: #fff;
   pointer-events: none;
+  opacity: 0.45;
 }
 .lookBoundedCard > img {
   display: block;

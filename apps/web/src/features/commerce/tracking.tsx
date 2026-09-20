@@ -68,12 +68,14 @@ export function TrackingDetail({
     delivered = order.status === "Delivered",
     waiting = order.status === "Ordered" && Boolean(product),
     manualLabel = order.status === "Ordered" && !product,
-    map = params.get("map") === "1",
     laterManualHistory =
       !product && params.get("history") === "delivered-later",
     labelCreated =
       !delivered && (manualLabel || params.get("progress") === "label"),
     inTransit = Boolean(product) && !delivered && !waiting && !labelCreated;
+  const mapAvailable = Boolean(product) && (inTransit || delivered);
+  const map = mapAvailable && params.get("map") === "1";
+  const StatusElement = mapAvailable ? "button" : "div";
   const sourceReceipt = capturedReceipts[order.id];
   const displayOrderNumber = sourceReceipt?.displayOrderNumber ?? order.id;
   const sourceCarrier = order.carrier;
@@ -105,7 +107,10 @@ export function TrackingDetail({
       next === "Delivered" ? "Marked as delivered" : "Unmarked as delivered",
     );
     if (next === "Delivered") {
-      timers.current.push(setTimeout(() => setCelebrate(false), 1400));
+      const duration = matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? 1400
+        : 3400;
+      timers.current.push(setTimeout(() => setCelebrate(false), duration));
     }
     timers.current.push(setTimeout(() => setStatusToast(""), 1800));
   };
@@ -113,6 +118,7 @@ export function TrackingDetail({
     <AccountPage
       className={`tracking-detail ${styles.tracking} ${waiting ? styles.waitingTracking : ""} ${inTransit ? styles.inTransitTracking : ""} ${labelCreated && product ? styles.labelTracking : ""} ${!product ? styles.manualTracking : ""} ${laterManualHistory ? styles.laterManualTracking : ""} ${delivered ? styles.deliveredTracking : ""} ${map ? `tracking-map-view ${styles.mapView}` : ""}`}
       onBack={() => router.back()}
+      dockFade={Boolean(product)}
     >
       {celebrate && <DeliveryConfetti />}
       {map && (
@@ -153,13 +159,17 @@ export function TrackingDetail({
         >
           <Icon name="more" />
         </button>
-        <button
+        <StatusElement
           className="tracking-status-card"
-          onClick={() => {
-            const q = new URLSearchParams(params.toString());
-            q.set("map", map ? "0" : "1");
-            router.push(`?${q}`, { scroll: false });
-          }}
+          onClick={
+            mapAvailable
+              ? () => {
+                  const q = new URLSearchParams(params.toString());
+                  q.set("map", map ? "0" : "1");
+                  router.push(`?${q}`, { scroll: false });
+                }
+              : undefined
+          }
         >
           <small>
             {product
@@ -206,7 +216,7 @@ export function TrackingDetail({
                     : "transit"
             }
           />
-        </button>
+        </StatusElement>
         {!waiting && (
           <section
             className="tracking-carrier"

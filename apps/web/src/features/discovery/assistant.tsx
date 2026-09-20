@@ -11,6 +11,7 @@ import { Sheet, SaveButton, IconButton, commitSheetQuery } from "./components";
 import { Icon } from "./icons";
 import { ReviewStars } from "./review-feedback";
 import { capturedCapQuestion } from "./search-model";
+import { useSearchDraft } from "./search-draft";
 import styles from "./search-entry.module.css";
 import photoStyles from "./search-photo.module.css";
 
@@ -392,7 +393,7 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
   }
   const [choice, setChoice] = useState("");
   const [boundary, setBoundary] = useState("");
-  const [draft, setDraft] = useState("");
+  const { draft, update: updateDraft } = useSearchDraft("photo-answer");
   const boundedTrigger = useRef<HTMLButtonElement>(null);
   const cards = [
     {
@@ -738,7 +739,7 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
           placeholder="Ask a follow-up"
           aria-label="Ask a follow-up"
           value={draft}
-          onChange={(event) => setDraft(event.target.value)}
+          onChange={(event) => updateDraft({ draft: event.target.value })}
         />
         <Link
           href="/search"

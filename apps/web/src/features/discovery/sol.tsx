@@ -1,6 +1,12 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- Allowlisted product artwork only. */
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Catalog } from "../catalog/types";
 import {
@@ -13,10 +19,14 @@ import { Icon } from "./icons";
 import { MiniAccess, MiniShell } from "./mini-frame";
 import { SavedCard } from "./saved-card";
 import styles from "./sol.module.css";
+import { useReducedMotion } from "./motion-preference";
+import { DecorativeVideo } from "./decorative-video";
+import { solRightMask } from "./sol-decoration-mask";
 
 const phases = [
   "welcome",
   "connecting",
+  "ready",
   "greeting",
   "response",
   "choices",
@@ -53,6 +63,8 @@ export function Sol({ catalog }: { catalog: Catalog }) {
         : rawPhase;
   const typing = params.get("mode") === "text";
   const muted = params.get("muted") === "1";
+  const reducedMotion = useReducedMotion();
+  const motion = !reducedMotion && params.get("reference") !== "captured";
   const [access, setAccess] = useState(() => rawPhase === "welcome");
   const [permission, setPermission] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -95,16 +107,22 @@ export function Sol({ catalog }: { catalog: Catalog }) {
   }, [typing]);
   useEffect(() => {
     let next: Phase | undefined;
-    if (phase === "connecting") next = "greeting";
+    let delay = 2400;
+    if (phase === "connecting") next = motion ? "ready" : "greeting";
+    if (phase === "ready") {
+      next = "greeting";
+      delay = motion ? 500 : 0;
+    }
     if (phase === "response") next = "choices";
+    if (phase === "response" && motion) delay = 750;
     if (phase === "selected" && topic === "glasses" && choice?.[0] === "gold")
       next = "results";
     if (!next) return;
     // Local playback only. This delay is a deterministic preview interval, not
     // asserted provider latency. Cleanup cancels it on Back, restart or exit.
-    const timer = window.setTimeout(() => change({ sol: next }, true), 2400);
+    const timer = window.setTimeout(() => change({ sol: next }, true), delay);
     return () => window.clearTimeout(timer);
-  }, [phase, topic, choice, change]);
+  }, [phase, topic, choice, change, motion]);
 
   const greeting = typing
     ? "Hey Alex, I am Sol. What are we hunting for today?"
@@ -165,6 +183,21 @@ export function Sol({ catalog }: { catalog: Catalog }) {
               alt=""
             />
           ))}
+          <DecorativeVideo
+            enabled={motion && !artworkVariant}
+            clips={[
+              { key: "sol-welcome-motion", className: styles.welcomeVideo },
+              {
+                key: "sol-welcome-lower-left-motion",
+                className: styles.welcomeLeftVideo,
+              },
+              {
+                key: "sol-welcome-lower-right-motion",
+                className: styles.welcomeRightVideo,
+                mask: solRightMask,
+              },
+            ]}
+          />
           <h1>Hi, I’m Sol</h1>
           <p>
             Shop with your voice. Just tell
@@ -184,7 +217,7 @@ export function Sol({ catalog }: { catalog: Catalog }) {
         </section>
       ) : (
         <section
-          className={`sol-surface ${styles.surface}`}
+          className={`sol-surface ${styles.surface} ${motion ? styles.phaseMotion : ""}`}
           data-sol-phase={phase}
           data-sol-mode={typing ? "text" : "voice"}
           data-sol-topic={topic}
@@ -194,17 +227,35 @@ export function Sol({ catalog }: { catalog: Catalog }) {
             src="/api/reference-media/sol-flower"
             alt="Sol"
           />
-          {phase === "connecting" ? (
+          <DecorativeVideo
+            enabled={motion && phase === "connecting"}
+            clips={[
+              {
+                key: "sol-connecting-motion",
+                className: styles.connectingVideo,
+              },
+            ]}
+          />
+          {phase === "connecting" || phase === "ready" ? (
             <p
               className={styles.connecting}
               role="status"
-              aria-label="Connecting"
+              aria-label={phase === "ready" ? "Almost ready" : "Connecting"}
             >
-              Connecting <span aria-hidden="true">•••</span>
+              {phase === "ready" ? "Almost ready" : "Connecting"}{" "}
+              <span aria-hidden="true">•••</span>
             </p>
           ) : (
             <div className={`sol-conversation ${styles.conversation}`}>
-              <h1 ref={heading} tabIndex={-1}>
+              <h1
+                ref={heading}
+                tabIndex={-1}
+                aria-label={
+                  phase === "choices" && motion && topic === "glasses"
+                    ? title
+                    : undefined
+                }
+              >
                 {phase === "results" ? (
                   <>
                     <span className={styles.spoken}>
@@ -212,6 +263,26 @@ export function Sol({ catalog }: { catalog: Catalog }) {
                     </span>{" "}
                     which one feels the easiest to wear every day.
                   </>
+                ) : phase === "choices" && motion && topic === "glasses" ? (
+                  <span className={styles.promptTransition} aria-hidden="true">
+                    <span className={styles.choiceLead}>
+                      Nice, sunglasses are a fun pick.
+                    </span>
+                    <span className={styles.choicePrompt}>
+                      {title.split(" ").map((word, index) => (
+                        <span
+                          key={`${word}-${index}`}
+                          style={
+                            {
+                              "--word-delay": `${1000 + index * 30}ms`,
+                            } as CSSProperties
+                          }
+                        >
+                          {word}{" "}
+                        </span>
+                      ))}
+                    </span>
+                  </span>
                 ) : (
                   title
                 )}
@@ -319,7 +390,7 @@ export function Sol({ catalog }: { catalog: Catalog }) {
               <IconButton
                 icon="type-input"
                 label="Type instead"
-                disabled={phase === "connecting"}
+                disabled={phase === "connecting" || phase === "ready"}
                 onClick={() => change({ mode: "text" })}
               />
             )}
@@ -330,7 +401,7 @@ export function Sol({ catalog }: { catalog: Catalog }) {
               }
               pressed={muted}
               filled={false}
-              disabled={phase === "connecting"}
+              disabled={phase === "connecting" || phase === "ready"}
               onClick={() => change({ muted: muted ? null : "1" }, true)}
             />
           </form>

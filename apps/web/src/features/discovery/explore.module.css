@@ -19,6 +19,45 @@
   margin: 14px 8px 34px 0;
   border-radius: 28px;
 }
+.openingRail {
+  display: flex;
+  gap: 8px;
+  width: calc(100% + 16px);
+  margin: 14px -16px 34px 0;
+}
+.page .openingRail :global(.editorial-hero) {
+  flex: 0 0 calc(100% - 24px);
+  margin: 0;
+}
+.heroContinuation {
+  flex: 0 0 15px;
+  height: 200px;
+  overflow: hidden;
+}
+.heroContinuation img {
+  display: block;
+  width: 15px;
+  height: 200px;
+}
+.beautyOpening {
+  display: contents;
+}
+.photoContinuation {
+  flex: 0 0 16px;
+  height: 172px;
+  overflow: hidden;
+  border-left: 1px solid #dedede;
+}
+.photoContinuation img {
+  display: block;
+  width: 15px;
+  height: 170px;
+  margin-top: 1px;
+}
+.page :global(.editorial-hero) > img {
+  display: block;
+  border-radius: inherit;
+}
 .page:not([data-category]) :global(.editorial-hero) {
   box-shadow: 0 6px 40px #0000001a;
 }
@@ -122,9 +161,9 @@
 }
 .miniRow strong {
   display: block;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 16px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .miniRow small {
   display: block;
@@ -168,6 +207,9 @@
 }
 .page :global(.explore-shelf .product-rail) {
   gap: 8px;
+  width: calc(100% + 16px);
+  margin-right: -16px;
+  padding-right: 16px;
 }
 .page :global(.explore-shelf .product-card) {
   width: 173px;
@@ -221,8 +263,7 @@
   width: 32px;
   height: 32px;
 }
-.page[data-category="Beauty"]
-  > :global(.editorial-hero):not(:global(.beauty-editorial)) {
+.page[data-category="Beauty"] .beautyOpening > :global(.editorial-hero) {
   width: 100%;
   height: 203px;
   margin: 0 0 36px;
@@ -230,15 +271,51 @@
 .page[data-category="Beauty"] > :global(.beauty-editorial) {
   width: 100%;
   height: 203px;
-  margin: 32px 0 36px;
+  margin: 28px 0 36px;
 }
 .page[data-category="Beauty"] > :global(.beauty-editorial-rail) {
   display: flex;
   align-items: stretch;
   gap: 8px;
-  overflow: hidden;
   width: calc(100% + 16px);
   margin: 35px -16px 39px 0;
+}
+.page :global(.beauty-product-fragment),
+.page :global(.beauty-deal-fragment) {
+  flex: 0 0 16px;
+  width: 16px;
+  margin-left: 1px;
+  padding: 0;
+  overflow: hidden;
+}
+.page :global(.beauty-product-fragment) > span {
+  display: block;
+  position: relative;
+  width: 172px;
+  height: 172px;
+  border: 1px solid #dedede;
+  border-radius: 20px;
+  background: #f8e8ea;
+  overflow: hidden;
+}
+.page :global(.beauty-product-fragment) img {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 15px;
+  height: 64px;
+}
+.page :global(.beauty-deals) > :global(.beauty-deal-fragment) {
+  flex-basis: 16px;
+  padding: 0;
+  border-radius: 0;
+  background: #101a16;
+}
+.page :global(.beauty-deal-fragment) img {
+  display: block;
+  width: 15px;
+  height: 110px;
+  object-fit: fill;
 }
 .page[data-category="Beauty"]
   > :global(.beauty-editorial-rail)
@@ -275,7 +352,7 @@
 .page[data-category="Beauty"] :global(.beauty-category-grid strong) {
   font-weight: 500;
 }
-.page[data-category="Beauty"] :global(.beauty-section) > h2 {
+.page[data-category="Beauty"] :global(.beauty-section) h2 {
   line-height: 22px;
   margin-bottom: 12px;
 }
@@ -295,6 +372,11 @@
 }
 .page[data-category="Beauty"] :global(.product-rail) {
   gap: 8px;
+}
+.page[data-category="Beauty"] :global(.beauty-bestsellers),
+.page[data-category="Beauty"] :global(.beauty-deals) {
+  width: calc(100% + 16px);
+  margin-right: -16px;
 }
 .page :global(.beauty-brand) {
   position: relative;

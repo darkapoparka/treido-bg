@@ -1,8 +1,8 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
-import Link from "next/link";
 import { Icon } from "./icons";
 import { ProductCard } from "./components";
+import { SourceLink } from "./return-navigation";
 import type { Catalog } from "../catalog/types";
 const brands = [
   {
@@ -56,7 +56,7 @@ function Editorial({
   image: string;
 }) {
   return (
-    <Link
+    <SourceLink
       className="editorial-hero beauty-editorial"
       href={`/search?q=${encodeURIComponent(title)}`}
     >
@@ -66,7 +66,7 @@ function Editorial({
         <p>{copy}</p>
         <Icon name="arrow" />
       </div>
-    </Link>
+    </SourceLink>
   );
 }
 export function BeautySections({ catalog }: { catalog: Catalog }) {
@@ -86,7 +86,7 @@ export function BeautySections({ catalog }: { catalog: Catalog }) {
             ["Shampoo & conditioner", "hair", "#99784d"],
             ["Nail care", "nail", "#b54fb3"],
           ].map(([title, key, color]) => (
-            <Link
+            <SourceLink
               key={key}
               style={{ background: color }}
               href={`/search?q=${encodeURIComponent(title)}`}
@@ -103,7 +103,7 @@ export function BeautySections({ catalog }: { catalog: Catalog }) {
                   title
                 )}
               </strong>
-            </Link>
+            </SourceLink>
           ))}
         </div>
       </section>
@@ -111,7 +111,7 @@ export function BeautySections({ catalog }: { catalog: Catalog }) {
         <h2>Favorites for a reason</h2>
         <div className="beauty-brand-grid">
           {brands.map((b) => (
-            <Link
+            <SourceLink
               href={`/search?q=${encodeURIComponent(b.name)}`}
               key={b.name}
               className="beauty-brand"
@@ -132,12 +132,14 @@ export function BeautySections({ catalog }: { catalog: Catalog }) {
                   alt={b.name + " featured product"}
                 />
               </div>
-            </Link>
+            </SourceLink>
           ))}
         </div>
       </section>
       <section className="beauty-section">
-        <h2>Bestsellers ›</h2>
+        <SourceLink href="/search?category=Beauty">
+          <h2>Bestsellers ›</h2>
+        </SourceLink>
         <div className="product-rail beauty-bestsellers">
           {catalog.products
             .filter((p) => ["beauty-fenty", "beauty-juvia"].includes(p.id))
@@ -148,13 +150,25 @@ export function BeautySections({ catalog }: { catalog: Catalog }) {
                 storeName={catalog.stores.find((s) => s.id === p.storeId)?.name}
               />
             ))}
+          <SourceLink
+            className="beauty-product-fragment"
+            href="/search?category=Beauty"
+            aria-label="More beauty bestsellers"
+          >
+            <span>
+              <img
+                src="/api/reference-media/beauty-bestseller-continuation"
+                alt=""
+              />
+            </span>
+          </SourceLink>
         </div>
       </section>
       <section className="beauty-section">
         <h2>Sweet deals</h2>
         <div className="product-rail beauty-deals">
           {[brands[0], brands[3]].map((b) => (
-            <Link
+            <SourceLink
               href={`/search?q=${encodeURIComponent(b.name)}&deals=1`}
               key={b.name}
               data-brand={b.name}
@@ -173,8 +187,15 @@ export function BeautySections({ catalog }: { catalog: Catalog }) {
               <p>
                 {b.rating} ★ ({b.count})
               </p>
-            </Link>
+            </SourceLink>
           ))}
+          <SourceLink
+            className="beauty-deal-fragment"
+            href="/search?category=Beauty&deals=1"
+            aria-label="More beauty deals"
+          >
+            <img src="/api/reference-media/beauty-deal-continuation" alt="" />
+          </SourceLink>
         </div>
       </section>
       <div className="beauty-editorial-rail">

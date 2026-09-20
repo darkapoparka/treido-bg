@@ -63,11 +63,24 @@ export function FirstCollectionPrompt({ catalog }: { catalog: Catalog }) {
         />
       ) : (
         <>
-          <div className="first-collection-art" aria-hidden="true">
+          <div
+            className="first-collection-art"
+            data-product-id={first?.id}
+            aria-hidden="true"
+          >
             <span />
             <span />
             <div>
-              {first && <img src={first.images[0]} alt="" />}
+              {first && (
+                <img
+                  src={
+                    first.id === "rice-bundle"
+                      ? "/api/reference-media/first-collection-rice-photo"
+                      : first.images[0]
+                  }
+                  alt=""
+                />
+              )}
               <i>
                 <Icon name="heart" filled />
               </i>

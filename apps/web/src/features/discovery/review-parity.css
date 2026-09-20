@@ -18,7 +18,38 @@
   margin-top: 12px;
 }
 .store-reviews > .section-heading h1 {
-  font-weight: 400;
+  font-weight: 600;
+}
+.store-review-list .review-author {
+  font-size: 14px;
+}
+.store-review-list .review-helpful {
+  margin-right: 16px;
+}
+.rating-information {
+  position: relative;
+  display: inline-grid;
+  width: 14px;
+  height: 14px;
+  margin-left: 2px;
+  place-items: center;
+  vertical-align: -2px;
+  color: inherit;
+}
+.rating-information::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+}
+.rating-information > svg {
+  width: 11px;
+  height: 11px;
+  stroke-width: 1.8;
+}
+.rating-information:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+  border-radius: 50%;
 }
 
 .reviews-page > .section-heading h1 {

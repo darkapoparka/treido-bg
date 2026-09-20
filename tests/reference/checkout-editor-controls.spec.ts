@@ -2,6 +2,74 @@ import { expect, test } from "@playwright/test";
 
 import { useReferenceScenario } from "./helpers";
 
+test("checkout card Edit, summary help and country selector preserve local details and focus", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "checkout");
+  await page.goto("/checkout?store=kitsch");
+  await page.getByRole("button", { name: /^Payment/ }).click();
+  const options = page.getByRole("button", {
+    name: "Payment method options 4263",
+    exact: true,
+  });
+  await options.click();
+  await page.getByRole("button", { name: "Edit", exact: true }).click();
+  const edit = page.getByRole("dialog", {
+    name: "Edit payment method",
+    exact: true,
+  });
+  await expect(edit).toContainText("4263");
+  await expect(
+    edit.getByRole("textbox", { name: "Card number", exact: true }),
+  ).toHaveCount(0);
+  await edit
+    .getByRole("textbox", { name: "Expiry", exact: true })
+    .fill("12/30");
+  await edit.getByRole("button", { name: "Save card", exact: true }).click();
+  await expect(edit).not.toBeVisible();
+  await expect(options).toBeFocused();
+  await options.click();
+  await page.getByRole("button", { name: "Edit", exact: true }).click();
+  await expect(
+    edit.getByRole("textbox", { name: "Expiry", exact: true }),
+  ).toHaveValue("12/30");
+  await expect(edit).toContainText("1226 University Dr");
+  await page.keyboard.press("Escape");
+
+  const country = page.getByRole("button", {
+    name: "Text offers country: United States (+1)",
+    exact: true,
+  });
+  await page
+    .getByRole("textbox", { name: "Phone number for text offers" })
+    .fill("6502137552");
+  await country.click();
+  const selector = page.getByRole("dialog", {
+    name: "Country or region",
+    exact: true,
+  });
+  await selector
+    .getByRole("button", { name: "Use United States (+1)", exact: true })
+    .click();
+  await expect(country).toBeFocused();
+  await expect(
+    page.getByRole("textbox", { name: "Phone number for text offers" }),
+  ).toHaveValue("6502137552");
+  await page.locator(".source-total-row").click();
+  for (const [button, title, amount] of [
+    ["About shipping", "Shipping", "$6.82"],
+    ["About estimated taxes", "Estimated taxes", "$0.35"],
+  ]) {
+    const trigger = page.getByRole("button", { name: button, exact: true });
+    await trigger.click();
+    const help = page.getByRole("dialog", { name: title, exact: true });
+    await expect(help).toContainText(amount);
+    await page.goBack();
+    await expect(help).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+  }
+});
+
 test("payment field helpers preserve entered values and let the buyer correct the card name", async ({
   page,
 }) => {

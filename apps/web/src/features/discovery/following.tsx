@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- Allowlisted frozen product photographs. */
 import Link from "next/link";
+import { SourceLink } from "./return-navigation";
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Catalog, Store } from "../catalog/types";
@@ -12,7 +13,10 @@ import "./following.css";
 
 function PostIdentity({ store, added }: { store: Store; added: string }) {
   return (
-    <Link className="following-post-identity" href={`/stores/${store.id}`}>
+    <SourceLink
+      className="following-post-identity"
+      href={`/stores/${store.id}`}
+    >
       <span
         className={`following-logo ${store.id === "pura" ? "has-offer" : ""}`}
       >
@@ -22,7 +26,7 @@ function PostIdentity({ store, added }: { store: Store; added: string }) {
         <strong>{store.name}</strong>
         <small>{added}</small>
       </span>
-    </Link>
+    </SourceLink>
   );
 }
 
@@ -95,10 +99,10 @@ export function Following({ catalog }: { catalog: Catalog }) {
             const followed = state.followed.includes(store.id);
             return (
               <div className="following-management-row" key={store.id}>
-                <Link href={`/stores/${store.id}`}>
+                <SourceLink href={`/stores/${store.id}`}>
                   <img src={store.logo} alt="" />
                   <span>{store.name}</span>
-                </Link>
+                </SourceLink>
                 <button
                   type="button"
                   aria-pressed={followed}
@@ -181,14 +185,14 @@ export function Following({ catalog }: { catalog: Catalog }) {
         <>
           <nav className="following-brand-rail" aria-label="Followed brands">
             {stores.map((store) => (
-              <Link
+              <SourceLink
                 key={store.id}
                 href={`/stores/${store.id}`}
                 aria-label={`Visit ${store.name}`}
                 className={`following-logo ${store.id === "pura" ? "has-offer" : ""}`}
               >
                 <img src={store.logo} alt="" />
-              </Link>
+              </SourceLink>
             ))}
           </nav>
           {pura && (

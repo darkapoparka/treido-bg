@@ -20,6 +20,8 @@ import {
   profileTextPatch,
 } from "./profile-model";
 import type { Catalog } from "../catalog/types";
+import { resolveSavedListing } from "../catalog/types";
+import { CollectionEditor } from "../discovery/collection-editor";
 import { Sheet, consumeSheetHistory } from "../discovery/components";
 import {
   AccountPage,
@@ -353,6 +355,7 @@ export function AccountDetails() {
   const [draftError, setDraftError] = useState("");
   const [photo, setPhoto] = useState(false);
   const [phoneStage, setPhoneStage] = useState<"phone" | "code">("phone");
+  const [phoneSession, setPhoneSession] = useState(0);
   const fields = [
     ["firstName", "First name"],
     ["lastName", "Last name"],
@@ -362,6 +365,10 @@ export function AccountDetails() {
     ["birthday", "Birthday"],
   ] as const;
   const edit = (key: keyof Profile) => {
+    if (key === "phone") {
+      setPhoneStage("phone");
+      setPhoneSession((session) => session + 1);
+    }
     setField(key);
   };
   return (
@@ -511,10 +518,14 @@ export function AccountDetails() {
         onClose={() => setField(null)}
       >
         <PhoneEditor
+          key={phoneSession}
+          initialPhone={profile.phone}
           controlledStage={phoneStage}
           onStageChange={setPhoneStage}
           onDone={(phone) => {
             updateProfile({ phone });
+            setDraft((current) => ({ ...current, phone }));
+            setPhoneStage("phone");
             setField(null);
           }}
         />
@@ -545,6 +556,7 @@ export function AccountDetails() {
   );
 }
 export function PublicProfile({ catalog }: { catalog: Catalog }) {
+  const router = useRouter();
   const { profile } = useAccount();
   const { collections, createCollection, updateCollection } = useDiscovery();
   const publicCollections = collections.filter(
@@ -552,6 +564,8 @@ export function PublicProfile({ catalog }: { catalog: Catalog }) {
   );
   const [name, setName] = useState("");
   const [creating, setCreating] = useState(false);
+  const [visibility, setVisibility] = useState<"Private" | "Public">("Public");
+  const submitting = useRef(false);
   const [sharing, setSharing] = useState(false);
   return (
     <AccountPage className="public-profile-page">
@@ -586,7 +600,15 @@ export function PublicProfile({ catalog }: { catalog: Catalog }) {
               Your profile is hidden until you create your first public
               collection.
             </p>
-            <button className="primary" onClick={() => setCreating(true)}>
+            <button
+              className="primary"
+              onClick={() => {
+                setName("");
+                setVisibility("Public");
+                submitting.current = false;
+                setCreating(true);
+              }}
+            >
               Create public collection
             </button>
             <Link href="/support/help">Learn more</Link>
@@ -602,7 +624,7 @@ export function PublicProfile({ catalog }: { catalog: Catalog }) {
           >
             <div className="collection-cover">
               {c.productIds.slice(0, 4).map((id) => {
-                const product = catalog.products.find((p) => p.id === id);
+                const product = resolveSavedListing(catalog, id);
                 return product ? (
                   <img key={id} src={product.images[0]} alt="" />
                 ) : null;
@@ -620,28 +642,27 @@ export function PublicProfile({ catalog }: { catalog: Catalog }) {
       <Sheet
         open={creating}
         title="Create collection"
+        headerless
+        initialFocus=".collection-name-input"
+        className="saved-sheet collection-editor"
         onClose={() => setCreating(false)}
       >
-        <form
-          className="account-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            const id = createCollection(name);
-            updateCollection(id, { visibility: "Public" });
+        <CollectionEditor
+          name={name}
+          visibility={visibility}
+          onNameChange={setName}
+          onVisibilityChange={setVisibility}
+          onCancel={() => setCreating(false)}
+          onSave={() => {
+            if (!name.trim() || submitting.current) return;
+            submitting.current = true;
+            const id = createCollection(name.trim());
+            updateCollection(id, { visibility });
+            consumeSheetHistory();
             setCreating(false);
+            router.replace(`/saved?collection=${id}&view=add`);
           }}
-        >
-          <label className="form-field">
-            Collection name
-            <input
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </label>
-          <p>Public · Anyone can view this collection</p>
-          <button className="primary form-submit">Create collection</button>
-        </form>
+        />
       </Sheet>
     </AccountPage>
   );
@@ -1119,7 +1140,9 @@ export function PaymentsPage() {
   } = useAccount();
   const [cardId, setCardId] = useState(() => paymentCards[0]?.id ?? "");
   const card = paymentCards.find((c) => c.id === (route.id ?? cardId));
-  const billing = addresses.find((a) => a.isDefault) ?? addresses[0];
+  const billing = card?.billingAddressId
+    ? addresses.find((address) => address.id === card.billingAddressId)
+    : (addresses.find((address) => address.isDefault) ?? addresses[0]);
   const view =
     route.view === "detail" || route.view === "add" ? route.view : "list";
   const finish = () =>

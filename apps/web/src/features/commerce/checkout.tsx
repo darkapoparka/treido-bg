@@ -9,8 +9,13 @@ import { useDiscovery } from "../discovery/state";
 import { consumeSheetHistory, Sheet } from "../discovery/components";
 import { Icon } from "../discovery/icons";
 import { AccountIcon } from "../account/icons";
-import { AccountPage } from "../account/forms";
-import { useAccount, type Address } from "../account/state";
+import { AccountPage, PaymentEditor } from "../account/forms";
+import {
+  useAccount,
+  type Address,
+  type ReferencePaymentCard,
+} from "../account/state";
+import { checkoutPolicies } from "../catalog/reference/store-policies";
 import { CartContents } from "./cart";
 import "./cart-parity.css";
 export { CartContents } from "./cart";
@@ -29,7 +34,7 @@ import {
 type CheckoutStep =
   "review" | "phone" | "address-search" | "address" | "payment-setup";
 type CheckoutSection = "ship" | "shipping" | "plan" | "payment";
-type LocalPayment = { id: string; last4: string };
+type CheckoutHelp = "shipping" | "taxes" | "country" | "terms" | "privacy";
 
 function blankCheckoutAddress(): Address {
   return {
@@ -108,6 +113,7 @@ export function Checkout({
   initialStage?: CheckoutStep;
 }) {
   const state = useDiscovery();
+  const account = useAccount();
   const searchParams = useSearchParams();
   const addressFocus = useRef<HTMLButtonElement | null>(null);
   const [step, updateStep] = useState<CheckoutStep>(initialStage);
@@ -119,8 +125,13 @@ export function Checkout({
   ]);
   const [addressId, setAddressId] = useState(shopSourceAddress.id);
   const [shipping, setShipping] = useState(0);
-  const [payments, setPayments] = useState<LocalPayment[]>(() => [
-    { id: shopSourcePayment.id, last4: shopSourcePayment.last4 },
+  const [payments, setPayments] = useState<ReferencePaymentCard[]>(() => [
+    {
+      id: shopSourcePayment.id,
+      last4: shopSourcePayment.last4,
+      expiry: "",
+      billingAddressId: shopSourceAddress.id,
+    },
   ]);
   const [paymentChoice, setPaymentChoice] = useState<string>(
     shopSourcePayment.id,
@@ -144,6 +155,8 @@ export function Checkout({
   const [editingAddressId, setEditingAddressId] = useState("");
   const [paymentModal, setPaymentModal] = useState(false);
   const [paymentMenu, setPaymentMenu] = useState("");
+  const [editingPaymentId, setEditingPaymentId] = useState("");
+  const [help, setHelp] = useState<CheckoutHelp | "">("");
   const [storeOffers, setStoreOffers] = useState(true);
   const [textOfferPhone, setTextOfferPhone] = useState("");
   const [processing, setProcessing] = useState(false);
@@ -164,12 +177,7 @@ export function Checkout({
     effectiveStoreId === "kitsch"
       ? "Kitsch"
       : (checkoutStore?.name ?? "this store");
-  const checkoutTermsHref = checkoutStore
-    ? `/stores/${checkoutStore.id}?info=terms`
-    : "/account/help";
-  const checkoutPrivacyHref = checkoutStore
-    ? `/stores/${checkoutStore.id}?info=privacy`
-    : "/account/privacy";
+  const policies = checkoutPolicies(effectiveStoreId);
   const hasCapturedKitschMerchandising = effectiveStoreId === "kitsch";
   const checkoutRecommendations =
     checkoutRecommendationsForStore(effectiveStoreId);
@@ -682,63 +690,85 @@ export function Checkout({
                 <div
                   className={`checkout-section-body checkout-payments ${payments.length === 1 ? "has-one-option" : ""}`}
                 >
-                  {payments.map((card) => (
-                    <div
-                      className={`shipping-option ${paymentChoice === card.id ? "selected" : ""}`}
-                      key={card.id}
-                    >
-                      <label>
-                        <input
-                          type="radio"
-                          name="payment"
-                          checked={paymentChoice === card.id}
-                          onChange={() => setPaymentChoice(card.id)}
-                        />
-                        <span>
-                          <strong>
-                            Visa ···· {card.last4}{" "}
-                            <b className="visa-mark">VISA</b>
-                          </strong>
-                          <span className="checkout-payment-address">
-                            {address?.firstName} {address?.lastName},{" "}
-                            {address?.street}, {address?.city} ...
-                          </span>
-                        </span>
-                      </label>
-                      <button
-                        className="context-trigger"
-                        aria-label={`Payment method options ${card.last4}`}
-                        onClick={() =>
-                          setPaymentMenu(paymentMenu === card.id ? "" : card.id)
-                        }
+                  {payments.map((card) => {
+                    const billing = [...addresses, ...account.addresses].find(
+                      (entry) => entry.id === card.billingAddressId,
+                    );
+                    return (
+                      <div
+                        className={`shipping-option ${paymentChoice === card.id ? "selected" : ""}`}
+                        key={card.id}
                       >
-                        •••
-                      </button>
-                      {paymentMenu === card.id && (
-                        <div className="checkout-context-menu">
-                          <button onClick={() => setPaymentMenu("")}>
-                            Edit
-                          </button>
-                          <button
-                            className="danger-text"
-                            onClick={() => {
-                              setPayments((current) =>
-                                current.filter((entry) => entry.id !== card.id),
-                              );
-                              if (paymentChoice === card.id)
-                                setPaymentChoice(
-                                  payments.find((entry) => entry.id !== card.id)
-                                    ?.id ?? "",
+                        <label>
+                          <input
+                            type="radio"
+                            name="payment"
+                            checked={paymentChoice === card.id}
+                            onChange={() => setPaymentChoice(card.id)}
+                          />
+                          <span>
+                            <strong>
+                              Visa ···· {card.last4}{" "}
+                              <b className="visa-mark">VISA</b>
+                            </strong>
+                            <span className="checkout-payment-address">
+                              {billing
+                                ? `${billing.firstName} ${billing.lastName}, ${billing.street}, ${billing.city} ...`
+                                : "Add billing address"}
+                            </span>
+                          </span>
+                        </label>
+                        <button
+                          className="context-trigger"
+                          aria-label={`Payment method options ${card.last4}`}
+                          onClick={() =>
+                            setPaymentMenu(
+                              paymentMenu === card.id ? "" : card.id,
+                            )
+                          }
+                        >
+                          •••
+                        </button>
+                        {paymentMenu === card.id && (
+                          <div className="checkout-context-menu">
+                            <button
+                              onClick={(event) => {
+                                event.currentTarget
+                                  .closest(".shipping-option")
+                                  ?.querySelector<HTMLButtonElement>(
+                                    ".context-trigger",
+                                  )
+                                  ?.focus({ preventScroll: true });
+                                setEditingPaymentId(card.id);
+                                setPaymentMenu("");
+                              }}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="danger-text"
+                              onClick={() => {
+                                setPayments((current) =>
+                                  current.filter(
+                                    (entry) => entry.id !== card.id,
+                                  ),
                                 );
-                              setPaymentMenu("");
-                            }}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                                if (paymentChoice === card.id)
+                                  setPaymentChoice(
+                                    payments.find(
+                                      (entry) => entry.id !== card.id,
+                                    )?.id ?? "",
+                                  );
+                                setPaymentMenu("");
+                              }}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                   <div className="payment-actions-row">
                     <button
                       className="checkout-link source-checkout-link"
@@ -747,10 +777,18 @@ export function Checkout({
                       <span>＋</span> Pay another way
                     </button>
                     <span className="payment-marks" aria-hidden="true">
-                      <span className="source-mastercard">
-                        <i />
-                        <i />
-                      </span>
+                      <svg className="source-generic-card" viewBox="0 0 32 20">
+                        <rect width="32" height="20" rx="2" fill="#505050" />
+                        <path d="M0 6h32v3H0z" fill="#d1d1d1" />
+                        <rect
+                          x="4"
+                          y="14"
+                          width="11"
+                          height="2"
+                          rx="1"
+                          fill="#a8a8a8"
+                        />
+                      </svg>
                       <SourceApplePayMark />
                     </span>
                   </div>
@@ -758,16 +796,17 @@ export function Checkout({
               )}
             </section>
 
-            {hasCapturedKitschMerchandising && (
-              <section className="shop-cash-section">
-                <span>Shop Cash</span>
-                <div>
-                  Get $20.00 off on orders over $50.00
-                  <br />
-                  <Link href="/search">Keep Shopping</Link>
-                </div>
-              </section>
-            )}
+            {hasCapturedKitschMerchandising &&
+              !expanded.includes("payment") && (
+                <section className="shop-cash-section">
+                  <span>Shop Cash</span>
+                  <div>
+                    Get $20.00 off on orders over $50.00
+                    <br />
+                    <Link href="/search">Keep Shopping</Link>
+                  </div>
+                </section>
+              )}
           </div>
 
           <label className="checkout-store-offers">
@@ -787,7 +826,7 @@ export function Checkout({
                 Sign up to be in the loop on exclusive offers, new products, and
                 haircare tips.
               </p>
-              <label className="source-text-offer-phone">
+              <div className="source-text-offer-phone">
                 <input
                   type="tel"
                   aria-label="Phone number for text offers"
@@ -797,20 +836,25 @@ export function Checkout({
                   disabled={processing}
                   onChange={(event) => setTextOfferPhone(event.target.value)}
                 />
-                <span aria-hidden="true">
+                <button
+                  type="button"
+                  aria-label="Text offers country: United States (+1)"
+                  aria-haspopup="dialog"
+                  onClick={() => setHelp("country")}
+                >
                   <SourceUnitedStatesFlag />
-                  <span>⌄</span>
-                </span>
-              </label>
+                  <span aria-hidden="true">⌄</span>
+                </button>
+              </div>
               <p className="checkout-sms-terms">
                 &quot;By providing your number and clicking the button, you
                 agree to receive recurring auto-dialed marketing SMS (including
                 cart reminders; AI content; artificial or prerecorded voices)
-                and our <Link href="/account/help">TERMS OF SERVICE</Link>{" "}
+                and our <a href={policies?.terms}>TERMS OF SERVICE</a>{" "}
                 (including arbitration). Consent is not required to purchase.
                 Msg & data rates may apply. Msg frequency varies. Reply HELP for
                 help; STOP to opt-out. View{" "}
-                <Link href="/account/privacy">PRIVACY POLICY</Link>.
+                <a href={policies?.privacy}>PRIVACY POLICY</a>.
               </p>
             </section>
           )}
@@ -977,15 +1021,25 @@ export function Checkout({
                     </span>
                   </p>
                   <p>
-                    <span className="checkout-fee-label">
+                    <button
+                      type="button"
+                      className="checkout-fee-label"
+                      aria-label="About shipping"
+                      onClick={() => setHelp("shipping")}
+                    >
                       Shipping <Icon name="question-circle" />
-                    </span>
+                    </button>
                     <span>{formatMoney({ amount: fee, currency: "USD" })}</span>
                   </p>
                   <p>
-                    <span className="checkout-fee-label">
+                    <button
+                      type="button"
+                      className="checkout-fee-label"
+                      aria-label="About estimated taxes"
+                      onClick={() => setHelp("taxes")}
+                    >
                       Estimated taxes <Icon name="question-circle" />
-                    </span>
+                    </button>
                     <span>{formatMoney({ amount: tax, currency: "USD" })}</span>
                   </p>
                   <p className="checkout-total-line">
@@ -1009,8 +1063,28 @@ export function Checkout({
 
             <p className="checkout-terms">
               By clicking ‘Pay Now’ you agree to {checkoutStoreName}’s{" "}
-              <Link href={checkoutTermsHref}>Terms of Service</Link> and{" "}
-              <Link href={checkoutPrivacyHref}>Privacy Policy</Link>.
+              {policies ? (
+                <a href={policies.terms}>Terms of Service</a>
+              ) : (
+                <button
+                  className="checkout-policy-link"
+                  onClick={() => setHelp("terms")}
+                >
+                  Terms of Service
+                </button>
+              )}{" "}
+              and{" "}
+              {policies ? (
+                <a href={policies.privacy}>Privacy Policy</a>
+              ) : (
+                <button
+                  className="checkout-policy-link"
+                  onClick={() => setHelp("privacy")}
+                >
+                  Privacy Policy
+                </button>
+              )}
+              .
             </p>
           </div>
 
@@ -1076,12 +1150,94 @@ export function Checkout({
             setPayments((current) =>
               current.some((entry) => entry.id === id)
                 ? current
-                : [...current, { id, last4: "••••" }],
+                : [
+                    ...current,
+                    {
+                      id,
+                      last4: "••••",
+                      expiry: "",
+                      billingAddressId: addressId,
+                    },
+                  ],
             );
             setPaymentChoice(id);
             setPaymentModal(false);
           }}
         />
+      </Sheet>
+
+      <Sheet
+        open={Boolean(editingPaymentId)}
+        title="Edit payment method"
+        onClose={() => setEditingPaymentId("")}
+      >
+        {payments.find((card) => card.id === editingPaymentId) && (
+          <PaymentEditor
+            key={editingPaymentId}
+            initialCard={payments.find((card) => card.id === editingPaymentId)}
+            addresses={addresses}
+            onEdited={(card) => {
+              setPayments((current) =>
+                current.map((entry) => (entry.id === card.id ? card : entry)),
+              );
+              setEditingPaymentId("");
+            }}
+          />
+        )}
+      </Sheet>
+
+      <Sheet
+        open={Boolean(help)}
+        title={
+          help === "shipping"
+            ? "Shipping"
+            : help === "taxes"
+              ? "Estimated taxes"
+              : help === "country"
+                ? "Country or region"
+                : help === "terms"
+                  ? "Terms of Service"
+                  : "Privacy Policy"
+        }
+        onClose={() => setHelp("")}
+      >
+        {help === "country" ? (
+          <>
+            <button
+              className="checkout-country-choice shipping-option selected"
+              onClick={() => setHelp("")}
+              aria-label="Use United States (+1)"
+            >
+              <SourceUnitedStatesFlag /> United States (+1){" "}
+              <Icon name="check" />
+            </button>
+            <p className="sheet-copy">
+              United States is the only country available for text offers in
+              this reference preview.
+            </p>
+          </>
+        ) : help === "shipping" ? (
+          <p className="sheet-copy">
+            The selected shipping option is{" "}
+            {shipping === 0 ? "Standard Shipping" : "Priority Shipping"},{" "}
+            {formatMoney({ amount: fee, currency: "USD" })}. You can change it
+            in Shipping method. This is the captured checkout rate; no live
+            carrier quote has been requested.
+          </p>
+        ) : help === "taxes" ? (
+          <p className="sheet-copy">
+            The estimated tax shown for this reference order is{" "}
+            {formatMoney({ amount: tax, currency: "USD" })}. It is a captured
+            preview amount, not a live tax calculation. No payment will be
+            submitted.
+          </p>
+        ) : (
+          <p className="sheet-copy">
+            {checkoutStoreName}’s{" "}
+            {help === "terms" ? "Terms of Service" : "Privacy Policy"} are not
+            included in this reference preview.
+          </p>
+        )}
       </Sheet>
 
       <Sheet

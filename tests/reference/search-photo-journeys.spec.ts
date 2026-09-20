@@ -386,4 +386,51 @@ test("structured photo continuations retain only their captured pixels and leave
   await page.goBack();
   await expect(page).toHaveURL(/\/assistant\?example=photo$/);
   await expect(fragments).toHaveCount(3);
+  await expect(
+    page.getByRole("textbox", { name: "Ask a follow-up", exact: true }),
+  ).toHaveValue("Keep this draft");
+});
+
+test("a pending local photo and question survive viewing the separate captured answer", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "search-photo");
+  await page.goto("/search");
+  await button(page, "Add photos").click();
+  const chooser = page.getByRole("dialog", { name: "Add photos", exact: true });
+  await chooser
+    .locator('input[type="file"]')
+    .first()
+    .setInputFiles({
+      name: "local-photo.png",
+      mimeType: "image/png",
+      buffer: Buffer.from(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2nVQAAAAASUVORK5CYII=",
+        "base64",
+      ),
+    });
+  const input = page.getByRole("textbox", {
+    name: "Search products",
+    exact: true,
+  });
+  await input.fill("Find soap in this photo");
+  const photo = page.getByRole("img", { name: "Selected photo", exact: true });
+  const original = await photo.getAttribute("src");
+  expect(original).toMatch(/^blob:/);
+  await input.press("Enter");
+  await page
+    .getByRole("dialog", { name: "Photo search unavailable", exact: true })
+    .getByRole("link", { name: "View captured example", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/assistant\?example=photo$/);
+  await page.goBack();
+  await expect(input).toHaveValue("Find soap in this photo");
+  await expect(photo).toHaveAttribute("src", original!);
+  await expect
+    .poll(() =>
+      photo.evaluate((image) => (image as HTMLImageElement).naturalWidth),
+    )
+    .toBe(1);
+  await button(page, "Remove selected photo").click();
+  await expect(photo).toHaveCount(0);
 });

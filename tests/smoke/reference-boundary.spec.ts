@@ -9,6 +9,7 @@ test("reference pages and media are unavailable without preview opt-in", async (
     "/profile",
     "/checkout",
     "/api/reference-media/cleo",
+    "/api/reference-video/kitsch-hero",
   ]) {
     const response = await request.get(path);
     expect(response.status(), path).toBe(404);

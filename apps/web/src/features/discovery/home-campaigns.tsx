@@ -1,14 +1,14 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import type { Catalog } from "../catalog/types";
 import { formatMoney } from "../catalog/types";
-import { IconButton, SaveButton, Sheet } from "./components";
+import { IconButton, SaveButton } from "./components";
 import { Icon } from "./icons";
 import { KitschWordmark } from "./kitsch-wordmark";
-import { useDiscovery } from "./state";
 import "./home-campaigns.css";
+import { ShopOptionsMenu, type ShopMenuStage } from "./shop-options-menu";
 
 type Campaign = {
   id: string;
@@ -124,6 +124,8 @@ const campaigns: Campaign[] = [
     tone: "pura",
     tall: true,
     photo: "home-pura-photo",
+    headerPhoto: "home-pura-menu-header",
+    wordmark: "home-pura-menu-wordmark",
     partialPhoto: true,
     products: [],
   },
@@ -262,19 +264,16 @@ export function HomeCampaigns({
       cancelAnimationFrame(focusFrame);
     };
   }, [history]);
-  const state = useDiscovery();
   const [menu, setMenu] = useState<Campaign | null>(null);
-  const [stage, setStage] = useState<"menu" | "reason" | "report" | "reported">(
-    "menu",
-  );
+  const lastMenu = useRef<Campaign | null>(null);
+  const [stage, setStage] = useState<ShopMenuStage>("menu");
   const [hidden, setHidden] = useState<string[]>([]);
   const [notice, setNotice] = useState("");
-  const [reportReason, setReportReason] = useState("");
+
   const selectedStore = catalog.stores.find((s) => s.id === menu?.store);
   function close() {
     setMenu(null);
     setStage("menu");
-    setReportReason("");
   }
   return (
     <>
@@ -386,9 +385,9 @@ export function HomeCampaigns({
                     icon="more"
                     label={`More options for ${store?.name ?? "shop"}`}
                     onClick={() => {
+                      lastMenu.current = c;
                       setMenu(c);
                       setStage("menu");
-                      setReportReason("");
                     }}
                   />
                 </header>
@@ -581,119 +580,22 @@ export function HomeCampaigns({
           );
         })}
       </div>
-      <Sheet
+      <ShopOptionsMenu
         open={!!menu}
-        title={
-          stage === "reason"
-            ? "Not interested"
-            : stage === "report"
-              ? "Report shop"
-              : stage === "reported"
-                ? "Report saved"
-                : (selectedStore?.name ?? "Shop")
-        }
-        headerless={stage === "menu"}
-        className={`campaign-menu campaign-menu-${stage}`}
+        store={selectedStore}
+        rating={menu?.rating}
+        stage={stage}
+        onStageChange={setStage}
         onClose={close}
-      >
-        {stage === "menu" ? (
-          <>
-            <header className="campaign-menu-store">
-              {selectedStore?.logo && <img src={selectedStore.logo} alt="" />}
-              <span>
-                <strong>{selectedStore?.name ?? "Shop"}</strong>
-                <b>{menu?.rating}</b>
-              </span>
-              <IconButton
-                icon="close"
-                label="Close shop options"
-                onClick={close}
-              />
-            </header>
-            <div className="campaign-menu-rows">
-              <Link href={menu?.store ? `/stores/${menu.store}` : "/search"}>
-                <Icon name="storefront" />
-                Visit shop
-              </Link>
-              {menu?.store && (
-                <button onClick={() => state.toggleFollow(menu.store!)}>
-                  <Icon name="plus-circle" />
-                  {state.followed.includes(menu.store) ? "Following" : "Follow"}
-                </button>
-              )}
-              <button onClick={() => setStage("reason")}>
-                <Icon name="thumb-down" />
-                Not interested
-              </button>
-              <button
-                className="danger-text"
-                onClick={() => setStage("report")}
-              >
-                <Icon name="alert" />
-                Report shop
-              </button>
-            </div>
-          </>
-        ) : stage === "reason" ? (
-          <>
-            <p>Please select a reason</p>
-            <div className="campaign-reasons">
-              {[
-                "I just don’t like it",
-                "Products are too expensive",
-                "Want to see fewer shops like this",
-                `Want to see less of ${selectedStore?.name ?? "this shop"}`,
-              ].map((reason) => (
-                <button
-                  key={reason}
-                  onClick={() => {
-                    if (menu) {
-                      setHidden((v) => [...new Set([...v, menu.id])]);
-                      setNotice(menu.id);
-                    }
-                    close();
-                  }}
-                >
-                  {reason}
-                </button>
-              ))}
-            </div>
-          </>
-        ) : stage === "report" ? (
-          <>
-            <p>Please select a reason</p>
-            <div className="filter-options">
-              {[
-                "Misleading",
-                "Inappropriate content",
-                "IP Infringement",
-                "Other",
-              ].map((reason) => (
-                <label key={reason}>
-                  {reason}
-                  <input
-                    type="radio"
-                    name="campaign-report"
-                    checked={reportReason === reason}
-                    onChange={() => setReportReason(reason)}
-                  />
-                </label>
-              ))}
-            </div>
-            <button
-              className="primary form-submit"
-              disabled={!reportReason}
-              onClick={() => setStage("reported")}
-            >
-              Report
-            </button>
-          </>
-        ) : (
-          <p className="sheet-copy">
-            This report was recorded locally. No report was sent.
-          </p>
-        )}
-      </Sheet>
+        onReopen={() => setMenu(lastMenu.current)}
+        onHide={() => {
+          if (menu) {
+            setHidden((values) => [...new Set([...values, menu.id])]);
+            setNotice(menu.id);
+          }
+          close();
+        }}
+      />
     </>
   );
 }

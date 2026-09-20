@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { SourceLink } from "./return-navigation";
 import { ReviewStars } from "./review-feedback";
 
 type Preview = {
@@ -80,7 +80,9 @@ export function ProductReviewPreview({
           </article>
         ))}
       </div>
-      <Link href={`/products/${productId}/reviews`}>Read all reviews</Link>
+      <SourceLink href={`/products/${productId}/reviews`}>
+        Read all reviews
+      </SourceLink>
     </section>
   );
 }

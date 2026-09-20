@@ -148,11 +148,18 @@ export function OrderProgress({
     >
       <span className={styles.progressFill} />
       {phase === "waiting" ? (
-        <img
+        <svg
           className={styles.waitingParcel}
-          src="/api/reference-media/parcel"
-          alt=""
-        />
+          viewBox="0 0 20 20"
+          aria-hidden="true"
+        >
+          <path d="M2 3.5 9 2l9 1.5v14L9 19l-7-1.5Z" fill="#b38d60" />
+          <path d="M2 3.5 9 5l9-1.5L9 2Z" fill="#d2b185" />
+          <path d="M9 5v14l9-1.5v-14Z" fill="#c8a575" />
+          <path d="m6 2.65 4 1.9 4-.65-4-1.75Z" fill="#85708f" />
+          <path d="M6 4.35v6.9l4 .7v-7Z" fill="#69547c" />
+          <path d="m6 14 4 .7v4l-4-.7Z" fill="#69547c" />
+        </svg>
       ) : (
         <>
           <span className={styles.progressCarrier}>

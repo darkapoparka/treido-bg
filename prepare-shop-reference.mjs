@@ -7,6 +7,10 @@ import { fileURLToPath, URL } from "node:url";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import process from "node:process";
+import {
+  readVideoMetadata,
+  decorativeVideoArguments,
+} from "./scripts/shop-parity/video-metadata.mjs";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const targetRoot = resolve(root, "reference-assets/shop/products");
@@ -18,6 +22,12 @@ const { assets } = JSON.parse(
   ),
 );
 const verifyOnly = process.argv.includes("--verify");
+const selected = process.argv
+  .find((argument) => argument.startsWith("--only="))
+  ?.slice("--only=".length)
+  .split(",");
+if (selected?.some((id) => !assets.some((asset) => asset.id === id)))
+  throw new Error("Unknown reference asset in --only selection");
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const sharp = createRequire(resolve(root, "apps/web/package.json"))("sharp");
 const matches = async (bytes, asset) => {
@@ -33,6 +43,7 @@ const failures = [];
 const reviews = [];
 
 for (const asset of assets) {
+  if (selected && !selected.includes(asset.id)) continue;
   try {
     const destination = resolve(root, asset.localFile);
     const child = relative(targetRoot, destination);
@@ -40,29 +51,69 @@ for (const asset of assets) {
       throw new Error(`Invalid asset destination: ${asset.id}`);
     let bytes;
     let sourceSha256;
-    let downloaded = false;
+    let prepared = false;
     try {
       bytes = await readFile(destination);
     } catch (error) {
       if (error.code !== "ENOENT" || verifyOnly) throw error;
     }
     if (!bytes) {
-      const url = new URL(asset.sourceUrl);
-      if (url.protocol !== "https:" || url.username || url.password)
-        throw new Error(`Invalid source: ${asset.id}`);
-      const response = await globalThis.fetch(url, {
-        signal: globalThis.AbortSignal.timeout(60_000),
-      });
-      if (!response.ok)
-        throw new Error(`${asset.id}: download returned ${response.status}`);
-      bytes = Buffer.from(await response.arrayBuffer());
+      let localSource;
+      if (asset.sourceFile) {
+        const captureRoot = resolve(root, "references/shop");
+        localSource = resolve(root, asset.sourceFile);
+        const captureChild = relative(captureRoot, localSource);
+        if (
+          !captureChild ||
+          captureChild.startsWith("..") ||
+          isAbsolute(captureChild)
+        )
+          throw new Error(`Invalid inherited source: ${asset.id}`);
+        bytes = await readFile(localSource);
+        if (hash(bytes) !== asset.sourceSha256)
+          throw new Error(`${asset.id}: inherited video checksum mismatch`);
+      } else {
+        const url = new URL(asset.sourceUrl);
+        if (url.protocol !== "https:" || url.username || url.password)
+          throw new Error(`Invalid source: ${asset.id}`);
+        const response = await globalThis.fetch(url, {
+          signal: globalThis.AbortSignal.timeout(60_000),
+        });
+        if (!response.ok)
+          throw new Error(`${asset.id}: download returned ${response.status}`);
+        bytes = Buffer.from(await response.arrayBuffer());
+      }
       sourceSha256 = hash(bytes);
-      downloaded = true;
+      if (
+        asset.mediaType === "video/mp4" &&
+        sourceSha256 !== asset.sourceSha256
+      )
+        throw new Error(`${asset.id}: original video checksum mismatch`);
+      prepared = true;
       await mkdir(targetRoot, { recursive: true });
-      if (asset.frameSeconds !== undefined) {
-        const video = `${destination}.source.mp4`;
+      if (asset.mediaType === "video/mp4" && asset.cropPixels) {
+        if (!localSource)
+          throw new Error(
+            "Decorative video requires an inherited local source",
+          );
+        const candidate = `${destination}.candidate.mp4`;
+        try {
+          await promisify(execFile)(
+            process.env.FFMPEG_PATH || "ffmpeg",
+            decorativeVideoArguments(localSource, candidate, asset.cropPixels),
+            { windowsHide: true },
+          );
+          bytes = await readFile(candidate);
+        } finally {
+          await unlink(candidate).catch((error) => {
+            if (error.code !== "ENOENT") throw error;
+          });
+        }
+      }
+      if (asset.frameSeconds !== undefined || asset.sourceFrame !== undefined) {
+        const video = localSource ?? `${destination}.source.mp4`;
         const frame = `${destination}.frame.png`;
-        await writeFile(video, bytes, { flag: "wx" });
+        if (!localSource) await writeFile(video, bytes, { flag: "wx" });
         try {
           await promisify(execFile)(
             process.env.FFMPEG_PATH || "ffmpeg",
@@ -70,10 +121,14 @@ for (const asset of assets) {
               "-nostdin",
               "-v",
               "error",
-              "-ss",
-              String(asset.frameSeconds),
+              ...(asset.sourceFrame === undefined
+                ? ["-ss", String(asset.frameSeconds)]
+                : []),
               "-i",
               video,
+              ...(asset.sourceFrame === undefined
+                ? []
+                : ["-vf", `select=eq(n\\,${asset.sourceFrame})`]),
               "-frames:v",
               "1",
               frame,
@@ -82,18 +137,36 @@ for (const asset of assets) {
           );
           bytes = await readFile(frame);
         } finally {
-          await unlink(video);
+          if (!localSource) await unlink(video);
           await unlink(frame).catch((error) => {
             if (error.code !== "ENOENT") throw error;
           });
         }
-      } else if (asset.cropPixels) {
+      }
+      if (asset.cropPixels && asset.mediaType !== "video/mp4") {
         const [left, top, width, height] = asset.cropPixels;
         bytes = await sharp(bytes)
           .extract({ left, top, width, height })
           .png()
           .toBuffer();
       }
+    }
+    if (asset.mediaType === "video/mp4") {
+      const metadata = readVideoMetadata(bytes);
+      if (hash(bytes) !== asset.sha256)
+        throw new Error(
+          `${asset.id}: video checksum mismatch; existing files preserved`,
+        );
+      if (
+        metadata.width !== asset.width ||
+        metadata.height !== asset.height ||
+        metadata.frames !== asset.frames ||
+        Math.abs(metadata.durationSeconds - asset.durationSeconds) > 0.001
+      )
+        throw new Error(`${asset.id}: video dimensions or timing changed`);
+      if (prepared) await writeFile(destination, bytes, { flag: "wx" });
+      process.stdout.write(`${asset.id}: verified video\n`);
+      continue;
     }
     const metadata = await sharp(bytes).metadata();
     if (!(await matches(bytes, asset))) {
@@ -128,7 +201,7 @@ for (const asset of assets) {
     }
     if (metadata.width !== asset.width || metadata.height !== asset.height)
       throw new Error(`${asset.id}: dimensions changed`);
-    if (downloaded) await writeFile(destination, bytes, { flag: "wx" });
+    if (prepared) await writeFile(destination, bytes, { flag: "wx" });
     process.stdout.write(`${asset.id}: verified\n`);
   } catch (error) {
     failures.push(`${asset.id}: ${error.message}`);

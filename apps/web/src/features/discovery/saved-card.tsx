@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
-import Link from "next/link";
+import { SourceLink } from "./return-navigation";
 import { useState } from "react";
 import { formatMoney, type SavedListing } from "../catalog/types";
 import { IconButton, Sheet } from "./components";
@@ -58,12 +58,12 @@ export function SavedCard({
             {photo}
           </button>
         ) : (
-          <Link
+          <SourceLink
             href={`/products/${product.id}`}
             aria-label={product.images[0] ? undefined : product.title}
           >
             {photo}
-          </Link>
+          </SourceLink>
         )}
         {product.promotion && (
           <span className="saved-promotion">{product.promotion}</span>
@@ -91,9 +91,12 @@ export function SavedCard({
           {title}
         </button>
       ) : (
-        <Link className="saved-item-title" href={`/products/${product.id}`}>
+        <SourceLink
+          className="saved-item-title"
+          href={`/products/${product.id}`}
+        >
           {title}
-        </Link>
+        </SourceLink>
       )}
       {product.price && <b>{formatMoney(product.price)}</b>}
       {product.variantLabel && (

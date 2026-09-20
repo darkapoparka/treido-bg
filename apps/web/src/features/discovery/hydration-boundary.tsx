@@ -6,6 +6,7 @@ import {
   type ComponentPropsWithoutRef,
   type ReactNode,
 } from "react";
+import { useSourceReturn } from "./return-navigation";
 const subscribe = () => () => {};
 const clientReady = () => true;
 const serverReady = () => false;
@@ -16,6 +17,7 @@ export const useSurfaceReady = () => useContext(Ready);
 // can hydrate later. Fieldset protects form values; inert also protects links.
 export function HydrationBoundary({ children }: { children: ReactNode }) {
   const ready = useSyncExternalStore(subscribe, clientReady, serverReady);
+  useSourceReturn(ready);
   return (
     <Ready value={ready}>
       <fieldset

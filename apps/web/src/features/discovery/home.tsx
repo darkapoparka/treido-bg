@@ -2,6 +2,7 @@
 import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { SourceLink } from "./return-navigation";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatMoney, type Catalog } from "../catalog/types";
@@ -208,13 +209,13 @@ export function Home({ catalog }: { catalog: Catalog }) {
                           }
                           compact
                         />
-                        <Link href={`/products/${p.id}`}>
+                        <SourceLink href={`/products/${p.id}`}>
                           <strong>{p.title}</strong>
                           <p className="rating">
                             <span>★★★★★</span> ({p.ratingCount})
                           </p>
                           <p>{formatMoney(p.price)}</p>
-                        </Link>
+                        </SourceLink>
                       </div>
                     ))}
                 </div>

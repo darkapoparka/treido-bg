@@ -596,7 +596,7 @@ test("manual package validates carrier selection and email forwarding remains an
     const artwork = carrierArtwork.nth(index);
     await expect(artwork).toHaveAttribute(
       "src",
-      "/api/reference-media/widget-dhl-logo",
+      `/api/reference-media/order-carrier-${["active-tracing", "benelux", "two-man", "ecommerce", "spain"][index]}`,
     );
     await expect
       .poll(() =>
@@ -606,6 +606,11 @@ test("manual package validates carrier selection and email forwarding remains an
       )
       .toBeGreaterThan(0);
   }
+  await expect(
+    page
+      .getByRole("button", { name: "DHL eCommerce Vietnam", exact: true })
+      .locator("img"),
+  ).toHaveCount(0);
 
   await page
     .getByRole("button", { name: "DHL eCommerce", exact: true })
@@ -931,6 +936,93 @@ test("the short-height manual form keeps every required control reachable", asyn
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(321);
+});
+
+test("manual carrier search can recover, dismiss and retain an existing carrier", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "orders-transit");
+  await page.goto("/orders/REF-1001?view=tracking");
+  const editor = await openTrackingEditor(page);
+  const carrier = editor.getByLabel("Carrier", { exact: true });
+  await carrier.fill("unlisted-carrier");
+  await expect(editor.getByRole("status")).toHaveText("No matching carriers");
+  await editor.getByRole("button", { name: "Show all carriers" }).click();
+  await editor
+    .getByRole("button", { name: "Amazon Logistics", exact: true })
+    .click();
+  await expect(carrier).toHaveValue("Amazon Logistics");
+  await carrier.fill("DHL");
+  await carrier.press("Escape");
+  await expect(editor).toBeVisible();
+  await expect(carrier).toBeFocused();
+  await expect(carrier).toHaveValue("Amazon Logistics");
+  await expect(editor.locator(".carrier-search")).toHaveCount(0);
+  await expect(
+    editor.getByRole("button", { name: "Update tracking details" }),
+  ).toBeDisabled();
+  await carrier.press("Escape");
+  await expect(editor).not.toBeVisible();
+  await page.goto("/orders/new");
+  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page
+    .getByRole("button", { name: "track-q6uoeuhu57@my.shop.app", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toHaveText("Email address copied");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    "track-q6uoeuhu57@my.shop.app",
+  );
+});
+
+test("deleting a reference order supports cancellation and undo from Orders", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "orders-waiting");
+  await page.goto("/orders/REF-1001");
+  await page
+    .getByRole("button", { name: "Order options", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Delete", exact: true }).click();
+  const dialog = page.getByRole("dialog", {
+    name: "Delete this order?",
+    exact: true,
+  });
+  await dialog.getByRole("button", { name: "Keep order", exact: true }).click();
+  await expect(page.locator(".order-hero")).toBeVisible();
+  await page
+    .getByRole("button", { name: "Order options", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Delete", exact: true }).click();
+  await dialog
+    .getByRole("button", { name: "Delete order", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/orders$/);
+  await expect(page.locator('.tracking-card[href*="REF-1001"]')).toHaveCount(0);
+  await page.getByRole("button", { name: "Undo", exact: true }).click();
+  await expect(page.locator('.tracking-card[href*="REF-1001"]')).toBeVisible();
+});
+
+test("manual packages do not expose unrelated geography and review help returns focus", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "orders-manual");
+  await page.goto("/orders/REF-manual-shirt?map=1");
+  await expect(
+    page.getByRole("heading", { name: "Label created", exact: true }),
+  ).toBeVisible();
+  await expect(page.locator(".tracking-map")).toHaveCount(0);
+  await expect(page.locator("button.tracking-status-card")).toHaveCount(0);
+  await page.goto("/orders/REF-1001/review");
+  const help = page.getByRole("button", { name: "About your review name" });
+  await help.click();
+  const dialog = page.getByRole("dialog", {
+    name: "Your review name",
+    exact: true,
+  });
+  await expect(dialog).toContainText("does not publish");
+  await page.goBack();
+  await expect(dialog).not.toBeVisible();
+  await expect(help).toBeFocused();
 });
 
 for (const width of [320, 393, 430]) {

@@ -148,6 +148,16 @@
   margin-left: 3px;
   object-fit: fill;
 }
+/* Pura's stills were captured below a 40% black native sheet backdrop.
+   Restore their luminance before the live Sheet applies its own backdrop. */
+.campaign-pura .campaign-photo-partial,
+.campaign-pura .campaign-header-photo,
+.campaign-pura .campaign-wordmark-image {
+  filter: brightness(1.666667);
+}
+.campaign-pura .campaign-header-photo {
+  height: 59px;
+}
 .campaign-pura-reason .campaign-art::after {
   content: "";
   position: absolute;
@@ -372,76 +382,6 @@
   background: black;
   color: white;
   font-size: 12px;
-}
-.campaign-menu-store {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 8px 0 16px;
-}
-.campaign-menu-store > img {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-}
-.campaign-menu-store > span {
-  flex: 1;
-  display: grid;
-  gap: 6px;
-}
-.campaign-menu-store strong {
-  font-size: 14px;
-}
-.campaign-menu-store b {
-  font-size: 12px;
-  font-weight: 500;
-}
-.campaign-menu-menu {
-  min-height: 295px;
-  bottom: 35px;
-}
-.campaign-menu-store > .icon-button {
-  width: 24px;
-  height: 24px;
-  align-self: flex-start;
-  background: #f4f4f4;
-}
-.campaign-menu-rows > a,
-.campaign-menu-rows > button {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  width: 100%;
-  min-height: 48px;
-  font-size: 16px;
-  text-align: left;
-}
-.campaign-menu-rows svg {
-  width: 22px;
-  height: 22px;
-}
-.campaign-menu-reason {
-  bottom: 37px;
-}
-.campaign-menu-reason .sheet-header {
-  margin-bottom: 0;
-}
-.campaign-menu-reason .sheet-header h2 {
-  font-size: 18px;
-}
-.campaign-menu-reason > p {
-  color: #888;
-  font-size: 14px;
-}
-.campaign-reasons {
-  margin-top: 20px;
-}
-.campaign-reasons button {
-  display: block;
-  width: 100%;
-  min-height: 54px;
-  font-size: 16px;
-  text-align: left;
 }
 @media (max-width: 360px) {
   .campaign-wordmark > span {

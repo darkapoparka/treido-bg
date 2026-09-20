@@ -2,6 +2,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Sheet } from "./components";
 import { Icon } from "./icons";
+import { useSheetStages } from "./sheet-stages";
 
 export { ReviewStars } from "./rating-stars";
 
@@ -122,21 +123,38 @@ const reportReasons = [
 ] as const;
 
 export function ReviewReport({
+  open,
   onClose,
+  onReopen,
   onReport,
 }: {
+  open: boolean;
   onClose: () => void;
+  onReopen: () => void;
   onReport: (reason: string) => void;
 }) {
-  const [stage, setStage] = useState<"menu" | "reasons" | "thanks">("menu");
   const [reason, setReason] = useState("");
+  const flow = useSheetStages<"menu" | "reasons" | "thanks">({
+    open,
+    initial: "menu",
+    onClose,
+    onReopen,
+    onStart: () => setReason(""),
+  });
+  const stage = flow.stage;
   const group = useId();
   const reasonRef = useRef<HTMLInputElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const entryRef = useRef<HTMLButtonElement>(null);
+  const previousStage = useRef(stage);
   useEffect(() => {
+    if (!open) return;
+    if (stage === "menu" && previousStage.current !== "menu")
+      entryRef.current?.focus({ preventScroll: true });
     if (stage === "reasons") reasonRef.current?.focus({ preventScroll: true });
     if (stage === "thanks") closeRef.current?.focus({ preventScroll: true });
-  }, [stage]);
+    previousStage.current = stage;
+  }, [open, stage]);
   const title =
     stage === "menu"
       ? "More options"
@@ -145,16 +163,18 @@ export function ReviewReport({
         : "Thanks for reporting";
   return (
     <Sheet
-      open
+      open={open}
       title={title}
-      onClose={onClose}
+      onClose={() => flow.close()}
+      manageHistory={false}
       headerless={stage !== "menu"}
       className={`review-report-${stage}`}
     >
       {stage === "menu" ? (
         <button
+          ref={entryRef}
           className="review-report-entry danger-text"
-          onClick={() => setStage("reasons")}
+          onClick={() => flow.navigate("reasons")}
         >
           <Icon name="alert" /> Report this review
         </button>
@@ -164,7 +184,7 @@ export function ReviewReport({
             event.preventDefault();
             if (!reason) return;
             onReport(reason);
-            setStage("thanks");
+            flow.navigate("thanks");
           }}
         >
           {/* Sheet already supplies the accessible heading in headerless mode. */}
@@ -185,7 +205,11 @@ export function ReviewReport({
                   <small id={`${group}-${index}`}>{description}</small>
                 </span>
                 <input
-                  ref={index === 0 ? reasonRef : undefined}
+                  ref={
+                    reason === label || (!reason && index === 0)
+                      ? reasonRef
+                      : undefined
+                  }
                   type="radio"
                   name={group}
                   value={label}
@@ -198,7 +222,7 @@ export function ReviewReport({
             ))}
           </fieldset>
           <div className="sheet-actions">
-            <button type="button" className="pill" onClick={onClose}>
+            <button type="button" className="pill" onClick={() => flow.close()}>
               Cancel
             </button>
             <button
@@ -225,7 +249,7 @@ export function ReviewReport({
             ref={closeRef}
             type="button"
             className="review-report-close"
-            onClick={onClose}
+            onClick={() => flow.close()}
           >
             Close
           </button>

@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- Local allowlisted reference crops. */
 import Link from "next/link";
+import { SourceLink } from "./return-navigation";
 import { usePathname, useRouter } from "next/navigation";
 import {
   useEffect,
@@ -67,13 +68,16 @@ export function FloatingNav({
     (quantity, line) => quantity + line.quantity,
     0,
   );
-  const active = pathname.startsWith("/orders")
-    ? "/orders"
-    : pathname.startsWith("/search")
-      ? "/search"
-      : pathname.startsWith("/explore") || pathname.startsWith("/minis")
-        ? "/explore"
-        : "/";
+  const active =
+    pathname === "/orders/history"
+      ? "/"
+      : pathname.startsWith("/orders")
+        ? "/orders"
+        : pathname.startsWith("/search")
+          ? "/search"
+          : pathname.startsWith("/explore") || pathname.startsWith("/minis")
+            ? "/explore"
+            : "/";
   return (
     <div
       data-fade={fade || undefined}
@@ -176,7 +180,7 @@ export function ProductCard({
       data-product-id={product.id}
     >
       <div className="product-media">
-        <Link
+        <SourceLink
           href={`/products/${product.id}`}
           aria-label={product.images[0] ? undefined : product.title}
         >
@@ -191,7 +195,7 @@ export function ProductCard({
               Product photograph was not included in the reference.
             </span>
           )}
-        </Link>
+        </SourceLink>
         {reported && (
           <span className="product-reported-mark">
             <Icon name="eye-off" />
@@ -205,7 +209,7 @@ export function ProductCard({
         {!reported && <SaveButton product={product} />}
       </div>
       {!compact && !mediaOnly && (
-        <Link href={`/products/${product.id}`} className="product-copy">
+        <SourceLink href={`/products/${product.id}`} className="product-copy">
           {storeName && <span className="product-seller">{storeName}</span>}
           <strong>{product.title}</strong>
           {(product.ratingCount || partialRatingStars !== undefined) && (
@@ -250,7 +254,7 @@ export function ProductCard({
               <del>{formatMoney(product.compareAt)}</del>
             )}
           </span>
-        </Link>
+        </SourceLink>
       )}
     </article>
   );
@@ -264,7 +268,7 @@ export function StoreRow({
 }) {
   return (
     <div className="store-row">
-      <Link className="store-row-identity" href={`/stores/${store.id}`}>
+      <SourceLink className="store-row-identity" href={`/stores/${store.id}`}>
         {store.logo ? (
           <img src={store.logo} alt="" />
         ) : (
@@ -280,13 +284,16 @@ export function StoreRow({
             </span>
           )}
         </span>
-      </Link>
+      </SourceLink>
       {onMore ? (
         <IconButton icon="more" label="More options" onClick={onMore} />
       ) : (
-        <Link href={`/stores/${store.id}/info`} aria-label="Store information">
+        <SourceLink
+          href={`/stores/${store.id}/info`}
+          aria-label="Store information"
+        >
           <Icon name="more" />
-        </Link>
+        </SourceLink>
       )}
     </div>
   );

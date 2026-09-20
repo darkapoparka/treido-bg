@@ -35,7 +35,7 @@
 }
 
 .store {
-  background: #c2bfb5;
+  background: linear-gradient(#393937 0 304px, #c2bfb5 304px);
 }
 .store :global(.floating-dock[data-fade="true"])::before {
   background: transparent;
@@ -46,10 +46,47 @@
 .store :global(.store-promotion) {
   background: #393937;
 }
+.store :global(.store-promotion > span) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.store :global(.store-promotion > span > svg) {
+  width: 14px;
+  height: 14px;
+}
+.store :global(.promotion-owner.expanded .store-promotion) {
+  height: 56px;
+  padding-bottom: 20px;
+}
+.store :global(.promotion-owner.expanded .promotion-offers) {
+  height: 208px;
+  grid-template-rows: 88px 88px;
+}
+.store :global(.promotion-offers > div) {
+  padding: 20px;
+  border-radius: 28px;
+}
+.store :global(.promotion-offers > div > b) {
+  font-size: 16px;
+  line-height: 20px;
+}
+.store :global(.promotion-offers p) {
+  font-size: 14px;
+  line-height: 20px;
+}
+.store :global(.promotion-offers span) {
+  display: inline-block;
+  padding: 2px 5px;
+  border: 1px solid #ffffff30;
+  border-radius: 6px;
+}
 .store :global(.store-hero) {
   border-radius: 36px 36px 0 0;
 }
 .store :global(.store-hero-kitsch) {
+  position: relative;
   --kitsch-hero-photo: url("/api/reference-media/store-kitsch-default-hero");
   /* Keep photo aspect and live controls independent at every viewport width.
      The 393px source uses the original video photo with a -43px vertical crop. */
@@ -66,6 +103,36 @@
       left top / 100% 100% no-repeat,
     var(--kitsch-hero-photo) center -43px / 100% auto no-repeat,
     #c2bfb5;
+}
+.kitschMotion {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 302px;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: inherit;
+}
+.kitschVideo {
+  top: -43px;
+  left: 0;
+  width: 100%;
+}
+.kitschMotion:has(video[data-video-ready="true"])::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    #c2bfb50a 0,
+    #c2bfb517 60px,
+    #c2bfb53d 100px,
+    #c2bfb57d 150px,
+    #c2bfb5b3 200px,
+    #c2bfb5de 250px,
+    #c2bfb5 302px
+  );
+}
+.storeHeader {
+  position: relative;
 }
 .store :global(.store-hero-kitsch.store-hero-followed) {
   --kitsch-hero-photo: url("/api/reference-media/store-kitsch-followed-hero");
@@ -337,33 +404,20 @@
   font-size: 24px;
   line-height: 28px;
 }
-.information :global(.store-info-rating > span) {
-  display: block;
+.information :global(.store-info-rating > .review-rating-stars) {
+  --review-star-size: 24px;
   flex: 0 0 124px;
   width: 124px;
-  height: 28px;
-  font-size: 0;
-  position: relative;
+  color: #080808;
+  transform: translateY(8px);
 }
-.information :global(.store-info-rating > span)::before,
-.information :global(.store-info-rating > span)::after {
-  content: "★★★★★";
-  display: block;
-  white-space: nowrap;
-  font-size: 28px;
-  line-height: 28px;
-  letter-spacing: 1px;
-}
-.information :global(.store-info-rating > span)::before {
+.information :global(.store-info-rating .review-rating-stars-empty) {
   color: #95958e;
 }
-.information :global(.store-info-rating > span)::after {
-  position: absolute;
-  inset: 0;
-  width: var(--store-rating-fill);
-  white-space: nowrap;
-  overflow: hidden;
-  color: #080808;
+.information :global(.store-info-rating .review-rating-stars-empty),
+.information :global(.store-info-rating .review-rating-stars-fill > span) {
+  width: 124px;
+  justify-content: space-between;
 }
 .information :global(.store-info-panel > p) {
   margin: 0;
@@ -383,6 +437,10 @@
 .information :global(.store-review-preview > span) {
   font-size: 14px;
   line-height: 18px;
+}
+.information :global(.store-review-preview > .review-rating-stars) {
+  --review-star-size: 13px;
+  color: #080808;
 }
 .information :global(.store-review-preview b) {
   margin-top: 4px;

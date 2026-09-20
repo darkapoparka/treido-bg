@@ -4,7 +4,12 @@ import Link from "next/link";
 import { AccountIcon } from "./icons";
 import { useState, type ReactNode } from "react";
 import { FloatingNav, Sheet } from "../discovery/components";
-import { useAccount, blankAddress, type Address } from "./state";
+import {
+  useAccount,
+  blankAddress,
+  type Address,
+  type ReferencePaymentCard,
+} from "./state";
 export function AccountPage({
   title,
   children,
@@ -366,8 +371,15 @@ export function PhoneEditor({
   initialPhone?: string;
   onPhoneChange?: (phone: string) => void;
 }) {
-  const [phone, setPhone] = useState(initialPhone);
-  const [country, setCountry] = useState("+1");
+  const initialCountry = ["+359", "+44", "+49", "+33", "+1"].find((prefix) =>
+    initialPhone.startsWith(prefix),
+  );
+  const [phone, setPhone] = useState(
+    initialCountry
+      ? initialPhone.slice(initialCountry.length).trim()
+      : initialPhone,
+  );
+  const [country, setCountry] = useState(initialCountry ?? "+1");
   const [localStage, setLocalStage] = useState<"phone" | "code">("phone");
   const stage = controlledStage ?? localStage;
   const setStage = (next: "phone" | "code") => {
@@ -498,31 +510,45 @@ export function PhoneEditor({
 export function PaymentEditor({
   checkout = false,
   onSaved,
+  initialCard,
+  addresses = [],
+  onEdited,
 }: {
   checkout?: boolean;
   onSaved?: (cardId: string) => void;
+  initialCard?: ReferencePaymentCard;
+  addresses?: Address[];
+  onEdited?: (card: ReferencePaymentCard) => void;
 }) {
   const [error, setError] = useState("");
   const [cardDigits, setCardDigits] = useState("");
   const [cardTail, setCardTail] = useState("");
-  const [expiryValue, setExpiryValue] = useState("");
+  const [expiryValue, setExpiryValue] = useState(initialCard?.expiry ?? "");
   const [cvcValue, setCvcValue] = useState("");
   const [cardName, setCardName] = useState("");
   const hasNumber = cardDigits.length > 0;
   const validCard = cardDigits.length >= 12 && cardDigits.length <= 19;
   const account = useAccount();
+  const billingAddresses = [
+    ...addresses,
+    ...account.addresses.filter(
+      (entry) => !addresses.some((a) => a.id === entry.id),
+    ),
+  ];
   const [billing, setBilling] = useState(
-    account.addresses.find((a) => a.isDefault)?.id ?? "",
+    initialCard?.billingAddressId ??
+      billingAddresses.find((a) => a.isDefault)?.id ??
+      "",
   );
   const [editBilling, setEditBilling] = useState(false);
   const [method, setMethod] = useState("card");
   const selectedBilling =
-    account.addresses.find((address) => address.id === billing) ??
-    account.addresses[0];
+    billingAddresses.find((address) => address.id === billing) ??
+    (initialCard?.billingAddressId ? undefined : billingAddresses[0]);
   return (
     <>
       <form
-        className={`account-form card-editor ${checkout ? "card-editor-checkout" : "card-editor-profile"} ${hasNumber ? "has-number" : ""} ${validCard ? "valid-card" : ""} ${expiryValue && cvcValue ? "details-complete" : ""} ${cardName.trim() ? "has-name" : ""} ${error ? "has-error" : ""}`}
+        className={`account-form card-editor ${initialCard ? "card-editor-existing" : checkout ? "card-editor-checkout" : "card-editor-profile"} ${hasNumber ? "has-number" : ""} ${validCard ? "valid-card" : ""} ${expiryValue && cvcValue ? "details-complete" : ""} ${cardName.trim() ? "has-name" : ""} ${error ? "has-error" : ""}`}
         onSubmit={(e) => {
           e.preventDefault();
           if (method === "apple") {
@@ -538,6 +564,25 @@ export function PaymentEditor({
           );
           const expiry = String(data.get("expiry") ?? "");
           const cvc = String(data.get("cvc") ?? "");
+          if (initialCard) {
+            if (!/^(0[1-9]|1[0-2])\/[0-9]{2}$/.test(expiry)) {
+              setError("Check the expiry date.");
+              return;
+            }
+            if (!selectedBilling) {
+              setError("Add a billing address to save this card.");
+              return;
+            }
+            const updated = {
+              ...initialCard,
+              expiry,
+              billingAddressId: selectedBilling.id,
+            };
+            if (onEdited) onEdited(updated);
+            else account.savePayment(updated);
+            onSaved?.(updated.id);
+            return;
+          }
           if (number.length < 12 || number.length > 19) {
             setError("Check your card number and try again.");
             return;
@@ -556,11 +601,16 @@ export function PaymentEditor({
             return;
           }
           const id = `card-preview-${crypto.randomUUID()}`;
-          account.savePayment({ id, last4: number.slice(-4), expiry });
+          account.savePayment({
+            id,
+            last4: number.slice(-4),
+            expiry,
+            billingAddressId: selectedBilling?.id,
+          });
           onSaved?.(id);
         }}
       >
-        {!checkout && (
+        {!checkout && !initialCard && (
           <div
             className={`payment-illustration ${validCard ? "valid" : ""} ${validCard && cardName.trim() ? "entered" : ""}`}
           >
@@ -576,7 +626,7 @@ export function PaymentEditor({
             {validCard && <b>VISA</b>}
           </div>
         )}
-        {!checkout && (
+        {!checkout && !initialCard && (
           <p className="form-note centered">
             Add a card to save for future checkouts
           </p>
@@ -593,30 +643,37 @@ export function PaymentEditor({
           </label>
         )}
         <div className="card-inputs">
-          <label>
-            Card number
-            <input
-              disabled={method === "apple"}
-              name="cardNumber"
-              onChange={(e) => {
-                const digits = e.target.value.replace(/\D/g, "");
-                setCardDigits(digits);
-                setCardTail(digits.slice(-4));
-                setError("");
-              }}
-              onBlur={(e) => {
-                const digits = e.target.value.replace(/\D/g, "");
-                if (digits && (digits.length < 12 || digits.length > 19))
-                  setError("Check your card number and try again.");
-              }}
-              aria-label="Card number"
-              inputMode="numeric"
-              placeholder="Card number"
-              maxLength={19}
-              required
-              autoComplete="off"
-            />
-          </label>
+          {initialCard ? (
+            <p className="form-note">
+              Visa ···· {initialCard.last4}. Only the masked card and local
+              billing details are available. Changes stay in this preview.
+            </p>
+          ) : (
+            <label>
+              Card number
+              <input
+                disabled={method === "apple"}
+                name="cardNumber"
+                onChange={(e) => {
+                  const digits = e.target.value.replace(/\D/g, "");
+                  setCardDigits(digits);
+                  setCardTail(digits.slice(-4));
+                  setError("");
+                }}
+                onBlur={(e) => {
+                  const digits = e.target.value.replace(/\D/g, "");
+                  if (digits && (digits.length < 12 || digits.length > 19))
+                    setError("Check your card number and try again.");
+                }}
+                aria-label="Card number"
+                inputMode="numeric"
+                placeholder="Card number"
+                maxLength={19}
+                required
+                autoComplete="off"
+              />
+            </label>
+          )}
           <label>
             Expiry
             <input
@@ -631,38 +688,42 @@ export function PaymentEditor({
               onChange={(e) => setExpiryValue(e.target.value)}
             />
           </label>
-          <label>
-            CVC
-            <input
-              disabled={method === "apple"}
-              name="cvc"
-              aria-label="CVC"
-              inputMode="numeric"
-              placeholder="CVC"
-              maxLength={4}
-              required
-              autoComplete="off"
-              value={cvcValue}
-              onChange={(e) => setCvcValue(e.target.value)}
-            />
-          </label>
+          {!initialCard && (
+            <label>
+              CVC
+              <input
+                disabled={method === "apple"}
+                name="cvc"
+                aria-label="CVC"
+                inputMode="numeric"
+                placeholder="CVC"
+                maxLength={4}
+                required
+                autoComplete="off"
+                value={cvcValue}
+                onChange={(e) => setCvcValue(e.target.value)}
+              />
+            </label>
+          )}
         </div>
         {!checkout && error && (
           <p className="form-error card-error" role="alert">
             {error}
           </p>
         )}
-        <label className="form-field">
-          Name on card
-          <input
-            disabled={method === "apple"}
-            required
-            autoComplete="off"
-            placeholder="Name on card"
-            value={cardName}
-            onChange={(e) => setCardName(e.target.value)}
-          />
-        </label>
+        {!initialCard && (
+          <label className="form-field">
+            Name on card
+            <input
+              disabled={method === "apple"}
+              required
+              autoComplete="off"
+              placeholder="Name on card"
+              value={cardName}
+              onChange={(e) => setCardName(e.target.value)}
+            />
+          </label>
+        )}
         {checkout && (
           <>
             <label className="form-field">
@@ -683,7 +744,7 @@ export function PaymentEditor({
         {checkout ? (
           <details open>
             <summary>Bill to</summary>
-            {account.addresses.map((a) => (
+            {billingAddresses.map((a) => (
               <label className="shipping-option" key={a.id}>
                 <input
                   type="radio"
@@ -708,7 +769,7 @@ export function PaymentEditor({
               + Use a different address
             </button>
           </details>
-        ) : cardName.trim() ? (
+        ) : cardName.trim() || initialCard ? (
           <section className="profile-billing">
             <h2>Billing address</h2>
             {selectedBilling && (

@@ -2,13 +2,15 @@
 import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { SourceLink } from "./return-navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "./saved.css";
 import { KitschWordmark } from "./kitsch-wordmark";
 import { SavedCard } from "./saved-card";
 import { CollectionEditor } from "./collection-editor";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Catalog, SavedListing } from "../catalog/types";
+import { resolveSavedListing } from "../catalog/types";
 import {
   FloatingNav,
   IconButton,
@@ -19,6 +21,11 @@ import { Icon } from "./icons";
 import { CartOverlay } from "../commerce/checkout";
 import { useDiscovery } from "./state";
 import { useAccount } from "../account/state";
+import {
+  SavedSelectionPreview,
+  type SavedPreviewTransition,
+} from "./saved-selection-preview";
+import { useReducedMotion } from "./motion-preference";
 
 export function Saved({ catalog }: { catalog: Catalog }) {
   const state = useDiscovery(),
@@ -36,14 +43,33 @@ export function Saved({ catalog }: { catalog: Catalog }) {
   const [visibility, setVisibility] = useState<"Private" | "Public">("Private");
   const [notice, setNotice] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
+  const [previewTransition, setPreviewTransition] =
+    useState<SavedPreviewTransition | null>(null);
+  const previewSerial = useRef(0);
+  const reducedMotion = useReducedMotion();
+  const clearPreview = useCallback(() => setPreviewTransition(null), []);
+  const finishPreview = useCallback((id: number) => {
+    setPreviewTransition((current) => (current?.id === id ? null : current));
+  }, []);
+  useEffect(() => {
+    const preference = matchMedia("(prefers-reduced-motion: reduce)");
+    const onPreference = () => {
+      if (preference.matches) clearPreview();
+    };
+    window.addEventListener("popstate", clearPreview);
+    preference.addEventListener("change", onPreference);
+    return () => {
+      window.removeEventListener("popstate", clearPreview);
+      preference.removeEventListener("change", onPreference);
+    };
+  }, [clearPreview]);
   const editorRef = useRef<HTMLInputElement>(null);
   const submitting = useRef(false);
   const selectionScroll = useRef<number | null>(null);
   const wasSelecting = useRef(false);
   const returnControl = useRef(".find-ideas");
   const productFor = (id: string): SavedListing | undefined =>
-    catalog.savedListings?.find((item) => item.id === id) ??
-    catalog.products.find((item) => item.id === id);
+    resolveSavedListing(catalog, id);
   const fromIds = (ids: readonly string[]) =>
     ids.flatMap((id) => {
       const item = productFor(id);
@@ -94,6 +120,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
   // Same-page selection owns an explicit return entry. Consuming an options
   // sheet replaces that entry; Done/Back must not add a duplicate detail page.
   function navigate(id: string | null, nextView = "", created = false) {
+    clearPreview();
     const next = new URLSearchParams();
     if (id) next.set("collection", id);
     if (nextView) next.set("view", nextView);
@@ -138,6 +165,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
     }
   }
   function finishSelection() {
+    clearPreview();
     const entry = window.history.state?.shopSavedSelection;
     if (entry?.collection === selected && !entry.created) {
       router.back();
@@ -169,7 +197,19 @@ export function Saved({ catalog }: { catalog: Catalog }) {
     setPanel("Create collection");
   }
   function choose(id: string) {
-    if (!collection || !productFor(id)) return;
+    const product = productFor(id);
+    if (!collection || !product) return;
+    clearPreview();
+    if (
+      !reducedMotion &&
+      !collection.productIds.includes(id) &&
+      product.images[0]
+    ) {
+      setPreviewTransition({
+        id: ++previewSerial.current,
+        previousImage: selectedPreview?.images[0],
+      });
+    }
     state.updateCollection(collection.id, {
       productIds: collection.productIds.includes(id)
         ? collection.productIds.filter((value) => value !== id)
@@ -195,10 +235,11 @@ export function Saved({ catalog }: { catalog: Catalog }) {
         {addMode ? (
           <>
             {selectedPreview && (
-              <img
-                className="saved-selection-preview"
-                src={selectedPreview.images[0]}
-                alt={`${collection?.productIds.length} selected items`}
+              <SavedSelectionPreview
+                image={selectedPreview.images[0]}
+                count={collection?.productIds.length ?? 0}
+                transition={reducedMotion ? null : previewTransition}
+                onComplete={finishPreview}
               />
             )}
             <button className="saved-selection-done" onClick={finishSelection}>
@@ -375,7 +416,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
                   </h2>
                   <div className="featured-brands">
                     {featured.map((store) => (
-                      <Link
+                      <SourceLink
                         key={store.id}
                         className={`featured-brand ${store.id === "kitsch" ? "featured-kitsch" : ""}`}
                         href={`/stores/${store.id}`}
@@ -388,7 +429,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
                         ) : (
                           <span>{store.name}</span>
                         )}
-                      </Link>
+                      </SourceLink>
                     ))}
                   </div>
                 </>

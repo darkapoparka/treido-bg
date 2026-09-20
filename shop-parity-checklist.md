@@ -6,7 +6,7 @@
 
 **Acceptance progress:** 0 / 97 flows owner-accepted. All 424 ordered frames have been visually inspected, and all 97 flows have executable recipes and passing focused family coverage. Source inspection, comparison and test evidence do not count as visual acceptance without owner/design approval.
 
-**Current evidence,2026-09-20:** application checkpoint018df04. Latest complete capture is cleanf77609c / `20260920-mobile-connected-full`:424/424scored,53numerical candidates,371requiring refinement, no replay/browser errors. The later018df04 controls batch has76unique scoped comparisons and9distinct focused passing journeys; exact run precedence is in the [implementation map](shop-implementation-map.md#current-source-checkpoint).307standalone images are reconciled with flow states;16videos have poster review, with motion still open. Do not combine partial runs into a fictitious single full capture.
+**Current evidence, 2026-09-20:** the active application batch extends018df04/218f243. Latest complete capture remains cleanf77609c / `20260920-mobile-connected-full`:424/424 scored,53 numerical candidates,371 requiring refinement, no replay/browser errors. Current real-code changes, scoped comparisons and original failures are recorded in the [implementation map](shop-implementation-map.md#current-source-checkpoint).307 standalone images are reconciled;16 videos have complete sampled-sequence review, with selected full-rate comparisons and bounded playback added this session. All755 frozen files verify; all16 standalone MP4s have zero audio tracks. Do not combine partial runs into a fictitious full capture or count these facts as 1:1 acceptance.
 
 **Tracking limitation:** unchecked Impl/UX/Widths entries mean the full criterion is not certified by linked flow-specific evidence; they do not mean that the route or all its controls are missing. Conversely, a Test checkmark does not certify every interaction. As each family is audited, record its actual source IDs, canonical components, checked transitions and remaining exceptions here, then update only justified boxes. Keep acceptance separate. No reliable “percent of the entire app completed1:1” is established.
 
@@ -83,15 +83,15 @@ The single execution session owns this file. The Lane column is retained only as
 | 57 | Analyzing skin from Minis<br><sub>`01972be8-07ed-4dfa-9ec9-d1e6824c35bc`</sub> | 7 | C Discovery | REVIEW | [x] | [ ] | [ ] | [x] | [ ] | [x] | [ ] |
 | 58 | Finding similar clothes from Minis<br><sub>`d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24`</sub> | 8 | C Discovery | REVIEW | [x] | [ ] | [ ] | [x] | [ ] | [x] | [ ] |
 | 59 | Chatting with Gift Sense from Minis<br><sub>`dc8fb947-e214-4d8c-ad6d-e814406e6ef7`</sub> | 11 | C Discovery | REVIEW | [x] | [ ] | [ ] | [x] | [ ] | [x] | [ ] |
-| 60 | Orders<br><sub>`8f406a69-ad1c-4de8-a699-12aa504efb74`</sub> | 6 | B Commerce | REVIEW | [x] | [ ] | [ ] | [x] | [ ] | [x] | [ ] |
-| 61 | Order detail from Orders<br><sub>`d3bf7c94-4d9e-4298-a255-eaf177f9efd1`</sub> | 11 | B Commerce | REVIEW | [x] | [ ] | [ ] | [x] | [ ] | [x] | [ ] |
-| 62 | Copying order number from Order detail<br><sub>`5dacb846-9f3f-4c7f-9378-d6178924867d`</sub> | 3 | B Commerce | REVIEW | [x] | [ ] | [ ] | [x] | [ ] | [x] | [ ] |
-| 63 | Marking an order as delivered from Order detail<br><sub>`e6c06e9f-26c9-476e-a3e5-d34c968eaa3d`</sub> | 3 | B Commerce | REVIEW | [x] | [ ] | [ ] | [x] | [ ] | [x] | [ ] |
-| 64 | Delivery progress from Order detail<br><sub>`10af411e-3523-4f6a-bb2f-ed4355895f4b`</sub> | 3 | B Commerce | REVIEW | [x] | [ ] | [ ] | [x] | [ ] | [x] | [ ] |
-| 65 | Updating tracking detail from Order detail<br><sub>`db478544-df8f-4e16-9e16-39a4829975f8`</sub> | 4 | B Commerce | REVIEW | [x] | [ ] | [ ] | [x] | [ ] | [x] | [ ] |
-| 66 | Archived orders from Orders<br><sub>`fd0628d8-b28d-4e15-b677-89c328603be6`</sub> | 3 | B Commerce | REVIEW | [x] | [ ] | [ ] | [x] | [ ] | [x] | [ ] |
-| 67 | Reviewing an order from Orders<br><sub>`7e196d37-7a35-4e2c-a398-eaae5dcf8f26`</sub> | 4 | B Commerce | REVIEW | [x] | [ ] | [ ] | [x] | [ ] | [x] | [ ] |
-| 68 | Creating an order from Orders<br><sub>`bdd3954f-d943-464a-8c57-6621ffba7fa6`</sub> | 6 | B Commerce | REVIEW | [x] | [ ] | [ ] | [x] | [ ] | [x] | [ ] |
+| 60 | Orders<br><sub>`8f406a69-ad1c-4de8-a699-12aa504efb74`</sub> | 6 | B Commerce | REVIEW | [x] | [x] | [ ] | [x] | [ ] | [x] | [ ] |
+| 61 | Order detail from Orders<br><sub>`d3bf7c94-4d9e-4298-a255-eaf177f9efd1`</sub> | 11 | B Commerce | REVIEW | [x] | [x] | [ ] | [x] | [ ] | [x] | [ ] |
+| 62 | Copying order number from Order detail<br><sub>`5dacb846-9f3f-4c7f-9378-d6178924867d`</sub> | 3 | B Commerce | REVIEW | [x] | [x] | [ ] | [x] | [ ] | [x] | [ ] |
+| 63 | Marking an order as delivered from Order detail<br><sub>`e6c06e9f-26c9-476e-a3e5-d34c968eaa3d`</sub> | 3 | B Commerce | REVIEW | [x] | [x] | [ ] | [x] | [ ] | [x] | [ ] |
+| 64 | Delivery progress from Order detail<br><sub>`10af411e-3523-4f6a-bb2f-ed4355895f4b`</sub> | 3 | B Commerce | REVIEW | [x] | [x] | [ ] | [x] | [ ] | [x] | [ ] |
+| 65 | Updating tracking detail from Order detail<br><sub>`db478544-df8f-4e16-9e16-39a4829975f8`</sub> | 4 | B Commerce | REVIEW | [x] | [x] | [ ] | [x] | [ ] | [x] | [ ] |
+| 66 | Archived orders from Orders<br><sub>`fd0628d8-b28d-4e15-b677-89c328603be6`</sub> | 3 | B Commerce | REVIEW | [x] | [x] | [ ] | [x] | [ ] | [x] | [ ] |
+| 67 | Reviewing an order from Orders<br><sub>`7e196d37-7a35-4e2c-a398-eaae5dcf8f26`</sub> | 4 | B Commerce | REVIEW | [x] | [x] | [ ] | [x] | [ ] | [x] | [ ] |
+| 68 | Creating an order from Orders<br><sub>`bdd3954f-d943-464a-8c57-6621ffba7fa6`</sub> | 6 | B Commerce | REVIEW | [x] | [x] | [ ] | [x] | [ ] | [x] | [ ] |
 | 69 | Profile<br><sub>`cf77c541-39be-418c-91ef-2ca98f8d9f73`</sub> | 7 | A Account | REVIEW | [x] | [x] | [x] | [ ] | [ ] | [x] | [ ] |
 | 70 | Account from Profile<br><sub>`537d6d87-4f1a-4202-a1aa-82fc3bdb934b`</sub> | 2 | A Account | REVIEW | [x] | [x] | [x] | [ ] | [ ] | [x] | [ ] |
 | 71 | Uploading profile picture from Account<br><sub>`bb30504f-8cba-413a-9d99-ea413dd27406`</sub> | 3 | A Account | REVIEW | [x] | [x] | [x] | [ ] | [ ] | [x] | [ ] |
@@ -102,7 +102,7 @@ The single execution session owns this file. The Lane column is retained only as
 | 76 | Adding a shoe size from Account<br><sub>`8b113fe6-f2d5-4756-ba1f-82a5e1fb571b`</sub> | 3 | A Account | REVIEW | [x] | [x] | [x] | [ ] | [ ] | [x] | [ ] |
 | 77 | Adding a skin condition from Account<br><sub>`232ee098-779e-4cb4-85c4-2a49de1a8a98`</sub> | 6 | A Account | REVIEW | [x] | [x] | [x] | [ ] | [ ] | [x] | [ ] |
 | 78 | Adding a person to shop from Account<br><sub>`e4568c11-f824-4bfe-9d63-ac0d62665a7d`</sub> | 8 | A Account | REVIEW | [x] | [x] | [x] | [ ] | [ ] | [x] | [ ] |
-| 79 | Order history from Profile<br><sub>`36ccec04-834a-4bdb-85e8-8f828c1070be`</sub> | 2 | B Commerce | REVIEW | [x] | [ ] | [ ] | [x] | [ ] | [x] | [ ] |
+| 79 | Order history from Profile<br><sub>`36ccec04-834a-4bdb-85e8-8f828c1070be`</sub> | 2 | B Commerce | REVIEW | [x] | [x] | [ ] | [x] | [ ] | [x] | [ ] |
 | 80 | Adding a card (profile) from Profile<br><sub>`0b84e516-1c43-4a00-8832-a659bdb587e7`</sub> | 8 | A Account | REVIEW | [x] | [x] | [x] | [x] | [x] | [x] | [ ] |
 | 81 | Card detail from Profile<br><sub>`78af4bc8-3317-4c8b-9d7f-1cd3c82061ea`</sub> | 2 | A Account | REVIEW | [x] | [x] | [x] | [x] | [x] | [x] | [ ] |
 | 82 | Deleting a card from Card detail<br><sub>`57811b67-ea3f-4231-bdc0-1776716034db`</sub> | 3 | A Account | REVIEW | [x] | [x] | [x] | [x] | [x] | [x] | [ ] |
@@ -139,6 +139,23 @@ All 19 ordered frozen frames were opened and mapped to deterministic profile/pay
 Use the ranked measurements in [shop-frame-ledger.md](shop-frame-ledger.md) and the current source/checkpoint in [shop-implementation-map.md](shop-implementation-map.md). All 424 ordered states are mapped and have a completed comparison. Fit the remaining visible differences and complete the unchecked full-flow behavior/width evidence; recipe coverage and partial tests do not close those columns.
 
 **Owner visual review (2026-09-11): rejected 1:1 acceptance.** Functional/source/test evidence remains recorded, but 393px visual parity and cross-width visual acceptance are reopened for flows 69-78. These flows are REVIEW, not accepted.
+
+### Current family evidence, 2026-09-20
+
+The Orders state-existence boxes for 60–68/79 are justified by the complete ordered source audit and current canonical `orders.tsx` / `tracking.tsx` / `order-presentation.tsx` states. They do not certify styling, every return path or owner acceptance. Source IDs remain the exact flow IDs in the table above.
+
+| Flows | Implemented and exercised behavior | Evidence and remaining scope |
+| --- | --- | --- |
+| 60–68, 79 | Source carrier menu/logos, manual fields, list/history/archive/detail variants, clipboard result, mark/unmark, activity/editor, reversible Delete/Undo and local review create/edit/delete | Orders 20 focused journeys pass; scoped source precedence is in the map. Manual/detail controls have 320/393/430 and short-height evidence. Eight ordinary returns lose focus, review Close has the wrong destination, manual draft return and Mark-delivered history still need their queued repair before complete UX certification |
+| 4, 42 | Identified deal products and merchant routes, shared Save/Follow/Hide/Undo/report actions, Pura options source geometry | `deals-journeys.spec.ts` and `20260920-connected-family-summary.json`; missing Pura campaign motion remains explicit |
+| 14–20, 32–41, 96–97 | Actual card/store entry, shared report-stage history and selected-reason focus, rating/help and policy boundaries, postal cancellation, promotion and collection image variants | 30 Store/PDP/review/Deals journeys pass; source comparison covers70 states. Browser checks467×853 storefront/cart and affected320/430 editors; exact typography, hidden photo regions and unmatched campaign video remain open |
+| 21–31, 80–84 | Actual masked-card edit/billing association, card/address/phone help, source Payment/Cash variants and provider boundaries | Checkout editor/connected siblings and `20260920-payment-beauty-final`; expanded Plan contrast is independently measured. These are local reference transitions, not payment processing |
+| 7–13, 69–94 | Public collection creation/selection, phone-to-Profile normalization, photo identity/drafts, Support unsent text/conversation/reading position | 30 account/photo/Saved journeys plus source-return cases; complete account visual acceptance remains rejected, and browser focus certification stays separate |
+| 40, 43–49 | Search/StoreSearch entry-owned draft/editor restoration, intentional Cancel/submit/Clear, nested Filter history/opener, photo answer and source-card returns | Six draft journeys and13 card/source-return journeys pass across recorded runs; Browser confirms query/card/rail return at393 and relevant320/430. Cancel currently needs a stable labeled-form focus target |
+| 1, 53–56, 60, 63 | Real bounded decorative playback, tracking stage/media-time synchronization, Sol readiness and source-traced per-frame art masks, corrected Saved preview and delivery celebration timing | Eight playback/motion journeys plus four updated Sol/video journeys;13 normal-motion width captures and27 corrected native-time motion captures. Intro3D orbits, confetti trajectories and Sol's page gradient still need exact-motion/visual qualification |
+| 14, 50–53, 58 | Source-sized Explore Mini labels and bounded trailing photographs, distinct Look terms/settled headings, first-collection photo/stack/heart geometry | Final illustration runs score27 and19 frames without replay/browser errors. Root viewed source/live pairs and Browser393/320 Look. Mini Close origin/rail and terms-dismiss focus remain queued |
+
+These rows record partial and complete criteria honestly. Full final-source capture and the queued shared history fixes must precede additional UX/width checkmarks; a successful family count alone never fills those columns.
 
 ### 2026-09-13 complete source review and connected states
 

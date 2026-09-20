@@ -11,8 +11,9 @@ type DeliveryConfettiPiece = readonly [
   clipPath?: string,
 ];
 
-// Deterministic source-capture composition; each particle remains live DOM and
-// fades out with the same local celebration lifecycle as the delivered state.
+// Video232 waits about 300ms, rises in a narrow column, then spreads and falls
+// with a sparse tail through three seconds. These particles retain the still
+// when reduced motion is requested; every piece remains live DOM.
 const deliveryConfetti: readonly DeliveryConfettiPiece[] = [
   [
     147,
@@ -229,7 +230,7 @@ export function DeliveryConfetti() {
             key={`${left}-${top}-${index}`}
             style={
               {
-                left,
+                left: `${(left / 393) * 100}%`,
                 top,
                 width,
                 height,
@@ -237,6 +238,17 @@ export function DeliveryConfetti() {
                 borderRadius: radius,
                 clipPath,
                 "--delivery-confetti-angle": `${angle}deg`,
+                "--delivery-confetti-origin-x": `calc(${50 - (left / 393) * 100}vw - ${width / 2}px)`,
+                "--delivery-confetti-origin-y": `calc(100dvh - ${top + height / 2}px)`,
+                "--delivery-confetti-column-x": `calc(${(50 - (left / 393) * 100) * 0.85}vw - ${width / 2}px)`,
+                "--delivery-confetti-column-y": `calc(100dvh - ${top + height / 2 + 45 + ((index * 83) % 500)}px)`,
+                "--delivery-confetti-apex-x": `calc(${(50 - (left / 393) * 100) * 0.4}vw - ${width / 2}px)`,
+                "--delivery-confetti-apex-y": `${((index * 71) % 500) - 280 - top}px`,
+                "--delivery-confetti-spread-y": `${((index * 71) % 500) - 240 - top + (index % 5) * 18}px`,
+                "--delivery-confetti-drift": `${((left - 196.5) / 393) * 45}vw`,
+                "--delivery-confetti-tail-y": `${(index % 8 === 0 ? 560 + (index % 7) * 32 : 960 + (index % 7) * 110) - top}px`,
+                "--delivery-confetti-fall": `${1100 + (index % 7) * 90 - top}px`,
+                "--delivery-confetti-spin": `${angle + (index % 2 ? 420 : -390)}deg`,
               } as CSSProperties
             }
           />

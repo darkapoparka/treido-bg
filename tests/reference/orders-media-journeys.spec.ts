@@ -36,6 +36,9 @@ test("manual order recommendations open their canonical products and retain a sa
 test("later captured manual delivery yields to local unmark and mark actions", async ({
   page,
 }) => {
+  // Geometry is the settled source composition. Continuous motion is exercised
+  // separately by the cancellation journey below.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await useReferenceScenario(page, "orders-manual-delivered");
   await page.goto("/orders/REF-manual-shirt?history=delivered-later");
   await expect(
@@ -219,7 +222,10 @@ test("rapid delivery undo cancels celebration without an old timer clearing the 
 }) => {
   await useReferenceScenario(page, "orders-manual");
   await page.goto("/orders/REF-manual-shirt");
-  await page.clock.install();
+  const clockStart = new Date("2026-09-20T12:00:00Z");
+  await page.clock.install({ time: clockStart });
+  // Freeze wall time so actions cannot consume the source celebration interval.
+  await page.clock.pauseAt(new Date(clockStart.getTime() + 1000));
   const mark = page.getByRole("button", {
     name: "Mark as delivered",
     exact: true,
@@ -242,10 +248,13 @@ test("rapid delivery undo cancels celebration without an old timer clearing the 
   await expect(confetti).toBeVisible();
   await expect(toast).toHaveText("Marked as delivered");
   await page.clock.fastForward(300);
-  await expect(confetti).toHaveCount(0);
+  await expect(confetti).toBeVisible();
   await expect(toast).toBeVisible();
   await page.clock.fastForward(400);
   await expect(toast).toHaveCount(0);
+  await expect(confetti).toBeVisible();
+  await page.clock.fastForward(1500);
+  await expect(confetti).toHaveCount(0);
 });
 
 test("manual tracking keeps carrier controls and dock fade usable at mobile widths", async ({

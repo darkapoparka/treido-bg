@@ -5,6 +5,8 @@ import { AccountPage } from "./forms";
 import { AccountIcon } from "./icons";
 import { Icon } from "../discovery/icons";
 import { Sheet } from "../discovery/components";
+import { ContextualCloseLink } from "../discovery/return-navigation";
+import { useAccount, type SupportConversation } from "./state";
 
 const capturedQuestion =
   "Is it possible to cancel an order and request a refund?";
@@ -13,30 +15,63 @@ const capturedReply = [
   "To proceed, you should contact the store directly to request a cancellation or refund. You can usually find contact options for the store within the Shop app once you locate your order.",
   "If you need to check the status of your order or find your order details, you can do so in the Orders tab of the Shop app.",
 ];
-type ReplyState = "idle" | "thinking" | "captured" | "unavailable";
-
 // This opt-in reference surface replays only the frozen example. Arbitrary
 // questions never claim to contact support or receive a live model response.
 export function SupportChat() {
-  const [draft, setDraft] = useState("");
-  const [attempt, setAttempt] = useState("");
-  const [phase, setPhase] = useState<ReplyState>("idle");
+  const { supportConversation, setSupportConversation } = useAccount();
+  const { draft, attempt, phase, query } = supportConversation;
+  const setDraft = (draft: string) =>
+    setSupportConversation((previous) => ({ ...previous, draft }));
+  const setAttempt = (attempt: string) =>
+    setSupportConversation((previous) => ({ ...previous, attempt }));
+  const setPhase = (phase: SupportConversation["phase"]) =>
+    setSupportConversation((previous) => ({ ...previous, phase }));
+  const setQuery = (query: string) =>
+    setSupportConversation((previous) => ({ ...previous, query }));
   const [searching, setSearching] = useState(false);
-  const [query, setQuery] = useState("");
   const conversation = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (phase !== "thinking") return;
-    const timer = window.setTimeout(() => setPhase("captured"), 1400);
-    return () => window.clearTimeout(timer);
-  }, [phase]);
+  const restoredScroll = useRef(supportConversation.scrollTop);
+  const savedScroll = useRef(supportConversation.scrollTop);
+  const previousReply = useRef({ phase, attempt });
   useEffect(() => {
     const pane = conversation.current;
-    if (pane) pane.scrollTop = pane.scrollHeight;
+    if (!pane) return;
+    pane.scrollTop = restoredScroll.current;
+    return () =>
+      setSupportConversation((previous) => ({
+        ...previous,
+        scrollTop: savedScroll.current,
+      }));
+  }, [setSupportConversation]);
+  useEffect(() => {
+    if (phase !== "thinking") return;
+    const timer = window.setTimeout(
+      () =>
+        setSupportConversation((previous) => ({
+          ...previous,
+          phase: "captured",
+        })),
+      1400,
+    );
+    return () => window.clearTimeout(timer);
+  }, [phase, setSupportConversation]);
+  useEffect(() => {
+    const pane = conversation.current;
+    if (
+      pane &&
+      (previousReply.current.phase !== phase ||
+        previousReply.current.attempt !== attempt)
+    ) {
+      pane.scrollTop = pane.scrollHeight;
+      savedScroll.current = pane.scrollTop;
+    }
+    previousReply.current = { phase, attempt };
   }, [phase, attempt]);
   const reset = () => {
     setDraft("");
     setAttempt("");
     setPhase("idle");
+    setQuery("");
   };
   const playExample = () => {
     setAttempt(capturedQuestion);
@@ -49,19 +84,22 @@ export function SupportChat() {
   return (
     <AccountPage dock={false} className="support-chat-page">
       <header className="support-chat-heading">
-        <Link
+        <ContextualCloseLink
           className="icon-button"
           href="/support"
           aria-label="Close support"
         >
           <Icon name="close" />
-        </Link>
+        </ContextualCloseLink>
         <h1>Support</h1>
       </header>
       <div
         ref={conversation}
         className="support-chat-scroll"
         aria-label="Support conversation"
+        onScroll={(event) => {
+          savedScroll.current = event.currentTarget.scrollTop;
+        }}
       >
         <div className="support-chat-messages">
           <p className="support-chat-notice">
@@ -104,7 +142,7 @@ export function SupportChat() {
               </div>
               <Link className="support-orders-link" href="/orders">
                 <span>
-                  <AccountIcon name="document" />
+                  <AccountIcon name="receipt" filled />
                 </span>
                 Go to orders <Icon name="chevron" />
               </Link>

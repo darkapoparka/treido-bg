@@ -78,6 +78,12 @@ test("expanded recent history has the identified eighth brand and removal surviv
     })
     .click();
   await expect(tea).toHaveCount(0);
+  await expect(
+    page
+      .locator("[data-recent-id]")
+      .last()
+      .getByRole("button", { name: /^Remove / }),
+  ).toBeFocused();
   await page
     .getByRole("navigation", { name: "Main navigation" })
     .getByRole("link", { name: "Search", exact: true })
@@ -87,6 +93,21 @@ test("expanded recent history has the identified eighth brand and removal surviv
     .click();
   await expect(page.locator("[data-recent-id]")).toHaveCount(7);
   await expect(page.locator('[data-recent-id="loaded-tea"]')).toHaveCount(0);
+  while (await page.locator("[data-recent-id]").count()) {
+    await page
+      .locator("[data-recent-id]")
+      .first()
+      .getByRole("button", { name: /^Remove / })
+      .click();
+    const remaining = page.locator("[data-recent-id]");
+    if (await remaining.count())
+      await expect(
+        remaining.first().getByRole("button", { name: /^Remove / }),
+      ).toBeFocused();
+  }
+  await expect(
+    page.getByRole("link", { name: "Browse products", exact: true }),
+  ).toBeFocused();
 });
 
 test("expanded recent history uses the captured heading gap without overflowing narrow phones", async ({

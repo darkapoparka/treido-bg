@@ -889,6 +889,7 @@ export function GetLook({ catalog }: { catalog: Catalog }) {
       <section
         className={`look-surface ${styles.look}`}
         data-look-phase={phase}
+        data-look-terms={terms}
         data-look-piece={selected?.id ?? ""}
         data-look-match={Boolean(matching && !selected)}
       >

@@ -51,7 +51,7 @@ The active web reconstruction uses isolated reference data through the existing 
 
 Acceptance: source/live pairs, actual family interactions, Back/Forward/focus/scroll, relevant 320/430 containment and scoped types/lint/tests. Keep numeric candidates distinct from owner acceptance.
 
-2026-09-20 checkpoint: all 97 frozen flows / 424 ordered states have executable recipes and complete comparison evidence. Application checkpoint `018df04` retains the integrated discovery, store, product, assistant and Mini implementation with later control repairs. Continue using the [shared-component audit](shop-implementation-map.md#shared-component-audit), then verify complete related flow families and record their actual implementation/UX evidence. The [current source checkpoint](shop-implementation-map.md#current-source-checkpoint) distinguishes full and scoped comparisons. Recipe coverage does not close visual acceptance.
+2026-09-20 checkpoint: the current batch extends `018df04` with shared Deals/Pura menus, real saved/follow/report actions, connected Store/PDP/review stages, public collections, card/rail return restoration, Search/StoreSearch drafts and bounded source motion. Source-measured Explore/Look/collection work and final integration checks continue. The [shared-component audit](shop-implementation-map.md#shared-component-audit) owns canonical roles; the [current source checkpoint](shop-implementation-map.md#current-source-checkpoint) records exact evidence and remaining gaps. All 97 flows / 424 ordered states remain in scope; recipe coverage does not close visual acceptance.
 
 ## Task 4 - Build data, identity and catalog
 
@@ -65,7 +65,7 @@ Acceptance: real isolated database constraints/tenant/quantity tests, current/re
 
 Owner: [web.md](web.md), [architecture.md](architecture.md), DEC-002. Current reference work may complete cart/checkout/order UI before services, but must not claim real payment/stock behavior.
 
-2026-09-13 reference checkpoint: cart context, connected phone/address/card editors, confirmation/receipt, manual orders, delivery changes and tracking history now use the canonical components and local state. Focused history, normalization, validation and sibling-width checks belong to the [current evidence](docs/STATUS.md); the real commerce acceptance below remains open.
+2026-09-20 reference checkpoint: checkout edits the actual masked card and billing association; shipping/tax help, source Payment/Cash variants and phone-to-Profile continuity are connected. Orders use source carrier identities, reversible Delete/Undo, complete manual fields, tracking/map boundaries and canonical review controls. The remaining review/manual-draft/route-return history repairs and final checks are recorded in [current evidence](docs/STATUS.md). This is isolated reference UI; the real commerce acceptance below remains open.
 
 Real acceptance requires merchant publish -> buyer discover -> guest cart/sign-in merge -> server quote -> reservation/idempotent payment operation -> verified sandbox outcome -> merchant fulfillment -> matching buyer timeline and allowed recovery. Support approved quantities and multi-seller allocations. Reuse one server implementation across web/native.
 
@@ -79,7 +79,7 @@ Track **source approval** separately from **real-service verification**. The sou
 
 Task 7 requires the approved source gate; this never waives Tasks 4/5/9/10's real-service acceptance or native requirements.
 
-2026-09-20 checkpoint: the complete 424-state comparison at `f77609c` is recorded in the existing frame ledger, with 76 later scoped comparisons through `018df04` listed in the implementation map. The flow checklist distinguishes inspected sources, exercised app behavior and measured comparisons from owner acceptance; unchecked implementation/UX entries require flow-specific certification, not blind bulk completion. The earlier rejection of 1:1 acceptance remains active. Resume with the [new-session prompt](single-session-execution.md#new-session-prompt).
+2026-09-20 checkpoint: the complete 424-state comparison at `f77609c` remains in the existing frame ledger until one complete final-source run replaces it. The implementation map records later scoped source comparisons and original failures. Complete sampled sequences for all 16 videos were already inspected; current bounded playback and selected full-rate comparisons add implementation evidence. All 755 frozen files verify, and all 16 standalone MP4s have no audio track. The checklist keeps state existence, UX, widths and source acceptance separate; the owner's rejection of 1:1 acceptance remains active. Resume with the [new-session prompt](single-session-execution.md#new-session-prompt).
 
 ## Task 7 - Adapt the approved frontend to Treido
 

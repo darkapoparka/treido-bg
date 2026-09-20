@@ -27,9 +27,12 @@ const paths = {
   "support-chat":
     "M12 3c5.5 0 10 3.6 10 8s-4.5 8-10 8c-1.6 0-3.2-.3-4.5-.9L3 20l1.1-4.2A7.1 7.1 0 0 1 2 11c0-4.4 4.5-8 10-8Zm-2.4 5a2.5 2.5 0 1 1 4 2c-1.1.7-1.6 1.2-1.6 2.5m0 3h.01",
   document: "M5 2h10l4 4v16H5ZM14 2v5h5M8 12h8M8 16h8",
+  receipt: "M5 3h14v19l-3-2-4 2-4-2-3 2ZM9 8h6M9 12h6",
   "document-check": "M5 2h9l5 5v15H5ZM14 2v6h5M8 15l3 3 5-6",
 } as const;
 const solidPaths: Partial<Record<keyof typeof paths, string>> = {
+  receipt:
+    "M6 2h12a1 1 0 0 1 1 1v19l-3-2-4 2-4-2-3 2V3a1 1 0 0 1 1-1Zm3 6v2h6V8Zm0 5v2h6v-2Z",
   location:
     "M12 23S3 15 3 9a9 9 0 1 1 18 0c0 6-9 14-9 14Zm0-17a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z",
   shield:

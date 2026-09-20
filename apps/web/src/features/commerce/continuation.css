@@ -2388,18 +2388,63 @@
   display: block;
   transform: rotate(var(--delivery-confetti-angle));
   transform-origin: center;
-  animation: order-confetti 1.4s ease-in forwards;
+  animation: order-confetti 3.4s linear forwards;
 }
 @keyframes order-confetti {
   0%,
-  74% {
-    opacity: 1;
-    transform: rotate(var(--delivery-confetti-angle));
+  8.8% {
+    opacity: 0;
+    transform: translate(
+        var(--delivery-confetti-origin-x),
+        var(--delivery-confetti-origin-y)
+      )
+      scale(0.3) rotate(0deg);
+    animation-timing-function: linear;
   }
+  10% {
+    opacity: 1;
+  }
+  14.7% {
+    opacity: 1;
+    transform: translate(
+        var(--delivery-confetti-column-x),
+        var(--delivery-confetti-column-y)
+      )
+      scale(0.65) rotate(calc(var(--delivery-confetti-angle) - 90deg));
+    animation-timing-function: cubic-bezier(0.15, 0.5, 0.4, 1);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(
+        var(--delivery-confetti-apex-x),
+        var(--delivery-confetti-apex-y)
+      )
+      rotate(calc(var(--delivery-confetti-angle) - 25deg));
+    animation-timing-function: linear;
+  }
+  35.3% {
+    opacity: 1;
+    transform: translate(0, var(--delivery-confetti-spread-y))
+      rotate(var(--delivery-confetti-angle));
+    animation-timing-function: cubic-bezier(0.4, 0, 0.8, 0.6);
+  }
+  73.5% {
+    opacity: 1;
+    transform: translate(
+        var(--delivery-confetti-drift),
+        var(--delivery-confetti-tail-y)
+      )
+      rotate(var(--delivery-confetti-spin));
+    animation-timing-function: linear;
+  }
+  91.2%,
   100% {
     opacity: 0;
-    transform: translateY(22px)
-      rotate(calc(var(--delivery-confetti-angle) + 18deg));
+    transform: translate(
+        var(--delivery-confetti-drift),
+        var(--delivery-confetti-fall)
+      )
+      rotate(var(--delivery-confetti-spin));
   }
 }
 @media (prefers-reduced-motion: reduce) {

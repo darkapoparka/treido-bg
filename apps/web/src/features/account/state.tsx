@@ -1,5 +1,12 @@
 "use client";
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from "react";
 export type Address = {
   id: string;
   firstName: string;
@@ -113,6 +120,26 @@ const initialOrders: ReferenceOrder[] = [
     review: "",
   },
 ];
+export type ReferencePaymentCard = {
+  id: string;
+  last4: string;
+  expiry: string;
+  billingAddressId?: string;
+};
+export type SupportConversation = {
+  draft: string;
+  attempt: string;
+  phase: "idle" | "thinking" | "captured" | "unavailable";
+  scrollTop: number;
+  query: string;
+};
+const emptySupportConversation: SupportConversation = {
+  draft: "",
+  attempt: "",
+  phase: "idle",
+  scrollTop: 0,
+  query: "",
+};
 type AccountState = {
   profile: Profile;
   updateProfile: (value: Partial<Profile>) => void;
@@ -121,20 +148,25 @@ type AccountState = {
   deleteAddress: (id: string) => void;
   orders: ReferenceOrder[];
   saveOrder: (value: ReferenceOrder) => void;
+  deleteOrder: (id: string) => void;
+  deletedOrder: ReferenceOrder | null;
+  restoreOrder: () => void;
   people: Person[];
   savePerson: (person: Person) => void;
   deletePerson: (id: string) => void;
   preferences: Record<string, string[]>;
   setPreferences: (value: Record<string, string[]>) => void;
-  paymentCards: { id: string; last4: string; expiry: string }[];
+  paymentCards: ReferencePaymentCard[];
   paymentAvailable: boolean;
   receiptPreferences: Record<string, boolean>;
   setReceiptPreference: (id: string, enabled: boolean) => void;
   hasPaymentProfile: boolean;
-  savePayment: (value: { id: string; last4: string; expiry: string }) => void;
+  savePayment: (value: ReferencePaymentCard) => void;
   removePayment: (id?: string) => void;
   notifications: Record<string, boolean>;
   toggleNotification: (name: string) => void;
+  supportConversation: SupportConversation;
+  setSupportConversation: Dispatch<SetStateAction<SupportConversation>>;
   reset: () => void;
 };
 export type AccountSeed = {
@@ -144,7 +176,7 @@ export type AccountSeed = {
   orders?: ReferenceOrder[];
   people?: Person[];
   preferences?: Record<string, string[]>;
-  paymentCards?: { id: string; last4: string; expiry: string }[];
+  paymentCards?: ReferencePaymentCard[];
   notifications?: Record<string, boolean>;
 };
 const Context = createContext<AccountState | null>(null);
@@ -166,6 +198,7 @@ export function AccountProvider({
   const [orders, setOrders] = useState<ReferenceOrder[]>(
     () => initial?.orders ?? initialOrders,
   );
+  const [deletedOrder, setDeletedOrder] = useState<ReferenceOrder | null>(null);
   const [people, setPeople] = useState<Person[]>(() => initial?.people ?? []);
   const [preferences, setPreferences] = useState<Record<string, string[]>>(
     () => initial?.preferences ?? {},
@@ -189,6 +222,8 @@ export function AccountProvider({
   const [notifications, setNotifications] = useState<Record<string, boolean>>(
     () => initial?.notifications ?? {},
   );
+  const [supportConversation, setSupportConversation] =
+    useState<SupportConversation>(emptySupportConversation);
   return (
     <Context
       value={{
@@ -212,6 +247,21 @@ export function AccountProvider({
         orders,
         saveOrder: (v) =>
           setOrders((a) => [...a.filter((x) => x.id !== v.id), v]),
+        deletedOrder,
+        deleteOrder: (id) => {
+          const order = orders.find((value) => value.id === id);
+          if (!order) return;
+          setDeletedOrder(order);
+          setOrders((current) => current.filter((value) => value.id !== id));
+        },
+        restoreOrder: () => {
+          if (!deletedOrder) return;
+          setOrders((current) => [
+            ...current.filter((value) => value.id !== deletedOrder.id),
+            deletedOrder,
+          ]);
+          setDeletedOrder(null);
+        },
         people,
         savePerson: (person) =>
           setPeople((p) => [...p.filter((x) => x.id !== person.id), person]),
@@ -238,6 +288,8 @@ export function AccountProvider({
         notifications,
         toggleNotification: (name) =>
           setNotifications((n) => ({ ...n, [name]: !(n[name] ?? true) })),
+        supportConversation,
+        setSupportConversation,
         reset: () => {
           setHasPaymentProfile(true);
           setProfile(initialProfile);
@@ -254,6 +306,7 @@ export function AccountProvider({
           ]);
           setNotifications({});
           setReceiptPreferences({});
+          setSupportConversation(emptySupportConversation);
         },
       }}
     >

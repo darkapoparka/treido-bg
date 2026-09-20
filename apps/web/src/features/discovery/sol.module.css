@@ -314,10 +314,12 @@
   width: 42px;
   height: 42px;
 }
-.surface[data-sol-phase="connecting"] {
+.surface[data-sol-phase="connecting"],
+.surface[data-sol-phase="ready"] {
   background: linear-gradient(white 93%, #f3f8ff);
 }
-.surface[data-sol-phase="connecting"] .mark {
+.surface[data-sol-phase="connecting"] .mark,
+.surface[data-sol-phase="ready"] .mark {
   position: absolute;
   top: 45%;
   left: calc(50% - 36px);
@@ -336,6 +338,154 @@
 .connecting > span {
   letter-spacing: 2px;
   color: #989caa;
+}
+.connectingVideo {
+  top: calc(45% + 36px);
+  left: 50%;
+  width: calc(min(100vw, 760px) * 76 / 360);
+  transform: translate(-50%, -50%);
+}
+.surface:has(video[data-video-ready="true"]) > .mark {
+  visibility: hidden;
+}
+.welcomeVideo {
+  inset: 0 0 auto;
+  width: 100%;
+  mask-image: linear-gradient(#000 95%, transparent);
+}
+.welcomeLeftVideo {
+  left: 0;
+  top: 383px;
+  width: calc(100% * 62 / 360);
+  /* Source180's stationary card silhouette; the photograph still plays. */
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 62 122' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 6L24 1Q41-3 45 15L59.5 94Q62 109 46 114L0 121Z'/%3E%3C/svg%3E");
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+}
+.welcome > :global(.sol-decoration-lower-left) {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 66 134' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 7L29 1Q45-3 50 17L65.5 107Q68 122 49 127L0 134Z'/%3E%3C/svg%3E");
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+}
+.welcome > :global(.sol-decoration-lower-right) {
+  /* The captured poster has a fixed outline; video follows the source flips. */
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 102' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M25 1L70 8V102L15 93Q-2 90 2 75L12 17Q14 3 25 1Z'/%3E%3C/svg%3E");
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+}
+.welcomeRightVideo {
+  right: 0;
+  top: calc(474px - min(100vw, 760px) * 8 / 360);
+  width: calc(100% * 70 / 360);
+}
+.welcome:has(
+    video[data-video-key="sol-welcome-motion"][data-video-ready="true"]
+  )
+  > :global(.sol-welcome-art),
+.welcome:has(
+    video[data-video-key="sol-welcome-lower-left-motion"][data-video-ready="true"]
+  )
+  > :global(.sol-decoration-lower-left) {
+  visibility: hidden;
+}
+.welcome:has(
+    video[data-video-key="sol-welcome-lower-right-motion"][data-video-ready="true"]
+  )
+  > :global(.sol-decoration-lower-right) {
+  visibility: hidden;
+}
+.phaseMotion .connecting > span {
+  animation: sol-connecting-dots 1.2s ease-in-out infinite;
+}
+.phaseMotion[data-sol-phase="greeting"] .mark {
+  animation: sol-avatar-rise 500ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.phaseMotion[data-sol-phase="greeting"] .conversation {
+  animation: sol-greeting-in 500ms ease-out both;
+}
+.phaseMotion[data-sol-phase="greeting"][data-sol-mode="voice"] {
+  animation: sol-glow-in 700ms ease-out both;
+}
+.phaseMotion[data-sol-phase="choices"][data-sol-topic="glasses"] .conversation {
+  animation: sol-response-rise 300ms ease-out both;
+}
+.phaseMotion[data-sol-phase="choices"][data-sol-topic="glasses"] .picks img {
+  animation: sol-photo-in 200ms 250ms ease-out both;
+}
+.promptTransition {
+  display: grid;
+}
+.choiceLead,
+.choicePrompt {
+  grid-area: 1 / 1;
+}
+.choiceLead {
+  animation: sol-old-prompt-out 1ms 1000ms step-end forwards;
+}
+.choicePrompt > span {
+  opacity: 0;
+  animation: sol-word-in 1ms var(--word-delay) step-end forwards;
+}
+@keyframes sol-connecting-dots {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes sol-avatar-rise {
+  from {
+    transform: translateY(calc(45dvh - 56px)) scale(1.714);
+  }
+  to {
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes sol-greeting-in {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes sol-glow-in {
+  from {
+    background-size: 100% 180%;
+  }
+  to {
+    background-size: 100% 100%;
+  }
+}
+@keyframes sol-response-rise {
+  from {
+    translate: 0 194px;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+@keyframes sol-photo-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes sol-old-prompt-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes sol-word-in {
+  to {
+    opacity: 1;
+  }
 }
 .continuation {
   max-width: 300px;

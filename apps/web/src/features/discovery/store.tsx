@@ -1,10 +1,12 @@
 "use client";
 import { ShopSurface } from "./hydration-boundary";
+import { DecorativeVideo } from "./decorative-video";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatMoney } from "../catalog/types";
+import { kitschPolicies } from "../catalog/reference/store-policies";
 import type { Catalog, Store, Product } from "../catalog/types";
 import {
   FloatingNav,
@@ -16,6 +18,9 @@ import {
 import { StoreFilter, openStoreFilter } from "./store-filter";
 import { Icon } from "./icons";
 import { KitschWordmark } from "./kitsch-wordmark";
+import { ReviewStars } from "./rating-stars";
+import { ContextualCloseLink, SourceLink } from "./return-navigation";
+import { useSearchDraft } from "./search-draft";
 import { Cart } from "./product";
 import { useDiscovery } from "./state";
 import styles from "./store.module.css";
@@ -28,8 +33,18 @@ import {
 } from "./store-model";
 
 const collectionMedia = [
-  { slug: "whats-new", name: "What's New", media: "collection-new" },
-  { slug: "best-sellers", name: "Best Sellers", media: "collection-best" },
+  {
+    slug: "whats-new",
+    name: "What's New",
+    media: "collection-new",
+    tileMedia: "collection-new-tile",
+  },
+  {
+    slug: "best-sellers",
+    name: "Best Sellers",
+    media: "collection-best",
+    tileMedia: "collection-best-tile",
+  },
   {
     slug: "coastal-cottage",
     name: "Coastal Cottage",
@@ -50,13 +65,23 @@ function StoreActions({
   return (
     <>
       <div className="store-actions" data-compact={compact}>
-        <Link
-          className="icon-button"
-          href={`/stores/${store.id}${close ? "" : "/info"}`}
-          aria-label={close ? "Close store information" : "Store information"}
-        >
-          <Icon name={close ? "close" : "menu"} />
-        </Link>
+        {close ? (
+          <ContextualCloseLink
+            className="icon-button"
+            href={`/stores/${store.id}`}
+            aria-label="Close store information"
+          >
+            <Icon name="close" />
+          </ContextualCloseLink>
+        ) : (
+          <SourceLink
+            className="icon-button"
+            href={`/stores/${store.id}/info`}
+            aria-label="Store information"
+          >
+            <Icon name="menu" />
+          </SourceLink>
+        )}
         {!close && (
           <Link
             className="icon-button"
@@ -210,7 +235,11 @@ function StorePromotion({ savings = 20 }: { savings?: number }) {
         onClick={() => setExpanded(!expanded)}
       >
         <span>
-          <b>Save ${expanded ? 15 : savings}</b> on orders over $50 ⌄
+          <b>Save ${expanded ? 15 : savings}</b> on orders over $50
+          <Icon
+            name="chevron"
+            style={{ transform: `rotate(${expanded ? -90 : 90}deg)` }}
+          />
         </span>
         {!expanded && <small>+ 1 more promotion</small>}
       </button>
@@ -593,6 +622,16 @@ export function Storefront({
       <section
         className={`store-hero${isKitsch ? " store-hero-kitsch" : ""}${followedKitsch ? " store-hero-followed" : ""}`}
       >
+        {isKitsch && (
+          <span className={styles.kitschMotion} aria-hidden="true">
+            <DecorativeVideo
+              enabled={params.get("reference") !== "captured"}
+              clips={[{ key: "kitsch-hero", className: styles.kitschVideo }]}
+              initialTime={followedKitsch ? 2.9 : 7.5}
+              loop
+            />
+          </span>
+        )}
         <div
           className={styles.storeHeader}
           inert={chemical && chemicalPinned}
@@ -604,9 +643,9 @@ export function Storefront({
               {isKitsch ? <KitschWordmark /> : store.name}
             </span>
             {store.rating && (
-              <Link href={`/stores/${store.id}/reviews`}>
+              <SourceLink href={`/stores/${store.id}/reviews`}>
                 {store.rating} ★ ({store.ratingCount})
-              </Link>
+              </SourceLink>
             )}
           </div>
           {isKitsch ? (
@@ -649,7 +688,10 @@ export function Storefront({
                   data-store-collection={c.slug}
                   onNavigate={() => openCollection(c.slug)}
                 >
-                  <img src={`/api/reference-media/${c.media}`} alt="" />
+                  <img
+                    src={`/api/reference-media/${c.tileMedia ?? c.media}`}
+                    alt=""
+                  />
                   <span>{c.name}</span>
                 </Link>
               ))}
@@ -857,28 +899,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
   const [detail, setDetail] = useState("");
   const [more, setMore] = useState(false);
   const kitsch = store.id === "kitsch";
-  const policies = [
-    [
-      "Refund policy",
-      "https://www.mykitsch.com/policies/refund-policy",
-      "return-package",
-    ],
-    [
-      "Shipping policy",
-      "https://www.mykitsch.com/policies/shipping-policy",
-      "package",
-    ],
-    [
-      "Privacy policy",
-      "https://www.mykitsch.com/pages/privacy-policy",
-      "shield-check",
-    ],
-    [
-      "Terms and conditions",
-      "https://www.mykitsch.com/pages/terms-of-service",
-      "info",
-    ],
-  ] as const;
+  const policies = kitschPolicies;
   const contacts = [
     ["Website", "https://www.mykitsch.com", "website"],
     ["kitsch@mykitsch.com", "mailto:kitsch@mykitsch.com", "mail"],
@@ -965,25 +986,15 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
         </>
       )}
       <section className="store-info-panel store-info-reviews">
-        <Link className="detail-row" href={`/stores/${store.id}/reviews`}>
+        <SourceLink className="detail-row" href={`/stores/${store.id}/reviews`}>
           <h2>Reviews</h2>
           <Icon name="arrow" />
-        </Link>
+        </SourceLink>
         {store.rating && (
           <>
             <div className="store-info-rating">
               <b>{store.rating}</b>
-              <span
-                role="img"
-                aria-label={`${store.rating} out of 5 stars`}
-                style={
-                  {
-                    "--store-rating-fill": `${Math.min(100, Math.max(0, store.rating * 20))}%`,
-                  } as CSSProperties
-                }
-              >
-                ★★★★★
-              </span>
+              <ReviewStars rating={store.rating} />
             </div>
             <p>{store.ratingCount} ratings</p>
           </>
@@ -995,18 +1006,18 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
               ["Pleasant Surprise", "Jamie"],
               ["Love Everything Kitsch", "Morgan"],
             ].map(([title, name]) => (
-              <Link
+              <SourceLink
                 href={`/stores/${store.id}/reviews`}
                 className="store-review-preview"
                 key={title}
               >
-                <span>★★★★★</span>
+                <ReviewStars rating={5} />
                 <b>{title}</b>
                 <small>
                   <i>{name[0]}</i>
                   {name} · Yesterday
                 </small>
-              </Link>
+              </SourceLink>
             ))}
           </div>
         )}
@@ -1087,19 +1098,29 @@ export function StoreSearch({
     state = useDiscovery();
   const filters = readStoreFilters(params);
   const q = params.get("q") || "";
-  const [draft, setDraft] = useState<string | null>(null);
+  const editor = useSearchDraft(`store-search:${store.id}`, q);
+  const draftEntry = JSON.stringify([
+    store.id,
+    q,
+    editor.draft,
+    editor.editing,
+  ]);
+  const [activeDraftEntry, setActiveDraftEntry] = useState(draftEntry);
+  const [draft, setDraft] = useState<string | null>(
+    editor.editing ? editor.draft : null,
+  );
+  if (activeDraftEntry !== draftEntry) {
+    setActiveDraftEntry(draftEntry);
+    setDraft(editor.editing ? editor.draft : null);
+  }
   const input = useRef<HTMLInputElement>(null);
   const value = draft ?? q,
     editing = draft !== null || !q;
   const query = normalizeStoreQuery(value),
     kitsch = store.id === "kitsch";
   const path = `/stores/${encodeURIComponent(store.id)}/search`;
-  useEffect(() => {
-    const restore = () => setDraft(null);
-    window.addEventListener("popstate", restore);
-    return () => window.removeEventListener("popstate", restore);
-  }, []);
   function submit(text: string) {
+    editor.update({ draft: q, editing: false });
     const next = new URLSearchParams(params.toString());
     if (text.trim()) next.set("q", text.trim());
     else next.delete("q");
@@ -1110,12 +1131,14 @@ export function StoreSearch({
     input.current?.blur();
   }
   function cancel() {
+    editor.update({ draft: q, editing: false });
     if (q) {
       setDraft(null);
       input.current?.blur();
     } else router.push(`/stores/${store.id}`);
   }
   function clear() {
+    editor.update({ draft: "", editing: true });
     setDraft("");
     input.current?.focus();
   }
@@ -1204,7 +1227,10 @@ export function StoreSearch({
             value={value}
             enterKeyHint="search"
             onFocus={() => setDraft((current) => current ?? q)}
-            onChange={(event) => setDraft(event.target.value)}
+            onChange={(event) => {
+              setDraft(event.target.value);
+              editor.update({ draft: event.target.value, editing: true });
+            }}
             onKeyDown={(event) => {
               if (event.key === "Escape") {
                 event.preventDefault();
@@ -1241,13 +1267,19 @@ export function StoreSearch({
               <span>{value}</span>
             </button>
             {suggestions.map((product) => (
-              <Link href={`/products/${product.id}`} key={product.id}>
+              <SourceLink
+                href={`/products/${product.id}`}
+                key={product.id}
+                onNavigate={() =>
+                  editor.update({ draft: value, editing: true })
+                }
+              >
                 <img src={product.images[0]} alt="" />
                 <span>
                   {product.title}
                   <small>{formatMoney(product.price)}</small>
                 </span>
-              </Link>
+              </SourceLink>
             ))}
             {phrases
               .filter(

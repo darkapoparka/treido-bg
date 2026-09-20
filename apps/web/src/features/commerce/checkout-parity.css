@@ -141,6 +141,70 @@
   margin-top: 10px;
   margin-left: 28px;
 }
+/* The Plan choices and saved-card row have different captured heights. */
+.source-checkout .checkout-plan-body .installment-unavailable {
+  margin-bottom: 15px;
+}
+.source-checkout .checkout-plan-body .shipping-option.selected {
+  margin-bottom: -1px;
+}
+.source-checkout .checkout-plan-body .shipping-option.is-disabled {
+  margin-bottom: 0;
+  color: #7f7f7f;
+  opacity: 1;
+}
+.source-checkout .checkout-plan-body .shipping-option.is-disabled strong {
+  color: #b7b7b7;
+}
+.source-checkout .checkout-plan-body .shipping-option.is-disabled input {
+  opacity: 0.55;
+}
+.source-checkout
+  .checkout-section:has(.checkout-payments)
+  .checkout-section-toggle {
+  min-height: 45px;
+}
+.source-checkout .checkout-payments {
+  padding-bottom: 9px;
+}
+.source-checkout .checkout-payments .shipping-option {
+  min-height: 74px;
+  padding: 14px;
+  margin-bottom: 0;
+}
+.source-checkout .checkout-payments .shipping-option > label > span > strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+}
+.source-checkout .checkout-payments .visa-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 38px;
+  height: 24px;
+  padding: 0;
+  margin-left: 0;
+  font-size: 12px;
+  line-height: 18px;
+  vertical-align: middle;
+}
+.source-checkout .checkout-payments .payment-marks {
+  flex: none;
+  gap: 3px;
+  margin-right: 10px;
+}
+.source-checkout .checkout-payments .source-apple-mark {
+  min-width: 33px;
+  width: 33px;
+  height: 21px;
+}
+.source-checkout .checkout-section-toggle,
+.source-checkout .checkout-section-body {
+  opacity: 0.999;
+}
 .source-checkout .checkout-pay,
 .source-checkout .source-address-editor-initial .editor-actions,
 .source-address-lookup-actions {
@@ -404,6 +468,11 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
 }
 .source-checkout .checkout-fee-label > svg {
   width: 14px;
@@ -1319,10 +1388,49 @@
   min-height: 24px;
 }
 .source-checkout .source-phone-field > div > span,
-.source-text-offer-phone > span {
+.source-text-offer-phone > button {
   display: flex;
   align-items: center;
   gap: 7px;
+}
+.source-text-offer-phone > button {
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.source-checkout .checkout-policy-link {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-decoration: underline;
+  padding: 0;
+  font: inherit;
+}
+.checkout-country-choice {
+  width: 100%;
+  align-items: center;
+  gap: 12px;
+}
+.checkout-country-choice > svg:last-child {
+  width: 20px;
+  margin-left: auto;
+}
+.source-generic-card {
+  flex: none;
+  width: 32px;
+  height: 20px;
+}
+.card-editor-existing .card-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.card-editor-existing .card-inputs > label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
 }
 .source-us-flag {
   display: block;

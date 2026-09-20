@@ -1,11 +1,12 @@
 "use client";
 import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element -- Existing allowlisted reference crops. */
-import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { IconButton, Sheet, commitSheetQuery } from "./components";
 import { Icon } from "./icons";
+import { ContextualCloseLink } from "./return-navigation";
+import { RatingInformation } from "./rating-information";
 import { ReviewHelpful, ReviewReport, ReviewStars } from "./review-feedback";
 import { useReviewFeedback } from "./review-state";
 import {
@@ -68,6 +69,7 @@ export function StoreReviews() {
     ratings.find((value) => value === Number(params.get("rating"))) ?? null;
   const [panel, setPanel] = useState("");
   const [report, setReport] = useState("");
+  const lastReport = useRef("");
   const feedback = useReviewFeedback("store:kitsch");
   const { helpful, reported } = feedback;
   const visible = selectReviews(records, { query: q, sort, rating, helpful });
@@ -92,19 +94,21 @@ export function StoreReviews() {
     <ShopSurface className="shop-page store-reviews">
       <header className="section-heading">
         <h1>Reviews</h1>
-        <Link
+        <ContextualCloseLink
           href="/stores/kitsch/info"
           className="icon-button"
           aria-label="Close reviews"
         >
           <Icon name="close" />
-        </Link>
+        </ContextualCloseLink>
       </header>
       <div className="store-review-summary">
         <b>4.5</b>
         <div>
           <ReviewStars rating={4.5} />
-          <small>194.9K ratings &#9432;</small>
+          <small>
+            194.9K ratings <RatingInformation />
+          </small>
         </div>
       </div>
       <div className="category-rail">
@@ -172,7 +176,10 @@ export function StoreReviews() {
               <IconButton
                 icon="more"
                 label={`More options for ${review.title}`}
-                onClick={() => setReport(review.id)}
+                onClick={() => {
+                  lastReport.current = review.id;
+                  setReport(review.id);
+                }}
               />
             </footer>
             {reported[review.id] && (
@@ -183,13 +190,12 @@ export function StoreReviews() {
           </article>
         ))}
       </div>
-      {report && (
-        <ReviewReport
-          key={report}
-          onClose={() => setReport("")}
-          onReport={(reason) => feedback.markReported(report, reason)}
-        />
-      )}
+      <ReviewReport
+        open={!!report}
+        onClose={() => setReport("")}
+        onReopen={() => setReport(lastReport.current)}
+        onReport={(reason) => feedback.markReported(lastReport.current, reason)}
+      />
       <Sheet open={!!panel} title={panel} onClose={() => setPanel("")}>
         {panel === "Filter" ? (
           <>

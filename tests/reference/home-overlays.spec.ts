@@ -170,6 +170,14 @@ test("campaign following and not-interested undo retain the full card", async ({
     "src",
     "/api/reference-media/home-pura-photo",
   );
+  await expect(card.locator(".campaign-header-photo")).toHaveAttribute(
+    "src",
+    "/api/reference-media/home-pura-menu-header",
+  );
+  await expect(card.locator(".campaign-wordmark-image")).toHaveAttribute(
+    "src",
+    "/api/reference-media/home-pura-menu-wordmark",
+  );
   await dialog
     .getByRole("button", { name: "Not interested", exact: true })
     .click();

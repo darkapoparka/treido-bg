@@ -51,6 +51,7 @@
   border-radius: 22px;
   font-size: 14px;
   line-height: 20px;
+  font-weight: 600;
 }
 .deals-feed {
   margin: 0 -16px;
@@ -74,11 +75,12 @@
   gap: 6px;
   min-width: 0;
   flex: 1;
+  text-align: left;
 }
 .deal-store-identity > img {
   width: 48px;
   height: 48px;
-  padding: 5px;
+  padding: 9.5px;
   border: 1.5px solid #6546f3;
   border-radius: 50%;
   object-fit: contain;
@@ -94,7 +96,7 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
 }
 .deal-store-identity small {
   overflow: hidden;
@@ -159,8 +161,8 @@
   background: #5a33ee;
 }
 .deal-save svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 .deal-product-copy {
   display: grid;
@@ -168,6 +170,8 @@
   padding: 9px 4px 0;
   font-size: 12px;
   line-height: 16px;
+  width: 100%;
+  text-align: left;
 }
 .deal-product-copy strong {
   overflow: hidden;
@@ -176,12 +180,87 @@
   font-weight: 500;
 }
 .deal-rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
   white-space: nowrap;
 }
-.deal-rating i {
+.deal-rating .review-rating-stars {
+  --review-star-size: 13px;
   color: #dbbb37;
-  font-style: normal;
-  letter-spacing: -1px;
+  vertical-align: -2px;
+}
+.deals-page
+  :is(h1, .deals-chip, .deal-store-identity span, .deal-product-copy) {
+  opacity: 0.999;
+}
+.deal-store-header > .icon-button svg {
+  stroke-width: 3.5;
+}
+.deal-source-tail {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 173px;
+  padding: 1px 0;
+  overflow: hidden;
+}
+.deal-source-tail img {
+  width: 14px;
+  height: 171px;
+  max-width: none;
+  object-fit: fill;
+}
+.deal-hidden {
+  min-height: 240px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.deal-hidden > svg {
+  width: 24px;
+  height: 24px;
+}
+.deal-detail-sheet .sheet-header h2 {
+  overflow-wrap: anywhere;
+}
+.deal-detail-sheet .deal-product-rail {
+  margin-inline: -16px;
+}
+.deal-shop-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.deal-shop-summary > img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+.deal-shop-summary .pill {
+  margin-top: 12px;
+  background: #f3f4f4;
+}
+.deal-detail-photo {
+  display: block;
+  width: 173px;
+  height: 173px;
+  border-radius: 20px;
+  margin: 0 auto 16px;
+}
+.deal-detail-seller {
+  color: #777;
+  margin-bottom: 8px;
+}
+.deal-detail-sheet > .sheet-copy {
+  margin-top: 16px;
+}
+.deal-view-saved {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
 }
 .deal-product-copy > span:last-child {
   margin-top: 1px;

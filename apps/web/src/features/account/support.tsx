@@ -11,6 +11,9 @@ import { Sheet } from "../discovery/components";
 import { AccountPage, Boundary } from "./forms";
 import { ShopSplash } from "./reference-transitions";
 import { navigateAccountStage } from "./stage-history";
+import { SourceLink } from "../discovery/return-navigation";
+import { useReducedMotion } from "../discovery/motion-preference";
+import { IntroHeadline, TrackingIllustration } from "./onboarding-motion";
 export function SupportPage() {
   return (
     <AccountPage title="Support" className="account-settings-page support-page">
@@ -24,13 +27,13 @@ export function SupportPage() {
             </small>
           </div>
         </Link>
-        <Link href="/support/chat">
+        <SourceLink href="/support/chat">
           <AccountIcon name="support-chat" />
           <div>
             Support Chat
             <small>Ask questions, and get support from our AI assistant</small>
           </div>
-        </Link>
+        </SourceLink>
         <Link href="/about">
           <AccountIcon name="info" />
           <div>
@@ -200,6 +203,8 @@ export function OnboardingPage({
   };
   const [choice, setChoice] = useState("");
   const [permission, setPermission] = useState(false);
+  const reducedMotion = useReducedMotion();
+  const motion = !reducedMotion && params.get("reference") !== "captured";
   if (params.get("step") === "splash" || params.get("step") === "signout")
     return (
       <ShopSplash
@@ -288,7 +293,10 @@ export function OnboardingPage({
     );
   if (step === 0)
     return (
-      <AccountPage dock={false} className="source-intro">
+      <AccountPage
+        dock={false}
+        className={`source-intro ${motion ? "intro-motion" : ""}`}
+      >
         <small className="intro-powered">
           Powered by{" "}
           <b>
@@ -329,14 +337,7 @@ export function OnboardingPage({
             />
           ))}
         </div>
-        <h1>
-          <img
-            src="/api/reference-media/shop-wordmark"
-            alt="Shop"
-            width="123"
-            height="51"
-          />
-        </h1>
+        <IntroHeadline motion={motion} />
         <div className="intro-actions">
           <Link
             className="primary form-submit"
@@ -464,7 +465,11 @@ export function OnboardingPage({
           </div>
         )}
         {step === 2 && (
-          <div className="tracking-onboarding-art" aria-hidden="true">
+          <div
+            className="tracking-onboarding-art"
+            data-motion={motion}
+            aria-hidden="true"
+          >
             {Array.from({ length: 9 }, (_, i) => (
               <img
                 key={i}
@@ -474,26 +479,7 @@ export function OnboardingPage({
             ))}
           </div>
         )}
-        {step === 3 && (
-          <div className="tracking-onboarding-card">
-            <img
-              className="tracking-shoe"
-              src="/api/reference-media/onboarding-shoe"
-              alt=""
-            />
-            <span>
-              <small>Online store</small>
-              <strong>Delivered</strong>
-              <i />
-              <small>Delivered 2 hours ago</small>
-            </span>
-            <img
-              className="tracking-parcel"
-              src="/api/reference-media/onboarding-delivered-parcel"
-              alt=""
-            />
-          </div>
-        )}
+        {step === 3 && <TrackingIllustration motion={motion} />}
         <div className="onboarding-actions">
           {step === 0 ? (
             <>

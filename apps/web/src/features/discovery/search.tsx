@@ -2,6 +2,7 @@
 import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { SourceLink } from "./return-navigation";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   useEffect,
@@ -33,6 +34,7 @@ import {
   searchStores,
 } from "./search-model";
 import { SearchLoading } from "./search-loading";
+import { useSearchDraft } from "./search-draft";
 import { JeansAnswer } from "./assistant";
 import { RecentSearchItems } from "./search-recent";
 import { CapturedJeansContinuation } from "./search-captured-continuation";
@@ -48,7 +50,6 @@ const filteredStoreDeals: Record<string, string> = {
 
 export function Search({
   catalog,
-  query: initialQuery = "",
   filters: initialFilters,
 }: {
   catalog: Catalog;
@@ -58,10 +59,9 @@ export function Search({
   const router = useRouter();
   const params = useSearchParams();
   // An absent q after browser navigation means an empty query, not the stale
-  // server prop from a previous result page. The prop only seeds the draft.
+  // server prop from a previous result page.
   const query = params.get("q") ?? "";
   const editCapturedPhoto = params.get("edit") === "photo";
-  const draftEntry = JSON.stringify([query, editCapturedPhoto]);
   const filters: SearchFilters = {
     ...initialFilters,
     ...readSearchFilters(params),
@@ -70,33 +70,60 @@ export function Search({
   const formRef = useRef<HTMLFormElement>(null);
   const state = useDiscovery();
   const { viewAnswer } = state;
-  const [draft, setDraft] = useState(
-    editCapturedPhoto ? capturedCapQuestion : query || initialQuery,
+  const composer = useSearchDraft(
+    "composer",
+    editCapturedPhoto ? capturedCapQuestion : query,
+    editCapturedPhoto ? capturedCapPhoto : "",
   );
+  const draftEntry = JSON.stringify([
+    query,
+    editCapturedPhoto,
+    composer.draft,
+    composer.photo,
+    composer.editing,
+  ]);
   const [activeDraftEntry, setActiveDraftEntry] = useState(draftEntry);
+  const [draft, setDraft] = useState(composer.draft);
+  const [photo, setPhotoValue] = useState(composer.photo);
+  function setPhoto(value: string) {
+    if (photo !== value && photo.startsWith("blob:"))
+      URL.revokeObjectURL(photo);
+    setPhotoValue(value);
+  }
+  function rememberComposer(nextDraft: string, nextPhoto: string) {
+    const save = () => composer.update({ draft: nextDraft, photo: nextPhoto });
+    if (window.history.state?.shopSheet) {
+      // The chooser/disclosure owns a temporary entry. Commit the pending
+      // composer when its Back retires, so later navigation restores the page.
+      const href = window.location.href;
+      window.addEventListener(
+        "popstate",
+        () => {
+          if (window.location.href === href) save();
+        },
+        { once: true },
+      );
+    } else save();
+  }
   const [filter, setFilter] = useState(false);
   const [filterUnderlay, setFilterUnderlay] = useState<SearchFilters | null>(
     null,
   );
   const answerTrigger = useRef<HTMLButtonElement>(null);
   const answerEntry = useRef(false);
-  const [focused, setFocused] = useState(false);
+  const [focused, setFocused] = useState(composer.editing);
   const [photos, setPhotos] = useState(false);
-  const [photo, setPhoto] = useState(editCapturedPhoto ? capturedCapPhoto : "");
   const [photoError, setPhotoError] = useState("");
   const [photoUnavailable, setPhotoUnavailable] = useState(false);
   const [pending, startTransition] = useTransition();
   if (activeDraftEntry !== draftEntry) {
     setActiveDraftEntry(draftEntry);
-    setDraft(editCapturedPhoto ? capturedCapQuestion : query);
-    setPhoto(editCapturedPhoto ? capturedCapPhoto : "");
-    setFocused(false);
+    setFocused(composer.editing);
+    setDraft(composer.draft);
+    setPhotoValue(composer.photo);
   }
-  useEffect(() => {
-    return () => {
-      if (photo.startsWith("blob:")) URL.revokeObjectURL(photo);
-    };
-  }, [photo]);
+  // Object URLs remain local to this document while their history entry is
+  // reachable. Explicit replacement/removal revokes them.
   useEffect(() => {
     if (!photo) return;
     // Focus after the photo chooser has returned its own trigger focus. The
@@ -186,17 +213,22 @@ export function Search({
     inputRef.current?.blur();
   }
   function cancelEditing() {
+    composer.update({ draft: query, photo, editing: false });
     setDraft(query);
     closeSuggestions();
   }
   function removePhoto() {
     setPhoto("");
+    rememberComposer(draft, "");
     setPhotoError("");
     setPhotoUnavailable(false);
     requestAnimationFrame(() => inputRef.current?.focus());
   }
   function submitQuery(value: string) {
     const next = value.trim();
+    // The old entry returns to its committed query after a deliberate submit.
+    // The new results entry gets its own URL seed, never the discarded editor.
+    composer.update({ draft: query, photo: "", editing: false });
     setDraft(next);
     setPhoto("");
     closeSuggestions();
@@ -215,8 +247,11 @@ export function Search({
     setPhotoError("");
     // A user-selected photograph has not been analyzed. Do not label every
     // upload as the frozen baseball cap or reuse that cap's fixture answer.
+    const nextDraft = photo === capturedCapPhoto ? "" : draft;
     if (photo === capturedCapPhoto) setDraft("");
-    setPhoto(URL.createObjectURL(file));
+    const nextPhoto = URL.createObjectURL(file);
+    setPhoto(nextPhoto);
+    rememberComposer(nextDraft, nextPhoto);
     setPhotos(false);
   }
   // Input identity is stable through text/photo entry, suggestions, pending
@@ -234,10 +269,12 @@ export function Search({
           (photo !== capturedCapPhoto ||
             (draft.trim() && !isCapturedCapQuestion(draft)))
         ) {
+          composer.update({ draft, photo });
           setPhotoUnavailable(true);
           return;
         }
         if (photo === capturedCapPhoto) {
+          composer.update({ draft, photo });
           startTransition(() => router.push("/assistant?example=photo"));
         } else submitQuery(draft);
       }}
@@ -263,7 +300,10 @@ export function Search({
         enterKeyHint="search"
         value={draft}
         onFocus={() => setFocused(true)}
-        onChange={(e) => setDraft(e.target.value)}
+        onChange={(e) => {
+          setDraft(e.target.value);
+          composer.update({ draft: e.target.value, editing: true });
+        }}
         onKeyDown={(e) => {
           if (e.key === "Escape") {
             e.preventDefault();
@@ -313,6 +353,7 @@ export function Search({
           onClick={() => {
             setPhoto("");
             cancelEditing();
+            rememberComposer(query, "");
           }}
         />
       )}
@@ -332,10 +373,13 @@ export function Search({
                 ["jeans-warehouse", "Jeans Warehouse", "4.7", ""],
                 ["city-jeans", "City Jeans", "4.8", "Save $10"],
               ].map(([id, name, rating, deal]) => (
-                <Link
+                <SourceLink
                   key={id}
                   className="suggestion-store"
                   href={`/stores/${id}`}
+                  onNavigate={() =>
+                    composer.update({ draft, photo, editing: true })
+                  }
                 >
                   <img
                     className="suggestion-logo"
@@ -345,7 +389,7 @@ export function Search({
                   <strong>{name}</strong>
                   <span className="suggestion-rating">{rating} ★</span>
                   {deal && <span className="deal-badge">{deal}</span>}
-                </Link>
+                </SourceLink>
               ))}
             </>
           )}
@@ -465,7 +509,7 @@ export function Search({
                     : store.logo;
                 const deal = filteredStoreDeals[store.id];
                 return (
-                  <Link
+                  <SourceLink
                     key={store.id}
                     href={`/stores/${store.id}`}
                     className={`search-store ${image ? "" : "plain"} ${capturedFilteredJeans ? styles.capturedFilterStore : ""}`}
@@ -495,7 +539,7 @@ export function Search({
                         {store.ratingCount ? ` (${store.ratingCount})` : ""}
                       </span>
                     )}
-                  </Link>
+                  </SourceLink>
                 );
               })}
               {capturedFilteredJeans && (
@@ -525,15 +569,15 @@ export function Search({
                 data-result-id={p.id}
               >
                 <div className="product-media">
-                  <Link href={`/products/${p.id}`}>
+                  <SourceLink href={`/products/${p.id}`}>
                     <img src={p.images[0]} alt={p.title} />
-                  </Link>
+                  </SourceLink>
                   <SaveButton product={p} />
                 </div>
                 <div>
-                  <Link href={`/products/${p.id}`}>
+                  <SourceLink href={`/products/${p.id}`}>
                     <strong>{p.title}</strong>
-                  </Link>
+                  </SourceLink>
                   {p.ratingCount && (
                     <p className="rating">
                       <span>★★★★★</span> ({p.ratingCount})
@@ -544,7 +588,7 @@ export function Search({
                     {p.compareAt && <del>{formatMoney(p.compareAt)}</del>}
                   </p>
                   <div className={styles.resultMerchant}>
-                    <Link
+                    <SourceLink
                       className="result-store"
                       href={`/stores/${p.storeId}`}
                     >
@@ -557,7 +601,7 @@ export function Search({
                         />
                       )}
                       {catalog.stores.find((s) => s.id === p.storeId)?.name}
-                    </Link>
+                    </SourceLink>
                     {p.storeId === "fashion-nova" && (
                       <span>
                         4.3 ★ <span className={styles.muted}>(428.8K)</span>
@@ -708,6 +752,7 @@ export function Search({
             setPhotoError("");
             setPhoto(capturedCapPhoto);
             setDraft("");
+            rememberComposer("", capturedCapPhoto);
             setPhotos(false);
           }}
         >
@@ -756,6 +801,7 @@ export function Search({
       <Filters
         open={filter}
         onClose={() => setFilter(false)}
+        onReopen={() => setFilter(true)}
         value={filters}
         onChange={update}
       />

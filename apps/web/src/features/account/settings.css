@@ -915,8 +915,9 @@
   margin: 0;
 }
 .login-page .auth-email-input:focus-visible {
-  outline: 1px solid #111;
+  outline: none;
   outline-offset: 0;
+  border-color: #111;
 }
 .login-page .auth-continue {
   width: 100%;
@@ -928,6 +929,7 @@
   font-size: 16px;
   font-weight: 500;
   box-shadow: 0 10px 20px #5433e92b;
+  opacity: 0.999;
 }
 .login-page .auth-content .auth-terms {
   margin-top: 16px;

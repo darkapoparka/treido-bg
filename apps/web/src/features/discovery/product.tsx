@@ -9,6 +9,7 @@ import { ReviewStars } from "./review-feedback";
 import { moveProductPhoto, productPhotoSwipe } from "./product-gallery";
 import { ProductAdditionFlight, useProductAddition } from "./product-addition";
 import { ProductReviewPreview } from "./product-review-preview";
+import { rememberSourceReturn } from "./return-navigation";
 import {
   formatMoney,
   type Catalog,
@@ -58,6 +59,7 @@ export function ProductDetail({
     [toast, setToast] = useState(false),
     [subscription, setSubscription] = useState(false);
   const [postalCode, setPostalCode] = useState("94025");
+  const [postalDraft, setPostalDraft] = useState("94025");
   const [priceAlertTip, setPriceAlertTip] = useState(
     () =>
       !state.viewedProducts.includes(product.id) &&
@@ -351,7 +353,13 @@ export function ProductDetail({
           {product.rating !== undefined && (
             <button
               className="rating review-link"
-              onClick={() => router.push(`/products/${product.id}/reviews`)}
+              onClick={() => {
+                rememberSourceReturn(
+                  `/products/${product.id}/reviews`,
+                  ".product-details > .review-link",
+                );
+                router.push(`/products/${product.id}/reviews`);
+              }}
             >
               <ReviewStars
                 rating={Math.round(product.rating * 2) / 2}
@@ -626,7 +634,12 @@ export function ProductDetail({
           {store && (
             <section className="pdp-delivery">
               <h2>Delivery & Returns</h2>
-              <button onClick={() => setDetail("Ship to")}>
+              <button
+                onClick={() => {
+                  setPostalDraft(postalCode);
+                  setDetail("Ship to");
+                }}
+              >
                 <Icon name="location" />
                 <span>
                   Ship to <b>{postalCode}</b>
@@ -720,6 +733,7 @@ export function ProductDetail({
         storeId={product.storeId}
         open={options}
         onClose={() => setOptions(false)}
+        onReopen={() => setOptions(true)}
       />
       <Sheet
         open={gallery !== null}
@@ -978,6 +992,8 @@ export function ProductDetail({
             <form
               onSubmit={(e) => {
                 e.preventDefault();
+                if (!postalDraft.trim()) return;
+                setPostalCode(postalDraft.trim());
                 setDetail("");
               }}
             >
@@ -985,8 +1001,8 @@ export function ProductDetail({
                 Postal code
                 <input
                   aria-label="Postal code"
-                  value={postalCode}
-                  onChange={(e) => setPostalCode(e.target.value)}
+                  value={postalDraft}
+                  onChange={(e) => setPostalDraft(e.target.value)}
                   required
                 />
               </label>

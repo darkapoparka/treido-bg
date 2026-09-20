@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TrackingDetail } from "./tracking";
 import { CartOverlay } from "./checkout";
@@ -9,6 +9,7 @@ import type { Catalog } from "../catalog/types";
 import { orderGridDeals } from "../catalog/reference/order-fixtures";
 import { formatMoney } from "../catalog/types";
 import { Icon } from "../discovery/icons";
+import { DecorativeVideo } from "../discovery/decorative-video";
 import { RatingStar, ReviewStars } from "../discovery/rating-stars";
 import { capturedReceipts } from "./receipt-data";
 import { shopSourceBuyer } from "./source-fixtures";
@@ -38,7 +39,7 @@ export function OrdersPage({
   archive?: boolean;
   history?: boolean;
 }) {
-  const { orders } = useAccount();
+  const { orders, deletedOrder, restoreOrder } = useAccount();
   const params = useSearchParams();
   const [menu, setMenu] = useState(false);
   const [search, setSearch] = useState(false);
@@ -103,6 +104,12 @@ export function OrdersPage({
         )
       }
     >
+      {deletedOrder && (
+        <div className={styles.deletedOrderNotice} role="status">
+          <span>Order deleted from this preview.</span>
+          <button onClick={restoreOrder}>Undo</button>
+        </div>
+      )}
       {search && (
         <label className="form-field">
           Search orders
@@ -175,11 +182,8 @@ export function OrdersPage({
                 </span>
               )}
               <span>
-                <strong>
-                  {kitsch ? "KITSCH" : "Loose Fit Printed T-Shirt"}
-                </strong>
+                <strong>{kitsch ? "KITSCH" : o.name}</strong>
                 <small>{kitsch ? "Order placed" : "On the way"}</small>
-                {kitsch && <b>1 item · $10.82</b>}
               </span>
               {kitsch && p && (
                 <img
@@ -188,7 +192,8 @@ export function OrdersPage({
                   alt=""
                 />
               )}
-              <small>Jul 27</small>
+              {kitsch && <b>1 item · $10.82</b>}
+              <small className="history-order-date">Jul 27</small>
             </Link>
           );
         }
@@ -212,7 +217,9 @@ export function OrdersPage({
               </strong>
               <h2>
                 {o.status === "Delivered"
-                  ? "Review your order"
+                  ? p
+                    ? "Review your order"
+                    : "Delivered today"
                   : sourceWaiting
                     ? "Expected by Aug 3"
                     : o.status === "Ordered"
@@ -221,7 +228,7 @@ export function OrdersPage({
                         : "Label created"
                       : "Arrives Jul 31–Aug 1"}
               </h2>
-              {o.status === "Delivered" ? (
+              {o.status === "Delivered" && p ? (
                 <span className="review-stars" aria-hidden="true">
                   <ReviewStars rating={0} />
                 </span>
@@ -229,11 +236,13 @@ export function OrdersPage({
                 <OrderProgress
                   carrier={o.carrier}
                   phase={
-                    sourceWaiting
-                      ? "waiting"
-                      : o.status === "Ordered" || labelCreated
-                        ? "label"
-                        : "transit"
+                    o.status === "Delivered"
+                      ? "delivered"
+                      : sourceWaiting
+                        ? "waiting"
+                        : o.status === "Ordered" || labelCreated
+                          ? "label"
+                          : "transit"
                   }
                 />
               )}
@@ -252,7 +261,19 @@ export function OrdersPage({
           }
         >
           {!archive && !query && (
-            <img src="/api/reference-media/order-empty-art" alt="" />
+            <span className={styles.emptyArt}>
+              <img src="/api/reference-media/order-empty-art" alt="" />
+              <DecorativeVideo
+                enabled={params.get("reference") !== "captured"}
+                clips={[
+                  {
+                    key: "orders-empty-motion",
+                    className: styles.emptyArtVideo,
+                  },
+                ]}
+                loop
+              />
+            </span>
           )}
           {archive && !query && (
             <img
@@ -305,7 +326,7 @@ export function OrdersPage({
                     <img src={`/api/reference-media/${entry.photo}`} alt="" />
                     <span>{entry.promotion}</span>
                     <i>
-                      <Icon name="cart" />
+                      <Icon name="bag-add" />
                     </i>
                   </button>
                 ))}
@@ -376,7 +397,7 @@ export function OrdersPage({
                     <Link href={`/products/${product.id}`}>
                       <img src={product.images[0]} alt="Shampoo Bar Bag" />
                       <span>
-                        <Icon name="cart" />
+                        <Icon name="bag-add" />
                       </span>
                     </Link>
                   ) : null;
@@ -408,7 +429,7 @@ export function OrdersPage({
   );
 }
 export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
-  const { orders, saveOrder } = useAccount();
+  const { orders, saveOrder, deleteOrder } = useAccount();
   const order = orders.find((o) => o.id === id);
   const [menu, setMenu] = useState(false);
   const router = useRouter(),
@@ -422,6 +443,7 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
   };
   const [edit, setEdit] = useState(false);
   const [boundary, setBoundary] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [toast, setToast] = useState("");
   if (!order)
     return (
@@ -483,7 +505,7 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
       </>
     );
   return (
-    <AccountPage className={styles.detail}>
+    <AccountPage className={styles.detail} dockFade>
       {toast && (
         <p
           className="order-action-toast"
@@ -514,7 +536,9 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
             <strong>Review your order</strong>
             <small>Tell us about your purchase</small>
           </span>
-          <span className="review-stars">★★★★★</span>
+          <span className="review-stars" aria-hidden="true">
+            <ReviewStars rating={0} />
+          </span>
         </Link>
       )}
       <button
@@ -651,7 +675,7 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
           label="Delete"
           onClick={() => {
             setMenu(false);
-            setBoundary(true);
+            setDeleteConfirm(true);
           }}
         />
       </Sheet>
@@ -673,6 +697,30 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
           }}
         />
       </Sheet>
+      <Sheet
+        open={deleteConfirm}
+        title="Delete this order?"
+        onClose={() => setDeleteConfirm(false)}
+      >
+        <p className="form-note">
+          Remove this order from your local preview. You can undo this from
+          Orders. This does not cancel a purchase or contact the merchant.
+        </p>
+        <button
+          className="primary form-submit"
+          onClick={() => {
+            consumeSheetHistory();
+            deleteOrder(id);
+            setDeleteConfirm(false);
+            router.replace("/orders");
+          }}
+        >
+          Delete order
+        </button>
+        <button className="form-cancel" onClick={() => setDeleteConfirm(false)}>
+          Keep order
+        </button>
+      </Sheet>
       <Boundary
         open={boundary}
         onClose={() => setBoundary(false)}
@@ -681,6 +729,21 @@ export function OrderDetail({ catalog, id }: { catalog: Catalog; id: string }) {
     </AccountPage>
   );
 }
+const manualCarriers = [
+  ["DHL Active Tracing", "active-tracing"],
+  ["DHL Benelux", "benelux"],
+  ["DHL 2_Mann_Handling", "two-man"],
+  ["DHL eCommerce", "ecommerce"],
+  ["DHL eCommerce Vietnam", null],
+  ["DHL Spain Domestic", "spain"],
+  ["DHL Express", null],
+  ["Amazon Logistics", null],
+  ["USPS", null],
+  ["FedEx", null],
+  ["UPS", null],
+  ["Other", null],
+] as const;
+
 function ManualOrderForm({
   initial,
   onSave,
@@ -694,11 +757,34 @@ function ManualOrderForm({
   const [carrierQuery, setCarrierQuery] = useState("");
   const [carrierOpen, setCarrierOpen] = useState(false);
   const [emailBoundary, setEmailBoundary] = useState(false);
+  const [copyStatus, setCopyStatus] = useState("");
   const carrierInput = useRef<HTMLInputElement>(null);
+  const carrierListId = useId();
+  const matchingCarriers = manualCarriers.filter(([name]) =>
+    name.toLowerCase().includes(carrierQuery.trim().toLowerCase()),
+  );
   return (
     <>
       <form
         className={`account-form ${styles.manualForm}`}
+        onKeyDown={(event) => {
+          if (event.key === "Escape" && carrierOpen) {
+            event.preventDefault();
+            event.stopPropagation();
+            carrierInput.current?.focus();
+            setCarrierOpen(false);
+          }
+        }}
+        onBlur={(event) => {
+          if (
+            carrierOpen &&
+            !(
+              event.relatedTarget instanceof Element &&
+              event.relatedTarget.closest(".carrier-selector, .carrier-search")
+            )
+          )
+            setCarrierOpen(false);
+        }}
         onSubmit={(e) => {
           e.preventDefault();
           if (
@@ -740,6 +826,8 @@ function ManualOrderForm({
             placeholder="Carrier"
             ref={carrierInput}
             aria-label="Carrier"
+            aria-controls={carrierOpen ? carrierListId : undefined}
+            autoComplete="off"
             value={carrierOpen ? carrierQuery : value.carrier}
             onFocus={() => {
               setCarrierQuery(value.carrier);
@@ -752,48 +840,46 @@ function ManualOrderForm({
           />
         </label>
         {carrierOpen && (
-          <div className="carrier-search">
+          <div className="carrier-search" id={carrierListId}>
             <h3>Recommended carriers</h3>
-            {[
-              "DHL Active Tracing",
-              "DHL Benelux",
-              "DHL 2_Mann_Handling",
-              "DHL eCommerce",
-              "DHL eCommerce Vietnam",
-              "DHL Spain Domestic",
-              "DHL Express",
-              "USPS",
-              "FedEx",
-              "UPS",
-              "Other",
-            ]
-              .filter((c) =>
-                c.toLowerCase().includes(carrierQuery.toLowerCase()),
-              )
-              .map((c) => (
+            {matchingCarriers.map(([c, logo]) => (
+              <button
+                type="button"
+                className="account-row"
+                key={c}
+                onClick={() => {
+                  setValue({ ...value, carrier: c });
+                  setCarrierOpen(false);
+                  carrierInput.current?.blur();
+                }}
+              >
+                {c}
+                {logo ? (
+                  <img
+                    aria-hidden="true"
+                    className="dhl-mark"
+                    src={`/api/reference-media/order-carrier-${logo}`}
+                    alt=""
+                  />
+                ) : !c.startsWith("DHL") ? (
+                  <span aria-hidden="true">›</span>
+                ) : null}
+              </button>
+            ))}
+            {matchingCarriers.length === 0 && (
+              <div className={styles.carrierEmpty}>
+                <p role="status">No matching carriers</p>
                 <button
                   type="button"
-                  className="account-row"
-                  key={c}
                   onClick={() => {
-                    setValue({ ...value, carrier: c });
-                    setCarrierOpen(false);
-                    carrierInput.current?.blur();
+                    setCarrierQuery("");
+                    carrierInput.current?.focus();
                   }}
                 >
-                  {c}
-                  {c.startsWith("DHL") ? (
-                    <img
-                      aria-hidden="true"
-                      className="dhl-mark"
-                      src="/api/reference-media/widget-dhl-logo"
-                      alt=""
-                    />
-                  ) : (
-                    <span aria-hidden="true">›</span>
-                  )}
+                  Show all carriers
                 </button>
-              ))}
+              </div>
+            )}
           </div>
         )}
         <button
@@ -818,10 +904,26 @@ function ManualOrderForm({
             <button
               type="button"
               className={styles.forwardAddress}
-              onClick={() => setEmailBoundary(true)}
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(
+                    "track-q6uoeuhu57@my.shop.app",
+                  );
+                  setCopyStatus("Email address copied");
+                } catch {
+                  setCopyStatus(
+                    "Copy unavailable. Select the address to copy it manually.",
+                  );
+                }
+              }}
             >
               track-q6uoeuhu57@my.shop.app
             </button>
+            {copyStatus && (
+              <p className={styles.copyStatus} role="status">
+                {copyStatus}
+              </p>
+            )}
             <p>
               Copy your unique address to forward shipping emails and Shop will
               track your orders. <Link href="/account/help">Learn more</Link>
@@ -903,6 +1005,7 @@ export function OrderReview({ id, catalog }: { id: string; catalog: Catalog }) {
   const [saved, setSaved] = useState(false);
   const editing = !!order?.rating;
   const [reviewMenu, setReviewMenu] = useState(false);
+  const [identityHelp, setIdentityHelp] = useState(false);
   return (
     <AccountPage dock={false} className={`order-review-page ${styles.review}`}>
       <Link
@@ -971,7 +1074,13 @@ export function OrderReview({ id, catalog }: { id: string; catalog: Catalog }) {
           </label>
           <p className="review-identity">
             Reviewing as {shopSourceBuyer.firstName}{" "}
-            <span title="Your public profile name">?</span>
+            <button
+              type="button"
+              aria-label="About your review name"
+              onClick={() => setIdentityHelp(true)}
+            >
+              ?
+            </button>
           </p>
           <button className="primary review-submit" disabled={!rating}>
             {editing ? "Update review" : "Submit"}
@@ -985,6 +1094,16 @@ export function OrderReview({ id, catalog }: { id: string; catalog: Catalog }) {
       ) : (
         <p>Order not found.</p>
       )}
+      <Sheet
+        open={identityHelp}
+        title="Your review name"
+        onClose={() => setIdentityHelp(false)}
+      >
+        <p className="form-note">
+          Your review uses the first name in your profile. This preview saves
+          reviews locally and does not publish them.
+        </p>
+      </Sheet>
       <Sheet
         open={reviewMenu}
         title="Your review"

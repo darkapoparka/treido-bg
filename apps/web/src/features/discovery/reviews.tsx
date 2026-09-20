@@ -6,13 +6,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { StoreReviews } from "./store-reviews";
 import "./review-parity.css";
 import { useDiscovery } from "./state";
-import {
-  IconButton,
-  Sheet,
-  commitSheetQuery,
-  consumeSheetHistory,
-} from "./components";
+import { IconButton, Sheet, commitSheetQuery } from "./components";
 import { Icon } from "./icons";
+import { ContextualCloseLink } from "./return-navigation";
+import { RatingInformation } from "./rating-information";
+import { useSheetStages } from "./sheet-stages";
 import {
   ReviewBody,
   ReviewHelpful,
@@ -115,6 +113,7 @@ export function Reviews({
   const { helpful, reported, expanded } = feedback;
   const searchRef = useRef<HTMLInputElement>(null);
   const [report, setReport] = useState("");
+  const lastReport = useRef("");
   const [filter, setFilter] = useState(false);
   const visible = selectReviews(reviews, { query: q, sort, helpful });
   function updateCriteria(patch: { q?: string; sort?: ReviewSort }) {
@@ -147,19 +146,21 @@ export function Reviews({
     <ShopSurface className="shop-page reviews-page" data-product-id={productId}>
       <header className="section-heading">
         <h1>Reviews</h1>
-        <Link
+        <ContextualCloseLink
           href={`/products/${productId}`}
           className="icon-button"
           aria-label="Close reviews"
         >
           <Icon name="close" />
-        </Link>
+        </ContextualCloseLink>
       </header>
       <div className="review-summary">
         <div>
           <strong>4.6</strong>
           <ReviewStars rating={4.5} label="4.6 out of 5 stars" />
-          <p>3.3K ratings ⓘ</p>
+          <p>
+            3.3K ratings <RatingInformation />
+          </p>
         </div>
         <div className="rating-bars" aria-label="Captured rating distribution">
           {[5, 4, 3, 2, 1].map((n, i) => (
@@ -251,7 +252,10 @@ export function Reviews({
             <IconButton
               icon="more"
               label={`More options for ${review.author}'s review`}
-              onClick={() => setReport(review.id)}
+              onClick={() => {
+                lastReport.current = review.id;
+                setReport(review.id);
+              }}
             />
           </footer>
           {reported[review.id] && (
@@ -261,13 +265,12 @@ export function Reviews({
           )}
         </article>
       ))}
-      {report && (
-        <ReviewReport
-          key={report}
-          onClose={() => setReport("")}
-          onReport={(reason) => feedback.markReported(report, reason)}
-        />
-      )}
+      <ReviewReport
+        open={!!report}
+        onClose={() => setReport("")}
+        onReopen={() => setReport(lastReport.current)}
+        onReport={(reason) => feedback.markReported(lastReport.current, reason)}
+      />
       <Sheet
         open={filter}
         title="Filter reviews"
@@ -303,17 +306,16 @@ export function ProductOptions({
   productId,
   open,
   onClose,
+  onReopen,
 }: {
   storeId?: string;
   productId?: string;
   open: boolean;
   onClose: () => void;
+  onReopen: () => void;
 }) {
   const router = useRouter(),
     state = useDiscovery();
-  const [view, setView] = useState<
-    "menu" | "contact" | "reason" | "notes" | "marked"
-  >("menu");
   const [reason, setReason] = useState("");
   const [notes, setNotes] = useState("");
   const [copyState, setCopyState] = useState<"idle" | "copied" | "unavailable">(
@@ -322,19 +324,39 @@ export function ProductOptions({
   const firstReason = useRef<HTMLInputElement>(null);
   const selectedReason = useRef<HTMLInputElement>(null);
   const copyOperation = useRef(0);
+  const contactTrigger = useRef<HTMLButtonElement>(null);
+  const reportTrigger = useRef<HTMLButtonElement>(null);
+  const previousView = useRef("menu");
+  const flow = useSheetStages<
+    "menu" | "contact" | "reason" | "notes" | "marked"
+  >({
+    open,
+    initial: "menu",
+    onClose,
+    onReopen,
+    onStart: () => {
+      setReason("");
+      setNotes("");
+      setCopyState("idle");
+    },
+  });
+  const view = flow.stage;
   useEffect(() => {
     if (!open) return;
+    if (view === "menu" && previousView.current !== "menu") {
+      (previousView.current === "contact"
+        ? contactTrigger
+        : reportTrigger
+      ).current?.focus({ preventScroll: true });
+    }
     if (view === "reason") firstReason.current?.focus({ preventScroll: true });
     if (view === "notes")
       selectedReason.current?.focus({ preventScroll: true });
+    previousView.current = view;
   }, [open, view]);
   const close = () => {
     copyOperation.current += 1;
-    setView("menu");
-    setReason("");
-    setNotes("");
-    setCopyState("idle");
-    onClose();
+    flow.close();
   };
   const title =
     view === "menu"
@@ -345,14 +367,14 @@ export function ProductOptions({
   function markProduct() {
     if (!reason) return;
     if (!productId || !storeId) {
-      setView("marked");
+      flow.navigate("marked");
       return;
     }
     state.reportProduct(productId);
-    consumeSheetHistory();
-    close();
-    router.replace(
-      `/stores/${encodeURIComponent(storeId)}?reported=${encodeURIComponent(productId)}#all-products`,
+    flow.close(() =>
+      router.replace(
+        `/stores/${encodeURIComponent(storeId)}?reported=${encodeURIComponent(productId)}#all-products`,
+      ),
     );
   }
   return (
@@ -361,16 +383,24 @@ export function ProductOptions({
       title={title}
       className={`product-options-sheet product-options-${view}`}
       onClose={close}
+      manageHistory={false}
     >
       {view === "menu" ? (
         <div className="product-option-list">
           {storeId === "kitsch" && (
-            <button onClick={() => setView("contact")}>
+            <button
+              ref={contactTrigger}
+              onClick={() => flow.navigate("contact")}
+            >
               <Icon name="chat-round" />
               Contact KITSCH
             </button>
           )}
-          <button className="danger-text" onClick={() => setView("reason")}>
+          <button
+            ref={reportTrigger}
+            className="danger-text"
+            onClick={() => flow.navigate("reason")}
+          >
             <Icon name="alert" />
             Report
           </button>
@@ -450,7 +480,7 @@ export function ProductOptions({
           className="product-report-form"
           onSubmit={(event) => {
             event.preventDefault();
-            if (reason) setView("notes");
+            if (reason) flow.navigate("notes");
           }}
         >
           <p className="product-report-subtitle">Please select a reason</p>
@@ -515,11 +545,7 @@ export function ProductOptions({
           />
           <p className="product-report-optional">Optional</p>
           <div className="sheet-actions">
-            <button
-              type="button"
-              className="pill"
-              onClick={() => setView("reason")}
-            >
+            <button type="button" className="pill" onClick={flow.back}>
               Back
             </button>
             <button

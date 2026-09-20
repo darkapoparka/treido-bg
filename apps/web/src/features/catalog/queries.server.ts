@@ -33,6 +33,7 @@ export async function readCatalog(): Promise<Catalog> {
     { solSavedListings },
     { searchSavedListings },
     { orderProducts, orderStores },
+    { dealListings, dealStores },
   ] = await Promise.all([
     import("./reference/catalog"),
     import("./reference/following-fixtures"),
@@ -42,6 +43,7 @@ export async function readCatalog(): Promise<Catalog> {
     import("./reference/sol-fixtures"),
     import("./reference/search-fixtures"),
     import("./reference/order-fixtures"),
+    import("./reference/deal-fixtures"),
   ]);
   const scenarioName = (await cookies()).get(referenceScenarioCookie)?.value;
   const scenario = resolveReferenceScenario(scenarioName);
@@ -59,13 +61,19 @@ export async function readCatalog(): Promise<Catalog> {
       scenario ? scenarioName : undefined,
     ),
     stores: storefrontProjection(
-      [...referenceCatalog.stores, ...savedStores, ...orderStores],
+      [
+        ...referenceCatalog.stores,
+        ...savedStores,
+        ...orderStores,
+        ...dealStores,
+      ],
       scenario ? scenarioName : undefined,
     ),
     savedListings: [
       ...savedListings,
       ...solSavedListings,
       ...searchSavedListings,
+      ...dealListings,
     ],
   };
   const unavailable = new Set(scenario?.catalog?.unavailableVariants ?? []);

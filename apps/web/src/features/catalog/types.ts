@@ -75,6 +75,17 @@ export type Catalog = Readonly<{
   stores: readonly Store[];
   savedListings?: readonly SavedListing[];
 }>;
+// Saved photographs and bounded listings also belong in collection covers.
+// Resolve that presentation before falling back to the full product record.
+export function resolveSavedListing(
+  catalog: Catalog,
+  id: string,
+): SavedListing | undefined {
+  return (
+    catalog.savedListings?.find((item) => item.id === id) ??
+    catalog.products.find((item) => item.id === id)
+  );
+}
 export function formatMoney(money: Money): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",

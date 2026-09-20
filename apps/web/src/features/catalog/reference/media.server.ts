@@ -68,6 +68,8 @@ const media: Record<
       [19, 164, 187, 19],
     ],
     circularOcclusions: [[325, 166, 17]],
+    textOcclusionMode: "inpaint",
+    textOcclusionDilation: 0.75,
   },
   "beauty-starter-photo": {
     file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/003.webp",
@@ -78,6 +80,8 @@ const media: Record<
       [19, 166, 254, 19],
     ],
     circularOcclusions: [[325, 167, 17]],
+    textOcclusionMode: "inpaint",
+    textOcclusionDilation: 0.75,
   },
   "beauty-perfume-photo": {
     file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/004.webp",
@@ -917,6 +921,22 @@ const media: Record<
     file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp",
     rect: [24, 184, 26, 26],
   },
+  "deals-rinse-tail": {
+    file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp",
+    rect: [379, 240, 14, 171],
+  },
+  "deals-syman-tail": {
+    file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp",
+    rect: [379, 573, 14, 171],
+  },
+  "deals-francesco-tail": {
+    file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/003.webp",
+    rect: [379, 180, 14, 171],
+  },
+  "deals-solid-tail": {
+    file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/003.webp",
+    rect: [379, 514, 14, 171],
+  },
   "deals-rinse-tres": {
     file: "flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp",
     rect: [17, 240, 171, 171],
@@ -1057,6 +1077,20 @@ const media: Record<
     file: "flows/5f25f0ee-f19a-49a8-8f9d-ca2f3259c3c6/002.webp",
     rect: [17, 174, 359, 332],
   },
+  "home-pura-menu-header": {
+    file: "flows/5f25f0ee-f19a-49a8-8f9d-ca2f3259c3c6/002.webp",
+    rect: [17, 115, 359, 59],
+    // Only brand/photography survives; live DOM supplies rating and More.
+    roundedOcclusions: [
+      [229, 22, 81, 18, 0],
+      [315, 26, 26, 13, 0],
+    ],
+    roundedOcclusionFill: "vertical-gradient",
+  },
+  "home-pura-menu-wordmark": {
+    file: "flows/5f25f0ee-f19a-49a8-8f9d-ca2f3259c3c6/002.webp",
+    rect: [35, 130, 95, 38],
+  },
   "home-pura-reason-photo": {
     file: "flows/5f25f0ee-f19a-49a8-8f9d-ca2f3259c3c6/003.webp",
     rect: [17, 174, 359, 332],
@@ -1144,6 +1178,14 @@ const media: Record<
   "beauty-athena-deal": {
     file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/006.webp",
     rect: [17, 269, 171, 110],
+  },
+  "beauty-bestseller-continuation": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/006.webp",
+    rect: [378, 59, 15, 64],
+  },
+  "beauty-deal-continuation": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/006.webp",
+    rect: [378, 269, 15, 109],
   },
   "beauty-necessaire-deal": {
     file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/006.webp",
@@ -1452,6 +1494,16 @@ const media: Record<
   "store-review-3": { file: "screens/128.webp", rect: [33, 726, 63, 63] },
 
   "collection-new": { file: "screens/124.webp", rect: [23, 502, 158, 161] },
+  "collection-new-tile": {
+    file: "screens/047.webp",
+    rect: [36.6667, 477, 126, 126],
+    photoRadius: 20,
+  },
+  "collection-best-tile": {
+    file: "screens/047.webp",
+    rect: [179.6667, 477, 126, 126],
+    photoRadius: 20,
+  },
   "collection-best": { file: "screens/047.webp", rect: [179, 479, 126, 124] },
   "category-cleanse": { file: "screens/124.webp", rect: [23, 290, 158, 161] },
   "category-heatless": { file: "screens/124.webp", rect: [211, 290, 158, 161] },
@@ -1499,6 +1551,38 @@ const media: Record<
     textOcclusionMode: "inpaint",
     circularOcclusions: [[317, 164, 18]],
     photoRadius: 28,
+  },
+  "explore-summer-continuation": {
+    file: "flows/5c39eb04-f5fe-43a0-92da-b79b275051e0/002.webp",
+    rect: [378, 119, 15, 200],
+  },
+  "explore-beauty-continuation": {
+    file: "flows/5c39eb04-f5fe-43a0-92da-b79b275051e0/004.webp",
+    rect: [378, 432, 15, 170],
+    roundedOcclusions: [[11, 10, 58, 20, 10]],
+  },
+  "explore-home-continuation": {
+    file: "flows/5c39eb04-f5fe-43a0-92da-b79b275051e0/003.webp",
+    rect: [378, 371, 15, 172],
+    // Only the observed photograph fragment. Remove the clipped native badge;
+    // its undisclosed discount and product identity are not invented.
+    roundedOcclusions: [[11, 11, 58, 20, 10]],
+  },
+  "first-collection-rice-photo": {
+    file: "flows/e85d0150-4fe9-4ee0-bde4-de17fe6da7df/003.webp",
+    // Product photograph inside the decorative stack only. Its native heart
+    // is excluded; the shared DOM heart remains responsible for that artwork.
+    rect: [128, 516, 110, 98],
+    circularOcclusions: [[100, 83, 15]],
+  },
+  "explore-menswear-continuation": {
+    file: "flows/5c39eb04-f5fe-43a0-92da-b79b275051e0/004.webp",
+    rect: [378, 111, 15, 172],
+  },
+  "beauty-new-continuation": {
+    file: "flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/003.webp",
+    rect: [378, 111, 15, 170],
+    roundedOcclusions: [[11, 10, 58, 20, 10]],
   },
   "explore-curls-upper": {
     file: "screens/169.webp",
@@ -1693,6 +1777,27 @@ const media: Record<
   "widget-dhl-logo": {
     file: "flows/403ffb92-8c6c-4117-8d75-21555bb8db42/001.webp",
     rect: [42, 269, 32, 33],
+  },
+  // Brand artwork only from f068-004; carrier labels and rows remain DOM.
+  "order-carrier-active-tracing": {
+    file: "flows/bdd3954f-d943-464a-8c57-6621ffba7fa6/004.webp",
+    rect: [311, 467, 50, 50],
+  },
+  "order-carrier-benelux": {
+    file: "flows/bdd3954f-d943-464a-8c57-6621ffba7fa6/004.webp",
+    rect: [311, 534, 50, 50],
+  },
+  "order-carrier-two-man": {
+    file: "flows/bdd3954f-d943-464a-8c57-6621ffba7fa6/004.webp",
+    rect: [311, 601, 50, 50],
+  },
+  "order-carrier-ecommerce": {
+    file: "flows/bdd3954f-d943-464a-8c57-6621ffba7fa6/004.webp",
+    rect: [311, 668, 50, 50],
+  },
+  "order-carrier-spain": {
+    file: "flows/bdd3954f-d943-464a-8c57-6621ffba7fa6/004.webp",
+    rect: [311, 802, 50, 50],
   },
   "sol-glasses-model": {
     file: "flows/ae7711ef-6c54-4aa1-bb56-bee25cf3bef7/003.webp",
@@ -1985,6 +2090,9 @@ const originals: Record<string, string> = {
   "carpenter-jeans": "carpenter-jeans.jpeg",
   "heritage-jeans": "heritage-jeans.jpeg",
   "store-hero": "store-hero.png",
+  "onboarding-order-parcel": "onboarding-order-parcel.png",
+  "onboarding-transit-plane": "onboarding-transit-plane.png",
+  "onboarding-delivery-vehicle": "onboarding-delivery-vehicle.png",
   // Clean stills from the already acquired merchant video: 7.5s and 2.9s.
   // These contain photography only; the storefront owns every logo and control.
   "store-kitsch-default-hero": "store-kitsch-brushes-clean.png",

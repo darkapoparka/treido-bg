@@ -10,6 +10,7 @@ import { BeautySections } from "./beauty";
 import { CartOverlay } from "../commerce/checkout";
 import { miniCatalog, miniHref } from "./mini-model";
 import { useDiscovery } from "./state";
+import { SourceLink } from "./return-navigation";
 import styles from "./explore.module.css";
 
 const departments = [
@@ -77,7 +78,7 @@ export function Explore({
         href:
           title === "Top rated"
             ? "/search?category=Beauty&ratings=4.5%20stars%20and%20up"
-            : "/search?category=Beauty&sort=Most%20recent",
+            : "/search?category=Beauty&sort=Newest",
       }))
     : category
       ? [
@@ -94,7 +95,7 @@ export function Explore({
         ]
       : homeShelves.map(([title, department, ids]) => ({
           title,
-          href: `/search?category=${encodeURIComponent(department)}&${title === "New in beauty" ? "sort=Most%20recent" : "ratings=4.5%20stars%20and%20up"}`,
+          href: `/search?category=${encodeURIComponent(department)}&${title === "New in beauty" ? "sort=Newest" : "ratings=4.5%20stars%20and%20up"}`,
           products:
             title === "New in beauty"
               ? byIds(ids)
@@ -119,7 +120,7 @@ export function Explore({
             ? ["Skin care", "Hair care", "Makeup", "Scent & body"]
             : ["Shop all", "Top rated", "What’s new"]
           ).map((label) => (
-            <Link
+            <SourceLink
               className="pill"
               key={label}
               href={`/search?q=${encodeURIComponent(label === "Shop all" ? category : label)}`}
@@ -132,38 +133,54 @@ export function Explore({
                 />
               )}
               {label}
-            </Link>
+            </SourceLink>
           ))}
         </div>
       )}
       {(!category || beauty) && (
-        <Link
-          className="editorial-hero"
-          href={`/search?q=${beauty ? "Hair" : "Dresses"}`}
-        >
-          <img
-            src={`/api/reference-media/${beauty ? "beauty-curls-photo" : "explore-summer-upper"}`}
-            alt={beauty ? "Wavy hair" : "Summer dress"}
-          />
-          <div>
-            <strong>
-              {beauty ? "Summer curl routine" : "High-rotation summer dresses"}
-            </strong>
-            <p>
-              {beauty
-                ? "Masks, leave-ins, and shine oils."
-                : "Slip dresses, shirt dresses, and linen midis."}
-            </p>
-            <Icon name="arrow" />
-          </div>
-        </Link>
+        <div className={beauty ? styles.beautyOpening : styles.openingRail}>
+          <SourceLink
+            className="editorial-hero"
+            href={`/search?q=${beauty ? "Hair" : "Dresses"}`}
+          >
+            <img
+              src={`/api/reference-media/${beauty ? "beauty-curls-photo" : "explore-summer-upper"}`}
+              alt={beauty ? "Wavy hair" : "Summer dress"}
+            />
+            <div>
+              <strong>
+                {beauty
+                  ? "Summer curl routine"
+                  : "High-rotation summer dresses"}
+              </strong>
+              <p>
+                {beauty
+                  ? "Masks, leave-ins, and shine oils."
+                  : "Slip dresses, shirt dresses, and linen midis."}
+              </p>
+              <Icon name="arrow" />
+            </div>
+          </SourceLink>
+          {!category && (
+            <SourceLink
+              className={styles.heroContinuation}
+              href="/search?category=Womenswear"
+              aria-label="More summer styles"
+            >
+              <img
+                src="/api/reference-media/explore-summer-continuation"
+                alt=""
+              />
+            </SourceLink>
+          )}
+        </div>
       )}
       {!category && (
         <>
           <h2>Browse categories</h2>
           <div className="explore-categories">
             {departments.map(([name, color, first, second]) => (
-              <Link
+              <SourceLink
                 key={name}
                 style={{ background: color }}
                 href={
@@ -179,14 +196,14 @@ export function Explore({
                     <img src={`/api/reference-media/${second}`} alt="" />
                   )}
                 </div>
-              </Link>
+              </SourceLink>
             ))}
           </div>
           <section className="explore-minis">
-            <Link className={styles.miniHeading} href="/minis">
+            <SourceLink className={styles.miniHeading} href="/minis">
               <h2>Try something new</h2>
               <Icon name="chevron" />
-            </Link>
+            </SourceLink>
             <p>Discover more ways to shop with Minis</p>
             {(["sol", "skin", "look"] as const).map((id) => (
               <Link
@@ -207,11 +224,14 @@ export function Explore({
       )}
       {shelves.map(({ title, href, products }) => (
         <section className="explore-shelf" key={title}>
-          <Link href={href}>
+          <SourceLink href={href}>
             <h2>
-              {title} <span className={styles.shelfChevron}>›</span>
+              {title}{" "}
+              <span className={styles.shelfChevron} aria-hidden="true">
+                ›
+              </span>
             </h2>
-          </Link>
+          </SourceLink>
           {products.length ? (
             <div className="product-rail">
               {products.map((product) => (
@@ -220,14 +240,44 @@ export function Explore({
                   product={product}
                   showPromotion
                   storeName={
-                    catalog.stores.find((store) => store.id === product.storeId)
-                      ?.name ??
-                    (product.id === "citizenry-linen"
-                      ? "The Citizenry"
-                      : undefined)
+                    product.id === "buffy-breeze" && !category
+                      ? "Buffy.co"
+                      : (catalog.stores.find(
+                          (store) => store.id === product.storeId,
+                        )?.name ??
+                        (product.id === "citizenry-linen"
+                          ? "The Citizenry"
+                          : undefined))
                   }
                 />
               ))}
+              {!category &&
+                products.length === 2 &&
+                (title === "Top rated in home" ||
+                  title === "Top rated in menswear") && (
+                  <SourceLink
+                    className={styles.photoContinuation}
+                    href={href}
+                    aria-label={`More ${title.toLowerCase()} products`}
+                  >
+                    <img
+                      src={`/api/reference-media/${title === "Top rated in home" ? "explore-home-continuation" : "explore-menswear-continuation"}`}
+                      alt=""
+                    />
+                  </SourceLink>
+                )}
+              {(title === "What’s new" || title === "New in beauty") && (
+                <SourceLink
+                  className={styles.photoContinuation}
+                  href={href}
+                  aria-label="More new beauty products"
+                >
+                  <img
+                    src={`/api/reference-media/${beauty ? "beauty-new-continuation" : "explore-beauty-continuation"}`}
+                    alt=""
+                  />
+                </SourceLink>
+              )}
             </div>
           ) : (
             <p className="empty-state" role="status">
@@ -239,10 +289,12 @@ export function Explore({
       {beauty && <BeautySections catalog={catalog} />}
       {!category && (
         <section className="explore-shelf">
-          <h2>
-            Top rated in womenswear{" "}
-            <span className={styles.shelfChevron}>›</span>
-          </h2>
+          <SourceLink href="/search?category=Womenswear&ratings=4.5%20stars%20and%20up">
+            <h2>
+              Top rated in womenswear{" "}
+              <span className={styles.shelfChevron}>›</span>
+            </h2>
+          </SourceLink>
           <div className="product-rail explore-women-partials">
             <div />
             <div>
