@@ -276,6 +276,29 @@ test("the returning campaign uses six real product cards and preserves saving", 
   ).toEqual(["drmtlgy", "mountain", "tea", "accessories", "kitsch", "carpe"]);
   const campaign = page.getByRole("region", { name: "DRMTLGY campaign" });
   await expect(campaign.locator(".campaign-product")).toHaveCount(6);
+  expect(
+    await campaign
+      .locator(".campaign-product > a")
+      .evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
+  ).toEqual(
+    ["eye", "retinol", "tinted", "bundle", "eye", "masks"].map(
+      (product) => `/products/home-drmtlgy-${product}`,
+    ),
+  );
+  const retinol = campaign.getByRole("link", {
+    name: "Retinol Body Lotion",
+    exact: true,
+  });
+  await expect(retinol.locator("img")).toHaveAttribute(
+    "src",
+    "/api/reference-media/home-returning-drmtlgy-retinol",
+  );
+  await retinol.click();
+  await expect(
+    page.getByRole("heading", { name: "Retinol Body Lotion", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Go back", exact: true }).click();
+  await expect(retinol).toBeFocused();
   const accessories = page.getByRole("region", {
     name: "Accessories campaign",
   });
@@ -306,6 +329,10 @@ test("the returning campaign uses six real product cards and preserves saving", 
   await expect(save).toHaveAttribute("aria-pressed", "false");
   await save.click();
   await expect(save).toHaveAttribute("aria-pressed", "true");
+  await expect(campaign.locator(".save-button").nth(4)).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
   for (const width of [320, 430]) {
     await page.setViewportSize({ width, height: 793 });
     const email = page.locator(".email-card");

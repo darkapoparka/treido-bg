@@ -46,9 +46,9 @@ const media: Record<
       number,
       number,
     ])[];
-    // Smooth background beneath removed cards, sampled from the two exposed
-    // horizontal edges. This carries no reconstructed object or interface detail.
-    roundedOcclusionFill?: "horizontal-gradient";
+    // Smooth colors beneath removed native UI, sampled from the two exposed
+    // edges on the selected axis. This does not reconstruct hidden detail.
+    roundedOcclusionFill?: "horizontal-gradient" | "vertical-gradient";
     // Retain a white brand mark without the photograph behind its source crop.
     lightWordmark?: boolean;
   }
@@ -942,6 +942,13 @@ const media: Record<
   "home-drmtlgy-eye": {
     file: "flows/b5716e20-b094-463c-b74b-a5e983dd1651/009.webp",
     rect: [100, 339, 32, 134],
+  },
+  "home-returning-drmtlgy-retinol": {
+    file: "flows/b5716e20-b094-463c-b74b-a5e983dd1651/009.webp",
+    rect: [251, 333, 61, 150],
+    // The native price overlaps this photograph; the live price owns that area.
+    roundedOcclusions: [[-39, 12, 49, 17, 8.5]],
+    roundedOcclusionFill: "vertical-gradient",
   },
   "home-drmtlgy-tinted": {
     file: "flows/b5716e20-b094-463c-b74b-a5e983dd1651/009.webp",
@@ -2299,7 +2306,8 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
           const roundedMask = Buffer.from(
             `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">${entry.roundedOcclusions.map(([x, y, w, h, radius]) => `<rect x="${x * scale}" y="${y * scale}" width="${w * scale}" height="${h * scale}" rx="${radius * scale}" fill="white"/>`).join("")}</svg>`,
           );
-          if (entry.roundedOcclusionFill === "horizontal-gradient") {
+          if (entry.roundedOcclusionFill) {
+            const vertical = entry.roundedOcclusionFill === "vertical-gradient";
             const pixels = await sharp(cleanPhoto)
               .raw()
               .toBuffer({ resolveWithObject: true });
@@ -2314,18 +2322,28 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
               const bottom = Math.min(height, Math.ceil((y + h) * scale));
               const sampleLeft = Math.max(0, left - Math.ceil(scale));
               const sampleRight = Math.min(width - 1, right + Math.ceil(scale));
+              const sampleTop = Math.max(0, top - Math.ceil(scale));
+              const sampleBottom = Math.min(
+                height - 1,
+                bottom + Math.ceil(scale),
+              );
               for (let row = top; row < bottom; row += 1) {
                 for (let column = left; column <= right; column += 1) {
                   const offset = (row * width + column) * 4;
                   const amount = mask[offset + 3] / 255;
                   if (!amount) continue;
-                  const position =
-                    (column - sampleLeft) / (sampleRight - sampleLeft || 1);
+                  const position = vertical
+                    ? (row - sampleTop) / (sampleBottom - sampleTop || 1)
+                    : (column - sampleLeft) / (sampleRight - sampleLeft || 1);
+                  const beforeOffset = vertical
+                    ? (sampleTop * width + column) * 4
+                    : (row * width + sampleLeft) * 4;
+                  const afterOffset = vertical
+                    ? (sampleBottom * width + column) * 4
+                    : (row * width + sampleRight) * 4;
                   for (let channel = 0; channel < 3; channel += 1) {
-                    const before =
-                      pixels.data[(row * width + sampleLeft) * 4 + channel];
-                    const after =
-                      pixels.data[(row * width + sampleRight) * 4 + channel];
+                    const before = pixels.data[beforeOffset + channel];
+                    const after = pixels.data[afterOffset + channel];
                     const background = before + (after - before) * position;
                     pixels.data[offset + channel] = Math.round(
                       pixels.data[offset + channel] * (1 - amount) +

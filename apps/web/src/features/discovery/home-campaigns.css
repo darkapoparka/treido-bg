@@ -439,6 +439,30 @@
 .campaign-product-grid .campaign-product img {
   mix-blend-mode: multiply;
 }
+.campaign-product-grid [data-campaign-product="home-drmtlgy-eye"] img {
+  position: absolute;
+  left: 42.2%;
+  top: 4%;
+  width: 19.9%;
+  height: 88.7%;
+  padding: 0;
+}
+.campaign-product-grid [data-campaign-product="home-drmtlgy-tinted"] img {
+  position: absolute;
+  left: 37.9%;
+  top: 3.3%;
+  width: 22.4%;
+  height: 93.4%;
+  padding: 0;
+}
+.campaign-product-grid [data-campaign-product="home-drmtlgy-retinol"] img {
+  position: absolute;
+  left: 31.25%;
+  top: 0;
+  width: 38.125%;
+  height: 99.3%;
+  mix-blend-mode: normal;
+}
 .campaign-product-grid .campaign-product.campaign-bundle img {
   position: absolute;
   left: 28.7%;

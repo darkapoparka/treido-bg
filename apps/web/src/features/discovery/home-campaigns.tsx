@@ -414,6 +414,7 @@ export function HomeCampaigns({
                     const p = catalog.products.find((p) => p.id === id);
                     return p ? (
                       <article
+                        data-campaign-product={id}
                         className={`campaign-product ${c.partialProducts ? "campaign-partial-product" : ""} ${id === "home-drmtlgy-bundle" ? "campaign-bundle" : id === "home-drmtlgy-masks" ? "campaign-eye-masks" : ["home-drmtlgy-eye", "home-drmtlgy-tinted"].includes(id) ? "campaign-isolated-bottle" : ""}`}
                         key={`${id}-${index}`}
                       >
@@ -431,9 +432,12 @@ export function HomeCampaigns({
                         >
                           <img
                             src={
-                              campaignProductPhotos[id]
-                                ? `/api/reference-media/${campaignProductPhotos[id]}`
-                                : p.images[0]
+                              productLayout === "grid" &&
+                              id === "home-drmtlgy-retinol"
+                                ? "/api/reference-media/home-returning-drmtlgy-retinol"
+                                : campaignProductPhotos[id]
+                                  ? `/api/reference-media/${campaignProductPhotos[id]}`
+                                  : p.images[0]
                             }
                             alt={p.title}
                           />
