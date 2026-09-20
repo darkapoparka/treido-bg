@@ -1,6 +1,26 @@
 .home-page {
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
 }
+.home-page > .floating-dock[data-fade="true"]::before {
+  background: linear-gradient(
+    to bottom,
+    #fdfdfd00 15%,
+    #fdfdfd8c 67%,
+    #fdfdfda6 82%,
+    #fdfdfda6
+  );
+}
+.home-page > .floating-dock[data-fade="true"]::after {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  bottom: calc(-1 * (var(--dock-bottom) + env(safe-area-inset-bottom)));
+  width: 100vw;
+  height: calc(128px + env(safe-area-inset-bottom));
+  backdrop-filter: blur(20px);
+  mask-image: linear-gradient(transparent, #000);
+  pointer-events: none;
+}
 .home-campaigns {
   display: grid;
   gap: 16px;
@@ -239,6 +259,10 @@
 .campaign-product .save-button svg {
   width: 21px;
   height: 21px;
+}
+.home-campaign:not(.campaign-product-grid) .save-button svg {
+  width: 16px;
+  height: 16px;
 }
 .campaign-source-save {
   display: flex;

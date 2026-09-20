@@ -225,11 +225,13 @@ test("Home dock fade preserves navigation, feed geometry and sibling containment
     await expect(dock).toBeVisible();
     const geometry = await dock.evaluate((element) => {
       const fade = getComputedStyle(element, "::before");
+      const blur = getComputedStyle(element, "::after");
       return {
         bottom: element.getBoundingClientRect().bottom,
         fadeWidth: parseFloat(fade.width),
         fadeHeight: parseFloat(fade.height),
         pointerEvents: fade.pointerEvents,
+        blurPointerEvents: blur.pointerEvents,
         scrollWidth: document.documentElement.scrollWidth,
       };
     });
@@ -237,6 +239,7 @@ test("Home dock fade preserves navigation, feed geometry and sibling containment
     expect(geometry.fadeWidth).toBe(width);
     expect(geometry.fadeHeight).toBe(128);
     expect(geometry.pointerEvents).toBe("none");
+    expect(geometry.blurPointerEvents).toBe("none");
     expect(geometry.scrollWidth).toBeLessThanOrEqual(width);
   }
   await page.setViewportSize({ width: 393, height: 793 });
@@ -248,6 +251,11 @@ test("Home dock fade preserves navigation, feed geometry and sibling containment
   await expect
     .poll(() =>
       dock.evaluate((element) => getComputedStyle(element, "::before").content),
+    )
+    .toBe("none");
+  await expect
+    .poll(() =>
+      dock.evaluate((element) => getComputedStyle(element, "::after").content),
     )
     .toBe("none");
   await page.goBack();

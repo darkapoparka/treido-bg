@@ -248,6 +248,7 @@ test("Home reflects the actual journey instead of always showing seeded history"
     "welcome",
   );
   await expect(page.getByLabel("Recently viewed products")).not.toBeVisible();
+  await expect(page.locator(".following-shortcut-icon i")).toHaveCount(0);
   await expect(page.locator(".delivery-card")).not.toBeVisible();
   await expect(page.locator(".home-campaign").first()).toHaveAccessibleName(
     "PRINCESS POLLY campaign",
@@ -258,6 +259,7 @@ test("Home reflects the actual journey instead of always showing seeded history"
   ).toBeVisible();
   await page.getByRole("link", { name: "Home", exact: true }).click();
   await expect(page.getByLabel("Recently viewed products")).toBeVisible();
+  await expect(page.locator(".following-shortcut-icon i")).toBeVisible();
 });
 
 test("the returning campaign uses six real product cards and preserves saving", async ({

@@ -502,7 +502,6 @@ const media: Record<
       [316, 28, 22, 10],
     ],
     textOcclusionDilation: 0.25,
-    photoRadius: 27,
   },
   "home-campaign-princess-wordmark": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
@@ -536,7 +535,6 @@ const media: Record<
       [316, 28, 22, 10],
     ],
     textOcclusionDilation: 0.25,
-    photoRadius: 27,
   },
   "home-campaign-drmtlgy-wordmark": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
@@ -548,7 +546,6 @@ const media: Record<
     darkTextOcclusions: [[13, 21, 108, 30]],
     textOcclusionDilation: 0.25,
     circularOcclusions: [[327, 37, 18]],
-    photoRadius: 27,
   },
   "home-campaign-drmtlgy-returning-photo": {
     // Only the exposed campaign photograph: remove every native product card,
@@ -662,7 +659,6 @@ const media: Record<
     ],
     textOcclusionDilation: 0.25,
     circularOcclusions: [[37, 38, 23]],
-    photoRadius: 27,
   },
   "home-campaign-kitsch-header": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/006.webp",
@@ -673,7 +669,6 @@ const media: Record<
       [316, 28, 22, 10],
     ],
     textOcclusionDilation: 0.25,
-    photoRadius: 27,
   },
   "home-campaign-kitsch-footer": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/006.webp",
@@ -681,7 +676,6 @@ const media: Record<
     lightTextOcclusions: [[13, 18, 108, 29]],
     textOcclusionDilation: 0.25,
     circularOcclusions: [[327, 33, 18]],
-    photoRadius: 27,
   },
   "recent-kitsch-cover": {
     file: "flows/1cb8d743-c728-4317-8c60-1cc3c2761f8c/002.webp",

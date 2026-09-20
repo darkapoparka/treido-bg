@@ -95,7 +95,7 @@ export function Home({ catalog }: { catalog: Catalog }) {
         <Link className="pill" href="/following">
           <span className="following-shortcut-icon">
             <Icon name="badge-check" filled />
-            <i />
+            {(recentStores || recentProducts) && <i aria-hidden="true" />}
           </span>
           Following
         </Link>
