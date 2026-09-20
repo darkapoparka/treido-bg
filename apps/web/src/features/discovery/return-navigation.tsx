@@ -20,6 +20,7 @@ type ScrollPosition = {
 };
 const returns = new Map<string, ReturnPosition>();
 let pendingReturn: { token: string; destination: string } | null = null;
+let pendingTop: { origin: string; destination: string } | null = null;
 let restoreFrame = 0;
 let observedPath: string | null = null;
 type Props = Omit<ComponentProps<typeof Link>, "href"> & { href: string };
@@ -130,6 +131,14 @@ export function useSourceReturn(ready: boolean) {
   const pathname = usePathname();
   useEffect(() => {
     if (!ready) return;
+    if (pendingTop && pendingTop.origin !== location.pathname) {
+      const destination = pendingTop.destination;
+      pendingTop = null;
+      // Reset only the arrived destination. The source history entry retains
+      // its native scroll position even if a later reload clears our return map.
+      if (destination === `${location.pathname}${location.search}`)
+        window.scrollTo({ top: 0, behavior: "instant" });
+    }
     const restore = () => {
       const crossedRoute =
         observedPath !== null && observedPath !== location.pathname;
@@ -218,8 +227,9 @@ export function SourceLink({
   href,
   onNavigate,
   sourceKey,
+  startAtTop = false,
   ...props
-}: Props & { sourceKey?: string }) {
+}: Props & { sourceKey?: string; startAtTop?: boolean }) {
   const element = useRef<HTMLAnchorElement>(null);
   const id =
     sourceKey ??
@@ -231,13 +241,36 @@ export function SourceLink({
       ref={element}
       data-source-return={id}
       onNavigate={(event) => {
+        pendingTop = null;
         const selector = `[data-source-return="${CSS.escape(id)}"]`;
         rememberSourceReturn(
           href,
           selector,
           [...document.querySelectorAll(selector)].indexOf(element.current!),
         );
-        onNavigate?.(event);
+        if (!startAtTop) {
+          onNavigate?.(event);
+          return;
+        }
+        let cancelled = false;
+        onNavigate?.({
+          preventDefault() {
+            cancelled = true;
+            event.preventDefault();
+          },
+        });
+        const destination = new URL(href, location.href);
+        if (
+          !cancelled &&
+          startAtTop &&
+          props.scroll !== false &&
+          destination.pathname !== location.pathname &&
+          !destination.hash
+        )
+          pendingTop = {
+            origin: location.pathname,
+            destination: `${destination.pathname}${destination.search}`,
+          };
       }}
     />
   );

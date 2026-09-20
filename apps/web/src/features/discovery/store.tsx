@@ -3,7 +3,7 @@ import { ShopSurface } from "./hydration-boundary";
 import { DecorativeVideo } from "./decorative-video";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatMoney } from "../catalog/types";
 import { kitschPolicies } from "../catalog/reference/store-policies";
@@ -229,14 +229,54 @@ function StoreNavigation({ store }: { store: Store }) {
   );
 }
 
-function StorePromotion({ savings = 20 }: { savings?: number }) {
-  const [expanded, setExpanded] = useState(false);
+const promotionEvent = "shop-store-promotion";
+function subscribePromotion(listener: () => void) {
+  window.addEventListener("popstate", listener);
+  window.addEventListener(promotionEvent, listener);
+  return () => {
+    window.removeEventListener("popstate", listener);
+    window.removeEventListener(promotionEvent, listener);
+  };
+}
+function promotionExpanded() {
+  const entry = window.history.state?.shopStorePromotion;
+  return entry?.path === location.pathname && entry.expanded === true;
+}
+
+function StorePromotion({
+  savings = 20,
+  compact = false,
+}: {
+  savings?: number;
+  compact?: boolean;
+}) {
+  const expanded = useSyncExternalStore(
+    subscribePromotion,
+    promotionExpanded,
+    () => false,
+  );
+  function toggle() {
+    // The disclosure belongs to this history entry, including native reload.
+    // New visits start collapsed; neither another store nor the URL inherits it.
+    window.history.replaceState(
+      {
+        ...window.history.state,
+        shopStorePromotion: {
+          path: location.pathname,
+          expanded: !promotionExpanded(),
+        },
+      },
+      "",
+      location.href,
+    );
+    window.dispatchEvent(new Event(promotionEvent));
+  }
   return (
     <div className={`promotion-owner ${expanded ? "expanded" : ""}`}>
       <button
-        className="store-promotion"
+        className={compact ? "collection-promotion" : "store-promotion"}
         aria-expanded={expanded}
-        onClick={() => setExpanded(!expanded)}
+        onClick={toggle}
       >
         <span>
           <b>Save ${expanded ? 15 : savings}</b> on orders over $50
@@ -245,7 +285,7 @@ function StorePromotion({ savings = 20 }: { savings?: number }) {
             style={{ transform: `rotate(${expanded ? -90 : 90}deg)` }}
           />
         </span>
-        {!expanded && <small>+ 1 more promotion</small>}
+        {!expanded && !compact && <small>+ 1 more promotion</small>}
       </button>
       {expanded && (
         <div className="promotion-offers">
@@ -423,13 +463,14 @@ function ChemicalMediaShelves() {
             </>
           );
           return index === 0 ? (
-            <Link
+            <SourceLink
+              startAtTop
               key={name}
               href="/stores/chemical-guys/video"
               aria-label="Open Tire and Trim video"
             >
               {contents}
-            </Link>
+            </SourceLink>
           ) : (
             <button
               key={name}
@@ -836,11 +877,7 @@ export function StoreCollection({
       className={`shop-page store-collection-page ${styles.page} ${styles.collection}`}
       data-collection={slug}
     >
-      {slug !== "best-sellers" && (
-        <div className="collection-promotion">
-          <b>Save $15</b> on orders over $50 <span aria-hidden="true">⌄</span>
-        </div>
-      )}
+      {slug !== "best-sellers" && <StorePromotion savings={15} compact />}
       <div className="store-collection-hero">
         {collection && (
           <img
@@ -850,10 +887,14 @@ export function StoreCollection({
         )}
         <div>
           <h1>{title}</h1>
-          <Link className="collection-store" href={`/stores/${store.id}`}>
+          <SourceLink
+            startAtTop
+            className="collection-store"
+            href={`/stores/${store.id}`}
+          >
             {store.logo && <img src={store.logo} alt="" />}
             {store.name}
-          </Link>
+          </SourceLink>
         </div>
         <IconButton
           icon="share"
@@ -959,15 +1000,17 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
         <>
           <div className="store-info-categories">
             {storeCategories.map((c) => (
-              <Link
+              <SourceLink
+                startAtTop
                 href={`/stores/${store.id}/collections/${c.slug}`}
                 key={c.slug}
               >
                 <img src={`/api/reference-media/${c.media}`} alt="" />
                 <span>{c.name}</span>
-              </Link>
+              </SourceLink>
             ))}
-            <Link
+            <SourceLink
+              startAtTop
               href={`/stores/${store.id}/collections/shampoo-conditioner-combo-packs`}
             >
               <img
@@ -975,7 +1018,7 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
                 alt="Shampoo and conditioner combo packs, partially captured"
               />
               <span>Shampoo &amp; Conditioner Combo Packs</span>
-            </Link>
+            </SourceLink>
             <div>
               <img
                 src="/api/reference-media/category-hair-partial"
@@ -984,13 +1027,13 @@ export function StoreInfo({ store }: { store: Store; catalog: Catalog }) {
               <span>Hair…</span>
             </div>
           </div>
-          <Link
+          <SourceLink
             className="store-shop-all"
             href={`/stores/${store.id}#all-products`}
           >
             <img src="/api/reference-media/store-shop-all" alt="" />
             <span>Shop all</span>
-          </Link>
+          </SourceLink>
         </>
       )}
       <section className="store-info-panel store-info-reviews">
@@ -1409,13 +1452,13 @@ export function StoreVideo() {
         alt="Chemical Guys Tire and Trim Gel in front of a GMC tailgate"
       />
       <div className="video-top">
-        <Link
+        <ContextualCloseLink
           className="icon-button"
           href="/stores/chemical-guys"
           aria-label="Close video"
         >
           <Icon name="close" />
-        </Link>
+        </ContextualCloseLink>
         <IconButton
           icon="more"
           label="Video options"
@@ -1442,7 +1485,11 @@ export function StoreVideo() {
         </svg>
       </button>
       <div className="video-bottom">
-        <Link className={styles.videoStore} href="/stores/chemical-guys">
+        <SourceLink
+          startAtTop
+          className={styles.videoStore}
+          href="/stores/chemical-guys"
+        >
           <span className={styles.videoStoreLogo}>
             <img src="/api/reference-media/chemical-video-logo" alt="" />
           </span>
@@ -1450,8 +1497,12 @@ export function StoreVideo() {
             <b>Chemical Guys</b>
             <small>3d ago</small>
           </span>
-        </Link>
-        <Link className={styles.videoProduct} href="/products/order-tire-trim">
+        </SourceLink>
+        <SourceLink
+          startAtTop
+          className={styles.videoProduct}
+          href="/products/order-tire-trim"
+        >
           <span className={styles.videoProductPhoto}>
             <img src="/api/reference-media/chemical-video-item-photo" alt="" />
           </span>
@@ -1460,7 +1511,7 @@ export function StoreVideo() {
             <small>$24.99</small>
           </span>
           <Icon name="chevron" />
-        </Link>
+        </SourceLink>
         <div className={styles.videoTimeline}>
           <button
             className="icon-button"

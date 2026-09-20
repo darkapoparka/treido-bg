@@ -1,13 +1,17 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useLayoutEffect, useState, type ReactNode } from "react";
 import { SourceLink } from "../discovery/return-navigation";
 import { useAccount } from "../account/state";
 import { Icon } from "../discovery/icons";
 import { useDiscovery } from "../discovery/state";
 import { formatMoney, type Catalog } from "../catalog/types";
 import { capturedLineAmount } from "./pricing";
+function cartMutationFocus(control: HTMLElement, ...selectors: string[]) {
+  const owner = control.closest<HTMLElement>("dialog, main");
+  return owner ? { owner, selectors } : null;
+}
 export function CartContents({
   catalog,
   onNavigate,
@@ -19,6 +23,33 @@ export function CartContents({
 }) {
   const state = useDiscovery();
   const { hasPaymentProfile } = useAccount();
+  const [pendingFocus, setPendingFocus] = useState<{
+    owner: HTMLElement;
+    selectors: string[];
+  } | null>(null);
+  function prepareMutationFocus(control: HTMLElement, ...selectors: string[]) {
+    setPendingFocus(cartMutationFocus(control, ...selectors));
+  }
+  useLayoutEffect(() => {
+    const pending = pendingFocus;
+    if (
+      !pending?.owner.isConnected ||
+      (pending.owner instanceof HTMLDialogElement && !pending.owner.open)
+    )
+      return;
+    for (const selector of [
+      ...pending.selectors,
+      ".cart-controls button:not(:disabled)",
+      ".notification-empty h2",
+      ".cart-close",
+    ]) {
+      const target = pending.owner.querySelector<HTMLElement>(selector);
+      if (target) {
+        target.focus();
+        break;
+      }
+    }
+  }, [pendingFocus]);
   const resolve = (list: typeof state.cart) =>
     list.flatMap((l) => {
       const product = catalog.products.find((p) => p.id === l.productId),
@@ -47,7 +78,7 @@ export function CartContents({
     <>
       {!resolved.length ? (
         <div className="notification-empty">
-          <h2>Your cart is empty</h2>
+          <h2 tabIndex={-1}>Your cart is empty</h2>
           <p>
             Add products while you shop, so
             <br />
@@ -101,6 +132,7 @@ export function CartContents({
                 <article
                   className="commerce-line"
                   key={`${l.productId}-${l.variantId}`}
+                  data-cart-line={`${l.productId}|${l.variantId}`}
                 >
                   {l.product.images[0] && (
                     <img src={l.product.images[0]} alt="" />
@@ -143,15 +175,17 @@ export function CartContents({
                               ? `Remove ${l.product.title}`
                               : `Decrease ${l.product.title}`
                           }
-                          onClick={() =>
-                            l.quantity === 1
-                              ? state.remove(l.productId, l.variantId)
-                              : state.setQuantity(
-                                  l.productId,
-                                  l.variantId,
-                                  l.quantity - 1,
-                                )
-                          }
+                          onClick={(event) => {
+                            if (l.quantity === 1) {
+                              prepareMutationFocus(event.currentTarget);
+                              state.remove(l.productId, l.variantId);
+                            } else
+                              state.setQuantity(
+                                l.productId,
+                                l.variantId,
+                                l.quantity - 1,
+                              );
+                          }}
                         >
                           <Icon name={l.quantity === 1 ? "trash" : "minus"} />
                         </button>
@@ -171,9 +205,14 @@ export function CartContents({
                         </button>
                       </div>
                       <button
-                        onClick={() =>
-                          state.saveForLater(l.productId, l.variantId)
-                        }
+                        onClick={(event) => {
+                          prepareMutationFocus(
+                            event.currentTarget,
+                            `.cart-later [data-cart-line="${CSS.escape(`${l.productId}|${l.variantId}`)}"] .move-to-cart:not(:disabled)`,
+                            `.cart-later [data-cart-line="${CSS.escape(`${l.productId}|${l.variantId}`)}"] .cart-controls button:not(:disabled)`,
+                          );
+                          state.saveForLater(l.productId, l.variantId);
+                        }}
                       >
                         Save for later
                       </button>
@@ -229,6 +268,7 @@ export function CartContents({
             <article
               className="commerce-line"
               key={`${l.productId}-${l.variantId}`}
+              data-cart-line={`${l.productId}|${l.variantId}`}
             >
               {l.product.images[0] && (
                 <span className="cart-later-media">
@@ -258,7 +298,10 @@ export function CartContents({
                 <div className="cart-controls">
                   <button
                     aria-label={`Remove saved ${l.product.title}`}
-                    onClick={() => state.removeLater(l.productId, l.variantId)}
+                    onClick={(event) => {
+                      prepareMutationFocus(event.currentTarget);
+                      state.removeLater(l.productId, l.variantId);
+                    }}
                   >
                     <Icon name="trash" />
                   </button>
@@ -280,15 +323,19 @@ export function CartContents({
                         ? "Currently unavailable"
                         : undefined
                     }
-                    onClick={() =>
+                    onClick={(event) => {
+                      prepareMutationFocus(
+                        event.currentTarget,
+                        `.seller-cart [data-cart-line="${CSS.escape(`${l.productId}|${l.variantId}`)}"] .cart-controls > button`,
+                      );
                       state.moveToCart(
                         l.productId,
                         l.variantId,
                         l.variant.availableQuantity,
-                      )
-                    }
+                      );
+                    }}
                   >
-                    Move to cart
+                    <span>Move to cart</span>
                   </button>
                 </div>
               </div>

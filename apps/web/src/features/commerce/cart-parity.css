@@ -261,6 +261,9 @@
   background: #292929;
   color: #686868;
 }
+.dark-cart-sheet .cart-later .move-to-cart:disabled > span {
+  opacity: 0.999;
+}
 .dark-cart-sheet .cart-close {
   display: grid;
   place-items: center;

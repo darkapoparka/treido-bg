@@ -9,7 +9,7 @@ import { ReviewStars } from "./review-feedback";
 import { moveProductPhoto, productPhotoSwipe } from "./product-gallery";
 import { ProductAdditionFlight, useProductAddition } from "./product-addition";
 import { ProductReviewPreview } from "./product-review-preview";
-import { rememberSourceReturn } from "./return-navigation";
+import { rememberSourceReturn, SourceLink } from "./return-navigation";
 import {
   formatMoney,
   type Catalog,
@@ -201,7 +201,8 @@ export function ProductDetail({
         left:
           rail.scrollLeft +
           photo.getBoundingClientRect().left -
-          rail.getBoundingClientRect().left,
+          rail.getBoundingClientRect().left -
+          (parseFloat(getComputedStyle(rail).scrollPaddingLeft) || 0),
         behavior: "auto",
       });
     });
@@ -664,16 +665,17 @@ export function ProductDetail({
                   Shipping policy
                 </button>
               </div>
-              <Link href={`/stores/${product.storeId}`}>
+              <SourceLink startAtTop href={`/stores/${product.storeId}`}>
                 <Icon name="link" /> Visit {store.name}
-              </Link>
+              </SourceLink>
             </section>
           )}
           {store && (
             <article
               className={`pdp-store-card ${shea || bag ? "pdp-kitsch-card" : ""}`}
             >
-              <Link
+              <SourceLink
+                startAtTop
                 href={`/stores/${store.id}`}
                 aria-label={`Visit ${store.name}`}
               >
@@ -692,7 +694,7 @@ export function ProductDetail({
                     {shea ? "195K" : bag ? "195.2K" : store.ratingCount})
                   </span>
                 </span>
-              </Link>
+              </SourceLink>
               <button
                 aria-pressed={state.followed.includes(store.id)}
                 onClick={() => state.toggleFollow(store.id)}

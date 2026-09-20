@@ -56,6 +56,25 @@
   width: 14px;
   height: 14px;
 }
+.collection :global(.collection-promotion) {
+  width: 100%;
+  padding: 0 0 8px;
+  font-size: 12px;
+  line-height: 16px;
+}
+.collection :global(.collection-promotion b) {
+  font-weight: 500;
+}
+.collection :global(.collection-promotion > span) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.collection :global(.collection-promotion svg) {
+  width: 14px;
+  height: 14px;
+}
 .store :global(.promotion-owner.expanded .store-promotion) {
   height: 56px;
   padding-bottom: 20px;
