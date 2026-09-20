@@ -419,6 +419,9 @@
 }
 
 /* The returning capture uses the same campaign, with a two-column product layout. */
+.home-returning .home-campaigns {
+  margin-top: 15px;
+}
 .campaign-product-grid .campaign-product-rail {
   top: 62px;
   right: 16px;
@@ -431,6 +434,7 @@
   width: 100%;
   height: 151px;
   border-radius: 22px;
+  background: #f0f0f0;
 }
 .campaign-product-grid .campaign-product img {
   mix-blend-mode: multiply;
@@ -522,10 +526,19 @@
   margin-top: auto;
 }
 .home-returning .floating-nav {
-  width: 224px;
+  width: 168px;
   grid-template-columns: repeat(3, 1fr);
 }
 @media (max-width: 350px) {
+  .home-returning .email-card > span {
+    min-width: 0;
+  }
+  .home-returning .email-card strong {
+    white-space: normal;
+  }
+  .home-returning .email-card svg {
+    flex: none;
+  }
   .campaign-product-grid .campaign-product {
     height: 134px;
   }
@@ -569,6 +582,10 @@
 .campaign-header-photo {
   top: 0;
 }
+.campaign-product-grid .campaign-header-photo {
+  /* Blend the bounded photograph into the campaign tone below its source edge. */
+  mask-image: linear-gradient(#000 calc(100% - 40px), transparent);
+}
 .campaign-footer-photo {
   bottom: 0;
 }
@@ -589,6 +606,13 @@
 .campaign-drmtlgy .campaign-wordmark-image {
   width: 153px;
   margin-left: 6px;
+  transform: translateY(2px);
+}
+.campaign-drmtlgy.campaign-product-grid .campaign-wordmark-image {
+  width: 153px;
+  transform: translateY(6px);
+}
+.campaign-drmtlgy.campaign-product-grid .campaign-rating {
   transform: translateY(2px);
 }
 .campaign-kitsch .campaign-brand .kitsch-wordmark {

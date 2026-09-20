@@ -46,6 +46,11 @@ const media: Record<
       number,
       number,
     ])[];
+    // Smooth background beneath removed cards, sampled from the two exposed
+    // horizontal edges. This carries no reconstructed object or interface detail.
+    roundedOcclusionFill?: "horizontal-gradient";
+    // Retain a white brand mark without the photograph behind its source crop.
+    lightWordmark?: boolean;
   }
 > = {
   "beauty-curls-photo": {
@@ -544,6 +549,34 @@ const media: Record<
     textOcclusionDilation: 0.25,
     circularOcclusions: [[327, 37, 18]],
     photoRadius: 27,
+  },
+  "home-campaign-drmtlgy-returning-photo": {
+    // Only the exposed campaign photograph: remove every native product card,
+    // heading and control, and stop before the captured dock. CSS blends its
+    // bounded lower edge into the campaign tone beneath the live viewport fade.
+    file: "flows/b5716e20-b094-463c-b74b-a5e983dd1651/009.webp",
+    rect: [17, 271, 359, 493],
+    lightTextOcclusions: [[19, 22, 157, 24]],
+    darkTextOcclusions: [
+      [228, 24, 78, 20],
+      [315, 24, 26, 18],
+    ],
+    textOcclusionMode: "inpaint",
+    textOcclusionDilation: 1.5,
+    roundedOcclusionFill: "horizontal-gradient",
+    roundedOcclusions: [
+      [13, 60, 165, 155, 0],
+      [182, 60, 164, 155, 0],
+      [13, 219, 165, 155, 0],
+      [182, 219, 164, 155, 0],
+      [13, 378, 165, 155, 0],
+      [182, 378, 164, 155, 0],
+    ],
+  },
+  "home-campaign-drmtlgy-returning-wordmark": {
+    file: "flows/b5716e20-b094-463c-b74b-a5e983dd1651/009.webp",
+    rect: [38, 297, 153, 22],
+    lightWordmark: true,
   },
   "home-campaign-tea-blue": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
@@ -1983,9 +2016,27 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
         entry.pinkChromaKey ||
         entry.circularOcclusions?.length ||
         entry.roundedOcclusions?.length ||
-        entry.photoRadius
+        entry.photoRadius ||
+        entry.lightWordmark
       ) {
         let cleanPhoto = await crop.ensureAlpha().png().toBuffer();
+        if (entry.lightWordmark) {
+          const pixels = await sharp(cleanPhoto)
+            .raw()
+            .toBuffer({ resolveWithObject: true });
+          for (let offset = 0; offset < pixels.data.length; offset += 4) {
+            const low = Math.min(...pixels.data.subarray(offset, offset + 3));
+            const high = Math.max(...pixels.data.subarray(offset, offset + 3));
+            pixels.data[offset + 3] =
+              high - low > 28
+                ? 0
+                : Math.round(255 * Math.max(0, Math.min(1, (low - 160) / 70)));
+            pixels.data.fill(255, offset, offset + 3);
+          }
+          cleanPhoto = await sharp(pixels.data, { raw: pixels.info })
+            .png()
+            .toBuffer();
+        }
         if (entry.pinkChromaKey) {
           const pixels = await sharp(cleanPhoto)
             .raw()
@@ -2245,12 +2296,52 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
           });
         }
         if (entry.roundedOcclusions?.length) {
-          photoCutouts.push({
-            input: Buffer.from(
-              `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">${entry.roundedOcclusions.map(([x, y, w, h, radius]) => `<rect x="${x * scale}" y="${y * scale}" width="${w * scale}" height="${h * scale}" rx="${radius * scale}" fill="white"/>`).join("")}</svg>`,
-            ),
-            blend: "dest-out",
-          });
+          const roundedMask = Buffer.from(
+            `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">${entry.roundedOcclusions.map(([x, y, w, h, radius]) => `<rect x="${x * scale}" y="${y * scale}" width="${w * scale}" height="${h * scale}" rx="${radius * scale}" fill="white"/>`).join("")}</svg>`,
+          );
+          if (entry.roundedOcclusionFill === "horizontal-gradient") {
+            const pixels = await sharp(cleanPhoto)
+              .raw()
+              .toBuffer({ resolveWithObject: true });
+            const mask = await sharp(roundedMask)
+              .ensureAlpha()
+              .raw()
+              .toBuffer();
+            for (const [x, y, w, h] of entry.roundedOcclusions) {
+              const left = Math.max(0, Math.floor(x * scale));
+              const right = Math.min(width - 1, Math.ceil((x + w) * scale));
+              const top = Math.max(0, Math.floor(y * scale));
+              const bottom = Math.min(height, Math.ceil((y + h) * scale));
+              const sampleLeft = Math.max(0, left - Math.ceil(scale));
+              const sampleRight = Math.min(width - 1, right + Math.ceil(scale));
+              for (let row = top; row < bottom; row += 1) {
+                for (let column = left; column <= right; column += 1) {
+                  const offset = (row * width + column) * 4;
+                  const amount = mask[offset + 3] / 255;
+                  if (!amount) continue;
+                  const position =
+                    (column - sampleLeft) / (sampleRight - sampleLeft || 1);
+                  for (let channel = 0; channel < 3; channel += 1) {
+                    const before =
+                      pixels.data[(row * width + sampleLeft) * 4 + channel];
+                    const after =
+                      pixels.data[(row * width + sampleRight) * 4 + channel];
+                    const background = before + (after - before) * position;
+                    pixels.data[offset + channel] = Math.round(
+                      pixels.data[offset + channel] * (1 - amount) +
+                        background * amount,
+                    );
+                  }
+                  pixels.data[offset + 3] = 255;
+                }
+              }
+            }
+            cleanPhoto = await sharp(pixels.data, { raw: pixels.info })
+              .png()
+              .toBuffer();
+          } else {
+            photoCutouts.push({ input: roundedMask, blend: "dest-out" });
+          }
         }
         if (entry.photoRadius) {
           photoCutouts.push({

@@ -287,10 +287,14 @@ export function HomeCampaigns({
             campaignPhoto = puraReason ? "home-pura-reason-photo" : c.photo,
             campaignHeaderPhoto = puraReason
               ? "home-pura-reason-header"
-              : c.headerPhoto,
+              : c.id === "drmtlgy" && productLayout === "grid"
+                ? "home-campaign-drmtlgy-returning-photo"
+                : c.headerPhoto,
             campaignWordmark = puraReason
               ? "home-pura-reason-wordmark"
-              : c.wordmark;
+              : c.id === "drmtlgy" && productLayout === "grid"
+                ? "home-campaign-drmtlgy-returning-wordmark"
+                : c.wordmark;
           const href = c.store ? `/stores/${c.store}` : "/search";
           const rating =
             c.id === "drmtlgy" && productOrder === "welcome"

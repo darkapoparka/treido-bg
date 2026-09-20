@@ -292,7 +292,7 @@ test("the returning campaign uses six real product cards and preserves saving", 
   await expect
     .poll(() =>
       campaign
-        .locator(".campaign-product img")
+        .locator("img")
         .evaluateAll((images) =>
           images.every(
             (image) =>
@@ -308,6 +308,19 @@ test("the returning campaign uses six real product cards and preserves saving", 
   await expect(save).toHaveAttribute("aria-pressed", "true");
   for (const width of [320, 430]) {
     await page.setViewportSize({ width, height: 793 });
+    const email = page.locator(".email-card");
+    const cardBounds = await email.boundingBox();
+    const textBounds = await email.locator("strong").boundingBox();
+    const arrowBounds = await email.locator("svg").boundingBox();
+    expect(cardBounds).not.toBeNull();
+    expect(textBounds).not.toBeNull();
+    expect(arrowBounds).not.toBeNull();
+    expect(textBounds!.x + textBounds!.width).toBeLessThanOrEqual(
+      arrowBounds!.x,
+    );
+    expect(arrowBounds!.x + arrowBounds!.width).toBeLessThanOrEqual(
+      cardBounds!.x + cardBounds!.width,
+    );
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
