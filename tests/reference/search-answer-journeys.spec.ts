@@ -293,15 +293,19 @@ test("captured answer rails preserve their source continuations without replacin
   await expect(
     answer.locator(".assistant-wide-rail article > span"),
   ).toHaveCount(2);
-  expect(
-    await answer
-      .locator(".assistant-wide-rail article > span")
-      .evaluateAll((labels) =>
-        labels.every(
-          (label) => getComputedStyle(label).visibility === "hidden",
-        ),
-      ),
-  ).toBe(true);
+  // f046-002 retains the pale merchant captions below the lower photo rail.
+  // The composer fade may cover them; the captions themselves stay visible.
+  const wideMerchantLabels = answer.locator(
+    ".assistant-wide-rail article > span",
+  );
+  await expect(wideMerchantLabels).toHaveText([
+    "Jeans Warehouse",
+    "Jeans Warehouse",
+  ]);
+  for (const label of await wideMerchantLabels.all()) {
+    await expect(label).toHaveCSS("visibility", "visible");
+    await expect(label).toHaveCSS("color", "rgb(189, 189, 189)");
+  }
   await answer.locator(".assistant-page").evaluate((element) => {
     element.scrollTo({ top: element.scrollHeight });
   });
