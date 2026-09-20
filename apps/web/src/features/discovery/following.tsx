@@ -1,6 +1,5 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- Allowlisted frozen product photographs. */
-import Link from "next/link";
 import { SourceLink } from "./return-navigation";
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -132,9 +131,9 @@ export function Following({ catalog }: { catalog: Catalog }) {
               <br />
               you might like
             </p>
-            <Link className="primary" href="/explore">
+            <SourceLink className="primary" href="/explore">
               Go shopping
-            </Link>
+            </SourceLink>
           </section>
           <section
             className="following-post following-recommendation"

@@ -303,6 +303,7 @@ export function HomeCampaigns({
             <section
               key={c.id}
               data-campaign={c.id}
+              data-product-order={productOrder}
               aria-label={`${store?.name ?? "Accessories"} campaign`}
               className={`home-campaign campaign-${c.tone} ${c.tall || (c.id === "drmtlgy" && productLayout === "grid") ? "campaign-tall" : ""} ${c.continuation ? "campaign-continuation" : ""} ${c.id === "drmtlgy" && productLayout === "grid" ? "campaign-product-grid" : ""} ${puraReason ? "campaign-pura-reason" : ""} ${concealed ? "campaign-concealed" : ""}`}
             >

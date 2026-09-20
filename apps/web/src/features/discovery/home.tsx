@@ -1,8 +1,7 @@
 "use client";
 import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
-import Link from "next/link";
-import { SourceLink } from "./return-navigation";
+import { rememberSourceReturn, SourceLink } from "./return-navigation";
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatMoney, type Catalog } from "../catalog/types";
@@ -77,41 +76,47 @@ export function Home({ catalog }: { catalog: Catalog }) {
       }
     >
       <header className="home-shortcuts">
-        <Link href="/profile" aria-label="Profile" className="avatar">
+        <SourceLink href="/profile" aria-label="Profile" className="avatar">
           {profile.avatar ? (
             <img src={profile.avatar} alt="" />
           ) : (
             <span>{profile.firstName[0] || "A"}</span>
           )}
-        </Link>
+        </SourceLink>
         <IconButton
           icon="bell"
           filled
           label="Notifications"
-          onClick={() => router.push("/notifications")}
+          onClick={() => {
+            rememberSourceReturn(
+              "/notifications",
+              '.home-shortcuts button[aria-label="Notifications"]',
+            );
+            router.push("/notifications");
+          }}
         />
-        <Link className="pill" href="/deals">
+        <SourceLink className="pill" href="/deals">
           <Icon name="tag" filled />
           Deals
-        </Link>
-        <Link className="pill" href="/following">
+        </SourceLink>
+        <SourceLink className="pill" href="/following">
           <span className="following-shortcut-icon">
             <Icon name="badge-check" filled />
             {(recentStores || recentProducts) && <i aria-hidden="true" />}
           </span>
           Following
-        </Link>
-        <Link className="pill" href="/saved">
+        </SourceLink>
+        <SourceLink className="pill" href="/saved">
           <Icon name="heart" filled />
           Saved
-        </Link>
-        <Link className="pill" href="/minis">
+        </SourceLink>
+        <SourceLink className="pill" href="/minis">
           <Icon name="minis" filled />
           Minis
-        </Link>
+        </SourceLink>
       </header>
       {tracking && (
-        <Link href="/orders" className="delivery-card">
+        <SourceLink href="/orders" className="delivery-card">
           <img
             src={catalog.stores.find((s) => s.id === "kitsch")!.logo}
             alt=""
@@ -121,11 +126,17 @@ export function Home({ catalog }: { catalog: Catalog }) {
             <strong>Ordered Jul 27</strong>
           </span>
           <img src="/api/reference-media/shampoo-bag" alt="Shampoo bar bag" />
-        </Link>
+        </SourceLink>
       )}
       <button
         className="email-card"
-        onClick={() => router.push("/account/connections")}
+        onClick={() => {
+          rememberSourceReturn(
+            "/account/connections",
+            ".home-page .email-card",
+          );
+          router.push("/account/connections");
+        }}
       >
         <img src="/api/reference-media/parcel" alt="" />
         <span>
@@ -143,10 +154,10 @@ export function Home({ catalog }: { catalog: Catalog }) {
           <div className="recent-store-grid">
             <RecentSearchItems catalog={catalog} limit={4} surface="home" />
           </div>
-          <Link href="/search?view=recent" className="recent-title">
+          <SourceLink href="/search?view=recent" className="recent-title">
             <h1>Recently viewed</h1>
             <Icon name="arrow" />
-          </Link>
+          </SourceLink>
         </section>
       )}
       {recentProducts && (
@@ -165,10 +176,10 @@ export function Home({ catalog }: { catalog: Catalog }) {
               />
             ))}
           </div>
-          <Link href="/search?view=recent" className="recent-title">
+          <SourceLink href="/search?view=recent" className="recent-title">
             <h1>Recently viewed</h1>
             <Icon name="arrow" />
-          </Link>
+          </SourceLink>
         </section>
       )}
       {recentProducts &&

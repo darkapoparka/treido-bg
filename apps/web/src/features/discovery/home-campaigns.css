@@ -555,6 +555,11 @@
 .campaign-isolated-bottle img {
   padding: 7px;
 }
+.campaign-drmtlgy[data-product-order="welcome"]:not(.campaign-product-grid)
+  [data-campaign-product="home-drmtlgy-tinted"]
+  img {
+  transform: translateX(-22px);
+}
 .campaign-drmtlgy:not(.campaign-product-grid)
   [data-campaign-product="home-drmtlgy-eye"]
   img {

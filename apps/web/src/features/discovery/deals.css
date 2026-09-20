@@ -80,7 +80,7 @@
 .deal-store-identity > img {
   width: 48px;
   height: 48px;
-  padding: 9.5px;
+  padding: 0.5px;
   border: 1.5px solid #6546f3;
   border-radius: 50%;
   object-fit: contain;
@@ -128,15 +128,16 @@
   padding: 9px 16px 0;
 }
 .deal-product {
+  --deal-photo-size: 173px;
   position: relative;
-  flex: 0 0 173px;
-  width: 173px;
+  flex: 0 0 var(--deal-photo-size);
+  width: var(--deal-photo-size);
 }
 .deal-product-photo {
   display: grid;
   place-items: center;
-  width: 173px;
-  height: 173px;
+  width: var(--deal-photo-size);
+  height: var(--deal-photo-size);
   border: 1px solid #e7e7e7;
   border-radius: 20px;
   overflow: hidden;
@@ -149,8 +150,9 @@
 }
 .deal-save {
   position: absolute;
-  top: 129px;
-  right: 11px;
+  /* Follow the source photo's removed native control as its frame resizes. */
+  top: calc(1px + (var(--deal-photo-size) - 2px) * 144 / 171 - 16px);
+  left: calc(1px + (var(--deal-photo-size) - 2px) * 144 / 171 - 16px);
   width: 32px;
   height: 32px;
   padding: 7px;
@@ -272,14 +274,6 @@
     padding-inline: 14px;
   }
   .deal-product {
-    flex-basis: 150px;
-    width: 150px;
-  }
-  .deal-product-photo {
-    width: 150px;
-    height: 150px;
-  }
-  .deal-save {
-    top: 106px;
+    --deal-photo-size: 150px;
   }
 }

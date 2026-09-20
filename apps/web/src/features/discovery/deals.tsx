@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- Frozen reference-media photographs. */
 import Link from "next/link";
+import { SourceLink } from "./return-navigation";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { ShopSurface } from "./hydration-boundary";
@@ -75,17 +76,17 @@ export function Deals({ initialStoreId }: { initialStoreId?: string }) {
     <ShopSurface className="shop-page deals-page">
       <h1>Deals</h1>
       <div className="deals-filter-rail" aria-label="Deal categories">
-        <Link className="deals-search" href="/search" aria-label="Search">
+        <SourceLink className="deals-search" href="/search" aria-label="Search">
           <Icon name="search" />
-        </Link>
+        </SourceLink>
         {chips.map((chip) => (
-          <Link
+          <SourceLink
             className="deals-chip"
             href={`/search?q=${encodeURIComponent(chip)}`}
             key={chip}
           >
             {chip}
-          </Link>
+          </SourceLink>
         ))}
       </div>
       <div className="deals-feed">
