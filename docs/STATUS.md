@@ -4,13 +4,15 @@ Updated 2026-09-20. This is the session entry point, not a second backlog.
 
 ## Resume handoff
 
-Application checkpoint **4bda84e** and test-only **b8377ff** complete the current Orders/Mini return, draft and shared-geometry batch on local **main**. Preserve this checkout and subsequent local work. The [copyable execution prompt](../single-session-execution.md#new-session-prompt) and [shared-component audit map](../shop-implementation-map.md#shared-component-audit) own the continuation. Next bounded repairs are Account named-avatar/text and inline/public-profile return focus, Reviews/Description ink/shadow, and Saved collection return focus/Cart footer fade. Root Browser reproduced the focus defects; these next changes are not yet implemented.
+Application checkpoint **30f336e** on local **main** adds Account/avatar/form and route returns, People completion focus, Reviews/Description ink, Saved collection returns and Cart navigation/footer corrections. Preserve this checkout and subsequent local work. The [copyable execution prompt](../single-session-execution.md#new-session-prompt) and [shared-component audit map](../shop-implementation-map.md#shared-component-audit) own continuation. Next are the source-measured Home/Deals photo/control variants and ordinary entry returns, then the inert collection promotion and remaining Store/PDP returns. Root Browser reproduces Home Profile Back landing on BODY; that next repair is not yet implemented.
 
 The preview was found stopped on2026-09-20: no6412 listener or Treido Node process remained. The cause is unconfirmed. Restarted with installed Node24.19/Next16.3.4, `SHOP_REFERENCE_PREVIEW=1`, `VERCEL_ENV=preview`, loopback6412, hidden persistent process. Observed launcherPID42116/serverPID11960; recheck ownership instead of trusting these PIDs later. Startup reports ready, storefront/media return200, and the in-app Browser renders the mobile storefront. Logs: ignored `.qa/shop-parity/20260920-preview-restart.stdout.log` and `.stderr.log`. The [execution guide](../single-session-execution.md#existing-local-reference-loop) records the installed-runtime fallback because the pnpm shim was broken.
 
 All 97 flows / 424 ordered frames are mapped and compared, and 307 standalone images are reconciled. The existing September 13 video audit actually inspected complete quarter-second sequence sheets for all 16 videos (309 samples, 4,310 decoded frames); the old “poster-only” description was stale. This session also examines selected full-rate motion. Coverage, motion inspection and passing tests are separate from 1:1 acceptance.
 
 ## Active repair checkpoint
+
+**30f336e** has scoped source comparisons and focused behavior evidence, not a new complete qualification. Account field Save, public-profile/collection Back, People Skip completion, Saved tile Back, Cart product/checkout returns and same-product dismissal pass in root Browser. Visual checks include320/393/430 and467x853 Store/Cart. The [implementation map](../shop-implementation-map.md#current-source-checkpoint) records exact capture precedence, passing checks and original failed attempts. No full build, unit suite or complete424 capture was repeated for this batch. Typography, payment art, shadows and bounded source-photo/motion gaps remain; the prior full ledger below is unchanged.
 
 The complete production-preview capture at clean **b8377ff** (application **4bda84e**), **20260920-connected-qualified-full**, covers **424/424** frozen frames: zero replay/browser errors, **2.765997% mean MAE**, **8.636994% mean bad pixels**, and **57 numerical candidates**. No frame regresses more than 0.15 MAE points against complete f77609c. The [frame ledger](../shop-frame-ledger.md) owns this exact run. **367 frames exceed a numerical threshold; owner acceptance remains 0/97. The entire app is not 1:1.**
 
@@ -164,7 +166,7 @@ Shopify reference acquisition remains separately unresolved in [its source recor
 
 ## Next action
 
-Finish the source-measured Explore/Look/first-collection visual batch and remaining Orders return controls, then freeze the application source for one complete 424-frame comparison and proportionate final checks. Inspect actual regressions and update the existing ledger only from that complete run. Continue remaining visible source differences; do not turn coverage or passing tests into 1:1 acceptance.
+Implement the audited Home welcome-only bottle placement, Deals merchant marks/Save targets, recent Home promotion cutout and ordinary Home/Deals/Following return ownership. Then connect the collection promotion through its canonical owner, finish remaining Store/PDP entry/Close returns and verify the gallery viewport without mistaking a captured swipe phase for settled geometry. Continue every unresolved family. Keep the complete ledger tied to its recorded source until another complete run qualifies later work; passing tests do not establish1:1.
 
 ## Dated setup and integration evidence
 

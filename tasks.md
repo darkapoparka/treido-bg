@@ -51,7 +51,7 @@ The active web reconstruction uses isolated reference data through the existing 
 
 Acceptance: source/live pairs, actual family interactions, Back/Forward/focus/scroll, relevant 320/430 containment and scoped types/lint/tests. Keep numeric candidates distinct from owner acceptance.
 
-2026-09-20 checkpoint: application **4bda84e** completes the current connected control/draft/motion batch; test-only **b8377ff** corrects a stale source-caption assertion. The exact complete 424-frame capture, build, unit/journey results and original failure are recorded in the [current checkpoint](shop-implementation-map.md#current-source-checkpoint). Continue Account avatar/inline and route return focus, Reviews/Description ink, and Saved return/Cart footer owners next. All 97 flows remain in scope; 367 frames exceed a diagnostic threshold and no flow gains owner acceptance from coverage.
+2026-09-20 checkpoint: application **30f336e** implements Account/avatar/form and route returns, People completion focus, Reviews/Description ink, Saved collection returns and Cart navigation/footer corrections. Exact scoped evidence and earlier complete424 qualification remain in the [current checkpoint](shop-implementation-map.md#current-source-checkpoint). Continue audited Home/Deals photo/control variants and ordinary entry returns, then collection promotion and Store/PDP returns. All97 flows remain in scope;367 frames in the prior full run exceed a diagnostic threshold and coverage grants no owner acceptance.
 
 ## Task 4 - Build data, identity and catalog
 
@@ -79,7 +79,7 @@ Track **source approval** separately from **real-service verification**. The sou
 
 Task 7 requires the approved source gate; this never waives Tasks 4/5/9/10's real-service acceptance or native requirements.
 
-2026-09-20 checkpoint: the complete 424-state comparison at `f77609c` remains in the existing frame ledger until one complete final-source run replaces it. The implementation map records later scoped source comparisons and original failures. Complete sampled sequences for all 16 videos were already inspected; current bounded playback and selected full-rate comparisons add implementation evidence. All 755 frozen files verify, and all 16 standalone MP4s have no audio track. The checklist keeps state existence, UX, widths and source acceptance separate; the owner's rejection of 1:1 acceptance remains active. Resume with the [new-session prompt](single-session-execution.md#new-session-prompt).
+2026-09-20 checkpoint: the complete424-state comparison at `b8377ff` / `20260920-connected-qualified-full` remains in the frame ledger. Later application `30f336e` has scoped comparisons and Browser/focused-journey evidence in the implementation map; original failures remain. Complete sampled sequences for all16 videos were inspected; current bounded playback and selected full-rate comparisons add implementation evidence. All755 frozen files verify and all16 standalone MP4s have no audio track. State existence, UX, widths and source acceptance remain separate; the owner's rejection of1:1 acceptance remains active. Resume with the [new-session prompt](single-session-execution.md#new-session-prompt).
 
 ## Task 7 - Adapt the approved frontend to Treido
 
