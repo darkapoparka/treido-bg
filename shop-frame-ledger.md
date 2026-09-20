@@ -4,7 +4,7 @@ Generated from the frozen manifest and deterministic replay definitions. This is
 
 **Corpus:** 97 flows / 424 ordered frames. **Mapped:** 424/424. **Scored in this run:** 424/424. **Numerical candidates:** 41; not automatic visual acceptance.
 
-Evidence run: `20260919-assistant-final-mobile`; created 2026-09-19T20:39:57.289Z; source HEAD `b49226d953633a2a7fa6c0ea807ac06df050cc14` (the report records the working-tree state). Viewport: 393x793.
+Evidence run: `20260920-minis-qualified-mobile`; created 2026-09-20T00:02:44.392Z; source HEAD `af59e398150f11b94625164d1b88a3ea8b14566a` (the report records the working-tree state). Viewport: 393x793.
 
 A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region inspection, complete UX coverage, sibling regression checks and owner acceptance are still required. Unchecked entries are not complete.
 
@@ -13,14 +13,14 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-001:001 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/001.webp` | shop-purple-splash | Defined | 0.332 | 0.350 | NUMERICAL CANDIDATE |
-| [ ] SF-001:002 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/002.webp` | shop-get-started | Defined | 1.313 | 4.044 | NUMERICAL CANDIDATE |
+| [ ] SF-001:002 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/002.webp` | shop-get-started | Defined | 1.314 | 4.034 | NUMERICAL CANDIDATE |
 | [ ] SF-001:003 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/003.webp` | discover-next-brand | Defined | 1.980 | 4.591 | REFINE |
 | [ ] SF-001:004 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/004.webp` | email-sign-in-empty | Defined | 3.351 | 7.969 | REFINE |
 | [ ] SF-001:005 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/005.webp` | email-sign-in-filled | Defined | 4.699 | 10.529 | REFINE |
 | [ ] SF-001:006 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/006.webp` | email-code-empty | Defined | 1.592 | 3.444 | REFINE |
 | [ ] SF-001:007 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/007.webp` | email-code-pending | Defined | 1.704 | 4.219 | REFINE |
 | [ ] SF-001:008 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/008.webp` | captured-home-after-sign-in | Defined | 4.650 | 18.913 | REFINE |
-| [ ] SF-001:009 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/009.webp` | shopping-preferences-empty | Defined | 1.699 | 5.150 | REFINE |
+| [ ] SF-001:009 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/009.webp` | shopping-preferences-empty | Defined | 1.698 | 5.150 | REFINE |
 | [ ] SF-001:010 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/010.webp` | email-code-verified | Defined | 1.408 | 3.196 | NUMERICAL CANDIDATE |
 | [ ] SF-001:011 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/011.webp` | tracking-introduction | Defined | 1.525 | 4.114 | REFINE |
 | [ ] SF-001:012 | `flows/b778fdce-2c65-4153-aaee-6703098f27d4/012.webp` | captured-signing-in | Defined | 0.844 | 1.954 | NUMERICAL CANDIDATE |
@@ -51,7 +51,7 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-004:001 | `flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/001.webp` | welcome-feed | Defined | 4.650 | 18.913 | REFINE |
-| [ ] SF-004:002 | `flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp` | deals-rinse-syman | Defined | 3.837 | 14.797 | REFINE |
+| [ ] SF-004:002 | `flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/002.webp` | deals-rinse-syman | Defined | 3.837 | 14.796 | REFINE |
 | [ ] SF-004:003 | `flows/7fd66949-219c-4ef9-ba53-a3482dbe2e60/003.webp` | deals-francesco-solid-hair | Defined | 3.868 | 14.473 | REFINE |
 
 ## SF-005 — Following from Home
@@ -77,18 +77,18 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | [ ] SF-007:001 | `flows/75b26fee-826f-4403-9288-be499890cd72/001.webp` | home-before-saved | Defined | 4.650 | 18.913 | REFINE |
 | [ ] SF-007:002 | `flows/75b26fee-826f-4403-9288-be499890cd72/002.webp` | saved-empty | Defined | 2.211 | 6.580 | REFINE |
 | [ ] SF-007:003 | `flows/75b26fee-826f-4403-9288-be499890cd72/003.webp` | saved-two-items | Defined | 2.124 | 6.952 | REFINE |
-| [ ] SF-007:004 | `flows/75b26fee-826f-4403-9288-be499890cd72/004.webp` | multi-brand-saved-library | Defined | 4.949 | 15.654 | REFINE |
+| [ ] SF-007:004 | `flows/75b26fee-826f-4403-9288-be499890cd72/004.webp` | multi-brand-saved-library | Defined | 4.956 | 15.690 | REFINE |
 
 ## SF-008 — Creating a collection from Saved
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-008:001 | `flows/b74ee3f5-005d-40d3-9466-f6d080f62b40/001.webp` | saved-before-creation | Defined | 2.124 | 6.952 | REFINE |
-| [ ] SF-008:002 | `flows/b74ee3f5-005d-40d3-9466-f6d080f62b40/002.webp` | collection-name-empty-focused | Defined | 2.232 | 5.410 | REFINE |
-| [ ] SF-008:003 | `flows/b74ee3f5-005d-40d3-9466-f6d080f62b40/003.webp` | collection-name-entered-focused | Defined | 2.038 | 4.403 | REFINE |
-| [ ] SF-008:004 | `flows/b74ee3f5-005d-40d3-9466-f6d080f62b40/004.webp` | add-saved-unselected | Defined | 1.625 | 6.082 | REFINE |
-| [ ] SF-008:005 | `flows/b74ee3f5-005d-40d3-9466-f6d080f62b40/005.webp` | add-saved-two-selected | Defined | 1.440 | 5.292 | NUMERICAL CANDIDATE |
-| [ ] SF-008:006 | `flows/b74ee3f5-005d-40d3-9466-f6d080f62b40/006.webp` | created-collection-with-collaboration-callout | Defined | 3.406 | 11.092 | REFINE |
+| [ ] SF-008:002 | `flows/b74ee3f5-005d-40d3-9466-f6d080f62b40/002.webp` | collection-name-empty-focused | Defined | 2.233 | 5.441 | REFINE |
+| [ ] SF-008:003 | `flows/b74ee3f5-005d-40d3-9466-f6d080f62b40/003.webp` | collection-name-entered-focused | Defined | 2.038 | 4.433 | REFINE |
+| [ ] SF-008:004 | `flows/b74ee3f5-005d-40d3-9466-f6d080f62b40/004.webp` | add-saved-unselected | Defined | 1.639 | 6.155 | REFINE |
+| [ ] SF-008:005 | `flows/b74ee3f5-005d-40d3-9466-f6d080f62b40/005.webp` | add-saved-two-selected | Defined | 1.454 | 5.370 | NUMERICAL CANDIDATE |
+| [ ] SF-008:006 | `flows/b74ee3f5-005d-40d3-9466-f6d080f62b40/006.webp` | created-collection-with-collaboration-callout | Defined | 3.420 | 11.154 | REFINE |
 | [ ] SF-008:007 | `flows/b74ee3f5-005d-40d3-9466-f6d080f62b40/007.webp` | multi-brand-saved-library | Defined | 4.956 | 15.693 | REFINE |
 
 ## SF-009 — Collection detail (saved) from Saved
@@ -96,49 +96,49 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-009:001 | `flows/a3ff00dc-6536-4966-89ae-2af61582d347/001.webp` | multi-brand-saved-library | Defined | 4.956 | 15.693 | REFINE |
-| [ ] SF-009:002 | `flows/a3ff00dc-6536-4966-89ae-2af61582d347/002.webp` | private-two-item-collection | Defined | 3.420 | 11.158 | REFINE |
-| [ ] SF-009:003 | `flows/a3ff00dc-6536-4966-89ae-2af61582d347/003.webp` | private-collection-scrolled | Defined | 3.707 | 15.145 | REFINE |
+| [ ] SF-009:002 | `flows/a3ff00dc-6536-4966-89ae-2af61582d347/002.webp` | private-two-item-collection | Defined | 3.420 | 11.156 | REFINE |
+| [ ] SF-009:003 | `flows/a3ff00dc-6536-4966-89ae-2af61582d347/003.webp` | private-collection-scrolled | Defined | 3.707 | 15.143 | REFINE |
 
 ## SF-010 — More ideas from Collection detail (saved)
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-010:001 | `flows/972c6dae-9ab4-4aaf-9f21-999808493dc6/001.webp` | private-collection-scrolled | Defined | 3.707 | 15.145 | REFINE |
-| [ ] SF-010:002 | `flows/972c6dae-9ab4-4aaf-9f21-999808493dc6/002.webp` | six-collection-recommendations | Defined | 3.791 | 14.855 | REFINE |
+| [ ] SF-010:002 | `flows/972c6dae-9ab4-4aaf-9f21-999808493dc6/002.webp` | six-collection-recommendations | Defined | 3.791 | 14.856 | REFINE |
 
 ## SF-011 — Editing a collection name from Collection detail (saved)
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-011:001 | `flows/c01a7936-24cd-44fb-97fc-a25302b0a2cf/001.webp` | private-collection-scrolled | Defined | 3.707 | 15.143 | REFINE |
+| [ ] SF-011:001 | `flows/c01a7936-24cd-44fb-97fc-a25302b0a2cf/001.webp` | private-collection-scrolled | Defined | 3.707 | 15.144 | REFINE |
 | [ ] SF-011:002 | `flows/c01a7936-24cd-44fb-97fc-a25302b0a2cf/002.webp` | expanded-collection-options | Defined | 2.627 | 6.887 | REFINE |
-| [ ] SF-011:003 | `flows/c01a7936-24cd-44fb-97fc-a25302b0a2cf/003.webp` | edit-name-focused | Defined | 3.491 | 12.865 | REFINE |
-| [ ] SF-011:004 | `flows/c01a7936-24cd-44fb-97fc-a25302b0a2cf/004.webp` | edit-name-with-emoji | Defined | 3.640 | 13.268 | REFINE |
-| [ ] SF-011:005 | `flows/c01a7936-24cd-44fb-97fc-a25302b0a2cf/005.webp` | renamed-three-item-collection | Defined | 3.546 | 10.473 | REFINE |
+| [ ] SF-011:003 | `flows/c01a7936-24cd-44fb-97fc-a25302b0a2cf/003.webp` | edit-name-focused | Defined | 3.489 | 12.873 | REFINE |
+| [ ] SF-011:004 | `flows/c01a7936-24cd-44fb-97fc-a25302b0a2cf/004.webp` | edit-name-with-emoji | Defined | 3.639 | 13.283 | REFINE |
+| [ ] SF-011:005 | `flows/c01a7936-24cd-44fb-97fc-a25302b0a2cf/005.webp` | renamed-three-item-collection | Defined | 3.561 | 10.520 | REFINE |
 
 ## SF-012 — Changing a collection visibility from Collection detail (saved)
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-012:001 | `flows/bd9d1905-9b47-445b-805f-0dcc71b59427/001.webp` | private-collection-options | Defined | 2.627 | 6.886 | REFINE |
+| [ ] SF-012:001 | `flows/bd9d1905-9b47-445b-805f-0dcc71b59427/001.webp` | private-collection-options | Defined | 2.627 | 6.887 | REFINE |
 | [ ] SF-012:002 | `flows/bd9d1905-9b47-445b-805f-0dcc71b59427/002.webp` | make-public-confirmation | Defined | 3.507 | 8.730 | REFINE |
-| [ ] SF-012:003 | `flows/bd9d1905-9b47-445b-805f-0dcc71b59427/003.webp` | public-collection-with-confirmation-toast | Defined | 4.477 | 14.098 | REFINE |
+| [ ] SF-012:003 | `flows/bd9d1905-9b47-445b-805f-0dcc71b59427/003.webp` | public-collection-with-confirmation-toast | Defined | 4.492 | 14.148 | REFINE |
 
 ## SF-013 — Deleting a collection from Collection detail (saved)
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-013:001 | `flows/bca3a9c6-3340-4b93-881d-ee1a26c2b26a/001.webp` | collection-options-before-delete | Defined | 2.627 | 6.886 | REFINE |
-| [ ] SF-013:002 | `flows/bca3a9c6-3340-4b93-881d-ee1a26c2b26a/002.webp` | delete-collection-confirmation | Defined | 3.531 | 8.912 | REFINE |
+| [ ] SF-013:001 | `flows/bca3a9c6-3340-4b93-881d-ee1a26c2b26a/001.webp` | collection-options-before-delete | Defined | 2.627 | 6.887 | REFINE |
+| [ ] SF-013:002 | `flows/bca3a9c6-3340-4b93-881d-ee1a26c2b26a/002.webp` | delete-collection-confirmation | Defined | 3.531 | 8.913 | REFINE |
 | [ ] SF-013:003 | `flows/bca3a9c6-3340-4b93-881d-ee1a26c2b26a/003.webp` | saved-items-retained-after-deletion | Defined | 2.124 | 6.952 | REFINE |
 
 ## SF-014 — Collection detail (shop detail) from Shop detail
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-014:001 | `flows/e85d0150-4fe9-4ee0-bde4-de17fe6da7df/001.webp` | kitsch-scrolled-collections | Defined | 5.035 | 21.177 | REFINE |
-| [ ] SF-014:002 | `flows/e85d0150-4fe9-4ee0-bde4-de17fe6da7df/002.webp` | whats-new-collection | Defined | 4.238 | 18.735 | REFINE |
-| [ ] SF-014:003 | `flows/e85d0150-4fe9-4ee0-bde4-de17fe6da7df/003.webp` | best-sellers-first-save-collection-prompt | Defined | 5.410 | 29.653 | REFINE |
+| [ ] SF-014:001 | `flows/e85d0150-4fe9-4ee0-bde4-de17fe6da7df/001.webp` | kitsch-scrolled-collections | Defined | 5.020 | 21.013 | REFINE |
+| [ ] SF-014:002 | `flows/e85d0150-4fe9-4ee0-bde4-de17fe6da7df/002.webp` | whats-new-collection | Defined | 4.238 | 18.739 | REFINE |
+| [ ] SF-014:003 | `flows/e85d0150-4fe9-4ee0-bde4-de17fe6da7df/003.webp` | best-sellers-first-save-collection-prompt | Defined | 5.410 | 29.649 | REFINE |
 
 ## SF-015 — Watching a video from Shop detail
 
@@ -151,61 +151,61 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-016:001 | `flows/85a58afb-b3e8-4f69-b274-69762b09ffbf/001.webp` | store-filter-default | Defined | 3.437 | 16.158 | REFINE |
-| [ ] SF-016:002 | `flows/85a58afb-b3e8-4f69-b274-69762b09ffbf/002.webp` | store-filter-on-sale-draft | Defined | 3.464 | 16.118 | REFINE |
-| [ ] SF-016:003 | `flows/85a58afb-b3e8-4f69-b274-69762b09ffbf/003.webp` | store-price-default-range | Defined | 2.909 | 14.056 | REFINE |
-| [ ] SF-016:004 | `flows/85a58afb-b3e8-4f69-b274-69762b09ffbf/004.webp` | store-price-maximum-380-draft | Defined | 2.833 | 13.866 | REFINE |
-| [ ] SF-016:005 | `flows/85a58afb-b3e8-4f69-b274-69762b09ffbf/005.webp` | store-products-after-filter-done | Defined | 4.973 | 20.279 | REFINE |
+| [ ] SF-016:001 | `flows/85a58afb-b3e8-4f69-b274-69762b09ffbf/001.webp` | store-filter-default | Defined | 3.277 | 15.877 | REFINE |
+| [ ] SF-016:002 | `flows/85a58afb-b3e8-4f69-b274-69762b09ffbf/002.webp` | store-filter-on-sale-draft | Defined | 3.257 | 15.499 | REFINE |
+| [ ] SF-016:003 | `flows/85a58afb-b3e8-4f69-b274-69762b09ffbf/003.webp` | store-price-default-range | Defined | 2.752 | 13.564 | REFINE |
+| [ ] SF-016:004 | `flows/85a58afb-b3e8-4f69-b274-69762b09ffbf/004.webp` | store-price-maximum-380-draft | Defined | 2.676 | 13.349 | REFINE |
+| [ ] SF-016:005 | `flows/85a58afb-b3e8-4f69-b274-69762b09ffbf/005.webp` | store-products-after-filter-done | Defined | 3.422 | 15.556 | REFINE |
 
 ## SF-017 — Product detail from Shop detail
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-017:001 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/001.webp` | store-all-products-before-shea | Defined | 5.564 | 23.831 | REFINE |
-| [ ] SF-017:002 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/002.webp` | shea-first-arrival | Defined | 3.046 | 8.034 | REFINE |
-| [ ] SF-017:003 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/003.webp` | shea-settled-detail | Defined | 2.416 | 6.423 | REFINE |
-| [ ] SF-017:004 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/004.webp` | shea-benefits-photo-in-inline-gallery | Defined | 4.234 | 18.431 | REFINE |
-| [ ] SF-017:005 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/005.webp` | captured-midi-shirtdress-variants | Defined | 5.318 | 14.410 | REFINE |
-| [ ] SF-017:006 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/006.webp` | shea-purchase-options-description-and-reviews | Defined | 4.284 | 10.853 | REFINE |
-| [ ] SF-017:007 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/007.webp` | bag-purchase-description-and-reviews | Defined | 3.726 | 11.514 | REFINE |
-| [ ] SF-017:008 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/008.webp` | shea-store-card-and-recommendations | Defined | 3.975 | 16.159 | REFINE |
-| [ ] SF-017:009 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/009.webp` | bag-delivery-store-and-recommendations | Defined | 5.660 | 21.174 | REFINE |
+| [ ] SF-017:001 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/001.webp` | store-all-products-before-shea | Defined | 3.287 | 15.522 | REFINE |
+| [ ] SF-017:002 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/002.webp` | shea-first-arrival | Defined | 2.926 | 7.897 | REFINE |
+| [ ] SF-017:003 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/003.webp` | shea-settled-detail | Defined | 2.296 | 6.287 | REFINE |
+| [ ] SF-017:004 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/004.webp` | shea-benefits-photo-in-inline-gallery | Defined | 4.114 | 18.281 | REFINE |
+| [ ] SF-017:005 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/005.webp` | captured-midi-shirtdress-variants | Defined | 5.101 | 14.167 | REFINE |
+| [ ] SF-017:006 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/006.webp` | shea-purchase-options-description-and-reviews | Defined | 4.166 | 11.010 | REFINE |
+| [ ] SF-017:007 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/007.webp` | bag-purchase-description-and-reviews | Defined | 3.567 | 11.254 | REFINE |
+| [ ] SF-017:008 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/008.webp` | shea-store-card-and-recommendations | Defined | 3.905 | 16.103 | REFINE |
+| [ ] SF-017:009 | `flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/009.webp` | bag-delivery-store-and-recommendations | Defined | 3.466 | 13.784 | REFINE |
 
 ## SF-018 — Photos from Product detail
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-018:001 | `flows/0f9653b4-5412-485a-a3a4-62bfb492a27e/001.webp` | shea-product-detail-top | Defined | 2.428 | 6.443 | REFINE |
-| [ ] SF-018:002 | `flows/0f9653b4-5412-485a-a3a4-62bfb492a27e/002.webp` | shea-fullscreen-first-photo | Defined | 0.768 | 3.991 | NUMERICAL CANDIDATE |
-| [ ] SF-018:003 | `flows/0f9653b4-5412-485a-a3a4-62bfb492a27e/003.webp` | shea-fullscreen-testimonial-photo | Defined | 1.018 | 4.953 | NUMERICAL CANDIDATE |
+| [ ] SF-018:001 | `flows/0f9653b4-5412-485a-a3a4-62bfb492a27e/001.webp` | shea-product-detail-top | Defined | 2.308 | 6.307 | REFINE |
+| [ ] SF-018:002 | `flows/0f9653b4-5412-485a-a3a4-62bfb492a27e/002.webp` | shea-fullscreen-first-photo | Defined | 0.768 | 3.997 | NUMERICAL CANDIDATE |
+| [ ] SF-018:003 | `flows/0f9653b4-5412-485a-a3a4-62bfb492a27e/003.webp` | shea-fullscreen-testimonial-photo | Defined | 1.019 | 4.958 | NUMERICAL CANDIDATE |
 
 ## SF-019 — Saving a product to a collection from Product detail
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-019:001 | `flows/300d3e11-4ba4-4c43-b720-a7132c6eb7f5/001.webp` | shea-product-detail-top | Defined | 2.416 | 6.423 | REFINE |
-| [ ] SF-019:002 | `flows/300d3e11-4ba4-4c43-b720-a7132c6eb7f5/002.webp` | shea-saved-collection-picker | Defined | 1.777 | 4.869 | REFINE |
-| [ ] SF-019:003 | `flows/300d3e11-4ba4-4c43-b720-a7132c6eb7f5/003.webp` | shea-item-saved-toast | Defined | 3.400 | 10.391 | REFINE |
+| [ ] SF-019:001 | `flows/300d3e11-4ba4-4c43-b720-a7132c6eb7f5/001.webp` | shea-product-detail-top | Defined | 2.296 | 6.287 | REFINE |
+| [ ] SF-019:002 | `flows/300d3e11-4ba4-4c43-b720-a7132c6eb7f5/002.webp` | shea-saved-collection-picker | Defined | 1.680 | 4.502 | REFINE |
+| [ ] SF-019:003 | `flows/300d3e11-4ba4-4c43-b720-a7132c6eb7f5/003.webp` | shea-item-saved-toast | Defined | 3.166 | 10.019 | REFINE |
 
 ## SF-020 — Adding a product to cart from Product detail
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-020:001 | `flows/9211553e-bc3c-45f9-943b-f032766e6799/001.webp` | bag-purchase-controls-description-reviews | Defined | 3.726 | 11.514 | REFINE |
-| [ ] SF-020:002 | `flows/9211553e-bc3c-45f9-943b-f032766e6799/002.webp` | bag-added-quantity-and-disabled-buy-now | Defined | 4.731 | 12.307 | REFINE |
-| [ ] SF-020:003 | `flows/9211553e-bc3c-45f9-943b-f032766e6799/003.webp` | bag-exclusive-offer-and-cart-summary | Defined | 3.770 | 10.520 | REFINE |
+| [ ] SF-020:001 | `flows/9211553e-bc3c-45f9-943b-f032766e6799/001.webp` | bag-purchase-controls-description-reviews | Defined | 3.567 | 11.254 | REFINE |
+| [ ] SF-020:002 | `flows/9211553e-bc3c-45f9-943b-f032766e6799/002.webp` | bag-added-quantity-and-disabled-buy-now | Defined | 4.569 | 11.954 | REFINE |
+| [ ] SF-020:003 | `flows/9211553e-bc3c-45f9-943b-f032766e6799/003.webp` | bag-exclusive-offer-and-cart-summary | Defined | 3.712 | 10.324 | REFINE |
 
 ## SF-021 — Purchasing a product from Adding a product to cart
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-021:001 | `flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/001.webp` | bag-after-add-before-cart | Defined | 4.731 | 12.307 | REFINE |
+| [ ] SF-021:001 | `flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/001.webp` | bag-after-add-before-cart | Defined | 4.569 | 11.954 | REFINE |
 | [ ] SF-021:002 | `flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/002.webp` | bag-cart-discount-and-checkout | Defined | 4.398 | 12.273 | REFINE |
 | [ ] SF-021:003 | `flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/003.webp` | checkout-review-collapsed | Defined | 3.406 | 8.259 | REFINE |
 | [ ] SF-021:004 | `flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/004.webp` | checkout-address-shipping-plan-expanded | Defined | 3.248 | 7.323 | REFINE |
 | [ ] SF-021:005 | `flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/005.webp` | checkout-plan-and-payment-expanded | Defined | 3.700 | 9.062 | REFINE |
 | [ ] SF-021:006 | `flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/006.webp` | white-rock-captured-shipping | Defined | 3.098 | 7.220 | REFINE |
-| [ ] SF-021:007 | `flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/007.webp` | white-rock-captured-pickup | Defined | 3.890 | 9.330 | REFINE |
+| [ ] SF-021:007 | `flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/007.webp` | white-rock-captured-pickup | Defined | 3.890 | 9.329 | REFINE |
 | [ ] SF-021:008 | `flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/008.webp` | kitsch-recommendations-and-total | Defined | 4.668 | 11.697 | REFINE |
 | [ ] SF-021:009 | `flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/009.webp` | kitsch-pay-processing | Defined | 4.857 | 13.307 | REFINE |
 | [ ] SF-021:010 | `flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/010.webp` | captured-order-confirmation | Defined | 2.912 | 7.745 | REFINE |
@@ -303,14 +303,14 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-032:001 | `flows/1dc39cc8-951e-4207-96a5-296145053e26/001.webp` | bag-description-preview | Defined | 3.726 | 11.514 | REFINE |
-| [ ] SF-032:002 | `flows/1dc39cc8-951e-4207-96a5-296145053e26/002.webp` | shea-full-description-and-ingredients | Defined | 5.648 | 19.272 | REFINE |
+| [ ] SF-032:001 | `flows/1dc39cc8-951e-4207-96a5-296145053e26/001.webp` | bag-description-preview | Defined | 3.567 | 11.254 | REFINE |
+| [ ] SF-032:002 | `flows/1dc39cc8-951e-4207-96a5-296145053e26/002.webp` | shea-full-description-and-ingredients | Defined | 5.641 | 19.380 | REFINE |
 
 ## SF-033 — Reviews (product detail) from Product detail
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-033:001 | `flows/4e59dce2-d2a0-4f4e-ae16-54267243df75/001.webp` | bag-purchase-controls-and-review-preview | Defined | 3.726 | 11.514 | REFINE |
+| [ ] SF-033:001 | `flows/4e59dce2-d2a0-4f4e-ae16-54267243df75/001.webp` | bag-purchase-controls-and-review-preview | Defined | 3.567 | 11.254 | REFINE |
 | [ ] SF-033:002 | `flows/4e59dce2-d2a0-4f4e-ae16-54267243df75/002.webp` | shea-reviews-summary-and-collapsed-reviews | Defined | 4.937 | 11.628 | REFINE |
 
 ## SF-034 — Searching keywords from Reviews (product detail)
@@ -342,36 +342,36 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-037:001 | `flows/6b220d0d-825a-477b-b42f-2e2330f6b8bb/001.webp` | shea-product-detail-top | Defined | 2.428 | 6.443 | REFINE |
-| [ ] SF-037:002 | `flows/6b220d0d-825a-477b-b42f-2e2330f6b8bb/002.webp` | shea-product-more-options | Defined | 1.713 | 4.020 | REFINE |
-| [ ] SF-037:003 | `flows/6b220d0d-825a-477b-b42f-2e2330f6b8bb/003.webp` | kitsch-contact-links-and-address | Defined | 1.902 | 3.953 | REFINE |
+| [ ] SF-037:001 | `flows/6b220d0d-825a-477b-b42f-2e2330f6b8bb/001.webp` | shea-product-detail-top | Defined | 2.308 | 6.307 | REFINE |
+| [ ] SF-037:002 | `flows/6b220d0d-825a-477b-b42f-2e2330f6b8bb/002.webp` | shea-product-more-options | Defined | 1.686 | 3.909 | REFINE |
+| [ ] SF-037:003 | `flows/6b220d0d-825a-477b-b42f-2e2330f6b8bb/003.webp` | kitsch-contact-links-and-address | Defined | 1.874 | 3.841 | REFINE |
 
 ## SF-038 — Reporting a product from Product detail
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-038:001 | `flows/82159116-18bf-4988-9acd-0f1bb1f76a0f/001.webp` | shea-more-options-before-report | Defined | 1.713 | 4.020 | REFINE |
-| [ ] SF-038:002 | `flows/82159116-18bf-4988-9acd-0f1bb1f76a0f/002.webp` | product-report-no-reason | Defined | 1.551 | 2.924 | REFINE |
-| [ ] SF-038:003 | `flows/82159116-18bf-4988-9acd-0f1bb1f76a0f/003.webp` | product-report-other-selected | Defined | 1.583 | 3.016 | REFINE |
-| [ ] SF-038:004 | `flows/82159116-18bf-4988-9acd-0f1bb1f76a0f/004.webp` | product-report-optional-notes-empty | Defined | 1.256 | 2.500 | NUMERICAL CANDIDATE |
-| [ ] SF-038:005 | `flows/82159116-18bf-4988-9acd-0f1bb1f76a0f/005.webp` | product-report-optional-notes-testing | Defined | 1.286 | 2.473 | NUMERICAL CANDIDATE |
-| [ ] SF-038:006 | `flows/82159116-18bf-4988-9acd-0f1bb1f76a0f/006.webp` | store-reported-product-concealed-and-confirmed | Defined | 5.206 | 19.915 | REFINE |
+| [ ] SF-038:001 | `flows/82159116-18bf-4988-9acd-0f1bb1f76a0f/001.webp` | shea-more-options-before-report | Defined | 1.686 | 3.909 | REFINE |
+| [ ] SF-038:002 | `flows/82159116-18bf-4988-9acd-0f1bb1f76a0f/002.webp` | product-report-no-reason | Defined | 1.524 | 2.815 | REFINE |
+| [ ] SF-038:003 | `flows/82159116-18bf-4988-9acd-0f1bb1f76a0f/003.webp` | product-report-other-selected | Defined | 1.556 | 2.906 | REFINE |
+| [ ] SF-038:004 | `flows/82159116-18bf-4988-9acd-0f1bb1f76a0f/004.webp` | product-report-optional-notes-empty | Defined | 1.224 | 2.405 | NUMERICAL CANDIDATE |
+| [ ] SF-038:005 | `flows/82159116-18bf-4988-9acd-0f1bb1f76a0f/005.webp` | product-report-optional-notes-testing | Defined | 1.255 | 2.368 | NUMERICAL CANDIDATE |
+| [ ] SF-038:006 | `flows/82159116-18bf-4988-9acd-0f1bb1f76a0f/006.webp` | store-reported-product-concealed-and-confirmed | Defined | 4.079 | 17.224 | REFINE |
 
 ## SF-039 — Reviews (shop information) from Shop information
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-039:001 | `flows/2d948785-52f0-49dd-985e-4a016ced6ae2/001.webp` | store-information-shop-all-and-review-preview | Defined | 2.430 | 6.897 | REFINE |
-| [ ] SF-039:002 | `flows/2d948785-52f0-49dd-985e-4a016ced6ae2/002.webp` | store-review-list-and-rating-filters | Defined | 4.449 | 12.574 | REFINE |
+| [ ] SF-039:002 | `flows/2d948785-52f0-49dd-985e-4a016ced6ae2/002.webp` | store-review-list-and-rating-filters | Defined | 4.449 | 12.576 | REFINE |
 
 ## SF-040 — Searching products from Shop detail
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-040:001 | `flows/1df75dd0-05f6-445c-9709-0e0bda2df3af/001.webp` | kitsch-default-storefront | Defined | 3.401 | 12.119 | REFINE |
-| [ ] SF-040:002 | `flows/1df75dd0-05f6-445c-9709-0e0bda2df3af/002.webp` | store-search-empty | Defined | 1.831 | 7.608 | REFINE |
+| [ ] SF-040:002 | `flows/1df75dd0-05f6-445c-9709-0e0bda2df3af/002.webp` | store-search-empty | Defined | 1.830 | 7.636 | REFINE |
 | [ ] SF-040:003 | `flows/1df75dd0-05f6-445c-9709-0e0bda2df3af/003.webp` | store-search-shampoo-suggestions | Defined | 2.712 | 8.339 | REFINE |
-| [ ] SF-040:004 | `flows/1df75dd0-05f6-445c-9709-0e0bda2df3af/004.webp` | store-search-shampoo-results | Defined | 3.694 | 14.712 | REFINE |
+| [ ] SF-040:004 | `flows/1df75dd0-05f6-445c-9709-0e0bda2df3af/004.webp` | store-search-shampoo-results | Defined | 3.695 | 14.746 | REFINE |
 
 ## SF-041 — Following a shop from Shop detail
 
@@ -394,7 +394,7 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-043:001 | `flows/52c46d53-6d5f-4c10-964a-f9b0c404203c/001.webp` | home-before-search | Defined | 4.650 | 18.913 | REFINE |
-| [ ] SF-043:002 | `flows/52c46d53-6d5f-4c10-964a-f9b0c404203c/002.webp` | search-with-kitsch-history | Defined | 1.347 | 4.281 | NUMERICAL CANDIDATE |
+| [ ] SF-043:002 | `flows/52c46d53-6d5f-4c10-964a-f9b0c404203c/002.webp` | search-with-kitsch-history | Defined | 1.346 | 4.268 | NUMERICAL CANDIDATE |
 | [ ] SF-043:003 | `flows/52c46d53-6d5f-4c10-964a-f9b0c404203c/003.webp` | search-with-returning-answer-history | Defined | 1.968 | 5.758 | REFINE |
 
 ## SF-044 — Searching Shop from Search
@@ -414,29 +414,29 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-045:001 | `flows/d6910bbb-655d-44ad-842e-11da062a1e66/001.webp` | search-before-photo | Defined | 1.346 | 4.268 | NUMERICAL CANDIDATE |
 | [ ] SF-045:002 | `flows/d6910bbb-655d-44ad-842e-11da062a1e66/002.webp` | add-photo-chooser | Defined | 2.258 | 5.174 | REFINE |
-| [ ] SF-045:003 | `flows/d6910bbb-655d-44ad-842e-11da062a1e66/003.webp` | captured-photo-selected-empty-draft | Defined | 3.848 | 11.004 | REFINE |
+| [ ] SF-045:003 | `flows/d6910bbb-655d-44ad-842e-11da062a1e66/003.webp` | captured-photo-selected-empty-draft | Defined | 3.844 | 10.988 | REFINE |
 | [ ] SF-045:004 | `flows/d6910bbb-655d-44ad-842e-11da062a1e66/004.webp` | captured-photo-with-question | Defined | 1.296 | 3.920 | NUMERICAL CANDIDATE |
-| [ ] SF-045:005 | `flows/d6910bbb-655d-44ad-842e-11da062a1e66/005.webp` | captured-photo-answer | Defined | 6.136 | 16.150 | REFINE |
-| [ ] SF-045:006 | `flows/d6910bbb-655d-44ad-842e-11da062a1e66/006.webp` | photo-answer-steps-expanded | Defined | 5.487 | 13.693 | REFINE |
-| [ ] SF-045:007 | `flows/d6910bbb-655d-44ad-842e-11da062a1e66/007.webp` | photo-answer-comparison-cards | Defined | 6.277 | 15.063 | REFINE |
-| [ ] SF-045:008 | `flows/d6910bbb-655d-44ad-842e-11da062a1e66/008.webp` | photo-answer-preferences-and-feedback | Defined | 4.724 | 12.050 | REFINE |
+| [ ] SF-045:005 | `flows/d6910bbb-655d-44ad-842e-11da062a1e66/005.webp` | captured-photo-answer | Defined | 6.059 | 15.579 | REFINE |
+| [ ] SF-045:006 | `flows/d6910bbb-655d-44ad-842e-11da062a1e66/006.webp` | photo-answer-steps-expanded | Defined | 5.487 | 13.692 | REFINE |
+| [ ] SF-045:007 | `flows/d6910bbb-655d-44ad-842e-11da062a1e66/007.webp` | photo-answer-comparison-cards | Defined | 6.002 | 14.902 | REFINE |
+| [ ] SF-045:008 | `flows/d6910bbb-655d-44ad-842e-11da062a1e66/008.webp` | photo-answer-preferences-and-feedback | Defined | 4.614 | 12.048 | REFINE |
 
 ## SF-046 — Answer detail from Searching Shop
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-046:001 | `flows/8b512345-0d92-4125-b037-4c6f05288cee/001.webp` | jeans-results-before-answer | Defined | 4.525 | 13.111 | REFINE |
-| [ ] SF-046:002 | `flows/8b512345-0d92-4125-b037-4c6f05288cee/002.webp` | jeans-answer-sheet-top | Defined | 5.390 | 16.345 | REFINE |
-| [ ] SF-046:003 | `flows/8b512345-0d92-4125-b037-4c6f05288cee/003.webp` | jeans-answer-sheet-end | Defined | 3.372 | 9.746 | REFINE |
+| [ ] SF-046:002 | `flows/8b512345-0d92-4125-b037-4c6f05288cee/002.webp` | jeans-answer-sheet-top | Defined | 5.390 | 16.346 | REFINE |
+| [ ] SF-046:003 | `flows/8b512345-0d92-4125-b037-4c6f05288cee/003.webp` | jeans-answer-sheet-end | Defined | 3.372 | 9.741 | REFINE |
 
 ## SF-047 — Giving feedback from Answer detail
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-047:001 | `flows/2e218159-702e-4708-b9aa-270dbca77f0b/001.webp` | answer-before-feedback | Defined | 3.372 | 9.741 | REFINE |
-| [ ] SF-047:002 | `flows/2e218159-702e-4708-b9aa-270dbca77f0b/002.webp` | answer-feedback-open | Defined | 2.813 | 10.306 | REFINE |
-| [ ] SF-047:003 | `flows/2e218159-702e-4708-b9aa-270dbca77f0b/003.webp` | answer-product-feedback-selected | Defined | 2.783 | 9.945 | REFINE |
-| [ ] SF-047:004 | `flows/2e218159-702e-4708-b9aa-270dbca77f0b/004.webp` | answer-feedback-note-entered | Defined | 2.943 | 10.238 | REFINE |
+| [ ] SF-047:002 | `flows/2e218159-702e-4708-b9aa-270dbca77f0b/002.webp` | answer-feedback-open | Defined | 2.815 | 10.310 | REFINE |
+| [ ] SF-047:003 | `flows/2e218159-702e-4708-b9aa-270dbca77f0b/003.webp` | answer-product-feedback-selected | Defined | 2.785 | 9.949 | REFINE |
+| [ ] SF-047:004 | `flows/2e218159-702e-4708-b9aa-270dbca77f0b/004.webp` | answer-feedback-note-entered | Defined | 2.945 | 10.244 | REFINE |
 | [ ] SF-047:005 | `flows/2e218159-702e-4708-b9aa-270dbca77f0b/005.webp` | answer-feedback-confirmed-locally | Defined | 3.866 | 10.647 | REFINE |
 
 ## SF-048 — Filtering results from Searching Shop
@@ -446,13 +446,13 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | [ ] SF-048:001 | `flows/0344c453-dece-4e8d-bb54-68f6e551b83f/001.webp` | jeans-results-before-filters | Defined | 4.525 | 13.111 | REFINE |
 | [ ] SF-048:002 | `flows/0344c453-dece-4e8d-bb54-68f6e551b83f/002.webp` | root-search-filter | Defined | 2.267 | 5.449 | REFINE |
 | [ ] SF-048:003 | `flows/0344c453-dece-4e8d-bb54-68f6e551b83f/003.webp` | search-filter-deals-selected | Defined | 2.294 | 5.475 | REFINE |
-| [ ] SF-048:004 | `flows/0344c453-dece-4e8d-bb54-68f6e551b83f/004.webp` | search-filter-sort | Defined | 3.367 | 9.863 | REFINE |
-| [ ] SF-048:005 | `flows/0344c453-dece-4e8d-bb54-68f6e551b83f/005.webp` | search-filter-highest-price | Defined | 3.372 | 8.207 | REFINE |
+| [ ] SF-048:004 | `flows/0344c453-dece-4e8d-bb54-68f6e551b83f/004.webp` | search-filter-sort | Defined | 3.366 | 9.864 | REFINE |
+| [ ] SF-048:005 | `flows/0344c453-dece-4e8d-bb54-68f6e551b83f/005.webp` | search-filter-highest-price | Defined | 3.372 | 8.206 | REFINE |
 | [ ] SF-048:006 | `flows/0344c453-dece-4e8d-bb54-68f6e551b83f/006.webp` | search-filter-sort-returned | Defined | 2.411 | 5.757 | REFINE |
 | [ ] SF-048:007 | `flows/0344c453-dece-4e8d-bb54-68f6e551b83f/007.webp` | search-filter-category | Defined | 2.493 | 7.563 | REFINE |
 | [ ] SF-048:008 | `flows/0344c453-dece-4e8d-bb54-68f6e551b83f/008.webp` | search-filter-women-category | Defined | 2.516 | 5.905 | REFINE |
 | [ ] SF-048:009 | `flows/0344c453-dece-4e8d-bb54-68f6e551b83f/009.webp` | search-filter-pants-selected | Defined | 2.569 | 6.022 | REFINE |
-| [ ] SF-048:010 | `flows/0344c453-dece-4e8d-bb54-68f6e551b83f/010.webp` | filtered-deal-jeans-highest-price-results | Defined | 4.312 | 13.361 | REFINE |
+| [ ] SF-048:010 | `flows/0344c453-dece-4e8d-bb54-68f6e551b83f/010.webp` | filtered-deal-jeans-highest-price-results | Defined | 4.313 | 13.362 | REFINE |
 
 ## SF-049 — Recently viewed from Search
 
@@ -466,8 +466,8 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-050:001 | `flows/5c39eb04-f5fe-43a0-92da-b79b275051e0/001.webp` | home-before-explore | Defined | 4.650 | 18.913 | REFINE |
-| [ ] SF-050:002 | `flows/5c39eb04-f5fe-43a0-92da-b79b275051e0/002.webp` | explore-categories | Defined | 5.369 | 21.766 | REFINE |
-| [ ] SF-050:003 | `flows/5c39eb04-f5fe-43a0-92da-b79b275051e0/003.webp` | explore-minis-and-home-shelf | Defined | 4.483 | 14.022 | REFINE |
+| [ ] SF-050:002 | `flows/5c39eb04-f5fe-43a0-92da-b79b275051e0/002.webp` | explore-categories | Defined | 5.369 | 21.767 | REFINE |
+| [ ] SF-050:003 | `flows/5c39eb04-f5fe-43a0-92da-b79b275051e0/003.webp` | explore-minis-and-home-shelf | Defined | 4.483 | 14.024 | REFINE |
 | [ ] SF-050:004 | `flows/5c39eb04-f5fe-43a0-92da-b79b275051e0/004.webp` | explore-menswear-beauty-womenswear | Defined | 4.625 | 14.835 | REFINE |
 
 ## SF-051 — Category detail from Explore
@@ -475,10 +475,10 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-051:001 | `flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/001.webp` | explore-categories | Defined | 5.369 | 21.767 | REFINE |
-| [ ] SF-051:002 | `flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/002.webp` | beauty-categories-curls-top-rated | Defined | 3.836 | 11.642 | REFINE |
+| [ ] SF-051:002 | `flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/002.webp` | beauty-categories-curls-top-rated | Defined | 3.836 | 11.643 | REFINE |
 | [ ] SF-051:003 | `flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/003.webp` | beauty-new-starter-set | Defined | 4.896 | 18.755 | REFINE |
-| [ ] SF-051:004 | `flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/004.webp` | beauty-scent-and-favorites | Defined | 4.250 | 16.117 | REFINE |
-| [ ] SF-051:005 | `flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp` | beauty-favorites-grid | Defined | 3.568 | 17.728 | REFINE |
+| [ ] SF-051:004 | `flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/004.webp` | beauty-scent-and-favorites | Defined | 4.250 | 16.113 | REFINE |
+| [ ] SF-051:005 | `flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/005.webp` | beauty-favorites-grid | Defined | 3.568 | 17.729 | REFINE |
 | [ ] SF-051:006 | `flows/3fd0a145-a819-409f-a853-c6b03e2e2d27/006.webp` | beauty-sweet-deals-and-nails | Defined | 4.908 | 16.253 | REFINE |
 
 ## SF-052 — Minis from Explore
@@ -487,19 +487,19 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-052:001 | `flows/5fc61632-627a-4875-883e-7cfea2bae666/001.webp` | explore-minis-entry | Defined | 4.483 | 14.022 | REFINE |
 | [ ] SF-052:002 | `flows/5fc61632-627a-4875-883e-7cfea2bae666/002.webp` | minis-sol-card | Defined | 4.205 | 15.256 | REFINE |
-| [ ] SF-052:003 | `flows/5fc61632-627a-4875-883e-7cfea2bae666/003.webp` | minis-sol-recently-viewed | Defined | 3.629 | 13.926 | REFINE |
-| [ ] SF-052:004 | `flows/5fc61632-627a-4875-883e-7cfea2bae666/004.webp` | minis-skincare-card | Defined | 3.334 | 12.966 | REFINE |
-| [ ] SF-052:005 | `flows/5fc61632-627a-4875-883e-7cfea2bae666/005.webp` | minis-look-card-and-skin-history | Defined | 4.034 | 16.329 | REFINE |
-| [ ] SF-052:006 | `flows/5fc61632-627a-4875-883e-7cfea2bae666/006.webp` | minis-gift-card-and-look-history | Defined | 3.670 | 13.231 | REFINE |
+| [ ] SF-052:003 | `flows/5fc61632-627a-4875-883e-7cfea2bae666/003.webp` | minis-sol-recently-viewed | Defined | 3.630 | 13.927 | REFINE |
+| [ ] SF-052:004 | `flows/5fc61632-627a-4875-883e-7cfea2bae666/004.webp` | minis-skincare-card | Defined | 3.334 | 12.963 | REFINE |
+| [ ] SF-052:005 | `flows/5fc61632-627a-4875-883e-7cfea2bae666/005.webp` | minis-look-card-and-skin-history | Defined | 4.034 | 16.325 | REFINE |
+| [ ] SF-052:006 | `flows/5fc61632-627a-4875-883e-7cfea2bae666/006.webp` | minis-gift-card-and-look-history | Defined | 3.685 | 13.229 | REFINE |
 
 ## SF-053 — Setting up a minis from Minis
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-053:001 | `flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/001.webp` | minis-sol-entry | Defined | 4.206 | 15.257 | REFINE |
+| [ ] SF-053:001 | `flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/001.webp` | minis-sol-entry | Defined | 4.205 | 15.256 | REFINE |
 | [ ] SF-053:002 | `flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/002.webp` | sol-mini-access | Defined | 2.695 | 10.065 | REFINE |
 | [ ] SF-053:003 | `flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/003.webp` | sol-welcome | Defined | 4.177 | 30.295 | REFINE |
-| [ ] SF-053:004 | `flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/004.webp` | sol-microphone-permission-preview | Defined | 3.172 | 13.316 | REFINE |
+| [ ] SF-053:004 | `flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/004.webp` | sol-microphone-permission-preview | Defined | 3.173 | 13.316 | REFINE |
 | [ ] SF-053:005 | `flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/005.webp` | sol-connecting | Defined | 0.647 | 1.910 | NUMERICAL CANDIDATE |
 | [ ] SF-053:006 | `flows/2f492f6c-2db7-440b-8515-aa56a2d029e5/006.webp` | sol-greeting | Defined | 1.913 | 2.288 | REFINE |
 
@@ -509,18 +509,18 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-054:001 | `flows/ae7711ef-6c54-4aa1-bb56-bee25cf3bef7/001.webp` | sol-greeting | Defined | 1.913 | 2.287 | REFINE |
 | [ ] SF-054:002 | `flows/ae7711ef-6c54-4aa1-bb56-bee25cf3bef7/002.webp` | sol-sunglasses-response | Defined | 1.438 | 2.371 | NUMERICAL CANDIDATE |
-| [ ] SF-054:003 | `flows/ae7711ef-6c54-4aa1-bb56-bee25cf3bef7/003.webp` | sol-glasses-choices | Defined | 3.093 | 7.450 | REFINE |
+| [ ] SF-054:003 | `flows/ae7711ef-6c54-4aa1-bb56-bee25cf3bef7/003.webp` | sol-glasses-choices | Defined | 3.093 | 7.451 | REFINE |
 | [ ] SF-054:004 | `flows/ae7711ef-6c54-4aa1-bb56-bee25cf3bef7/004.webp` | sol-gold-glasses-selected | Defined | 2.889 | 8.548 | REFINE |
-| [ ] SF-054:005 | `flows/ae7711ef-6c54-4aa1-bb56-bee25cf3bef7/005.webp` | sol-glasses-recommendations | Defined | 2.872 | 8.303 | REFINE |
+| [ ] SF-054:005 | `flows/ae7711ef-6c54-4aa1-bb56-bee25cf3bef7/005.webp` | sol-glasses-recommendations | Defined | 2.873 | 8.300 | REFINE |
 
 ## SF-055 — Chatting with Sol (text) from Chatting with Sol
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-055:001 | `flows/763ecd50-4acd-4a7c-8323-ad622a6df77f/001.webp` | sol-greeting | Defined | 1.913 | 2.287 | REFINE |
-| [ ] SF-055:002 | `flows/763ecd50-4acd-4a7c-8323-ad622a6df77f/002.webp` | sol-text-empty | Defined | 1.111 | 2.775 | NUMERICAL CANDIDATE |
-| [ ] SF-055:003 | `flows/763ecd50-4acd-4a7c-8323-ad622a6df77f/003.webp` | sol-text-cap-draft | Defined | 1.202 | 2.862 | NUMERICAL CANDIDATE |
-| [ ] SF-055:004 | `flows/763ecd50-4acd-4a7c-8323-ad622a6df77f/004.webp` | sol-cap-choices | Defined | 1.822 | 5.975 | REFINE |
+| [ ] SF-055:002 | `flows/763ecd50-4acd-4a7c-8323-ad622a6df77f/002.webp` | sol-text-empty | Defined | 1.111 | 2.776 | NUMERICAL CANDIDATE |
+| [ ] SF-055:003 | `flows/763ecd50-4acd-4a7c-8323-ad622a6df77f/003.webp` | sol-text-cap-draft | Defined | 1.202 | 2.863 | NUMERICAL CANDIDATE |
+| [ ] SF-055:004 | `flows/763ecd50-4acd-4a7c-8323-ad622a6df77f/004.webp` | sol-cap-choices | Defined | 1.823 | 5.978 | REFINE |
 
 ## SF-056 — Turning off microphone from Chatting with Sol
 
@@ -534,10 +534,10 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-057:001 | `flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/001.webp` | minis-skincare-entry | Defined | 3.334 | 12.967 | REFINE |
-| [ ] SF-057:002 | `flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/002.webp` | skincare-welcome | Defined | 5.277 | 9.498 | REFINE |
-| [ ] SF-057:003 | `flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/003.webp` | skincare-camera-permission-preview | Defined | 3.275 | 7.413 | REFINE |
-| [ ] SF-057:004 | `flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/004.webp` | skincare-photo-choice-web-adaptation | Defined | 4.268 | 11.855 | REFINE |
-| [ ] SF-057:005 | `flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/005.webp` | skincare-recorded-analysis | Defined | 3.738 | 7.092 | REFINE |
+| [ ] SF-057:002 | `flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/002.webp` | skincare-welcome | Defined | 1.892 | 3.902 | REFINE |
+| [ ] SF-057:003 | `flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/003.webp` | skincare-camera-permission-preview | Defined | 3.054 | 7.090 | REFINE |
+| [ ] SF-057:004 | `flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/004.webp` | skincare-photo-choice-web-adaptation | Defined | 2.549 | 5.322 | REFINE |
+| [ ] SF-057:005 | `flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/005.webp` | skincare-recorded-analysis | Defined | 2.041 | 3.653 | REFINE |
 | [ ] SF-057:006 | `flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/006.webp` | skincare-recorded-summary | Defined | 4.203 | 10.516 | REFINE |
 | [ ] SF-057:007 | `flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/007.webp` | skincare-cleanser-grid | Defined | 4.662 | 14.342 | REFINE |
 
@@ -545,14 +545,14 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-058:001 | `flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/001.webp` | minis-get-look-entry | Defined | 4.034 | 16.325 | REFINE |
+| [ ] SF-058:001 | `flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/001.webp` | minis-get-look-entry | Defined | 4.034 | 16.327 | REFINE |
 | [ ] SF-058:002 | `flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/002.webp` | get-look-terms-notice | Defined | 4.999 | 9.668 | REFINE |
 | [ ] SF-058:003 | `flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/003.webp` | get-look-welcome | Defined | 4.872 | 8.011 | REFINE |
 | [ ] SF-058:004 | `flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/004.webp` | get-look-photo-choice-web-adaptation | Defined | 4.941 | 11.206 | REFINE |
 | [ ] SF-058:005 | `flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/005.webp` | get-look-recorded-scan | Defined | 3.136 | 6.785 | REFINE |
-| [ ] SF-058:006 | `flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/006.webp` | get-look-outfit-hotspots | Defined | 2.379 | 10.547 | REFINE |
-| [ ] SF-058:007 | `flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/007.webp` | get-look-selected-shirt | Defined | 3.129 | 12.430 | REFINE |
-| [ ] SF-058:008 | `flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp` | get-look-all-matching-pieces | Defined | 4.515 | 14.072 | REFINE |
+| [ ] SF-058:006 | `flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/006.webp` | get-look-outfit-hotspots | Defined | 2.348 | 10.421 | REFINE |
+| [ ] SF-058:007 | `flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/007.webp` | get-look-selected-shirt | Defined | 3.099 | 12.395 | REFINE |
+| [ ] SF-058:008 | `flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp` | get-look-all-matching-pieces | Defined | 4.304 | 13.349 | REFINE |
 
 ## SF-059 — Chatting with Gift Sense from Minis
 
@@ -565,7 +565,7 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | [ ] SF-059:005 | `flows/dc8fb947-e214-4d8c-ad6d-e814406e6ef7/005.webp` | gift-personality-selected | Defined | 3.002 | 11.137 | REFINE |
 | [ ] SF-059:006 | `flows/dc8fb947-e214-4d8c-ad6d-e814406e6ef7/006.webp` | gift-budget-selected-notes-empty | Defined | 2.913 | 10.932 | REFINE |
 | [ ] SF-059:007 | `flows/dc8fb947-e214-4d8c-ad6d-e814406e6ef7/007.webp` | gift-notes-draft | Defined | 3.594 | 11.894 | REFINE |
-| [ ] SF-059:008 | `flows/dc8fb947-e214-4d8c-ad6d-e814406e6ef7/008.webp` | gift-local-profile-consent | Defined | 2.628 | 7.570 | REFINE |
+| [ ] SF-059:008 | `flows/dc8fb947-e214-4d8c-ad6d-e814406e6ef7/008.webp` | gift-local-profile-consent | Defined | 2.629 | 7.571 | REFINE |
 | [ ] SF-059:009 | `flows/dc8fb947-e214-4d8c-ad6d-e814406e6ef7/009.webp` | gift-recorded-finding | Defined | 2.743 | 7.705 | REFINE |
 | [ ] SF-059:010 | `flows/dc8fb947-e214-4d8c-ad6d-e814406e6ef7/010.webp` | gift-results-loading-artwork | Defined | 3.934 | 10.929 | REFINE |
 | [ ] SF-059:011 | `flows/dc8fb947-e214-4d8c-ad6d-e814406e6ef7/011.webp` | gift-results-loaded | Defined | 3.722 | 11.030 | REFINE |
@@ -588,11 +588,11 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | [ ] SF-061:001 | `flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/001.webp` | orders-waiting-before-detail | Defined | 1.268 | 3.317 | NUMERICAL CANDIDATE |
 | [ ] SF-061:002 | `flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/002.webp` | order-detail-waiting | Defined | 4.516 | 16.095 | REFINE |
 | [ ] SF-061:003 | `flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/003.webp` | order-detail-in-transit | Defined | 4.575 | 16.281 | REFINE |
-| [ ] SF-061:004 | `flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/004.webp` | order-detail-delivered | Defined | 4.530 | 16.601 | REFINE |
-| [ ] SF-061:005 | `flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/005.webp` | order-tracking-waiting | Defined | 5.297 | 20.801 | REFINE |
+| [ ] SF-061:004 | `flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/004.webp` | order-detail-delivered | Defined | 4.530 | 16.602 | REFINE |
+| [ ] SF-061:005 | `flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/005.webp` | order-tracking-waiting | Defined | 5.299 | 20.797 | REFINE |
 | [ ] SF-061:006 | `flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/006.webp` | manual-package-label-created | Defined | 3.609 | 12.087 | REFINE |
 | [ ] SF-061:007 | `flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/007.webp` | order-tracking-label-created | Defined | 5.181 | 20.850 | REFINE |
-| [ ] SF-061:008 | `flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/008.webp` | order-tracking-map-in-transit | Defined | 4.597 | 21.755 | REFINE |
+| [ ] SF-061:008 | `flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/008.webp` | order-tracking-map-in-transit | Defined | 4.599 | 21.755 | REFINE |
 | [ ] SF-061:009 | `flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/009.webp` | order-tracking-map-delivered | Defined | 4.809 | 22.494 | REFINE |
 | [ ] SF-061:010 | `flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/010.webp` | order-label-created-delivery-progress | Defined | 4.869 | 13.013 | REFINE |
 | [ ] SF-061:011 | `flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/011.webp` | order-in-transit-delivery-progress | Defined | 4.557 | 14.059 | REFINE |
@@ -602,8 +602,8 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-062:001 | `flows/5dacb846-9f3f-4c7f-9378-d6178924867d/001.webp` | order-detail-before-menu | Defined | 4.520 | 16.142 | REFINE |
-| [ ] SF-062:002 | `flows/5dacb846-9f3f-4c7f-9378-d6178924867d/002.webp` | order-actions | Defined | 2.380 | 6.220 | REFINE |
-| [ ] SF-062:003 | `flows/5dacb846-9f3f-4c7f-9378-d6178924867d/003.webp` | order-number-copied | Defined | 4.768 | 17.263 | REFINE |
+| [ ] SF-062:002 | `flows/5dacb846-9f3f-4c7f-9378-d6178924867d/002.webp` | order-actions | Defined | 2.381 | 6.226 | REFINE |
+| [ ] SF-062:003 | `flows/5dacb846-9f3f-4c7f-9378-d6178924867d/003.webp` | order-number-copied | Defined | 4.773 | 17.310 | REFINE |
 
 ## SF-063 — Marking an order as delivered from Order detail
 
@@ -617,7 +617,7 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-064:001 | `flows/10af411e-3523-4f6a-bb2f-ed4355895f4b/001.webp` | order-delivery-progress-preview | Defined | 4.557 | 14.059 | REFINE |
+| [ ] SF-064:001 | `flows/10af411e-3523-4f6a-bb2f-ed4355895f4b/001.webp` | order-delivery-progress-preview | Defined | 4.559 | 14.074 | REFINE |
 | [ ] SF-064:002 | `flows/10af411e-3523-4f6a-bb2f-ed4355895f4b/002.webp` | delivered-order-full-activity | Defined | 4.612 | 13.775 | REFINE |
 | [ ] SF-064:003 | `flows/10af411e-3523-4f6a-bb2f-ed4355895f4b/003.webp` | full-delivery-activity-earliest-events | Defined | 4.266 | 12.830 | REFINE |
 
@@ -628,7 +628,7 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | [ ] SF-065:001 | `flows/db478544-df8f-4e16-9e16-39a4829975f8/001.webp` | order-delivery-preview-before-edit | Defined | 4.557 | 14.059 | REFINE |
 | [ ] SF-065:002 | `flows/db478544-df8f-4e16-9e16-39a4829975f8/002.webp` | tracking-editor-unchanged | Defined | 1.833 | 3.653 | REFINE |
 | [ ] SF-065:003 | `flows/db478544-df8f-4e16-9e16-39a4829975f8/003.webp` | tracking-editor-name-changed | Defined | 1.985 | 3.886 | REFINE |
-| [ ] SF-065:004 | `flows/db478544-df8f-4e16-9e16-39a4829975f8/004.webp` | tracking-details-saved | Defined | 4.886 | 15.751 | REFINE |
+| [ ] SF-065:004 | `flows/db478544-df8f-4e16-9e16-39a4829975f8/004.webp` | tracking-details-saved | Defined | 4.885 | 15.749 | REFINE |
 
 ## SF-066 — Archived orders from Orders
 
@@ -643,27 +643,27 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-067:001 | `flows/7e196d37-7a35-4e2c-a398-eaae5dcf8f26/001.webp` | orders-before-review | Defined | 2.377 | 7.318 | REFINE |
-| [ ] SF-067:002 | `flows/7e196d37-7a35-4e2c-a398-eaae5dcf8f26/002.webp` | order-review-five-stars | Defined | 2.068 | 3.772 | REFINE |
-| [ ] SF-067:003 | `flows/7e196d37-7a35-4e2c-a398-eaae5dcf8f26/003.webp` | order-review-written | Defined | 2.012 | 3.436 | REFINE |
-| [ ] SF-067:004 | `flows/7e196d37-7a35-4e2c-a398-eaae5dcf8f26/004.webp` | order-review-saved-locally | Defined | 1.949 | 2.770 | REFINE |
+| [ ] SF-067:002 | `flows/7e196d37-7a35-4e2c-a398-eaae5dcf8f26/002.webp` | order-review-five-stars | Defined | 2.068 | 3.781 | REFINE |
+| [ ] SF-067:003 | `flows/7e196d37-7a35-4e2c-a398-eaae5dcf8f26/003.webp` | order-review-written | Defined | 2.012 | 3.448 | REFINE |
+| [ ] SF-067:004 | `flows/7e196d37-7a35-4e2c-a398-eaae5dcf8f26/004.webp` | order-review-saved-locally | Defined | 1.949 | 2.781 | REFINE |
 
 ## SF-068 — Creating an order from Orders
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-068:001 | `flows/bdd3954f-d943-464a-8c57-6621ffba7fa6/001.webp` | orders-before-manual-add | Defined | 2.377 | 7.318 | REFINE |
+| [ ] SF-068:001 | `flows/bdd3954f-d943-464a-8c57-6621ffba7fa6/001.webp` | orders-before-manual-add | Defined | 2.377 | 7.317 | REFINE |
 | [ ] SF-068:002 | `flows/bdd3954f-d943-464a-8c57-6621ffba7fa6/002.webp` | orders-more-options | Defined | 1.819 | 4.176 | REFINE |
 | [ ] SF-068:003 | `flows/bdd3954f-d943-464a-8c57-6621ffba7fa6/003.webp` | manual-order-empty | Defined | 3.217 | 8.458 | REFINE |
 | [ ] SF-068:004 | `flows/bdd3954f-d943-464a-8c57-6621ffba7fa6/004.webp` | manual-order-carrier-search | Defined | 3.982 | 11.677 | REFINE |
 | [ ] SF-068:005 | `flows/bdd3954f-d943-464a-8c57-6621ffba7fa6/005.webp` | manual-order-carrier-selected | Defined | 3.936 | 9.405 | REFINE |
-| [ ] SF-068:006 | `flows/bdd3954f-d943-464a-8c57-6621ffba7fa6/006.webp` | manual-order-added-locally | Defined | 2.228 | 7.062 | REFINE |
+| [ ] SF-068:006 | `flows/bdd3954f-d943-464a-8c57-6621ffba7fa6/006.webp` | manual-order-added-locally | Defined | 2.227 | 7.054 | REFINE |
 
 ## SF-069 — Profile
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-069:001 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/001.webp` | home-kitsch-before-profile | Defined | 2.620 | 10.908 | REFINE |
-| [ ] SF-069:002 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/002.webp` | starter-profile | Defined | 3.953 | 12.767 | REFINE |
+| [ ] SF-069:002 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/002.webp` | starter-profile | Defined | 3.953 | 12.764 | REFINE |
 | [ ] SF-069:003 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/003.webp` | complete-profile-overview | Defined | 3.877 | 13.186 | REFINE |
 | [ ] SF-069:004 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/004.webp` | recent-products-before-wallet | Defined | 3.957 | 13.208 | REFINE |
 | [ ] SF-069:005 | `flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/005.webp` | recent-minis-and-wallet | Defined | 2.986 | 9.980 | REFINE |
@@ -753,8 +753,8 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-079:001 | `flows/36ccec04-834a-4bdb-85e8-8f828c1070be/001.webp` | profile-before-order-history | Defined | 3.877 | 13.186 | REFINE |
-| [ ] SF-079:002 | `flows/36ccec04-834a-4bdb-85e8-8f828c1070be/002.webp` | profile-order-history | Defined | 3.359 | 8.622 | REFINE |
+| [ ] SF-079:001 | `flows/36ccec04-834a-4bdb-85e8-8f828c1070be/001.webp` | profile-before-order-history | Defined | 3.877 | 13.184 | REFINE |
+| [ ] SF-079:002 | `flows/36ccec04-834a-4bdb-85e8-8f828c1070be/002.webp` | profile-order-history | Defined | 3.357 | 8.622 | REFINE |
 
 ## SF-080 — Adding a card (profile) from Profile
 
@@ -828,7 +828,7 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-088:001 | `flows/3d1f4110-721a-44e8-b35d-be4c015a9e03/001.webp` | connections | Defined | 1.788 | 4.668 | REFINE |
-| [ ] SF-088:002 | `flows/3d1f4110-721a-44e8-b35d-be4c015a9e03/002.webp` | choose-connection-provider | Defined | 2.448 | 6.356 | REFINE |
+| [ ] SF-088:002 | `flows/3d1f4110-721a-44e8-b35d-be4c015a9e03/002.webp` | choose-connection-provider | Defined | 2.448 | 6.351 | REFINE |
 | [ ] SF-088:003 | `flows/3d1f4110-721a-44e8-b35d-be4c015a9e03/003.webp` | gmail-connection-introduction | Defined | 1.958 | 4.717 | REFINE |
 
 ## SF-089 — Deleting an account from Profile
@@ -874,7 +874,7 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | [ ] SF-093:001 | `flows/9143aaad-196e-459f-bf7d-6482d8c9f330/001.webp` | profile-sign-out-footer | Defined | 2.074 | 6.608 | REFINE |
 | [ ] SF-093:002 | `flows/9143aaad-196e-459f-bf7d-6482d8c9f330/002.webp` | sign-out-confirmation | Defined | 2.172 | 5.242 | REFINE |
 | [ ] SF-093:003 | `flows/9143aaad-196e-459f-bf7d-6482d8c9f330/003.webp` | signed-out-splash | Defined | 0.411 | 0.934 | NUMERICAL CANDIDATE |
-| [ ] SF-093:004 | `flows/9143aaad-196e-459f-bf7d-6482d8c9f330/004.webp` | signed-out-introduction | Defined | 1.313 | 4.043 | NUMERICAL CANDIDATE |
+| [ ] SF-093:004 | `flows/9143aaad-196e-459f-bf7d-6482d8c9f330/004.webp` | signed-out-introduction | Defined | 1.314 | 4.036 | NUMERICAL CANDIDATE |
 
 ## SF-094 — Logging in
 
@@ -888,7 +888,7 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | [ ] SF-094:006 | `flows/b5716e20-b094-463c-b74b-a5e983dd1651/006.webp` | captured-passkey-introduction | Defined | 2.008 | 4.086 | REFINE |
 | [ ] SF-094:007 | `flows/b5716e20-b094-463c-b74b-a5e983dd1651/007.webp` | captured-sign-in-animation | Defined | 0.890 | 2.235 | NUMERICAL CANDIDATE |
 | [ ] SF-094:008 | `flows/b5716e20-b094-463c-b74b-a5e983dd1651/008.webp` | returning-tracking-introduction | Defined | 1.525 | 4.111 | REFINE |
-| [ ] SF-094:009 | `flows/b5716e20-b094-463c-b74b-a5e983dd1651/009.webp` | returning-home | Defined | 5.536 | 20.463 | REFINE |
+| [ ] SF-094:009 | `flows/b5716e20-b094-463c-b74b-a5e983dd1651/009.webp` | returning-home | Defined | 5.538 | 20.462 | REFINE |
 
 ## SF-095 — Widgets
 
@@ -902,17 +902,17 @@ A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region
 | --- | --- | --- | --- | ---: | ---: | --- |
 | [ ] SF-096:001 | `flows/ea05a60f-ccf7-427a-97b3-9c2bb9a5674c/001.webp` | home-kitsch-campaign-before-store-visit | Defined | 2.620 | 10.908 | REFINE |
 | [ ] SF-096:002 | `flows/ea05a60f-ccf7-427a-97b3-9c2bb9a5674c/002.webp` | kitsch-store-from-campaign | Defined | 3.401 | 12.118 | REFINE |
-| [ ] SF-096:003 | `flows/ea05a60f-ccf7-427a-97b3-9c2bb9a5674c/003.webp` | kitsch-expanded-promotions | Defined | 4.992 | 21.197 | REFINE |
-| [ ] SF-096:004 | `flows/ea05a60f-ccf7-427a-97b3-9c2bb9a5674c/004.webp` | kitsch-returning-recommendations-and-collections | Defined | 5.035 | 21.177 | REFINE |
+| [ ] SF-096:003 | `flows/ea05a60f-ccf7-427a-97b3-9c2bb9a5674c/003.webp` | kitsch-expanded-promotions | Defined | 4.989 | 21.193 | REFINE |
+| [ ] SF-096:004 | `flows/ea05a60f-ccf7-427a-97b3-9c2bb9a5674c/004.webp` | kitsch-returning-recommendations-and-collections | Defined | 5.020 | 21.013 | REFINE |
 | [ ] SF-096:005 | `flows/ea05a60f-ccf7-427a-97b3-9c2bb9a5674c/005.webp` | chemical-guys-products-and-video-rail | Defined | 4.625 | 22.552 | REFINE |
-| [ ] SF-096:006 | `flows/ea05a60f-ccf7-427a-97b3-9c2bb9a5674c/006.webp` | kitsch-pinned-all-products | Defined | 5.564 | 23.832 | REFINE |
+| [ ] SF-096:006 | `flows/ea05a60f-ccf7-427a-97b3-9c2bb9a5674c/006.webp` | kitsch-pinned-all-products | Defined | 3.287 | 15.522 | REFINE |
 
 ## SF-097 — Shop information from Shop detail
 
 | Frame | Source | State | Replay | MAE % | Bad pixels % | Status |
 | --- | --- | --- | --- | ---: | ---: | --- |
-| [ ] SF-097:001 | `flows/069d1098-37bd-4600-85ab-28342cf021ad/001.webp` | kitsch-default-storefront | Defined | 3.401 | 12.119 | REFINE |
-| [ ] SF-097:002 | `flows/069d1098-37bd-4600-85ab-28342cf021ad/002.webp` | store-information-brand-and-categories | Defined | 4.338 | 20.252 | REFINE |
+| [ ] SF-097:001 | `flows/069d1098-37bd-4600-85ab-28342cf021ad/001.webp` | kitsch-default-storefront | Defined | 3.401 | 12.118 | REFINE |
+| [ ] SF-097:002 | `flows/069d1098-37bd-4600-85ab-28342cf021ad/002.webp` | store-information-brand-and-categories | Defined | 4.337 | 20.254 | REFINE |
 | [ ] SF-097:003 | `flows/069d1098-37bd-4600-85ab-28342cf021ad/003.webp` | store-information-shop-all-and-reviews | Defined | 2.430 | 6.897 | REFINE |
 | [ ] SF-097:004 | `flows/069d1098-37bd-4600-85ab-28342cf021ad/004.webp` | store-information-reviews-and-policies | Defined | 3.032 | 8.547 | REFINE |
 | [ ] SF-097:005 | `flows/069d1098-37bd-4600-85ab-28342cf021ad/005.webp` | store-information-policies-contact-and-report | Defined | 4.934 | 20.175 | REFINE |
