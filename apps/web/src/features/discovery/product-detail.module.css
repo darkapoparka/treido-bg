@@ -1,5 +1,8 @@
 /* These metadata-only states share ProductDetail. Explicit specificity keeps
    their geometry stable when the canonical product stylesheet loads later. */
+.detailsOnly.detailsOnly :global(.product-underlay) {
+  background: #fdfdfd;
+}
 .detailsOnly.detailsOnly :global(.product-details) {
   margin-top: 12px;
 }
@@ -92,10 +95,19 @@
   font-weight: 400;
 }
 .detailsOnly.detailsOnly :global(.pdp-purchase-buttons) {
-  margin-top: 28px;
+  margin-top: 29px;
 }
 .detailsOnly.detailsOnly :global(.pdp-purchase-buttons button) {
   font-weight: 500;
+  box-shadow:
+    inset 0 0 0 1px #ffffff1a,
+    0 12px 30px #0000002e;
+}
+.detailsOnly.detailsOnly :global(.pdp-purchase-buttons .primary) {
+  background: linear-gradient(#5034e4, #4b33db);
+  box-shadow:
+    inset 0 0 0 1px #ffffff1a,
+    0 6px 36px #5433eb33;
 }
 .unrecordedReviews {
   margin-top: 40px;

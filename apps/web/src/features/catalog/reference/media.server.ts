@@ -1618,6 +1618,10 @@ const media: Record<
   avatar: { file: "screens/017.webp", rect: [16, 59, 40, 40] },
   parcel: { file: "screens/017.webp", rect: [33, 211, 32, 25] },
   "deal-tag": { file: "screens/059.webp", rect: [31, 611, 31, 33] },
+  "dress-deal-tag": {
+    file: "flows/a99e7161-595d-466c-b0b1-bc1183f1d4d7/005.webp",
+    rect: [33, 252, 32, 33],
+  },
   cleo: { file: "screens/017.webp", rect: [42, 390, 115, 61] },
   "round-sunglasses": { file: "screens/017.webp", rect: [185, 390, 115, 61] },
   "shampoo-bag": { file: "screens/072.webp", rect: [30, 416, 85, 87] },

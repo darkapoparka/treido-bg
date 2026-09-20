@@ -383,7 +383,10 @@ export function ProductDetail({
               className="product-deal"
               onClick={() => setDetail("Offer details")}
             >
-              <img src="/api/reference-media/deal-tag" alt="" />
+              <img
+                src={`/api/reference-media/${product.id === "midi-shirtdress" ? "dress-deal-tag" : "deal-tag"}`}
+                alt=""
+              />
               <span>
                 <strong
                   className={
