@@ -6,7 +6,7 @@ Generated from the frozen manifest and deterministic replay definitions. This is
 
 Evidence run: `20260920-connected-qualified-full`; created 2026-09-20T17:53:50.056Z; source HEAD `b8377ff4ce28942bb8fac6a8a781f7a22abe8322` (the report records the working-tree state). Viewport: 393x793.
 
-Later application **30f336e** has scoped evidence in [the implementation map](shop-implementation-map.md#current-source-checkpoint). This complete ledger is not relabeled as qualification of that later source.
+Later application **fe3d5e6**, including **6b89210** and **30f336e**, has scoped evidence in [the implementation map](shop-implementation-map.md#current-source-checkpoint). This complete ledger is not relabeled as qualification of that later source.
 
 A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region inspection, complete UX coverage, sibling regression checks and owner acceptance are still required. Unchecked entries are not complete.
 

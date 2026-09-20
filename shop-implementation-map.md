@@ -4,11 +4,26 @@ Current checkout/branch policy is owned by [AGENTS.md](AGENTS.md); use [single-s
 
 ## Current source checkpoint
 
-Application checkpoint **30f336e** follows **4bda84e**, test-only **b8377ff** and tracking **46a5e78** in the existing local **main** checkout. It implements the Account/Reviews/Saved/Cart batch below. Preserve later local changes and distinguish scoped evidence from the earlier complete qualification.
+Application checkpoint **fe3d5e6** follows Home/Deals **6b89210** and Account/Reviews/Saved/Cart **30f336e** in the existing local **main** checkout. The new batches implement source-specific Home/Deals geometry, ordinary entry returns, connected collection promotions, Store/PDP navigation and gallery framing, and Cart mutation focus. Preserve later local changes and distinguish scoped evidence from the earlier complete qualification.
 
 The complete ledger is clean **b8377ff** / **20260920-connected-qualified-full**, captured from the immutable **4bda84e** production build on loopback6413: **424/424** frames, zero replay/browser errors, **2.765997% mean MAE**, **8.636994% mean bad pixels**, **57 numerical candidates**, and no >0.15-point regression against complete f77609c. **367 frames exceed at least one threshold; owner acceptance is 0/97.** Exact comparison: .qa/shop-parity/20260920-connected-qualified-comparison.json. Later scoped evidence does not replace this complete run.
 
-### Current Account, Reviews, Saved and Cart implementation
+### Current Home, Deals, Store and PDP implementation
+
+Home preserves the welcome-only DRMTLGY bottle placement; tracking retains its own crop. Deals uses complete merchant marks, source-sized live rings and Save controls aligned to resized photographs. The recent-store promotion excludes only its rounded native pill. Original media, comparison masks and hashes are unchanged. Home shortcuts, notification/email actions, recent headings, Deals categories and Following's Go shopping now restore their actual opener, document position and inner rail.
+
+StoreCollection reuses the canonical promotion with a compact source variant; Best Sellers still omits it. Expansion belongs to the current history entry and survives merchant/PDP excursions and reload. Ordinary StoreInfo, collection, PDP delivery/merchant and Chemical video links own their return position; video Close consumes its actual entry. Opt-in `SourceLink.startAtTop` resets the arrived destination, preserving the source's native scroll entry. Hash navigation and modified clicks retain their semantics. The inline gallery spans the viewport while each selected photograph keeps its 16px inset. Cart mutations move focus with the item or to the empty heading; closing after the original Cart icon disappears uses the existing active-dock fallback. Only disabled Move-to-cart text gets measured grayscale compositing.
+
+| Scope | Exact scoped evidence | Result and limits |
+| --- | --- | --- |
+| Home/Deals/Following 2–6 | `20260920-home-deals-geometry`, 17 frames; flow4 superseded by `20260920-home-deals-geometry-final`; comparison/27 width screenshots in `20260920-home-deals-widths/` | Zero capture errors/material regressions. Deals 3.685→3.555% and 3.760→3.657% MAE. 27 distinct journeys pass across the initial run and three-case rerun; two initial scroll-setup failures retained. Root Browser confirms Home Profile and 320px category focus/rail returns, and inspects 393/320/430 layouts |
+| Store/PDP/Cart 14/15/17/18/21–24/96/97 | `20260920-store-product-return-visual`, superseded14/96 by `20260920-store-promotion-entry-final` and22/23 by `20260920-cart-mutation-focus-final`; exact48-frame precedence in `20260920-store-product-return-comparison.json` | Zero capture errors/material regressions. Gallery 3.762→3.592%, collection 3.781→3.699%; disabled Cart text chromatic pixels338→0. Current-source24/24 journeys in `20260920-store-product-returns-complete/`, plus3/3 existing siblings. Earlier removed-opener expectation, reload timing and popup-event failures retained |
+
+TypeScript, scoped source/test lint, formatting, diff checks and React review pass for both batches. Root Browser verifies gallery controls at320/393/430, Store/Cart at467×853, Chemical Close, destination-top/return-Y1345, and Cart focus. The final frozen-source collection test preserves expansion and merchant focus through Back, then expansion through reload; an earlier HMR-overlapping failure remains recorded. Evidence: `20260920-home-deals-root-browser.json` and `20260920-store-product-root-browser.json`. No full build, units or complete424 capture was repeated. Source swipe displacement, typography/shadows, photo occlusions and unavailable Chemical motion remain open.
+
+Next: implement the audited Skin lower photo/control continuations, standalone/embedded Jeans draft and return ownership, Photo answer ordinary returns, Gift collection identity, and Sol draft restoration. Root has reproduced Jeans, Gift and Sol losses (`20260920-search-mini-root-audit.json`). Then repair Receipt spacing/payment information, source-specific Orders recommendation photos, remaining receipt/recommendation entry returns and checkout thumbnail/rounded-star variants. Continue the remaining source obligations without inferring acceptance.
+
+### Preceding Account, Reviews, Saved and Cart implementation
 
 Account uses the source's compact named-avatar variant, scoped text rendering, correct First/Last-name autofocus and Save return focus. Ordinary Profile/Account/public-collection entries use the existing source-return owner. People birthday Save/Skip now focus the created person's Nickname after sheet cleanup; Cancel and page Back retain their actual opener. Long values remain complete in DOM/editors while ellipsizing inside their source-sized rows/tiles. ProfileChoice uses measured#f9f9f9; nickname/birthday chips and distinct action widths, local Account/Add-card fades, Visa badge variants and the full Add-card helper copy follow the source. Compound card inputs keep a visible group focus border instead of overlapping inner outlines. Payment art and some source text/shadows remain approximate.
 
@@ -23,7 +38,7 @@ Saved collection Back restores its stable tile, page Y and horizontal rail. Cart
 
 Scoped TypeScript, source/test ESLint, formatting and diff checks pass; final helper-copy/CSS finishing gets scoped formatting/lint,8frame comparison and Browser keyboard focus verification. No full build, units or full journey rerun was required. Root Browser records: `20260920-account-profile-browser-verification.json`, `20260920-account-forms-root-browser.json`, `20260920-review-description-root-browser.json`, `20260920-cart-saved-root-browser.json`. All are ignored local evidence; no source/mask/hash/threshold changed.
 
-Next audited implementation is Home/Deals source-specific image/control geometry and ordinary entry returns (root confirms Home Profile Back loses focus), followed by collection promotion, remaining Store/PDP returns and verified gallery viewport geometry. The disabled Cart Move-to-cart label alone has measured colored text fringes; other Cart ink is already grayscale. These gaps remain open, alongside the existing full-source obligations.
+The following Home/Deals and Store/PDP batches above supersede this checkpoint's queued entry, promotion, gallery and disabled Cart-label repairs. Other Cart ink was already grayscale; no blanket text treatment was applied.
 
 ### Preceding connected implementation
 
