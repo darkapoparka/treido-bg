@@ -4063,6 +4063,9 @@ h3 {
 .home-shortcuts .avatar img {
   object-fit: cover;
 }
+.home-shortcuts .avatar:not(:has(img)) {
+  background: #c1c3c4;
+}
 .hidden-shop {
   height: 500px;
   border-radius: 28px;

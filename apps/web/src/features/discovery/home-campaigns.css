@@ -640,6 +640,20 @@
 }
 .campaign-header-photo {
   top: 0;
+  object-fit: cover;
+}
+.campaign-princess .campaign-header-photo {
+  height: 85px;
+}
+.campaign-drmtlgy:not(.campaign-product-grid) .campaign-header-photo,
+.campaign-accessories .campaign-header-photo {
+  height: 67px;
+}
+.campaign-mountain .campaign-header-photo {
+  height: 89px;
+}
+.campaign-kitsch .campaign-header-photo {
+  height: 59px;
 }
 .campaign-product-grid .campaign-header-photo {
   /* Blend the bounded photograph into the campaign tone below its source edge. */

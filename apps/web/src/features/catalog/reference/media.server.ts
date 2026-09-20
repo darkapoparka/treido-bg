@@ -501,11 +501,13 @@ const media: Record<
       [221, 24, 84, 19],
       [316, 28, 22, 10],
     ],
-    textOcclusionDilation: 0.25,
+    textOcclusionMode: "inpaint",
+    textOcclusionDilation: 1.5,
   },
   "home-campaign-princess-wordmark": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
     rect: [31, 215, 162, 25],
+    lightWordmark: true,
   },
   "home-campaign-princess-top": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
@@ -541,17 +543,20 @@ const media: Record<
       [234, 23, 73, 21],
       [316, 28, 22, 10],
     ],
-    textOcclusionDilation: 0.25,
+    textOcclusionMode: "inpaint",
+    textOcclusionDilation: 1.5,
   },
   "home-campaign-drmtlgy-wordmark": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
     rect: [38, 544, 153, 22],
+    lightWordmark: true,
   },
   "home-campaign-drmtlgy-footer": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/004.webp",
     rect: [17, 474, 359, 69],
     darkTextOcclusions: [[13, 21, 108, 30]],
-    textOcclusionDilation: 0.25,
+    textOcclusionMode: "inpaint",
+    textOcclusionDilation: 1.5,
     circularOcclusions: [[327, 37, 18]],
   },
   "home-campaign-drmtlgy-returning-photo": {
@@ -615,7 +620,8 @@ const media: Record<
       [234, 24, 75, 20],
       [316, 28, 22, 10],
     ],
-    textOcclusionDilation: 0.25,
+    textOcclusionMode: "inpaint",
+    textOcclusionDilation: 1.5,
     photoRadius: 27,
   },
   "home-campaign-accessory-cap": {
@@ -678,7 +684,8 @@ const media: Record<
       [65, 17, 166, 40],
       [316, 32, 22, 10],
     ],
-    textOcclusionDilation: 0.25,
+    textOcclusionMode: "inpaint",
+    textOcclusionDilation: 1.5,
     circularOcclusions: [[37, 38, 23]],
   },
   "home-campaign-kitsch-header": {
@@ -689,13 +696,15 @@ const media: Record<
       [219, 23, 95, 20],
       [316, 28, 22, 10],
     ],
-    textOcclusionDilation: 0.25,
+    textOcclusionMode: "inpaint",
+    textOcclusionDilation: 1.5,
   },
   "home-campaign-kitsch-footer": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/006.webp",
     rect: [17, 647, 359, 63],
     lightTextOcclusions: [[13, 18, 108, 29]],
-    textOcclusionDilation: 0.25,
+    textOcclusionMode: "inpaint",
+    textOcclusionDilation: 1.5,
     circularOcclusions: [[327, 33, 18]],
   },
   "recent-kitsch-cover": {
@@ -2091,8 +2100,8 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
             .raw()
             .toBuffer({ resolveWithObject: true });
           // At source scale, a small bounded dilation also removes the captured
-          // glyph's dark antialiasing/shadow. Only alpha changes; no photo pixels
-          // are synthesized and the mask cannot extend beyond the caption bounds.
+          // glyph's dark antialiasing/shadow. Transparent mode changes only alpha;
+          // opt-in inpainting interpolates nearby colors within the caption bounds.
           const inkRadius = Math.max(
             0,
             Math.ceil((entry.textOcclusionDilation ?? 1.5) * scale),
