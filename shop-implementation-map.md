@@ -4,11 +4,23 @@ Current checkout/branch policy is owned by [AGENTS.md](AGENTS.md); use [single-s
 
 ## Current source checkpoint
 
-Application checkpoint **fe3d5e6** follows Home/Deals **6b89210** and Account/Reviews/Saved/Cart **30f336e** in the existing local **main** checkout. The new batches implement source-specific Home/Deals geometry, ordinary entry returns, connected collection promotions, Store/PDP navigation and gallery framing, and Cart mutation focus. Preserve later local changes and distinguish scoped evidence from the earlier complete qualification.
+Application checkpoint **b302d88** follows Store/PDP **fe3d5e6**, Home/Deals **6b89210** and Account/Reviews/Saved/Cart **30f336e** in the existing local **main** checkout. The latest batch connects Search/Mini draft, collection and control behavior. Preserve later local changes and distinguish scoped evidence from the earlier complete qualification.
 
 The complete ledger is clean **b8377ff** / **20260920-connected-qualified-full**, captured from the immutable **4bda84e** production build on loopback6413: **424/424** frames, zero replay/browser errors, **2.765997% mean MAE**, **8.636994% mean bad pixels**, **57 numerical candidates**, and no >0.15-point regression against complete f77609c. **367 frames exceed at least one threshold; owner acceptance is 0/97.** Exact comparison: .qa/shop-parity/20260920-connected-qualified-comparison.json. Later scoped evidence does not replace this complete run.
 
-### Current Home, Deals, Store and PDP implementation
+### Current Search and Mini implementation
+
+Jeans uses separate entry-owned composer/answer drafts, with deliberate shared ownership for the embedded answer. Router-owned entry creation preserves Back/Forward after reload; Close retires only an explicitly owned parent. Standalone/Photo product and merchant links restore actual origins. Sol preserves unsent text through mute/reload and clears only deliberate submissions/restarts. Gift records the created collection ID, derives its saved action from actual membership, and permits one replacement after deletion. No draft enters storage, a server request or a URL.
+
+Skin's lower photo fragments retain visible backgrounds, remove captured controls with bounded backdrop treatment and expose real photo/heart disclosures. Bottom clearance makes hearts reachable above fixed Home at maximum scroll. Captured4½-star/12px variants are explicit; catalog facts are unchanged. Jeans' two visible wide-leg photo entries use its existing unavailable-details sheet; the trailing fragment stays noninteractive. No unavailable product inventory is invented.
+
+Evidence under ignored `.qa/shop-parity/`: `runs/20260920-search-mini-forms` scores49 frames across43–47/55–57/59 with zero errors; override57 with `20260920-search-skin-frozen` and46 with `20260920-jeans-photo-top-final`. Skin007 improves4.106→2.726%,0063.621→3.489%; flow46 remains4.095/5.235/3.363%. New `20260920-search-mini-frozen-checks` passes7/7 and final `20260920-search-router-siblings-final` passes25/25; earlier40/40 in `20260920-search-mini-continuity-siblings` retains unchanged Sol/Gift/Mini coverage. Types, app/test ESLint, Prettier, diff and React review pass. No full build, units or full424 capture rerun.
+
+Root `20260920-search-mini-root-browser.json` verifies fresh standalone/embedded draft returns, exact focus, Sol/Gift reloads, bounded photo actions and Skin320/393/430. `20260920-skin-final-exposed-widths/` verifies actual pointer coordinates at maximum scroll. Initial fixture/Back-count failures, reload/Forward failures in `20260920-search-mini-owned-close-final` and `20260920-search-answer-final-controls`, and rejected photo geometry in `20260920-search-skin-final-controls`/flow46 of `20260920-search-skin-frozen` remain. A long-lived IAB hot-module failure recovered on reload; a later rapid Forward failure was not reproduced by the final separate settled Browser transitions or fresh Chrome predecessor audit (`20260920-forward-predecessor-audit/evidence.json`). Do not merge these into a clean first-pass claim.
+
+Remaining: reloading while away can lose the newest draft held only in the shared document cache; source heart erasure holes scale beyond fixed controls at430, including pre-existing cards. Native typography, narrow-star glyph finishing, bounded/hidden photos and motion remain. Next: Receipt/Orders/checkout recommendations, then shared PDP/review variants, Home accessory hearts and PDP collection creation history. Root confirms native Back/draft/focus gaps in PDP creation and Saved rename; Saved nested stages follow while preserving whole-sheet Cancel semantics. No1:1 acceptance is inferred.
+
+### Preceding Home, Deals, Store and PDP implementation
 
 Home preserves the welcome-only DRMTLGY bottle placement; tracking retains its own crop. Deals uses complete merchant marks, source-sized live rings and Save controls aligned to resized photographs. The recent-store promotion excludes only its rounded native pill. Original media, comparison masks and hashes are unchanged. Home shortcuts, notification/email actions, recent headings, Deals categories and Following's Go shopping now restore their actual opener, document position and inner rail.
 
@@ -21,7 +33,7 @@ StoreCollection reuses the canonical promotion with a compact source variant; Be
 
 TypeScript, scoped source/test lint, formatting, diff checks and React review pass for both batches. Root Browser verifies gallery controls at320/393/430, Store/Cart at467×853, Chemical Close, destination-top/return-Y1345, and Cart focus. The final frozen-source collection test preserves expansion and merchant focus through Back, then expansion through reload; an earlier HMR-overlapping failure remains recorded. Evidence: `20260920-home-deals-root-browser.json` and `20260920-store-product-root-browser.json`. No full build, units or complete424 capture was repeated. Source swipe displacement, typography/shadows, photo occlusions and unavailable Chemical motion remain open.
 
-Next: implement the audited Skin lower photo/control continuations, standalone/embedded Jeans draft and return ownership, Photo answer ordinary returns, Gift collection identity, and Sol draft restoration. Root has reproduced Jeans, Gift and Sol losses (`20260920-search-mini-root-audit.json`). Then repair Receipt spacing/payment information, source-specific Orders recommendation photos, remaining receipt/recommendation entry returns and checkout thumbnail/rounded-star variants. Continue the remaining source obligations without inferring acceptance.
+The following Search/Mini batch above repairs the losses recorded in `20260920-search-mini-root-audit.json`. Receipt/Orders and shared-control work remain queued; continue the remaining source obligations without inferring acceptance.
 
 ### Preceding Account, Reviews, Saved and Cart implementation
 
