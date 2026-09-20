@@ -1,6 +1,15 @@
 .product-page {
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
 }
+/* Match the source's grayscale text edges without changing photo rendering,
+   font metrics or the containing blocks of fixed purchase controls. */
+.product-page .product-heading h1,
+.product-page .product-price,
+.product-page .product-deal > span,
+.product-page .pdp-description :is(h2, p),
+.product-page .pdp-review-preview h2 {
+  opacity: 0.999;
+}
 .product-page .product-heading > .icon-button[aria-pressed="true"] {
   background: var(--color-accent);
   color: white;

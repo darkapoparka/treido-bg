@@ -9,12 +9,10 @@ import {
 import type { Collection } from "./saved-model";
 import { useSavedCollections } from "./saved-history";
 import { useMiniHistory } from "./mini-history";
+import { useCartHistory } from "./cart-history";
+import type { CartLine } from "./cart-model";
 export type { Collection } from "./saved-model";
-export type CartLine = {
-  productId: string;
-  variantId: string;
-  quantity: number;
-};
+export type { CartLine } from "./cart-model";
 export type ViewedItem = {
   kind: "product" | "store";
   id: string;
@@ -137,8 +135,10 @@ export function DiscoveryProvider({
   const [followed, setFollowed] = useState<string[]>(
     () => initial?.followed ?? [],
   );
-  const [cart, setCart] = useState<CartLine[]>(() => initial?.cart ?? []);
-  const [later, setLater] = useState<CartLine[]>(() => initial?.later ?? []);
+  const [{ cart, later }, dispatchCart] = useCartHistory({
+    cart: initial?.cart ?? [],
+    later: initial?.later ?? [],
+  });
   const toggle = (values: string[], id: string) =>
     values.includes(id) ? values.filter((v) => v !== id) : [...values, id];
   return (
@@ -173,75 +173,30 @@ export function DiscoveryProvider({
         cart,
         later,
         removeLater: (id, variantId) =>
-          setLater((v) =>
-            v.filter((x) => x.productId !== id || x.variantId !== variantId),
-          ),
-        moveToCart: (id, variantId, maximum = 99) => {
-          const line = later.find(
-            (x) => x.productId === id && x.variantId === variantId,
-          );
-          if (!line) return;
-          setCart((v) => {
-            const existing = v.find(
-              (x) => x.productId === id && x.variantId === variantId,
-            );
-            return [
-              ...v.filter(
-                (x) => x.productId !== id || x.variantId !== variantId,
-              ),
-              {
-                ...line,
-                quantity: Math.min(
-                  maximum,
-                  line.quantity + (existing?.quantity ?? 0),
-                ),
-              },
-            ];
-          });
-          setLater((v) =>
-            v.filter((x) => x.productId !== id || x.variantId !== variantId),
-          );
-        },
+          dispatchCart({ type: "remove-later", productId: id, variantId }),
+        moveToCart: (id, variantId, maximum = 99) =>
+          dispatchCart({
+            type: "move-to-cart",
+            productId: id,
+            variantId,
+            maximum,
+          }),
         collections,
         toggleSaved: (productId) =>
           dispatchSaved({ type: "toggle-saved", productId }),
         toggleFollow: (id) => setFollowed((v) => toggle(v, id)),
-        add: (line) =>
-          setCart((v) => [
-            ...v.filter(
-              (x) =>
-                x.productId !== line.productId ||
-                x.variantId !== line.variantId,
-            ),
-            line,
-          ]),
+        add: (line) => dispatchCart({ type: "add", line }),
         remove: (id, variantId) =>
-          setCart((v) =>
-            v.filter((x) => x.productId !== id || x.variantId !== variantId),
-          ),
+          dispatchCart({ type: "remove", productId: id, variantId }),
         setQuantity: (id, variantId, quantity) =>
-          setCart((v) =>
-            v.map((x) =>
-              x.productId === id && x.variantId === variantId
-                ? { ...x, quantity: Math.max(1, Math.floor(quantity)) }
-                : x,
-            ),
-          ),
-        saveForLater: (id, variantId) => {
-          const line = cart.find(
-            (x) => x.productId === id && x.variantId === variantId,
-          );
-          if (line)
-            setLater((v) => [
-              ...v.filter(
-                (x) => x.productId !== id || x.variantId !== variantId,
-              ),
-              line,
-            ]);
-          setCart((v) =>
-            v.filter((x) => x.productId !== id || x.variantId !== variantId),
-          );
-        },
+          dispatchCart({
+            type: "quantity",
+            productId: id,
+            variantId,
+            quantity,
+          }),
+        saveForLater: (id, variantId) =>
+          dispatchCart({ type: "save-for-later", productId: id, variantId }),
         createCollection: (name, productIds = []) => {
           const id = crypto.randomUUID();
           dispatchSaved({
