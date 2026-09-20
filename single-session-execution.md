@@ -23,6 +23,22 @@ pnpm --filter @treido/web exec next dev --hostname 127.0.0.1 --port 6412
 
 Use the installed browser channel actually available. `--verify` checks the existing allowlisted media; a failure requires provenance-aware preparation/review, not new expected hashes. Starting this opt-in preview does not authorize any real provider action. Do not reuse an unidentified listener or take over another project's server.
 
+If the local pnpm shim fails, use the already installed runtime; do not reinstall the stack. Verified on2026-09-20: Node24.19 at `C:/Users/radev/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe`, Next16.3.4 at `apps/web/node_modules/next/dist/bin/next`. After confirming6412 is free and no Treido dev/build process owns the same output directory, start persistently from PowerShell:
+
+```powershell
+$env:SHOP_REFERENCE_PREVIEW = '1'
+$env:VERCEL_ENV = 'preview'
+$nodeRuntimeDir = 'C:\Users\radev\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin'
+$env:PATH = $nodeRuntimeDir + ';' + $env:PATH
+Start-Process -FilePath "$nodeRuntimeDir\node.exe" `
+  -ArgumentList 'node_modules/next/dist/bin/next','dev','--hostname','127.0.0.1','--port','6412' `
+  -WorkingDirectory 'J:\treido-bg\apps\web' -WindowStyle Hidden `
+  -RedirectStandardOutput 'J:\treido-bg\.qa\shop-parity\preview.stdout.log' `
+  -RedirectStandardError 'J:\treido-bg\.qa\shop-parity\preview.stderr.log' -PassThru
+```
+
+Use unused log filenames when earlier evidence must be retained. Verify the new listener and a rendered Browser page; do not assume a returned process ID proves readiness. Reuse a healthy existing server. For other commands, invoke installed Node directly against the existing root Playwright/TypeScript/Prettier CLIs. Run source ESLint from `apps/web` so its actual configuration applies. Do not start dev and build in the same output directory concurrently.
+
 In a second terminal with the same runtime and base-URL/browser environment, use the existing commands with the selected family and an honest run identifier:
 
 ```sh
@@ -37,6 +53,8 @@ Run the relevant existing Playwright specs with the reference config. To use the
 
 ## Decide and act
 
+Start with the [shared-component audit map](shop-implementation-map.md#shared-component-audit). For a related family, inspect every source control and variant, map it to its current component/state, and correct the common owner. Compare glyph ink and hit targets separately; include cards, headers, navigation, sheets, fields, selected/loading/disabled states, shadows and photograph boundaries. Preserve source-specific variants rather than adding global overrides from one screenshot. Then traverse the entire family in Browser and inspect sibling consumers. A broad inventory should produce immediate implementation batches, not consume a whole session without code.
+
 Inspect ordered source and live pairs; fix the canonical owner. Exercise actual Back/Forward, overlays, keyboard, focus, scrolling and state persistence. Wait for the target UI state, fonts and decoded images. Verify related sibling states and relevant 320/430 widths before keeping a shared change.
 
 Treat current access/permission failures precisely. Historical failures are dated evidence, not permanent claims that a tool or file is unavailable. Verify current permitted access without evading an actual denial. An unavailable computer is not proof that GitHub access is unavailable.
@@ -46,3 +64,25 @@ Treat current access/permission failures precisely. Historical failures are date
 Run scoped checks, preserve original assertions and diagnostic thresholds, record exact source/run/evidence and update the owning task/flow records. Follow the root commit/synchronization contract and leave unrelated work untouched. Update the current resume note rather than appending another contradictory queue.
 
 The browser/source gate is not payment, native or production acceptance. Missing proof is reported as not run or unresolved. Continue the next useful related work within the current request; do not ask the owner to approve routine component edits.
+
+## New-session prompt
+
+Copy the following into the next session in this same project:
+
+```text
+Continue implementing the ENTIRE frozen Shop buyer mobile-web UI/UX 1:1 in J:\treido-bg. This is implementation work, not another plan or test-only pass. Preserve the current canonical checkout, branch and all local work; no new clone/worktree, framework upgrade, backend/native work, food rebrand or deployment.
+
+Read AGENTS.md, product.md, docs/STATUS.md, Tasks 3/5/6 in tasks.md, then single-session-execution.md and the current checkpoint, shared-component audit map and open obligations in shop-implementation-map.md. Use the relevant parity/frontend/UI-verification skills and installed-version framework guidance. Do not reread the historical documentation library.
+
+Application checkpoint 018df04 includes the latest storefront/cart/Saved, checkout/onboarding/account, Orders/Mini and photo-answer repairs. Verify actual Git state for later changes. Reuse the preview at http://127.0.0.1:6412; if down, use the documented installed-runtime restart and confirm ownership/readiness. Use @Browser for actual mobile inspection at 393x793, then affected 320/430 widths and the reported 467x853 store/cart layout.
+
+All 97 flows / 424 ordered frames have mappings and capture evidence; that is coverage, NOT completed 1:1. The full ledger is clean f77609c / 20260920-mobile-connected-full (53 numerical candidates, 371 requiring refinement). 018df04 has 76 later scoped comparisons. Read actual source/live pairs and final run precedence. 307 standalone images are reconciled; 16 videos have only poster review. Keep motion and named platform/source limitations visible.
+
+Work component-first and flow-by-flow. Scan every visible button/icon/card/field/header/dock/sheet/menu plus selected, disabled, loading and error variants in each source family. Map source frame -> current route/state -> canonical component -> discrepancy -> implementation -> evidence. Fix shared owners once, preserve real source variants, and check their sibling screens. Do not clone screenshot backgrounds with baked controls, invent hidden assets or substitute a nearby product/state. Reuse existing state/actions and complete navigation, Back/Forward, focus, scrolling, keyboard, persistence and cancellation.
+
+Use up to three subagents for independent bounded source/component audits alongside useful main-agent work. Keep one source writer at a time in this checkout, with explicit implementation handoffs. Begin with remaining Orders/manual-order families 60–68 and 79 plus shared control/typography discrepancies, then continue through every family in the existing map. Do not repeatedly polish one card while leaving other families uncertified. If current evidence identifies a more important broken control, fix it first and record why.
+
+Write real code in coherent batches. Visually compare each affected source sequence in Browser, then use existing scoped capture and interaction checks. Run types/lint as appropriate; avoid repeated full-suite/build runs after cosmetic edits. Keep masks, hashes, thresholds and meaningful assertions intact. Do not confuse passing tests or low average pixel error with 1:1.
+
+Update shop-parity-checklist.md with flow-specific implementation/UX/width evidence and remaining exceptions as each family is completed. Keep shop-frame-ledger.md tied to a real complete run; record later scoped evidence in shop-implementation-map.md. Update docs/STATUS.md with exact commits, checks and next unresolved work. Do not create another backlog or mark acceptance on my behalf. Continue safe implementation without routine permission requests. Do not declare the entire app done while visible differences or incomplete app-owned flows remain.
+```

@@ -51,7 +51,7 @@ The active web reconstruction uses isolated reference data through the existing 
 
 Acceptance: source/live pairs, actual family interactions, Back/Forward/focus/scroll, relevant 320/430 containment and scoped types/lint/tests. Keep numeric candidates distinct from owner acceptance.
 
-2026-09-13 checkpoint: all 97 frozen flows / 424 ordered states now have executable recipes. The integrated discovery, store, product, assistant and Mini work is being verified against those existing states; the [current source checkpoint](shop-implementation-map.md#current-source-checkpoint) records completed comparisons and remaining media/catalog differences. Recipe coverage does not close this task's visual acceptance.
+2026-09-20 checkpoint: all 97 frozen flows / 424 ordered states have executable recipes and complete comparison evidence. Application checkpoint `018df04` retains the integrated discovery, store, product, assistant and Mini implementation with later control repairs. Continue using the [shared-component audit](shop-implementation-map.md#shared-component-audit), then verify complete related flow families and record their actual implementation/UX evidence. The [current source checkpoint](shop-implementation-map.md#current-source-checkpoint) distinguishes full and scoped comparisons. Recipe coverage does not close visual acceptance.
 
 ## Task 4 - Build data, identity and catalog
 
@@ -79,7 +79,7 @@ Track **source approval** separately from **real-service verification**. The sou
 
 Task 7 requires the approved source gate; this never waives Tasks 4/5/9/10's real-service acceptance or native requirements.
 
-2026-09-13 checkpoint: the complete 424-state comparison is recorded in the existing frame ledger, with later fitting runs listed in the implementation map. The flow checklist distinguishes inspected sources, exercised app behavior and measured comparisons from owner acceptance. The earlier rejection of 1:1 acceptance remains active.
+2026-09-20 checkpoint: the complete 424-state comparison at `f77609c` is recorded in the existing frame ledger, with 76 later scoped comparisons through `018df04` listed in the implementation map. The flow checklist distinguishes inspected sources, exercised app behavior and measured comparisons from owner acceptance; unchecked implementation/UX entries require flow-specific certification, not blind bulk completion. The earlier rejection of 1:1 acceptance remains active. Resume with the [new-session prompt](single-session-execution.md#new-session-prompt).
 
 ## Task 7 - Adapt the approved frontend to Treido
 

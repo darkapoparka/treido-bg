@@ -2,6 +2,14 @@
 
 Updated 2026-09-20. This is the session entry point, not a second backlog.
 
+## Resume handoff
+
+Current application checkpoint: **018df04** on local **main**, after **dba6636** (storefront/cart/Saved controls) and **f77609c** (checkout/onboarding/connected controls). Preserve this checkout and all subsequent local work. The next session should use the [copyable execution prompt](../single-session-execution.md#new-session-prompt) and [shared-component audit map](../shop-implementation-map.md#shared-component-audit).
+
+The preview was found stopped on2026-09-20: no6412 listener or Treido Node process remained. The cause is unconfirmed. Restarted with installed Node24.19/Next16.3.4, `SHOP_REFERENCE_PREVIEW=1`, `VERCEL_ENV=preview`, loopback6412, hidden persistent process. Observed launcherPID42116/serverPID11960; recheck ownership instead of trusting these PIDs later. Startup reports ready, storefront/media return200, and the in-app Browser renders the mobile storefront. Logs: ignored `.qa/shop-parity/20260920-preview-restart.stdout.log` and `.stderr.log`. The [execution guide](../single-session-execution.md#existing-local-reference-loop) records the installed-runtime fallback because the pnpm shim was broken.
+
+Coverage is broad, fidelity remains unfinished: all97flows/424ordered frames are mapped and compared,307standalone images reconciled and16videos poster-inspected. These are not completed-screen percentages. Full-flow implementation/UX certification, motion, typography/assets and visual acceptance remain open in the existing checklist. Next session must inventory shared control variants, fix canonical owners, then close complete source families with actual mobile navigation; do not repeatedly polish isolated screenshots or substitute test counts for visual inspection.
+
 ## Active repair checkpoint
 
 The full mobile development capture at clean **f77609c**, **20260920-mobile-connected-full**, now covers **424/424** frozen frames: zero replay/browser errors, **2.868717% mean MAE**, **9.008538% mean bad pixels**, and **53 numerical candidates**. No frame regresses more than0.15 MAE points against the preceding complete24b0143 capture. The [frame ledger](../shop-frame-ledger.md) now owns this complete run. **371 frames still exceed a numerical threshold; owner acceptance remains0/97. The entire app is not1:1.**

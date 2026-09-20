@@ -461,6 +461,23 @@ A route hint is not executable coverage. A reproducible definition is not visual
 
 All families remain in scope. Preserve working canonical components and state rather than making disconnected screenshot pages. Captured history jumps belong in explicit named entries with source notes; do not invent a causal UI transition that the source does not show. The catalog/reference adapter and existing account/discovery state own isolated fixtures; preview data is not real commerce.
 
+### Shared-component audit
+
+This is the ownership map for the next systematic control audit, not a claim that every variant has passed. Refine these components before adding another implementation of the same role. Keep genuine source variants explicit. Paths are relative to `apps/web/src/`.
+
+| Visual role | Canonical owner | Audit across source families |
+| --- | --- | --- |
+| Icons, icon buttons, Back/cart/navigation dock | `features/discovery/icons.tsx`, `components.tsx` (`IconButton`, `FloatingNav`), `app/globals.css` | Glyph ink versus target size, centering, count, selected/disabled states and source-specific offsets |
+| Hearts, product/store cards, ratings, collection mosaics | `features/discovery/components.tsx` (`SaveButton`, `ProductCard`, `StoreRow`), `saved-card.tsx`, `reviews.tsx` | Home, Following, Saved, Store, PDP and search; shared saved state, truncation, photograph crop and card variants |
+| Sheets, menus, Close controls and dimming | `features/discovery/components.tsx` (`Sheet`) plus owning feature CSS | Open/close, Back, return focus, keyboard, scroll locking, corners, handle and overlay opacity; no blanket Close sizing from one source |
+| Fields, rows, switches, phone/address/card/date editors | `features/account/forms.tsx`, `account.css`, `settings.css`, `icons.tsx`; `features/commerce/initial-payment.tsx`, `checkout-parity.css` | Account/checkout siblings; values, validation/help, focus, selected state and reachable footer |
+| Cart lines, quantities, offers and checkout actions | `features/commerce/cart.tsx`, `cart-parity.css`, `checkout.tsx` | Empty/filled/later, variant/quantity, reload/history, totals and each continuation entry |
+| Order actions, brand cards, timeline and review controls | `features/commerce/order-presentation.tsx`, `orders.tsx`, `tracking.tsx` | Existing/manual/archived/delivered states; inspect60–68and79next, including every menu/action |
+| Mini chrome and entry/exit controls | `features/discovery/mini-frame.tsx`, `minis.tsx`, `sol.tsx` and scoped CSS | Sol, Skin, Look, Gift; corners, close/Back, access sheets, drafts/history and bottom controls |
+| Search/assistant composers, result/filter controls | `features/discovery/search.tsx`, `assistant.tsx`, `filters.tsx`, `search-entry.module.css`, `search-photo.module.css` | Text/photo answers, edits, saved/history, feedback, filters and source-bounded recommendations |
+
+For each family, attach a compact control inventory to its existing evidence: source frame/region -> live route/state -> component -> target and ink geometry -> default/selected/pressed/disabled/loading variants -> action and return path -> observed discrepancy -> final evidence. Inventory visible unlabeled controls as well as accessibility-tree controls. A DOM button count is not a source audit. Use three independent read-only audits when useful, with one source writer and explicit handoffs in the same checkout. Integrate a bounded related batch, inspect affected siblings, and move through all families rather than indefinitely tuning one card.
+
 ## Historical evidence
 
 The earlier `77efe3e` / `b12796d` implementation, Actions runs, unresolved frame list and historical next step are preserved in the [immutable pre-Astra map](docs/history/pre-astra-2026-09-12/shop-implementation-map.md.txt). Consult that specific record for older evidence; do not repeat its failures as current facts.
