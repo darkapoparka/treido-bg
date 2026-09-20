@@ -47,6 +47,7 @@
 }
 .campaign-princess {
   --campaign-tone: #79605a;
+  height: 309px;
 }
 .campaign-drmtlgy {
   --campaign-tone: #a49889;
@@ -247,6 +248,16 @@
 }
 .campaign-price del {
   opacity: 0.6;
+}
+.home-campaign:not(.campaign-product-grid) .campaign-price {
+  font-size: 11px;
+  /* Composite live captions without Windows LCD color fringes. */
+  opacity: 0.999;
+}
+.campaign-rating,
+.campaign-cta strong,
+.campaign-brand small {
+  opacity: 0.999;
 }
 .campaign-product .save-button {
   width: 32px;
@@ -578,13 +589,13 @@
   grid-template-columns: repeat(3, 1fr);
 }
 @media (max-width: 350px) {
-  .home-returning .email-card > span {
+  .home-page .email-card > span {
     min-width: 0;
   }
-  .home-returning .email-card strong {
+  .home-page .email-card strong {
     white-space: normal;
   }
-  .home-returning .email-card svg {
+  .home-page .email-card svg {
     flex: none;
   }
   .campaign-product-grid .campaign-product {

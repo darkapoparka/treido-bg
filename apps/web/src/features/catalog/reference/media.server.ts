@@ -510,21 +510,28 @@ const media: Record<
   "home-campaign-princess-top": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
     rect: [32, 280, 135, 135],
-    occlusions: [[11, 11, 89, 20]],
-    circularOcclusions: [[107, 107, 17]],
+    roundedOcclusions: [
+      [11, 11, 85, 19, 9.5],
+      [90, 90, 34, 34, 17],
+    ],
+    roundedOcclusionFill: "vertical-gradient",
     photoRadius: 20,
   },
   "home-campaign-princess-dress": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
     rect: [175, 280, 135, 135],
-    occlusions: [[11, 11, 49, 20]],
-    circularOcclusions: [[107, 107, 17]],
+    roundedOcclusions: [
+      [11, 11, 49, 19, 9.5],
+      [90, 90, 34, 34, 17],
+    ],
+    roundedOcclusionFill: "vertical-gradient",
     photoRadius: 20,
   },
   "home-campaign-princess-trailing": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
     rect: [318, 280, 75, 135],
-    occlusions: [[7, 11, 58, 20]],
+    roundedOcclusions: [[11, 11, 49, 19, 9.5]],
+    roundedOcclusionFill: "vertical-gradient",
   },
   "home-campaign-drmtlgy-header": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/001.webp",
@@ -578,21 +585,28 @@ const media: Record<
   "home-campaign-tea-blue": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
     rect: [32, 195, 135, 128],
-    occlusions: [[11, 10, 74, 21]],
-    circularOcclusions: [[107, 100, 17]],
+    roundedOcclusions: [
+      [11, 10, 74, 21, 10.5],
+      [90, 83, 34, 34, 17],
+    ],
+    roundedOcclusionFill: "vertical-gradient",
     photoRadius: 20,
   },
   "home-campaign-tea-orange": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
     rect: [175, 195, 135, 128],
-    occlusions: [[11, 10, 73, 21]],
-    circularOcclusions: [[107, 100, 17]],
+    roundedOcclusions: [
+      [11, 10, 73, 21, 10.5],
+      [90, 83, 34, 34, 17],
+    ],
+    roundedOcclusionFill: "vertical-gradient",
     photoRadius: 20,
   },
   "home-campaign-tea-trailing": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
     rect: [318, 195, 75, 128],
-    occlusions: [[7, 10, 61, 21]],
+    roundedOcclusions: [[7, 10, 61, 21, 10.5]],
+    roundedOcclusionFill: "vertical-gradient",
   },
   "home-campaign-accessories-header": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
@@ -607,21 +621,28 @@ const media: Record<
   "home-campaign-accessory-cap": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
     rect: [32, 506, 135, 135],
-    occlusions: [[11, 11, 86, 21]],
-    circularOcclusions: [[107, 107, 17]],
+    roundedOcclusions: [
+      [11, 11, 86, 21, 10.5],
+      [90, 90, 34, 34, 17],
+    ],
+    roundedOcclusionFill: "vertical-gradient",
     photoRadius: 20,
   },
   "home-campaign-accessory-glasses": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
     rect: [175, 506, 135, 135],
-    occlusions: [[11, 11, 109, 21]],
-    circularOcclusions: [[107, 107, 17]],
+    roundedOcclusions: [
+      [11, 11, 109, 21, 10.5],
+      [90, 90, 34, 34, 17],
+    ],
+    roundedOcclusionFill: "vertical-gradient",
     photoRadius: 20,
   },
   "home-campaign-accessory-trailing": {
     file: "flows/8d7a8acd-de80-444e-93ba-65c61d7b6444/005.webp",
     rect: [318, 506, 75, 135],
-    occlusions: [[7, 11, 68, 21]],
+    roundedOcclusions: [[7, 11, 68, 21, 10.5]],
+    roundedOcclusionFill: "vertical-gradient",
   },
   // Mountain tiles are full-bleed photographs with live controls over them.
   // Price pills and the captured dock region are removed; the corresponding
