@@ -145,6 +145,11 @@ test("flow 78 keeps Account behind the person editor and returns once with the s
   await expect(page.locator("main.profile-editor")).toBeVisible();
   await expect(nickname.locator(".sheet-header")).toHaveCount(0);
   await expect(page.getByRole("textbox", { name: "Nickname" })).toBeFocused();
+  await nickname.getByRole("button", { name: "Cancel", exact: true }).click();
+  await expect(page).toHaveURL(/\/account$/);
+  await expect(addPerson).toBeFocused();
+  await addPerson.click();
+  await expect(page.getByRole("textbox", { name: "Nickname" })).toBeFocused();
 
   await page.getByRole("textbox", { name: "Nickname" }).fill("Sam");
   await nickname.getByRole("button", { name: "Friend" }).click();
@@ -196,6 +201,7 @@ test("flow 78 keeps Account behind the person editor and returns once with the s
   await expect(page.getByRole("textbox", { name: "Nickname" })).toHaveValue(
     "Sam",
   );
+  await expect(page.getByRole("textbox", { name: "Nickname" })).toBeFocused();
   await expect(
     page.getByRole("button", { name: "Relation Friend" }),
   ).toBeVisible();
@@ -205,5 +211,30 @@ test("flow 78 keeps Account behind the person editor and returns once with the s
   await expect(page.getByRole("link", { name: "Sam" })).toBeVisible();
   await expect(
     page.getByRole("link", { name: /Add someone new/ }),
-  ).toBeVisible();
+  ).toBeFocused();
+  const savedPerson = page.locator(".person-chip").filter({ hasText: "Sam" });
+  await savedPerson.click();
+  await expect(page.getByRole("textbox", { name: "Nickname" })).toHaveValue(
+    "Sam",
+  );
+  await page.getByRole("button", { name: "Go back", exact: true }).click();
+  await expect(savedPerson).toBeFocused();
+
+  await page.getByRole("link", { name: /Add someone new/ }).click();
+  await nickname.getByRole("textbox", { name: "Nickname" }).fill("Robin");
+  await nickname.getByRole("button", { name: "Friend" }).click();
+  await nickname.getByRole("button", { name: "Save" }).click();
+  await page
+    .getByRole("dialog", { name: "Add Robin's birthday" })
+    .getByRole("button", { name: "Skip" })
+    .click();
+  await expect(page.getByRole("textbox", { name: "Nickname" })).toHaveValue(
+    "Robin",
+  );
+  await expect(page.getByRole("textbox", { name: "Nickname" })).toBeFocused();
+  await page.goBack();
+  await expect(page).toHaveURL(/\/account$/);
+  await expect(
+    page.getByRole("link", { name: /Add someone new/ }),
+  ).toBeFocused();
 });

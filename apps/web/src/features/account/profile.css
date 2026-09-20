@@ -131,6 +131,20 @@
   text-align: left;
   color: #111;
 }
+.profile-field > span:first-child,
+.profile-field > button,
+.profile-field > input,
+.profile-field .date-fields > input,
+.selected-preferences:not(:has(b)),
+.profile-tiles strong,
+.profile-overview > h2,
+.profile-payment-heading h2,
+.checkout-faster-card > strong,
+.checkout-faster-card > p,
+.profile-empty-orders > span,
+.people-preview h2 {
+  opacity: 0.999;
+}
 .profile-field > input::placeholder {
   color: #999;
   opacity: 1;
@@ -184,7 +198,12 @@
 }
 .profile-editor .profile-field > button:disabled {
   color: #777;
-  opacity: 1;
+  opacity: 0.999;
+}
+.profile-contact-fields .profile-field > button {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .selected-preferences {
   display: flex;
@@ -367,6 +386,7 @@
   margin-left: -124px;
   padding: 10px 20px;
   border-radius: 30px;
+  background: #f9f9f9;
 }
 .profile-choice[open] {
   animation: none !important;
@@ -494,10 +514,28 @@
   border-radius: 22px;
   padding: 8px 16px;
   font-weight: 600;
+  background: #fff;
 }
 .person-editor-sheet .editor-actions {
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
   height: 46px;
+}
+.person-editor-nickname .account-form {
+  gap: 0;
+}
+.person-editor-nickname .nickname-input {
+  margin-bottom: 12px;
+}
+.person-editor-nickname .relationship-chips {
+  margin-bottom: 16px;
+}
+.person-editor-nickname .form-note {
+  margin-bottom: 20px;
+}
+.person-editor-nickname .editor-actions {
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
 }
 .person-editor-sheet .editor-actions > * {
   height: 46px;
@@ -642,6 +680,9 @@
 .public-collections > .account-panel > strong {
   padding-top: 16px;
   font-size: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .public-collections > .account-panel > small {
   padding-bottom: 10px;

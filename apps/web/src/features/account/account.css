@@ -18,6 +18,15 @@
   letter-spacing: -1.1px;
   line-height: 1.12;
 }
+/* Composite text leaves without changing the panels, fields or dock glass. */
+.account-heading h1,
+.account-row > span:not([aria-hidden]),
+.notification-setting > span,
+.identity-row > span > strong,
+.identity-row > span > small,
+.account-control-text {
+  opacity: 0.999;
+}
 .account-page > h2 {
   font-size: 20px;
   margin: 28px 0 14px;
@@ -3527,9 +3536,14 @@
 .card-editor-profile .payment-illustration > b {
   position: absolute;
   z-index: 3;
-  left: 16px;
+  left: 20px;
+  right: auto;
   bottom: 22px;
-  padding: 3px 4px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 16px;
+  padding: 0;
   border-radius: 1px;
   background: white;
   color: #1c2c8c;
@@ -3552,11 +3566,13 @@
   left: auto;
   right: 24px;
   bottom: 24px;
-  padding: 10px 18px;
+  width: 76px;
+  height: 48px;
+  padding: 0;
   border-radius: 10px;
   background: #b2b4e17a;
   color: #1b237d;
-  font-size: 28px;
+  font-size: 24px;
 }
 .card-editor-profile .payment-illustration.entered > span {
   left: 16px;
@@ -3582,6 +3598,12 @@
 }
 .card-editor-profile.has-number .card-inputs {
   border-color: #5433e9;
+}
+.card-editor-profile .card-inputs:focus-within {
+  border-color: #5433e9;
+}
+.card-editor-profile .card-inputs input:focus-visible {
+  outline: none;
 }
 .card-editor-profile .card-inputs label {
   position: relative;
@@ -3610,13 +3632,17 @@
   position: absolute;
   z-index: 2;
   left: 16px;
-  top: 18px;
-  padding: 2px 4px;
+  top: 16px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 24px;
+  padding: 0;
   border: 1px solid #e5e5e5;
   border-radius: 1px;
   background: #fff;
   color: #1d2b8e;
-  font-size: 9px;
+  font-size: 12px;
   font-style: italic;
   font-weight: 700;
 }
@@ -4025,7 +4051,7 @@
   padding-left: 17px;
 }
 .card-editor-profile.valid-card .card-inputs label:first-child::before {
-  left: 20px;
+  left: 16px;
 }
 .card-editor-profile .payment-illustration.valid:not(.entered) > span,
 .card-editor-profile .payment-illustration.entered > span {

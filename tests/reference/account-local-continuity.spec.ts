@@ -94,6 +94,7 @@ test("a saved reference card retains its chosen nondefault billing address", asy
 test("public creation shares the validated collection editor and keeps saved-only photographs", async ({
   page,
 }) => {
+  const collectionName = "Browser local picks and gifts for everyone";
   await useReferenceScenario(page, "saved-library");
   await page.goto("/account/public");
   await page
@@ -111,7 +112,7 @@ test("public creation shares the validated collection editor and keeps saved-onl
   ).toBeDisabled();
   await editor
     .getByRole("textbox", { name: "Collection name", exact: true })
-    .fill("  Local picks  ");
+    .fill(`  ${collectionName}  `);
   await expect(
     editor.getByRole("button", { name: "Public", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
@@ -122,11 +123,35 @@ test("public creation shares the validated collection editor and keeps saved-onl
     .click();
   await page.getByRole("button", { name: "Done", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "Local picks", exact: true }),
+    page.getByRole("heading", { name: collectionName, exact: true }),
   ).toBeVisible();
   await page.goto("/account/public");
-  const cover = page.getByRole("link", { name: "Local picks", exact: true });
+  const cover = page.getByRole("link", { name: collectionName, exact: true });
   await expect(
     cover.locator('img[src="/api/reference-media/saved-pink-partial"]'),
   ).toBeVisible();
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    await expect(cover).toHaveAccessibleName(collectionName);
+    await expect(cover.locator("strong")).toHaveText(collectionName);
+    const bounds = await cover.evaluate((card) => {
+      const title = card.querySelector("strong")!;
+      const rect = title.getBoundingClientRect();
+      return {
+        bottom: rect.bottom,
+        cardBottom: card.getBoundingClientRect().bottom,
+        clipped: title.scrollWidth > title.clientWidth,
+        whiteSpace: getComputedStyle(title).whiteSpace,
+      };
+    });
+    expect(bounds.bottom).toBeLessThanOrEqual(bounds.cardBottom);
+    expect(bounds.clipped).toBe(true);
+    expect(bounds.whiteSpace).toBe("nowrap");
+  }
+  await cover.click();
+  await expect(
+    page.getByRole("heading", { name: collectionName, exact: true }),
+  ).toBeVisible();
+  await page.goBack();
+  await expect(cover).toBeFocused();
 });

@@ -945,6 +945,7 @@
   max-height: calc(100dvh - 68px);
   bottom: 34px;
   padding: 24px 16px 16px;
+  box-shadow: 0 30px 28px -18px #0005;
 }
 .shea-description-sheet .sheet-header {
   height: 24px;
@@ -952,8 +953,11 @@
 }
 .shea-description-sheet .sheet-header h2 {
   line-height: 24px;
+  opacity: 0.999;
 }
 .shea-description-sheet .sheet-copy {
+  color: #404040;
+  opacity: 0.999;
   font-size: 14.5px;
   line-height: 16.8px;
   letter-spacing: 0;

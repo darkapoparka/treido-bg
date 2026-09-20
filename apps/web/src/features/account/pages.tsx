@@ -3,7 +3,7 @@ import { navigateAccountStage } from "./stage-history";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { SourceLink } from "../discovery/return-navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useLayoutEffect, useState, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useDiscovery } from "../discovery/state";
 import { Icon } from "../discovery/icons";
@@ -64,7 +64,11 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
       dockFade
       className={`profile-overview ${starterProfile ? "starter-profile" : "active-profile"}`}
     >
-      <Link className="account-panel identity-row" href="/account">
+      <SourceLink
+        className="account-panel identity-row"
+        href="/account"
+        sourceKey="profile-identity"
+      >
         <ProfileAvatar src={profile.avatar} name={profile.firstName} />
         <span>
           {starterProfile ? (
@@ -77,7 +81,7 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
           )}
         </span>
         <b>›</b>
-      </Link>
+      </SourceLink>
       {starterProfile ? (
         <div className="account-panel checkout-faster-card">
           <strong>Check out faster</strong>
@@ -95,7 +99,10 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
           </Link>
         </div>
       ) : (
-        <Link className="account-panel passkey-row" href="/account/security">
+        <SourceLink
+          className="account-panel passkey-row"
+          href="/account/security"
+        >
           <span className="profile-passkey-mark" aria-hidden="true">
             <AccountIcon name="passkey" />
           </span>
@@ -103,10 +110,14 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
             Add a passkey for fast and secure sign-in on millions of stores
           </strong>
           <b>›</b>
-        </Link>
+        </SourceLink>
       )}
       <div className="profile-tiles">
-        <Link className="account-panel" href="/saved">
+        <SourceLink
+          className="account-panel"
+          href="/saved"
+          sourceKey="profile-saved"
+        >
           <div className="tile-images">
             {starterProfile ? (
               <span className="starter-saved-icon" aria-hidden="true">
@@ -120,8 +131,12 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
             )}
           </div>
           <strong>Saved</strong>
-        </Link>
-        <Link className="account-panel" href="/following">
+        </SourceLink>
+        <SourceLink
+          className="account-panel"
+          href="/following"
+          sourceKey="profile-following"
+        >
           <div className="tile-images">
             {starterProfile ? (
               <span className="starter-following-logos" aria-hidden="true">
@@ -144,7 +159,7 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
             )}
           </div>
           <strong>Following</strong>
-        </Link>
+        </SourceLink>
       </div>
       <h2 className="profile-order-heading">
         {!hasOrders ? (
@@ -173,9 +188,9 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
                 here
               </small>
             </span>
-            <Link className="pill" href="/account/connections">
+            <SourceLink className="pill" href="/account/connections">
               Connect accounts
-            </Link>
+            </SourceLink>
           </div>
         ) : (
           <>
@@ -286,7 +301,7 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
               <Link href="https://shop.app/terms-of-service">
                 Terms and conditions
               </Link>
-              <Link href="/about">Licenses</Link>
+              <SourceLink href="/about">Licenses</SourceLink>
             </p>
             <p className="profile-powered">
               Powered by{" "}
@@ -337,9 +352,9 @@ export function EmailConnection() {
           <button className="pill" onClick={() => setDismissed(true)}>
             Dismiss
           </button>
-          <Link className="black-button" href="/account/connections">
+          <SourceLink className="black-button" href="/account/connections">
             Connect
-          </Link>
+          </SourceLink>
         </div>
       </div>
     )
@@ -357,6 +372,24 @@ export function AccountDetails() {
   const [photo, setPhoto] = useState(false);
   const [phoneStage, setPhoneStage] = useState<"phone" | "code">("phone");
   const [phoneSession, setPhoneSession] = useState(0);
+  const contactFields = useRef<HTMLDivElement>(null);
+  const pendingFieldReturn = useRef<keyof Profile | null>(null);
+  useLayoutEffect(() => {
+    if (field === "birthday") {
+      contactFields.current
+        ?.querySelector<HTMLInputElement>(
+          '[data-account-field="birthday"] input',
+        )
+        ?.focus({ preventScroll: true });
+    } else if (field === null && pendingFieldReturn.current) {
+      contactFields.current
+        ?.querySelector<HTMLButtonElement>(
+          `[data-account-field="${pendingFieldReturn.current}"] > button`,
+        )
+        ?.focus({ preventScroll: true });
+      pendingFieldReturn.current = null;
+    }
+  }, [field]);
   const fields = [
     ["firstName", "First name"],
     ["lastName", "Last name"],
@@ -375,6 +408,7 @@ export function AccountDetails() {
   return (
     <AccountPage
       className="profile-editor"
+      dockFade
       action={
         field && field !== "phone" && field !== "gender" ? (
           <button
@@ -392,6 +426,7 @@ export function AccountDetails() {
               } else if (field === "birthday") {
                 updateProfile({ birthday: draft.birthday });
               }
+              pendingFieldReturn.current = field;
               setField(null);
             }}
           >
@@ -413,13 +448,16 @@ export function AccountDetails() {
         >
           <Icon name="edit" />
         </button>
-        <Link className="pill" href="/account/public">
+        <SourceLink className="pill" href="/account/public">
           View public profile
-        </Link>
+        </SourceLink>
       </div>
-      <div className="account-panel field-panel profile-contact-fields">
+      <div
+        ref={contactFields}
+        className="account-panel field-panel profile-contact-fields"
+      >
         {fields.map(([key, label]) => (
-          <div className="profile-field" key={key}>
+          <div className="profile-field" data-account-field={key} key={key}>
             <span>{label}</span>
             {((editingName && (key === "firstName" || key === "lastName")) ||
               field === key) &&
@@ -435,7 +473,7 @@ export function AccountDetails() {
                 />
               ) : (
                 <input
-                  autoFocus
+                  autoFocus={field === key}
                   aria-label={label}
                   type="text"
                   value={draft[key]}
@@ -495,23 +533,25 @@ export function AccountDetails() {
       <div className="account-panel people-preview">
         <h2>Others you shop for</h2>
         {people.map((p) => (
-          <Link
+          <SourceLink
             className="person-chip"
             href={`/account/people?view=profile&id=${p.id}&return=account`}
             key={p.id}
+            sourceKey={`account-person-${p.id}`}
           >
             <ProfileAvatar src={p.avatar} name={p.name} initial />
             {p.name}
-          </Link>
+          </SourceLink>
         ))}
-        <Link
+        <SourceLink
           className="add-person-tile"
           href="/account/people?view=nickname&new=1&return=account"
           scroll={false}
+          sourceKey="account-add-person"
         >
           <span>+</span>
           {people.length ? "Add someone new" : "Add someone"}
-        </Link>
+        </SourceLink>
       </div>
       <Sheet
         open={field === "phone"}
@@ -582,9 +622,13 @@ export function PublicProfile({ catalog }: { catalog: Catalog }) {
       <div className="public-profile">
         <ProfileAvatar src={profile.avatar} name={profile.firstName} large />
         {!!publicCollections.length && <h1>{profile.firstName}</h1>}
-        <Link className="pill" href="/account">
+        <SourceLink
+          className="pill"
+          href="/account"
+          sourceKey="public-edit-profile"
+        >
           Edit profile
-        </Link>
+        </SourceLink>
         {!publicCollections.length && (
           <div className="public-hidden">
             <svg
@@ -612,16 +656,17 @@ export function PublicProfile({ catalog }: { catalog: Catalog }) {
             >
               Create public collection
             </button>
-            <Link href="/support/help">Learn more</Link>
+            <SourceLink href="/support/help">Learn more</SourceLink>
           </div>
         )}
       </div>
       <div className="public-collections">
         {publicCollections.map((c) => (
-          <Link
+          <SourceLink
             className="account-panel"
             href={`/saved?collection=${c.id}`}
             key={c.id}
+            sourceKey={`public-collection-${c.id}`}
           >
             <div className="collection-cover">
               {c.productIds.slice(0, 4).map((id) => {
@@ -632,7 +677,7 @@ export function PublicProfile({ catalog }: { catalog: Catalog }) {
               })}
             </div>
             <strong>{c.name}</strong>
-          </Link>
+          </SourceLink>
         ))}
       </div>
       <Boundary
@@ -694,15 +739,18 @@ export function PeoplePage() {
   const editingPerson = stage === "nickname" || stage === "birthday";
   const showAccountBackground = returnToAccount && editingPerson;
   const wasEditingPerson = useRef(editingPerson);
+  const profileNickname = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const enteringProfile = wasEditingPerson.current && stage === "profile";
     wasEditingPerson.current = editingPerson;
     if (!enteringProfile) return;
-    // Let the dismissed sheet restore/unlock the document before positioning
-    // the new profile. Do not reset scroll when closing its photo menu.
-    const frame = requestAnimationFrame(() =>
-      window.scrollTo({ top: 0, behavior: "instant" }),
-    );
+    // Completion replaces the sheet's opener. After it restores/unlocks the
+    // document, position and focus the new profile rather than its dock.
+    // Closing the profile's own menus must keep their existing return owner.
+    const frame = requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: "instant" });
+      profileNickname.current?.focus({ preventScroll: true });
+    });
     return () => cancelAnimationFrame(frame);
   }, [editingPerson, stage]);
   const [personChoice, setPersonChoice] = useState<
@@ -767,6 +815,7 @@ export function PeoplePage() {
               </button>
             </div>
             <input
+              ref={profileNickname}
               aria-label="Nickname"
               value={person.name}
               onChange={(e) => {
@@ -969,7 +1018,7 @@ export function PeoplePage() {
                       key={r}
                       onClick={() => setPerson({ ...person, relation: r })}
                     >
-                      {r}
+                      <span className="account-control-text">{r}</span>
                     </button>
                   ))}
                 </div>
@@ -999,7 +1048,9 @@ export function PeoplePage() {
                   stage === "birthday" ? save(true) : setStage("list")
                 }
               >
-                {stage === "birthday" ? "Skip" : "Cancel"}
+                <span className="account-control-text">
+                  {stage === "birthday" ? "Skip" : "Cancel"}
+                </span>
               </button>
               <button
                 className="primary form-submit"
@@ -1009,7 +1060,7 @@ export function PeoplePage() {
                     (!person.birthday || !validBirthday(person.birthday)))
                 }
               >
-                Save
+                <span className="account-control-text">Save</span>
               </button>
             </div>
           </form>
@@ -1167,6 +1218,7 @@ export function PaymentsPage() {
             : "payment-detail-page payment-card-detail-page"
       }
       onBack={view !== "list" ? backFromSubpage : undefined}
+      dockFade={view === "add"}
       title={
         view === "add"
           ? "Add card"
@@ -1318,7 +1370,11 @@ export function SecurityPage() {
             </span>
             <span aria-hidden="true">›</span>
           </Link>
-          <Link className="security-detail-row" href="/account">
+          <SourceLink
+            className="security-detail-row"
+            href="/account"
+            sourceKey="security-profile-name"
+          >
             <span>
               <small>Name</small>
               <strong>
@@ -1326,7 +1382,7 @@ export function SecurityPage() {
               </strong>
             </span>
             <span aria-hidden="true">›</span>
-          </Link>
+          </SourceLink>
         </div>
       ) : (
         <>

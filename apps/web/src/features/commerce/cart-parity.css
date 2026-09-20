@@ -272,6 +272,24 @@
   width: 20px;
   height: 20px;
 }
+.dark-cart-sheet::after {
+  content: "";
+  position: fixed;
+  inset: auto 0 0;
+  height: 100px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    transparent 7%,
+    #ffffff01 27%,
+    #ffffff03 37%,
+    #ffffff05 47%,
+    #ffffff09 57%,
+    #ffffff0d 67%,
+    #ffffff11 77%,
+    #ffffff13 87%
+  );
+}
 .product-page.cart-visible {
   background: #000;
 }

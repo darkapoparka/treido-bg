@@ -126,7 +126,7 @@ export function Preferences({ personId }: { personId?: string }) {
                       {swatch && (
                         <i aria-hidden="true" style={{ background: swatch }} />
                       )}
-                      {value}
+                      <span className="account-control-text">{value}</span>
                     </b>
                   );
                 })
@@ -156,7 +156,11 @@ export function Preferences({ personId }: { personId?: string }) {
                   })
                 }
               >
-                {colors ? "" : option}
+                {colors ? (
+                  ""
+                ) : (
+                  <span className="account-control-text">{option}</span>
+                )}
               </button>
             ))}
           </div>
@@ -194,9 +198,11 @@ export function Preferences({ personId }: { personId?: string }) {
                     ? choices[choiceKey(field)]?.[0]
                     : profile[field]) ? (
                     <b>
-                      {personId
-                        ? choices[choiceKey(field)]?.[0]
-                        : profile[field]}
+                      <span className="account-control-text">
+                        {personId
+                          ? choices[choiceKey(field)]?.[0]
+                          : profile[field]}
+                      </span>
                     </b>
                   ) : expanded === key ? null : (
                     `Add ${label.toLowerCase()}`
@@ -230,7 +236,7 @@ export function Preferences({ personId }: { personId?: string }) {
                           : updateProfile({ [field]: option })
                       }
                     >
-                      {option}
+                      <span className="account-control-text">{option}</span>
                     </button>
                   ))}
                 </div>

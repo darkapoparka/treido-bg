@@ -1,6 +1,8 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import type { ReactNode } from "react";
+import { SourceLink } from "../discovery/return-navigation";
 import { useAccount } from "../account/state";
 import { Icon } from "../discovery/icons";
 import { useDiscovery } from "../discovery/state";
@@ -8,11 +10,11 @@ import { formatMoney, type Catalog } from "../catalog/types";
 import { capturedLineAmount } from "./pricing";
 export function CartContents({
   catalog,
-  onContinue,
+  onNavigate,
   onOffer,
 }: {
   catalog: Catalog;
-  onContinue?: () => void;
+  onNavigate?: (href: string) => void;
   onOffer?: (id: string) => void;
 }) {
   const state = useDiscovery();
@@ -51,7 +53,7 @@ export function CartContents({
             <br />
             they’ll be ready for checkout later.
           </p>
-          {!onContinue && (
+          {!onNavigate && (
             <Link className="primary form-submit" href="/search">
               Go shopping
             </Link>
@@ -105,9 +107,12 @@ export function CartContents({
                   )}
                   <div>
                     <div className="cart-line-title">
-                      <Link href={`/products/${l.productId}`}>
+                      <CartNavigationLink
+                        href={`/products/${l.productId}`}
+                        onNavigate={onNavigate}
+                      >
                         <strong>{l.product.title}</strong>
-                      </Link>
+                      </CartNavigationLink>
                       <span>
                         {formatMoney({
                           ...l.product.price,
@@ -200,13 +205,13 @@ export function CartContents({
                 </strong>
               </div>
               {store ? (
-                <Link
-                  onClick={onContinue}
+                <CartNavigationLink
+                  onNavigate={onNavigate}
                   className="primary form-submit"
                   href={`/checkout?store=${encodeURIComponent(storeId)}${hasPaymentProfile ? "" : "&stage=phone"}`}
                 >
                   Continue to checkout
-                </Link>
+                </CartNavigationLink>
               ) : (
                 <p className="form-note">
                   Checkout details were not captured for this item. Nothing will
@@ -292,5 +297,37 @@ export function CartContents({
         </section>
       )}
     </>
+  );
+}
+
+function CartNavigationLink({
+  href,
+  className,
+  onNavigate,
+  children,
+}: {
+  href: string;
+  className?: string;
+  onNavigate?: (href: string) => void;
+  children: ReactNode;
+}) {
+  if (!onNavigate)
+    return (
+      <SourceLink href={href} className={className}>
+        {children}
+      </SourceLink>
+    );
+  return (
+    <Link
+      href={href}
+      className={className}
+      onClick={(event) => {
+        // Sheet owns ordinary internal navigation in capture. Modified clicks
+        // keep the current cart and source history intact.
+        if (event.defaultPrevented) onNavigate(href);
+      }}
+    >
+      {children}
+    </Link>
   );
 }

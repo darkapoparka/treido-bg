@@ -3,11 +3,15 @@ import { ShopSurface } from "../discovery/hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { formatMoney, type Catalog } from "../catalog/types";
 import { useDiscovery } from "../discovery/state";
 import { consumeSheetHistory, Sheet } from "../discovery/components";
 import { Icon } from "../discovery/icons";
+import {
+  bindSourceDestination,
+  rememberSourcePosition,
+} from "../discovery/return-navigation";
 import { AccountIcon } from "../account/icons";
 import { AccountPage, PaymentEditor } from "../account/forms";
 import {
@@ -71,8 +75,62 @@ export function CartOverlay({
   onClose: () => void;
 }) {
   const [offer, setOffer] = useState("");
+  const sourceOrigin = useRef<{ href: string; token: string | null } | null>(
+    null,
+  );
+  const recordedOpen = useRef(false);
+  useLayoutEffect(() => {
+    if (!open) {
+      recordedOpen.current = false;
+      return;
+    }
+    if (recordedOpen.current) return;
+    recordedOpen.current = true;
+    const opener = document.activeElement;
+    const selector = '[data-focus-return="cart"]';
+    sourceOrigin.current = {
+      href: location.href,
+      token:
+        opener instanceof HTMLElement && opener.matches(selector)
+          ? rememberSourcePosition(
+              selector,
+              [...document.querySelectorAll(selector)].indexOf(opener),
+            )
+          : null,
+    };
+  }, [open]);
   return (
-    <>
+    <div
+      style={{ display: "contents" }}
+      onClickCapture={(event) => {
+        if (
+          event.button !== 0 ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey
+        )
+          return;
+        const link =
+          event.target instanceof Element
+            ? event.target.closest<HTMLAnchorElement>("a[href]")
+            : null;
+        if (
+          !link?.closest("dialog.dark-cart-sheet[open]") ||
+          link.target === "_blank" ||
+          link.hasAttribute("download") ||
+          link.href !== sourceOrigin.current?.href
+        )
+          return;
+        // Returning to the exact page already beneath this cart is dismissal.
+        // Intercept before Sheet would replace its temporary entry with a
+        // duplicate of the same product, including its query and fragment.
+        event.preventDefault();
+        event.stopPropagation();
+        if (window.history.state?.shopSheet) window.history.back();
+        else onClose();
+      }}
+    >
       <Sheet
         open={open}
         title="Your cart"
@@ -82,7 +140,11 @@ export function CartOverlay({
       >
         <CartContents
           catalog={catalog}
-          onContinue={onClose}
+          onNavigate={(href) => {
+            if (sourceOrigin.current?.token)
+              bindSourceDestination(sourceOrigin.current.token, href);
+            onClose();
+          }}
           onOffer={setOffer}
         />
         <button
@@ -99,7 +161,7 @@ export function CartOverlay({
         open={Boolean(offer)}
         onClose={() => setOffer("")}
       />
-    </>
+    </div>
   );
 }
 

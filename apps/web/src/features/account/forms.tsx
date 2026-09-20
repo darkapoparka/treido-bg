@@ -631,7 +631,7 @@ export function PaymentEditor({
         )}
         {!checkout && !initialCard && (
           <p className="form-note centered">
-            Add a card to save for future checkouts
+            Add a card to save for all future checkouts
           </p>
         )}
         {checkout && (

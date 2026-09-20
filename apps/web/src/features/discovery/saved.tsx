@@ -2,7 +2,11 @@
 import { ShopSurface } from "./hydration-boundary";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { SourceLink } from "./return-navigation";
+import {
+  SourceLink,
+  rememberSourcePosition,
+  restoreSourcePosition,
+} from "./return-navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import "./saved.css";
 import { KitschWordmark } from "./kitsch-wordmark";
@@ -219,6 +223,12 @@ export function Saved({ catalog }: { catalog: Catalog }) {
   useEffect(() => {
     if (editing) editorRef.current?.focus({ preventScroll: true });
   }, [editing]);
+  useEffect(() => {
+    if (selected || addMode) return;
+    const id = window.history.state?.shopSavedCollectionReturn;
+    if (typeof id === "string")
+      restoreSourcePosition(`[data-saved-collection="${CSS.escape(id)}"]`);
+  }, [selected, addMode]);
   return (
     <ShopSurface
       className={`shop-page saved-page saved-library ${collection ? "saved-collection" : ""} ${addMode ? "saved-selection" : ""}`}
@@ -294,8 +304,23 @@ export function Saved({ catalog }: { catalog: Catalog }) {
                   {state.collections.map((item) => (
                     <button
                       className="collection-tile"
+                      data-saved-collection={item.id}
                       key={item.id}
-                      onClick={() => navigate(item.id)}
+                      onClick={() => {
+                        window.history.replaceState(
+                          {
+                            ...window.history.state,
+                            shopSavedCollectionReturn: item.id,
+                          },
+                          "",
+                          location.href,
+                        );
+                        rememberSourcePosition(
+                          `[data-saved-collection="${CSS.escape(item.id)}"]`,
+                        );
+                        navigate(item.id);
+                        window.scrollTo({ top: 0, behavior: "instant" });
+                      }}
                     >
                       <div>
                         {fromIds(item.productIds)

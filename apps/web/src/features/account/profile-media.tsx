@@ -23,6 +23,11 @@ export function ProfileAvatar({
         <img src={src} alt="Selected profile picture" />
       ) : initial ? (
         name.charAt(0)
+      ) : name ? (
+        <svg viewBox="0 0 96 96" aria-hidden="true">
+          <circle cx="48" cy="37" r="9" />
+          <path d="M31 64c0-9.4 7.6-17 17-17s17 7.6 17 17v2H31Z" />
+        </svg>
       ) : (
         <svg viewBox="0 0 96 96" aria-hidden="true">
           <circle cx="48" cy="37" r="14" />

@@ -94,7 +94,7 @@
 }
 
 .reviews-page .review-search input::placeholder {
-  color: #b9bcbc;
+  color: #929496;
   opacity: 1;
 }
 .reviews-page .helpful-count {
@@ -120,10 +120,19 @@
 /* Composite text separately to match the source's grayscale edges without
    changing font metrics or compositing product photographs. */
 .reviews-page :is(h1, h2, p, .review-author, .review-variant, .read-more),
+.reviews-page .review-summary > div > strong,
+.reviews-page .rating-bars > div > span,
+.reviews-page .review-search input,
+.reviews-page .review-helpful,
 .store-reviews > .section-heading h1,
 .store-review-summary :is(b, small),
 .store-review-product :is(h2, small),
 .store-review-list article > p,
-.store-reviews .review-author {
+.store-reviews .review-author,
+.store-reviews .review-helpful,
+.store-reviews .category-rail .pill,
+.review-report-reasons .sheet-actions > button,
+.review-report-reasons .sheet-actions .primary:disabled,
+.review-report-close {
   opacity: 0.999;
 }
