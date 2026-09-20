@@ -203,7 +203,7 @@
   line-height: 12px;
 }
 .skinResults.skinResults {
-  padding: 20px 16px 46px;
+  padding: 20px 16px 140px;
   overflow: hidden;
   border-radius: 28px 28px 0 0;
   background: #fffcf9;
@@ -311,8 +311,34 @@
   line-height: 18px;
   color: #000;
 }
+.skinResults :global(.product-copy > .rating > .review-rating-stars) {
+  --review-star-size: 12px;
+  transform: translateY(3px);
+}
 .skinResults :global(.skin-partial-grid) {
-  margin-top: 24px;
+  margin-top: 27px;
+}
+.skinResults .skinPartialCard {
+  position: relative;
+  height: auto;
+  aspect-ratio: 1;
+  background: transparent;
+}
+.skinPartialPhoto {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.skinResults .skinPartialPhoto img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.skinPartialCard :global(.save-button) {
+  right: 12px;
+  bottom: 12px;
 }
 .skinHome {
   position: fixed;

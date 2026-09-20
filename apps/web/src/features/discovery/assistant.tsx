@@ -12,7 +12,7 @@ import { Icon } from "./icons";
 import { ReviewStars } from "./review-feedback";
 import { capturedCapQuestion } from "./search-model";
 import { useSearchDraft } from "./search-draft";
-import { ContextualCloseLink } from "./return-navigation";
+import { ContextualCloseLink, SourceLink } from "./return-navigation";
 import styles from "./search-entry.module.css";
 import photoStyles from "./search-photo.module.css";
 
@@ -55,9 +55,11 @@ export function Assistant({ catalog }: { catalog: Catalog }) {
 export function JeansAnswer({
   catalog,
   onClose,
+  onConsumedNavigate,
 }: {
   catalog: Catalog;
   onClose?: () => void;
+  onConsumedNavigate?: (href: string) => void;
 }) {
   const [feedback, setFeedback] = useState(false),
     [votes, setVotes] = useState<Record<string, boolean>>({}),
@@ -67,8 +69,8 @@ export function JeansAnswer({
     [feedbackSentiment, setFeedbackSentiment] = useState<
       "positive" | "negative"
     >("positive"),
-    [query, setQuery] = useState(""),
     [boundary, setBoundary] = useState("");
+  const { draft: query, update: updateQuery } = useSearchDraft("jeans-answer");
   const products = [
     "assistant-signature-straight",
     "assistant-urban-straight",
@@ -109,6 +111,16 @@ export function JeansAnswer({
   return (
     <section
       className={`assistant-page ${styles.answerBody} ${onClose ? styles.embeddedAnswer : ""}`}
+      onClickCapture={(event) => {
+        // The enclosing Sheet consumes its route entry before this handler.
+        // Return to Search's real answer opener, not the retired sheet card.
+        if (!event.defaultPrevented || !onConsumedNavigate) return;
+        const link = (event.target as Element).closest<HTMLAnchorElement>(
+          "a[href]",
+        );
+        if (link && !link.classList.contains("assistant-edit"))
+          onConsumedNavigate(link.href);
+      }}
     >
       <Link
         href="/search?q=jeans"
@@ -124,9 +136,14 @@ export function JeansAnswer({
         From everyday straight legs to bold, vintage-inspired streetwear, the
         right pair of jeans is all about the balance of comfort and a silhouette
         that feels like home. I have pulled some versatile styles from{" "}
-        <Link href="/stores/jeans-warehouse">Jeans Warehouse</Link> and{" "}
-        <Link href="/stores/city-jeans">City Jeans</Link> to help you find your
-        next go-to pair.
+        <SourceLink startAtTop href="/stores/jeans-warehouse">
+          Jeans Warehouse
+        </SourceLink>{" "}
+        and{" "}
+        <SourceLink startAtTop href="/stores/city-jeans">
+          City Jeans
+        </SourceLink>{" "}
+        to help you find your next go-to pair.
       </p>
       <h2>Classic and straight leg fits</h2>
       <p className="form-note">
@@ -138,15 +155,15 @@ export function JeansAnswer({
             <div
               className={`product-media ${p.id === "assistant-blue-skinny" ? "assistant-partial-product" : ""}`}
             >
-              <Link href={`/products/${p.id}`}>
+              <SourceLink startAtTop href={`/products/${p.id}`}>
                 <img src={p.images[0]} alt={p.title} />
-              </Link>
+              </SourceLink>
               <SaveButton product={p} />
             </div>
             <span>Jeans Warehouse</span>
-            <Link href={`/products/${p.id}`}>
+            <SourceLink startAtTop href={`/products/${p.id}`}>
               <strong>{p.title}</strong>
-            </Link>
+            </SourceLink>
             <b>{formatMoney(p.price)}</b>
           </article>
         ))}
@@ -157,10 +174,14 @@ export function JeansAnswer({
         {["assistant-wide-one", "assistant-wide-two"].map((key) => (
           <article key={key}>
             <div className="product-media">
-              <img
-                src={`/api/reference-media/${key}`}
-                alt="Jeans Warehouse wide leg recommendation"
-              />
+              <button
+                type="button"
+                className={styles.boundedWideEntry}
+                aria-label={`View captured wide leg recommendation ${key === "assistant-wide-one" ? "1" : "2"}`}
+                onClick={() => setBoundary("Product details unavailable")}
+              >
+                <img src={`/api/reference-media/${key}`} alt="" />
+              </button>
             </div>
             <span>Jeans Warehouse</span>
           </article>
@@ -179,12 +200,12 @@ export function JeansAnswer({
         data-answer-product="city-duaa-denim"
       >
         <div className={`product-media ${styles.answerCardPhoto}`}>
-          <Link href="/products/city-duaa-denim">
+          <SourceLink startAtTop href="/products/city-duaa-denim">
             <img
               src="/api/reference-media/assistant-city-square"
               alt="Men’s Duaa Neptune Denim"
             />
-          </Link>
+          </SourceLink>
           {cityProduct && <SaveButton product={cityProduct} />}
           <CapturedPagination count={4} centered />
           <span className={`price-badge deal ${styles.answerCardDeal}`}>
@@ -192,7 +213,11 @@ export function JeansAnswer({
           </span>
         </div>
         <div>
-          <Link className={styles.answerSeller} href="/stores/city-jeans">
+          <SourceLink
+            startAtTop
+            className={styles.answerSeller}
+            href="/stores/city-jeans"
+          >
             <img src="/api/reference-media/suggestion-city-jeans" alt="" />
             <span>
               City Jeans
@@ -200,11 +225,11 @@ export function JeansAnswer({
                 4.8 ★ <span>(3.7K)</span>
               </small>
             </span>
-          </Link>
+          </SourceLink>
           <strong>
-            <Link href="/products/city-duaa-denim">
+            <SourceLink startAtTop href="/products/city-duaa-denim">
               Men’s Duaa Neptune Denim…
-            </Link>
+            </SourceLink>
           </strong>
           <p>$90.00</p>
           <ul>
@@ -219,17 +244,21 @@ export function JeansAnswer({
         data-answer-product="assistant-signature-straight"
       >
         <div className={`product-media ${styles.answerCardPhoto}`}>
-          <Link href="/products/assistant-signature-straight">
+          <SourceLink startAtTop href="/products/assistant-signature-straight">
             <img
               src="/api/reference-media/assistant-signature-square"
               alt="Signature straight jeans"
             />
-          </Link>
+          </SourceLink>
           {signatureProduct && <SaveButton product={signatureProduct} />}
           <CapturedPagination count={2} current={1} centered />
         </div>
         <div>
-          <Link className={styles.answerSeller} href="/stores/jeans-warehouse">
+          <SourceLink
+            startAtTop
+            className={styles.answerSeller}
+            href="/stores/jeans-warehouse"
+          >
             <img src="/api/reference-media/suggestion-jeans-warehouse" alt="" />
             <span>
               Jeans Warehouse
@@ -237,11 +266,14 @@ export function JeansAnswer({
                 4.7 ★ <span>(294)</span>
               </small>
             </span>
-          </Link>
+          </SourceLink>
           <strong>
-            <Link href="/products/assistant-signature-straight">
+            <SourceLink
+              startAtTop
+              href="/products/assistant-signature-straight"
+            >
               SIGNATURE STRAIGHT…
-            </Link>
+            </SourceLink>
           </strong>
           <p>$29.99</p>
           <ul>
@@ -294,18 +326,18 @@ export function JeansAnswer({
           aria-label="Ask a follow-up"
           placeholder="Ask a follow-up"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => updateQuery({ draft: e.target.value })}
         />
         {onClose ? (
           <IconButton icon="close" label="Close assistant" onClick={onClose} />
         ) : (
-          <Link
+          <ContextualCloseLink
             href="/search"
             className="icon-button"
             aria-label="Close assistant"
           >
             <Icon name="close" />
-          </Link>
+          </ContextualCloseLink>
         )}
       </form>
       <Sheet
@@ -366,8 +398,9 @@ export function JeansAnswer({
       </Sheet>
       <Sheet open={!!boundary} title={boundary} onClose={() => setBoundary("")}>
         <p className="sheet-copy">
-          This recorded answer is available locally. New assistant responses and
-          shared shopping profiles are not connected.
+          {boundary === "Product details unavailable"
+            ? "This recommendation appears in the captured answer. Its complete product details are unavailable, so it has not been opened, saved, or added to a cart."
+            : "This recorded answer is available locally. New assistant responses and shared shopping profiles are not connected."}
         </p>
       </Sheet>
       {submitted && (
@@ -451,7 +484,9 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
           <CapturedPagination count={9} />
         )}
         {product ? (
-          <Link href={`/products/${product.id}`}>{photograph}</Link>
+          <SourceLink startAtTop href={`/products/${product.id}`}>
+            {photograph}
+          </SourceLink>
         ) : (
           <button
             type="button"
@@ -502,12 +537,13 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
         </span>
       );
     return product ? (
-      <Link
+      <SourceLink
+        startAtTop
         className={styles.photoProductLink}
         href={`/products/${product.id}`}
       >
         {children}
-      </Link>
+      </SourceLink>
     ) : (
       <button
         type="button"

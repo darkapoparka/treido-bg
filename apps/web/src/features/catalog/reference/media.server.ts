@@ -1283,6 +1283,27 @@ const media: Record<
     file: "flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/007.webp",
     rect: [253, 704, 60, 144],
   },
+  "skin-card-laundry-partial": {
+    file: "flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/007.webp",
+    rect: [16, 697, 173, 155],
+    photoRadius: 28,
+    photoTopCornersOnly: true,
+    circularOcclusions: [[144, 143, 17]],
+  },
+  "skin-card-gopure-partial": {
+    file: "flows/01972be8-07ed-4dfa-9ec9-d1e6824c35bc/007.webp",
+    rect: [205, 697, 172, 155],
+    photoRadius: 28,
+    photoTopCornersOnly: true,
+    // Keep only exposed photograph pixels: Save and the fixed Home control
+    // are independent DOM controls, never baked into this bounded fragment.
+    circularOcclusions: [[143, 143, 17]],
+    // The fixed Home control's shadow also belongs to that control. The
+    // bounded blue backdrop begins beyond the bottle's right edge (x308),
+    // so its exposed top/bottom edges can fill this control-only region.
+    roundedOcclusions: [[103, 29, 69, 84, 34.5]],
+    roundedOcclusionFill: "vertical-gradient",
+  },
   "look-blazer-one-card": {
     file: "flows/d0dd4fc3-7ffe-4f1e-81d8-d2a17e904e24/008.webp",
     rect: [28, 181, 134, 134],

@@ -75,7 +75,11 @@ export function Sol({ catalog }: { catalog: Catalog }) {
   const heading = useRef<HTMLHeadingElement>(null);
   const chosenResult = useRef(false);
   const change = useCallback(
-    (next: Record<string, string | null>, replace = false) => {
+    (
+      next: Record<string, string | null>,
+      replace = false,
+      nextDraft?: string,
+    ) => {
       const search = new URLSearchParams(query);
       for (const [key, value] of Object.entries(next)) {
         if (value === null) search.delete(key);
@@ -85,7 +89,10 @@ export function Sol({ catalog }: { catalog: Catalog }) {
       const consume = consumeSheetHistory();
       // Next's public History API synchronizes useSearchParams without fetching
       // another page. Never copy reserved router flags into this query write.
-      const historyState = sourceReturnState({}, consume || !replace);
+      const historyState = sourceReturnState(
+        { solDraft: nextDraft ?? window.history.state?.solDraft ?? "" },
+        consume || !replace,
+      );
       if (replace || consume)
         window.history.replaceState(historyState, "", url);
       else window.history.pushState(historyState, "", url);
@@ -105,10 +112,13 @@ export function Sol({ catalog }: { catalog: Catalog }) {
       heading.current?.focus({ preventScroll: true });
   }, [phase]);
   useEffect(() => {
+    const restore = (state: unknown) => {
+      const value = (state as { solDraft?: unknown } | null)?.solDraft;
+      setDraft(typeof value === "string" ? value : "");
+    };
+    restore(window.history.state);
     const onBack = (event: PopStateEvent) => {
-      setDraft(
-        typeof event.state?.solDraft === "string" ? event.state.solDraft : "",
-      );
+      restore(event.state);
     };
     window.addEventListener("popstate", onBack);
     return () => window.removeEventListener("popstate", onBack);
@@ -167,9 +177,9 @@ export function Sol({ catalog }: { catalog: Catalog }) {
     const value = draft.trim();
     if (!value) return;
     if (/\b(cap|caps|hat|hats)\b/i.test(value))
-      change({ sol: "choices", topic: "caps", choice: null });
+      change({ sol: "choices", topic: "caps", choice: null }, false, "");
     else if (/\b(sunglasses|glasses)\b/i.test(value))
-      change({ sol: "response", topic: "glasses", choice: null });
+      change({ sol: "response", topic: "glasses", choice: null }, false, "");
     else {
       setUnsupported(true);
       return;
@@ -465,12 +475,16 @@ export function Sol({ catalog }: { catalog: Catalog }) {
           <button onClick={() => setPermission(false)}>Cancel</button>
           <button
             onClick={() => {
-              change({
-                sol: "connecting",
-                mode: null,
-                topic: null,
-                choice: null,
-              });
+              change(
+                {
+                  sol: "connecting",
+                  mode: null,
+                  topic: null,
+                  choice: null,
+                },
+                false,
+                "",
+              );
               setPermission(false);
             }}
           >
@@ -492,12 +506,16 @@ export function Sol({ catalog }: { catalog: Catalog }) {
           <button
             className="primary"
             onClick={() => {
-              change({
-                sol: "response",
-                topic: "glasses",
-                choice: null,
-                mode: null,
-              });
+              change(
+                {
+                  sol: "response",
+                  topic: "glasses",
+                  choice: null,
+                  mode: null,
+                },
+                false,
+                "",
+              );
               setMenu(false);
               setDraft("");
             }}
@@ -521,13 +539,17 @@ export function Sol({ catalog }: { catalog: Catalog }) {
           <button
             className="pill"
             onClick={() => {
-              change({
-                sol: null,
-                mode: null,
-                topic: null,
-                choice: null,
-                muted: null,
-              });
+              change(
+                {
+                  sol: null,
+                  mode: null,
+                  topic: null,
+                  choice: null,
+                  muted: null,
+                },
+                false,
+                "",
+              );
               setDraft("");
               setMenu(false);
             }}

@@ -520,6 +520,7 @@ export function Skin({ catalog }: { catalog: Catalog }) {
   const [upload, setUpload] = useState(false);
   const [cameraAccess, setCameraAccess] = useState(false);
   const [menu, setMenu] = useState(false);
+  const [unavailableProduct, setUnavailableProduct] = useState("");
   useEffect(() => {
     if (phase !== "analyzing") return;
     const timer = window.setTimeout(
@@ -626,6 +627,7 @@ export function Skin({ catalog }: { catalog: Catalog }) {
                     ? [
                         <ProductCard
                           key={id}
+                          ratingStars={4.5}
                           product={{
                             ...product,
                             images: [
@@ -639,15 +641,26 @@ export function Skin({ catalog }: { catalog: Catalog }) {
               )}
             </div>
             <div className="product-grid skin-partial-grid">
-              {["skin-laundry-partial", "skin-gopure-partial"].map((key) => (
-                <div key={key}>
-                  <img
-                    src={`/api/reference-media/${key}`}
-                    alt={
-                      key.includes("laundry")
-                        ? "Skin Laundry Hydrating Gentle Cleanser"
-                        : "goPure Gentle Gel Cleanser"
-                    }
+              {[
+                [
+                  "skin-card-laundry-partial",
+                  "Skin Laundry Hydrating Gentle Cleanser",
+                ],
+                ["skin-card-gopure-partial", "goPure Gentle Gel Cleanser"],
+              ].map(([key, title]) => (
+                <div key={key} className={styles.skinPartialCard}>
+                  <button
+                    className={styles.skinPartialPhoto}
+                    aria-label={`View ${title}`}
+                    onClick={() => setUnavailableProduct(title)}
+                  >
+                    <img src={`/api/reference-media/${key}`} alt="" />
+                  </button>
+                  <IconButton
+                    icon="heart"
+                    label={`Save ${title}`}
+                    className="save-button"
+                    onClick={() => setUnavailableProduct(title)}
                   />
                 </div>
               ))}
@@ -706,6 +719,17 @@ export function Skin({ catalog }: { catalog: Catalog }) {
         anchorSelector=".skin-analyze"
         onClose={() => setUpload(false)}
       />
+      <Sheet
+        open={!!unavailableProduct}
+        title="Product details unavailable"
+        onClose={() => setUnavailableProduct("")}
+      >
+        <p className="sheet-copy">
+          {unavailableProduct} appears in the captured example. Complete product
+          details are unavailable, so it has not been opened, saved, or added to
+          a cart.
+        </p>
+      </Sheet>
       <Sheet
         open={menu}
         title="Skincare AI preview"
@@ -1183,6 +1207,7 @@ type GiftAnswers = {
   budget: string;
   notes: string;
   drafts: Record<string, string>;
+  collectionId: string;
 };
 const emptyGiftAnswers: GiftAnswers = {
   recipient: "",
@@ -1190,6 +1215,7 @@ const emptyGiftAnswers: GiftAnswers = {
   budget: "",
   notes: "",
   drafts: {},
+  collectionId: "",
 };
 
 function readGiftAnswers(historyState: unknown): GiftAnswers | undefined {
@@ -1214,6 +1240,8 @@ function readGiftAnswers(historyState: unknown): GiftAnswers | undefined {
     budget: answer.budget,
     notes: answer.notes,
     drafts: answer.drafts,
+    collectionId:
+      typeof answer.collectionId === "string" ? answer.collectionId : "",
   };
 }
 
@@ -1224,7 +1252,6 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
   const loadingResults = phaseIndex === 7;
   const step = phaseIndex < 0 ? 0 : loadingResults ? 5 : phaseIndex;
   const [answers, setAnswers] = useState<GiftAnswers>(emptyGiftAnswers);
-  const [saved, setSaved] = useState(false);
   const [access, setAccess] = useState(false);
   const [menu, setMenu] = useState(false);
   const [similar, setSimilar] = useState(false);
@@ -1235,6 +1262,9 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
     return product ? [product] : [];
   });
   const { recipient, selected, budget, notes } = answers;
+  const saved = state.collections.some(
+    (collection) => collection.id === answers.collectionId,
+  );
   const draft = answers.drafts[String(step)] ?? "";
   function remember(next: GiftAnswers) {
     setAnswers(next);
@@ -1258,7 +1288,6 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
   function restart() {
     remember(emptyGiftAnswers);
     change({ gift: null }, false, { giftAnswers: emptyGiftAnswers });
-    setSaved(false);
     setAccess(false);
     setMenu(false);
   }
@@ -1593,11 +1622,11 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
                     <button
                       onClick={() => {
                         if (!saved) {
-                          state.createCollection(
+                          const collectionId = state.createCollection(
                             "Gift ideas",
                             products.map((product) => product.id),
                           );
-                          setSaved(true);
+                          remember({ ...answers, collectionId });
                         }
                       }}
                     >
@@ -1607,8 +1636,7 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
                   <button
                     className={`gift-action ${styles.differentIdeas}`}
                     onClick={() => {
-                      setSaved(false);
-                      advance(1);
+                      advance(1, { collectionId: "" });
                     }}
                   >
                     Show Me Different Ideas

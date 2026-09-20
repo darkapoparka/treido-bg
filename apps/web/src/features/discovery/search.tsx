@@ -39,7 +39,11 @@ import {
   searchStores,
 } from "./search-model";
 import { SearchLoading } from "./search-loading";
-import { useSearchDraft } from "./search-draft";
+import {
+  inheritSearchDraftOwners,
+  prepareSearchDraftOwner,
+  useSearchDraft,
+} from "./search-draft";
 import { JeansAnswer } from "./assistant";
 import { RecentSearchItems } from "./search-recent";
 import { CapturedJeansContinuation } from "./search-captured-continuation";
@@ -121,7 +125,13 @@ export function Search({
     null,
   );
   const answerTrigger = useRef<HTMLButtonElement>(null);
-  const answerEntry = useRef(false);
+  const answerOrigin = useRef<string | null>(null);
+  const pendingAnswer = useRef<{
+    parent: string;
+    drafts: ReturnType<typeof prepareSearchDraftOwner>;
+    origin: string;
+  } | null>(null);
+  const closingAnswer = useRef(false);
   const [focused, setFocused] = useState(composer.editing);
   const [photos, setPhotos] = useState(false);
   const [photoError, setPhotoError] = useState("");
@@ -171,6 +181,29 @@ export function Search({
   const capturedFilteredJeans = isCapturedFilteredJeans(query, visibleFilters);
   const answerOpen = params.get("answer") === "jeans";
   useEffect(() => {
+    const entry = pendingAnswer.current;
+    if (answerOpen && entry) {
+      pendingAnswer.current = null;
+      window.history.replaceState(
+        {
+          ...window.history.state,
+          shopJeansAnswerParent: entry.parent,
+          shopSourceReturnOrigin: entry.origin,
+        },
+        "",
+        window.location.href,
+      );
+      inheritSearchDraftOwners(entry.drafts);
+    }
+    if (!answerOpen && closingAnswer.current) {
+      closingAnswer.current = false;
+      const frame = requestAnimationFrame(() =>
+        answerTrigger.current?.focus({ preventScroll: true }),
+      );
+      return () => cancelAnimationFrame(frame);
+    }
+  }, [answerOpen]);
+  useEffect(() => {
     if (answerOpen) viewAnswer("jeans");
   }, [answerOpen, viewAnswer]);
   const showResults = !!query.trim() || filtered;
@@ -200,21 +233,30 @@ export function Search({
   function openAnswer() {
     const next = new URLSearchParams(params);
     next.set("answer", "jeans");
-    answerEntry.current = true;
+    const drafts = prepareSearchDraftOwner("jeans-answer");
+    answerOrigin.current = rememberSourcePosition(
+      'button[aria-label="View answer for Jeans"]',
+    );
+    pendingAnswer.current = {
+      parent: `${window.location.pathname}${window.location.search}`,
+      drafts,
+      origin: answerOrigin.current,
+    };
     router.push(`/search?${next}`, { scroll: false });
   }
   function closeAnswer() {
-    if (answerEntry.current) router.back();
+    const next = new URLSearchParams(params);
+    next.delete("answer");
+    const parent = `/search${next.size ? `?${next}` : ""}`;
+    closingAnswer.current = true;
+    // Only a deliberately pushed answer owns a parent entry. Retain that
+    // identity through reload; a direct answer URL still replaces itself.
+    if (window.history.state?.shopJeansAnswerParent === parent) router.back();
     else {
-      const next = new URLSearchParams(params);
-      next.delete("answer");
-      router.replace(`/search${next.size ? `?${next}` : ""}`, {
+      router.replace(parent, {
         scroll: false,
       });
     }
-    requestAnimationFrame(() =>
-      answerTrigger.current?.focus({ preventScroll: true }),
-    );
   }
 
   function update(next: SearchFilters) {
@@ -707,23 +749,31 @@ export function Search({
       ) : (
         <>
           <h1>Search</h1>
-          <Link className="search-section-heading" href="/search?view=recent">
+          <SourceLink
+            className="search-section-heading"
+            href="/search?view=recent"
+          >
             <h2>
               Recently viewed <Icon name="back" />
             </h2>
-          </Link>
+          </SourceLink>
           <RecentSearchItems
             catalog={catalog}
             capturedContinuation={state.capturedSearchHistory}
           />
           {state.viewedAnswers.includes("jeans") && (
             <section className={`keep-shopping ${styles.conversations}`}>
-              <Link className={styles.conversationHeading} href="/assistant">
+              <SourceLink
+                startAtTop
+                className={styles.conversationHeading}
+                href="/assistant"
+              >
                 <h2>
                   Keep shopping <Icon name="back" />
                 </h2>
-              </Link>
-              <Link
+              </SourceLink>
+              <SourceLink
+                startAtTop
                 className={styles.conversation}
                 href="/assistant"
                 aria-label="Continue Finding the right pair of jeans"
@@ -740,7 +790,7 @@ export function Search({
                       : "Jul 24"}
                   </small>
                 </span>
-              </Link>
+              </SourceLink>
             </section>
           )}
         </>
@@ -826,7 +876,16 @@ export function Search({
         manageHistory={false}
         initialFocus="[data-answer-heading]"
       >
-        <JeansAnswer catalog={catalog} onClose={closeAnswer} />
+        <JeansAnswer
+          catalog={catalog}
+          onClose={closeAnswer}
+          onConsumedNavigate={(href) => {
+            const token =
+              answerOrigin.current ??
+              window.history.state?.shopSourceReturnOrigin;
+            if (token) bindSourceDestination(token, href);
+          }}
+        />
       </Sheet>
       <Filters
         open={filter}
