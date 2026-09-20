@@ -875,8 +875,15 @@ export function Checkout({
               <div className="inline-order-summary">
                 <details className="order-points">
                   <summary>
-                    <AccountIcon name="info" /> Complete this purchase to earn 4
-                    points <span aria-hidden="true">⌄</span>
+                    <AccountIcon name="info" />
+                    <span className="order-points-label">
+                      Complete this purchase to
+                      <br />
+                      earn 4 points
+                    </span>
+                    <span className="order-points-caret" aria-hidden="true">
+                      <Icon name="chevron" />
+                    </span>
                   </summary>
                   <p>
                     The captured offer awards 4 points. No loyalty account is
@@ -897,7 +904,10 @@ export function Checkout({
                       <span>
                         <strong>{line.product.title}</strong>
                         {net !== line.product.price.amount && (
-                          <small>27% OFF BACK TO SCHOOL SALE (-$1.35)</small>
+                          <small className="source-line-discount">
+                            <Icon name="price-tag" />
+                            <span>27% OFF BACK TO SCHOOL SALE (-$1.35)</span>
+                          </small>
                         )}
                         {line.quantity > 1 && (
                           <small>Quantity {line.quantity}</small>
@@ -967,11 +977,15 @@ export function Checkout({
                     </span>
                   </p>
                   <p>
-                    Shipping{" "}
+                    <span className="checkout-fee-label">
+                      Shipping <Icon name="question-circle" />
+                    </span>
                     <span>{formatMoney({ amount: fee, currency: "USD" })}</span>
                   </p>
                   <p>
-                    Estimated taxes{" "}
+                    <span className="checkout-fee-label">
+                      Estimated taxes <Icon name="question-circle" />
+                    </span>
                     <span>{formatMoney({ amount: tax, currency: "USD" })}</span>
                   </p>
                   <p className="checkout-total-line">
@@ -982,8 +996,11 @@ export function Checkout({
                   </p>
                   {savings > 0 && (
                     <strong className="checkout-savings">
-                      TOTAL SAVINGS{" "}
-                      {formatMoney({ amount: savings, currency: "USD" })}
+                      <Icon name="price-tags" />
+                      <span>
+                        TOTAL SAVINGS{" "}
+                        {formatMoney({ amount: savings, currency: "USD" })}
+                      </span>
                     </strong>
                   )}
                 </div>

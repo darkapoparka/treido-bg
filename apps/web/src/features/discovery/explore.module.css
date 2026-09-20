@@ -19,6 +19,9 @@
   margin: 14px 8px 34px 0;
   border-radius: 28px;
 }
+.page:not([data-category]) :global(.editorial-hero) {
+  box-shadow: 0 6px 40px #0000001a;
+}
 .page :global(.editorial-hero) > div {
   left: 20px;
   bottom: 20px;

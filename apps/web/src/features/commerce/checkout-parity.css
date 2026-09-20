@@ -267,6 +267,7 @@
   > span:nth-child(2)
   strong {
   font-size: 22px;
+  line-height: 26px;
 }
 .source-checkout .source-total-row[aria-expanded="true"] .source-total-value {
   display: block;
@@ -293,11 +294,20 @@
 .source-checkout .order-points summary .account-icon {
   width: 17px;
   height: 17px;
+  flex: none;
   color: #666;
 }
-.source-checkout .order-points summary > span {
+.source-checkout .order-points-caret {
   margin-left: auto;
   flex: none;
+}
+.source-checkout .order-points-caret svg {
+  width: 12px;
+  height: 12px;
+  transform: rotate(90deg);
+}
+.source-checkout .order-points[open] .order-points-caret svg {
+  transform: rotate(-90deg);
 }
 .source-checkout .order-points p {
   margin-top: 12px;
@@ -316,16 +326,119 @@
 .source-checkout .source-summary-item > span {
   flex: 1;
   min-width: 0;
+  align-self: flex-start;
+  padding-top: 6px;
+}
+.source-checkout .source-summary-item > span > strong {
+  font-weight: 400;
 }
 .source-checkout .source-summary-item > strong {
   flex: none;
+  align-self: flex-start;
+  padding-top: 6px;
+  font-weight: 400;
+  line-height: 18px;
+}
+.source-checkout .source-summary-item > strong > del {
+  line-height: 16px;
 }
 .source-checkout .source-summary-item small {
   font-size: 12px;
   line-height: 15px;
 }
+.source-checkout .source-summary-item .source-line-discount {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.source-checkout .source-line-discount > svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  color: #111;
+}
+.source-checkout .source-discount-form {
+  grid-template-columns: minmax(0, 1fr) 71px;
+  gap: 10px;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+.source-checkout .source-discount-form input,
+.source-checkout .source-discount-form button {
+  height: 49px;
+  min-height: 49px;
+  border: 1px solid #ddd;
+}
+.source-checkout .source-discount-form input {
+  min-width: 0;
+  padding: 0 10px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+.source-checkout .source-discount-form button {
+  border-color: #eee;
+  border-radius: 26px;
+  background: #fafafa;
+  color: #555;
+  font-weight: 600;
+  font-size: 16px;
+}
+.source-checkout .source-discount-form button:disabled {
+  opacity: 1;
+  color: #858585;
+}
+.source-checkout .checkout-totals > p {
+  line-height: 18px;
+  margin-block: 6px;
+}
 .source-checkout .checkout-total-line {
   font-size: 18px;
+}
+.source-checkout .checkout-totals > .checkout-total-line {
+  line-height: 22px;
+  margin-top: 18px;
+  margin-bottom: 4px;
+}
+.source-checkout .checkout-fee-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.source-checkout .checkout-fee-label > svg {
+  width: 14px;
+  height: 14px;
+}
+.source-checkout .checkout-savings {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 18px;
+  margin-top: 4px;
+}
+.source-checkout .checkout-savings > svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+/* Keep source text edges grayscale on Windows while photographs and fixed
+   checkout controls retain their own rendering and containing blocks. */
+.source-checkout .checkout-header h1,
+.source-checkout .checkout-sms-terms,
+.source-checkout .checkout-terms,
+.source-checkout .checkout-recommendations header h2,
+.source-checkout .checkout-recommendations article > div,
+.source-checkout .source-total-row > span:not(.source-total-thumbnail),
+.source-checkout .checkout-pay > button > span,
+.source-checkout .checkout-pay > button > b,
+.source-checkout .source-summary-item > span,
+.source-checkout .source-summary-item > strong,
+.source-checkout .checkout-totals,
+.source-checkout .order-points summary,
+.source-checkout .source-discount-form input,
+.source-checkout .source-discount-form button {
+  opacity: 0.999;
 }
 .source-checkout .checkout-total-line > strong:last-child::before {
   content: "USD";

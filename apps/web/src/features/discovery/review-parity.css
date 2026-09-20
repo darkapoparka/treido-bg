@@ -78,4 +78,21 @@
 .reviews-page .review-card footer > .icon-button svg {
   width: 18px;
   height: 18px;
+  stroke-width: 3.4;
+  transform: translate(-0.4px, -0.5px);
+}
+.store-review-list article footer > .icon-button svg {
+  stroke-width: 4;
+  transform: translate(-3px, -2px);
+}
+
+/* Composite text separately to match the source's grayscale edges without
+   changing font metrics or compositing product photographs. */
+.reviews-page :is(h1, h2, p, .review-author, .review-variant, .read-more),
+.store-reviews > .section-heading h1,
+.store-review-summary :is(b, small),
+.store-review-product :is(h2, small),
+.store-review-list article > p,
+.store-reviews .review-author {
+  opacity: 0.999;
 }

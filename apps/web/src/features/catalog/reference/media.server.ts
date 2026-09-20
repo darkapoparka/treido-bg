@@ -1501,7 +1501,7 @@ const media: Record<
   "mini-decor-icon": { file: "screens/174.webp", rect: [16, 674, 44, 44] },
   "explore-summer-upper": {
     file: "flows/5c39eb04-f5fe-43a0-92da-b79b275051e0/002.webp",
-    rect: [16, 119, 361, 200],
+    rect: [16, 119, 353, 200],
     lightTextOcclusions: [
       [20, 140, 274, 28],
       [20, 166, 250, 21],

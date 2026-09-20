@@ -1857,7 +1857,15 @@
 .source-checkout.is-processing .source-total-row,
 .source-checkout.is-processing .checkout-recommendations button:not(.primary) {
   pointer-events: none;
+}
+.source-checkout.is-processing .checkout-section-toggle {
   opacity: 0.62;
+}
+.source-checkout.is-processing .source-total-row {
+  opacity: 1;
+}
+.source-checkout.is-processing .checkout-recommendations button:not(.primary) {
+  opacity: 0.5;
 }
 @media (max-width: 350px) {
   .source-checkout {
