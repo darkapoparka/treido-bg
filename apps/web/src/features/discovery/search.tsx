@@ -40,7 +40,7 @@ import styles from "./search-entry.module.css";
 import photoStyles from "./search-photo.module.css";
 import "./search-loading.css";
 
-const capturedCapPhoto = "/api/reference-media/assistant-cap";
+const capturedCapPhoto = "/api/reference-media/assistant-uploaded-cap";
 const filteredStoreDeals: Record<string, string> = {
   "arrow-twenty-two": "Save $5",
   "american-blues": "Save $15",

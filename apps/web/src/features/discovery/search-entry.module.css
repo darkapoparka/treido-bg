@@ -176,6 +176,9 @@
   border-radius: inherit;
   padding: 6px;
 }
+.photoChip > img[src$="/assistant-uploaded-cap"] {
+  padding: 11.5px;
+}
 .photoChip > button {
   position: absolute;
   top: -10px;
@@ -915,6 +918,7 @@
   height: 24px;
   padding: 6px;
   border-radius: 50%;
+  border: 1px solid #dedfe0;
   background: #e8e8e8;
 }
 .photoAnswer :global(.assistant-steps) {
@@ -1000,7 +1004,7 @@
 }
 .photoAnswer :global(.assistant-product-rail) .photoRating {
   display: flex;
-  gap: 6px;
+  gap: 2px;
   margin-top: 0;
 }
 .photoRating > :global(.review-rating-stars) {
@@ -1290,6 +1294,8 @@
 .photoAnswer > p {
   letter-spacing: 0;
   margin-bottom: 12px;
+  /* Composite prose separately to avoid colored LCD fringes on Windows. */
+  opacity: 0.999;
 }
 .photoAnswer > h2 {
   font-size: 18px;
@@ -1311,7 +1317,7 @@
 }
 .photoAnswer :global(.assistant-product-rail) strong,
 .photoAnswer :global(.assistant-product-rail) b {
-  font-weight: 500;
+  font-weight: 600;
   line-height: 16px;
 }
 .photoAnswer :global(.assistant-answer-card) {

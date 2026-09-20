@@ -1649,6 +1649,11 @@ const media: Record<
     rect: [59, 198, 277, 225],
     pinkChromaKey: true,
   },
+  "assistant-uploaded-cap": {
+    // The selected photo, tightly bounded inside its DOM thumbnail control.
+    file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/003.webp",
+    rect: [81, 503, 17, 16],
+  },
   "assistant-cap": {
     file: "flows/d6910bbb-655d-44ad-842e-11da062a1e66/007.webp",
     rect: [49, 330, 96, 112],

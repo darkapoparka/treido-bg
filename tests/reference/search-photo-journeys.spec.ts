@@ -70,11 +70,18 @@ test("the captured example naturally reaches the bounded photo answer", async ({
   await button(page, "Add photos").click();
   await button(page, "Use captured cap example").click();
   await expect(page.getByRole("img", { name: "Selected photo" })).toBeVisible();
+  const selectedSource = await page
+    .getByRole("img", { name: "Selected photo" })
+    .getAttribute("src");
   await expect(
     page.getByRole("textbox", { name: "Search products", exact: true }),
   ).toBeFocused();
   await button(page, "Submit search").click();
   await expect(page).toHaveURL(/\/assistant\?example=photo$/);
+  await expect(page.locator(".photo-tag img")).toHaveAttribute(
+    "src",
+    selectedSource!,
+  );
   await expect(
     page.locator('[data-photo-recommendation="source-bounded-third"]'),
   ).toBeVisible();
@@ -260,7 +267,7 @@ test("editing the captured answer restores its photo, question and disclosure hi
   await expect(input).toBeFocused();
   await expect(
     page.getByRole("img", { name: "Selected photo", exact: true }),
-  ).toHaveAttribute("src", "/api/reference-media/assistant-cap");
+  ).toHaveAttribute("src", "/api/reference-media/assistant-uploaded-cap");
   for (const width of [320, 393, 430]) {
     await page.setViewportSize({ width, height: 793 });
     expect(

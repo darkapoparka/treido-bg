@@ -529,7 +529,7 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
       </Link>
       <h1>{capturedCapQuestion}</h1>
       <span className="photo-tag">
-        <img src="/api/reference-media/assistant-cap" alt="" />
+        <img src="/api/reference-media/assistant-uploaded-cap" alt="" />
         Photo
       </span>
       <button
