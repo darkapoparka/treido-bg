@@ -121,6 +121,71 @@ test("Kitsch store and collection use the captured source media geometry", async
   );
 });
 
+test("opening a collection starts at its header and Back restores the store shelf", async ({
+  page,
+  baseURL,
+}) => {
+  await page.setViewportSize({ width: 430, height: 793 });
+  await openScenario(page, baseURL, store);
+  await page.locator("main img").evaluateAll(async (images) => {
+    await document.fonts.ready;
+    await Promise.all(
+      images.map((image) => (image as HTMLImageElement).decode()),
+    );
+  });
+  const link = page.locator(".store-collection-rail a").filter({
+    hasText: "Best Sellers",
+  });
+  const navigation = page.locator(".store-category-navigation");
+  await expect(navigation).not.toHaveClass(/is-pinned/);
+  // Pin when the anchor's top crosses 80px, while its bottom still intersects.
+  await page.locator(".store-category-anchor").evaluate((element) => {
+    window.scrollTo({
+      top: window.scrollY + element.getBoundingClientRect().top - 79,
+      behavior: "instant",
+    });
+  });
+  await expect(navigation).toHaveClass(/is-pinned/);
+  await expect(navigation).toBeInViewport();
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await expect(navigation).not.toHaveClass(/is-pinned/);
+  await link.evaluate((element) =>
+    element.scrollIntoView({ block: "center", behavior: "instant" }),
+  );
+  await expect(navigation).toHaveClass(/is-pinned/);
+  await expect(navigation).toBeInViewport();
+  const sourceScroll = await page.evaluate(() => scrollY);
+  const sourceTop = await link.evaluate(
+    (element) => element.getBoundingClientRect().top,
+  );
+  expect(sourceScroll).toBeGreaterThan(0);
+  await link.click();
+  await expect(page).toHaveURL(collection);
+  const heading = page.getByRole("heading", {
+    name: "Best Sellers",
+    exact: true,
+  });
+  await expect(heading).toBeInViewport();
+  await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
+  for (let visit = 0; visit < 2; visit += 1) {
+    await page.goBack();
+    await expect(page).toHaveURL(store);
+    await expect.poll(() => page.evaluate(() => scrollY)).toBe(sourceScroll);
+    await expect(navigation).toHaveClass(/is-pinned/);
+    await expect(navigation).toBeInViewport();
+    await expect
+      .poll(() =>
+        link.evaluate((element) => element.getBoundingClientRect().top),
+      )
+      .toBeCloseTo(sourceTop, 0);
+    if (visit === 0) await expect(link).toBeFocused();
+    await page.goForward();
+    await expect(page).toHaveURL(collection);
+    await expect(heading).toBeInViewport();
+    await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
+  }
+});
+
 test("following Kitsch swaps to the captured followed storefront hero", async ({
   page,
   baseURL,

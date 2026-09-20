@@ -6,6 +6,7 @@ import {
   useEffect,
   useRef,
   useId,
+  type CSSProperties,
   type ReactNode,
   type PointerEvent,
 } from "react";
@@ -154,6 +155,7 @@ export function ProductCard({
   storeName,
   ratingStyle = "stars",
   ratingStars,
+  partialRatingStars,
 }: {
   product: Product;
   compact?: boolean;
@@ -163,6 +165,8 @@ export function ProductCard({
   ratingStyle?: "stars" | "summary";
   /** The depicted star fill when a shelf snapshot differs from product details. */
   ratingStars?: number;
+  /** Only these filled stars were visible; the full rating and count are unknown. */
+  partialRatingStars?: number;
 }) {
   const discovery = useDiscovery();
   const reported = discovery.reportedProducts.includes(product.id);
@@ -204,8 +208,20 @@ export function ProductCard({
         <Link href={`/products/${product.id}`} className="product-copy">
           {storeName && <span className="product-seller">{storeName}</span>}
           <strong>{product.title}</strong>
-          {product.ratingCount && (
-            <span className="rating">
+          {(product.ratingCount || partialRatingStars !== undefined) && (
+            <span
+              className="rating"
+              data-partial-rating={
+                partialRatingStars !== undefined || undefined
+              }
+              style={
+                partialRatingStars === undefined
+                  ? undefined
+                  : ({
+                      "--partial-rating-stars": partialRatingStars,
+                    } as CSSProperties)
+              }
+            >
               {ratingStyle === "summary" ? (
                 <>
                   ★ {product.rating} · {product.ratingCount} reviews
@@ -215,12 +231,15 @@ export function ProductCard({
                   <ReviewStars
                     rating={ratingStars ?? product.rating ?? 5}
                     label={
-                      ratingStars === undefined && product.rating === undefined
-                        ? "Captured rating"
-                        : undefined
+                      partialRatingStars !== undefined
+                        ? "Partially captured stars; full rating and review count unavailable"
+                        : ratingStars === undefined &&
+                            product.rating === undefined
+                          ? "Captured rating"
+                          : undefined
                     }
                   />{" "}
-                  ({product.ratingCount})
+                  {product.ratingCount && `(${product.ratingCount})`}
                 </>
               )}
             </span>

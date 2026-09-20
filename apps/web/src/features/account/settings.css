@@ -821,12 +821,15 @@
 }
 .login-page.auth-code .auth-content,
 .login-page.auth-passkey .auth-content {
-  padding-top: 108px;
+  padding-top: 106px;
 }
 .login-page .auth-art {
-  width: 32px;
-  height: 68px;
-  margin: 0 auto 28px;
+  width: 36px;
+  height: 72px;
+  margin: 0 auto 24px;
+}
+.login-page.auth-passkey .auth-art {
+  margin-bottom: 26px;
 }
 .login-page .auth-art.auth-loop {
   width: 32px;
@@ -850,6 +853,10 @@
 }
 .login-page .auth-form {
   margin: 0;
+}
+.login-page .auth-email-input:focus-visible {
+  outline: 1px solid #111;
+  outline-offset: 0;
 }
 .login-page .auth-continue {
   width: 100%;
@@ -932,6 +939,9 @@
   gap: 26px;
   font-size: 14px;
   line-height: 20px;
+}
+.login-page.auth-phase-idle .auth-phone-alternatives {
+  margin-top: 30px;
 }
 .login-page .auth-phone-alternatives > button {
   display: flex;

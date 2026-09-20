@@ -299,6 +299,23 @@
   height: 115px;
   object-fit: cover;
 }
+.resultsPage :global(.search-store)[href="/stores/fitjeans"] {
+  /* Continue the captured photograph into its measured lower-card tone. */
+  background: linear-gradient(#958a85 115px, #9f9491 127px);
+  padding-bottom: 9px;
+}
+.resultsPage :global(.search-store)[href="/stores/miss-me"] {
+  padding-bottom: 9px;
+}
+.resultsPage
+  :global(.search-store)[href="/stores/miss-me"]
+  :global(.store-monogram) {
+  position: absolute;
+  top: 36px;
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%);
+}
 .storeDeal,
 .resultDeal {
   width: fit-content;
@@ -387,14 +404,23 @@
   font-weight: 500;
   line-height: 16px;
 }
+.resultComposer input,
+.resultsPage :global(.search-store) > strong,
+.resultsPage :global(.search-store) > span,
+.resultsPage :global(.result-row) strong,
+.resultsPage :global(.result-row) p,
+.resultMerchant {
+  /* Composite text in grayscale, as in the captured product/answer surfaces. */
+  opacity: 0.999;
+}
 .resultMerchant {
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
   margin-top: auto;
-  padding-bottom: 6px;
-  font-size: 10px;
+  padding-bottom: 4px;
+  font-size: 11px;
   white-space: nowrap;
 }
 .resultMerchant :global(.result-store) {
@@ -412,6 +438,13 @@
   flex: none;
   border-radius: 50%;
   object-fit: contain;
+}
+.resultMerchant :global(.result-store)[href="/stores/fashion-nova"] {
+  gap: 8px;
+}
+.resultMerchant :global(.result-store)[href="/stores/fashion-nova"] img {
+  width: 24px;
+  height: 24px;
 }
 .resultDeal {
   margin-left: auto;
@@ -1102,6 +1135,15 @@
 }
 .filterSheet :global(.sheet-header) {
   min-height: 24px;
+}
+.filterSheet :global(.filter-options) {
+  scrollbar-width: none;
+}
+.filterSheet :global(.filter-options)::-webkit-scrollbar {
+  display: none;
+}
+.filterSheet :global(.filter-value) svg {
+  stroke-width: 3;
 }
 .filterSheet :global(.sheet-header) h2 {
   font-size: 18px;

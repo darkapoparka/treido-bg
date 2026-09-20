@@ -187,15 +187,20 @@ export function LoginPage() {
           />
         )}
         <h1>
-          {showingSignIn
-            ? "Signing you in..."
-            : passkey
-              ? "Sign in faster with a passkey"
-              : screen === "email"
-                ? "Sign in to Shop"
-                : emailCode
-                  ? "Verify your email"
-                  : "Confirm it’s you"}
+          {showingSignIn ? (
+            "Signing you in..."
+          ) : passkey ? (
+            <>
+              Sign in faster with
+              <br />a passkey
+            </>
+          ) : screen === "email" ? (
+            "Sign in to Shop"
+          ) : emailCode ? (
+            "Verify your email"
+          ) : (
+            "Confirm it’s you"
+          )}
         </h1>
         <p>
           {showingSignIn ? (

@@ -328,6 +328,9 @@
   font-size: 12px;
   font-weight: 500;
 }
+.campaign-drmtlgy .campaign-offer {
+  color: white;
+}
 .campaign-concealed .campaign-art,
 .campaign-concealed .campaign-offer {
   filter: blur(24px);

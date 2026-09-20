@@ -109,14 +109,25 @@ function StoreNavigation({ store }: { store: Store }) {
   useEffect(() => {
     const element = anchor.current;
     if (!element) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry) setPinned(entry.boundingClientRect.top < 80);
-      },
-      { threshold: 0, rootMargin: "-80px 0px 0px 0px" },
-    );
+    const syncPinned = () =>
+      setPinned(element.getBoundingClientRect().top < 80);
+    // Partial intersection starts when the anchor's top crosses the header
+    // boundary. Also read live geometry after restored/programmatic scroll;
+    // an observer entry can describe the position before history restoration.
+    const observer = new IntersectionObserver(syncPinned, {
+      threshold: [0, 1],
+      rootMargin: "-80px 0px 0px 0px",
+    });
     observer.observe(element);
-    return () => observer.disconnect();
+    const frame = requestAnimationFrame(syncPinned);
+    window.addEventListener("scroll", syncPinned, { passive: true });
+    window.addEventListener("resize", syncPinned);
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", syncPinned);
+      window.removeEventListener("resize", syncPinned);
+    };
   }, []);
   return (
     <div className="store-category-anchor" ref={anchor}>
@@ -436,9 +447,75 @@ export function Storefront({
   const params = useSearchParams();
   const reported = params.get("reported");
   const [dismissedReport, setDismissedReport] = useState<string | null>(null);
+  const collectionRail = useRef<HTMLDivElement>(null);
   useEffect(() => {
     viewStore(store.id);
   }, [store.id, viewStore]);
+  useEffect(() => {
+    const saved: unknown = window.history.state?.shopStoreCollectionReturn;
+    if (
+      !saved ||
+      typeof saved !== "object" ||
+      !("storeId" in saved) ||
+      saved.storeId !== store.id ||
+      !("slug" in saved) ||
+      typeof saved.slug !== "string" ||
+      !("top" in saved) ||
+      typeof saved.top !== "number" ||
+      !Number.isFinite(saved.top)
+    )
+      return;
+    const { slug, top } = saved;
+    let secondFrame = 0;
+    let focusFrame = 0;
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => {
+        const link = collectionRail.current?.querySelector<HTMLAnchorElement>(
+          `[data-store-collection="${CSS.escape(slug)}"]`,
+        );
+        if (!link) return;
+        const align = () => {
+          const delta = link.getBoundingClientRect().top - top;
+          if (Math.abs(delta) > 0.5)
+            window.scrollBy({ top: delta, behavior: "instant" });
+        };
+        align();
+        focusFrame = requestAnimationFrame(() => {
+          align();
+          link.focus({ preventScroll: true });
+          const state = { ...window.history.state };
+          delete state.shopStoreCollectionReturn;
+          window.history.replaceState(state, "", window.location.href);
+        });
+      });
+    });
+    return () => {
+      cancelAnimationFrame(firstFrame);
+      cancelAnimationFrame(secondFrame);
+      cancelAnimationFrame(focusFrame);
+    };
+  }, [store.id]);
+  function openCollection(slug: string) {
+    const link = collectionRail.current?.querySelector<HTMLAnchorElement>(
+      `[data-store-collection="${CSS.escape(slug)}"]`,
+    );
+    if (!link) return;
+    window.history.replaceState(
+      {
+        ...window.history.state,
+        shopStoreCollectionReturn: {
+          storeId: store.id,
+          slug,
+          top: link.getBoundingClientRect().top,
+        },
+      },
+      "",
+      window.location.href,
+    );
+    // Next may retain the shelf's scroll while the collection still intersects
+    // the viewport. The owned source entry restores its anchor on Back.
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
   const isKitsch = store.id === "kitsch",
     chemical = store.id === "chemical-guys",
     followedKitsch = isKitsch && followed.includes(store.id);
@@ -546,6 +623,16 @@ export function Storefront({
                 key={product.id}
                 product={product}
                 showPromotion={chemical}
+                ratingStars={
+                  isKitsch &&
+                  product.id === "terracotta" &&
+                  product.ratingCount === "2.1K"
+                    ? 4.5
+                    : undefined
+                }
+                partialRatingStars={
+                  isKitsch && product.id === "sugar-scrub" ? 4 : undefined
+                }
               />
             ))}
           </div>
@@ -554,11 +641,13 @@ export function Storefront({
         {isKitsch && (
           <section className="store-recommendations">
             <h2>Collections</h2>
-            <div className="store-collection-rail">
+            <div className="store-collection-rail" ref={collectionRail}>
               {collectionMedia.map((c) => (
                 <Link
                   key={c.slug}
                   href={`/stores/${store.id}/collections/${c.slug}`}
+                  data-store-collection={c.slug}
+                  onNavigate={() => openCollection(c.slug)}
                 >
                   <img src={`/api/reference-media/${c.media}`} alt="" />
                   <span>{c.name}</span>

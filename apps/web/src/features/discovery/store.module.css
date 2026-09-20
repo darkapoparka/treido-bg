@@ -65,6 +65,42 @@
 .store :global(.store-hero-kitsch .store-recommendations) {
   background: #d9d8d1;
 }
+.store :global(.store-hero-kitsch .store-recommendations h1),
+.store :global(.store-hero-kitsch .store-recommendations h2) {
+  line-height: 29px;
+  margin-bottom: 9px;
+}
+.store
+  :global(
+    .store-hero-kitsch > .store-recommendations + .store-recommendations
+  ) {
+  margin-top: 17px;
+}
+.store
+  :global(.store-hero-kitsch .store-recommendations .product-copy > strong) {
+  font-weight: 600;
+}
+.store :global(.rating[data-partial-rating] > .review-rating-stars) {
+  width: calc(var(--review-star-size) * var(--partial-rating-stars));
+  overflow: hidden;
+}
+.store :global(.store-collection-rail) {
+  gap: 8px;
+}
+.store :global(.store-collection-rail img) {
+  border: 5px solid #c5c4be;
+  border-radius: 20px;
+}
+.store :global(.store-collection-rail > a) {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+}
+.store :global(.store-collection-rail > a > span) {
+  display: block;
+  margin-inline: 8px;
+  white-space: nowrap;
+}
 .store :global(.store-category-navigation.is-pinned) {
   background: #393937;
 }
@@ -169,6 +205,7 @@
 
 .information {
   background: #c2bfb5;
+  padding-bottom: 55px;
 }
 .information > :global(.store-actions) {
   top: 8px;
@@ -363,6 +400,9 @@
 /* A short result set retains the filter trigger's viewport context. */
 .store :global(.store-all-products) {
   min-height: calc(100dvh - 120px);
+}
+.store :global(.store-hero-kitsch .store-grid-heading) {
+  margin-bottom: 15.5px;
 }
 .storeHeader[inert] {
   visibility: hidden;
