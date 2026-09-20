@@ -1291,6 +1291,13 @@
   letter-spacing: -0.6px;
   margin-bottom: 0;
 }
+.photoAnswer > h1,
+.photoAnswer > h2,
+.photoAnswer :global(.assistant-product-rail) strong,
+.photoAnswer :global(.assistant-product-rail) b,
+.photoAnswer :global(.assistant-product-rail) article > span {
+  opacity: 0.999;
+}
 .photoAnswer > p {
   letter-spacing: 0;
   margin-bottom: 12px;
