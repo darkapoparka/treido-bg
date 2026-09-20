@@ -84,6 +84,36 @@ test("Minis catalogue preserves captured card geometry and natural visit history
     "/api/reference-media/mini-sol-icon",
   ]);
 
+  await page.getByRole("button", { name: /^Get that room/ }).click();
+  const unavailable = page.getByRole("dialog", {
+    name: "Get that room",
+    exact: true,
+  });
+  const unavailableCopy =
+    "This Mini has no captured detail flow and is unavailable in this reference preview.";
+  await expect(unavailable).toBeVisible();
+  await expect(unavailable).toContainText(unavailableCopy);
+  await page.keyboard.press("Escape");
+  await expect(unavailable).not.toBeVisible();
+  await expect(page).toHaveURL(/\/minis$/);
+
+  await page
+    .locator(".mini-recent")
+    .getByRole("button", { name: "Get that room", exact: true })
+    .click();
+  await expect(unavailable).toBeVisible();
+  await expect(unavailable).toContainText(unavailableCopy);
+  await expect(page).toHaveURL(/\/minis$/);
+  await page.keyboard.press("Escape");
+  await expect(unavailable).not.toBeVisible();
+  await expect(page).toHaveURL(/\/minis$/);
+  expect(await recentSources(page)).toEqual([
+    "/api/reference-media/mini-room-icon",
+    "/api/reference-media/mini-look-icon",
+    "/api/reference-media/mini-skin-icon",
+    "/api/reference-media/mini-sol-icon",
+  ]);
+
   const carousel = page.locator(".mini-carousel");
   await carousel.evaluate((element) =>
     element.scrollTo({ left: element.scrollWidth, behavior: "instant" }),

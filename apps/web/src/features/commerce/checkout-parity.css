@@ -689,6 +689,59 @@
 .source-checkout .initial-payment {
   padding-top: 0;
 }
+.source-checkout:has(.initial-payment) {
+  padding-inline: 16px;
+}
+.source-checkout:has(.initial-payment) .checkout-header h1 {
+  transform: translateY(-3px);
+  font-weight: 500;
+}
+.source-checkout .initial-payment input:not([type="checkbox"]) {
+  padding-top: 18px;
+  padding-bottom: 10px;
+  opacity: 0.999;
+}
+.source-checkout .initial-payment input::placeholder {
+  color: #444;
+  opacity: 1;
+}
+.source-checkout .initial-payment .initial-card-fields > input {
+  height: 49px;
+  padding-top: 21px;
+  padding-bottom: 7px;
+}
+.source-checkout .initial-card-fields > div {
+  position: relative;
+}
+.source-checkout .initial-card-fields input[aria-label="CVV"] {
+  padding-right: 44px;
+}
+.initial-card-help {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 40px;
+  padding: 0;
+}
+.initial-card-help svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.source-checkout .initial-payment .checkout-pay .primary {
+  height: 44px;
+  min-height: 44px;
+  font-weight: 500;
+}
+.source-checkout .initial-payment .checkout-pay {
+  padding-bottom: calc(58px + env(safe-area-inset-bottom));
+}
 .source-checkout .initial-billing {
   gap: 16px;
 }
@@ -754,6 +807,32 @@
   padding-top: 0;
   padding-bottom: 24px;
   bottom: -20px;
+}
+.source-address-editor-sheet .editor-actions {
+  position: static;
+  padding-bottom: 0;
+}
+.source-address-editor-sheet .editor-actions button {
+  padding-inline: 12px;
+  white-space: nowrap;
+}
+.source-address-editor-sheet .source-address-field-phone input {
+  padding-right: 28px;
+}
+.source-address-phone-help {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 40px;
+  padding: 0;
+  color: #111;
+}
+.source-address-phone-help svg {
+  width: 18px;
+  height: 18px;
 }
 .source-address-editor-sheet .form-cancel,
 .source-payment-editor .form-cancel {
@@ -886,9 +965,23 @@
 }
 .source-billing-group .source-bill-to[aria-expanded="true"] {
   min-height: 40px;
+  padding-block: 12px;
+  line-height: 18px;
 }
-.source-billing-group .source-bill-to > b {
+.source-billing-group .source-billing-chevron {
   grid-column: 3;
+  display: grid;
+  place-items: center;
+  width: 12px;
+  height: 18px;
+}
+.source-billing-chevron svg {
+  width: 12px;
+  height: 12px;
+  transform: rotate(90deg);
+}
+.source-bill-to[aria-expanded="true"] .source-billing-chevron svg {
+  transform: rotate(-90deg);
 }
 .source-billing-options {
   padding: 0 14px 12px;
@@ -900,6 +993,7 @@
   border-radius: 13px;
   background: #f5f5f6;
   font-size: 14px;
+  margin-top: 0;
 }
 .source-billing-options .shipping-option input {
   position: absolute;

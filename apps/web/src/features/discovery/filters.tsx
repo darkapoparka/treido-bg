@@ -26,6 +26,14 @@ const names: Record<FilterSection, string> = {
   country: "Ships to",
 };
 
+// The capture exposes these disclosures, but not their child category lists.
+const unavailableCategoryChildren = new Set([
+  "Shirts & tops",
+  "Shoes",
+  "Intimates",
+  "Activewear",
+]);
+
 type FilterProps = {
   open: boolean;
   onClose: () => void;
@@ -54,7 +62,9 @@ function OpenFilters({
   };
   const [section, setSection] = useState<FilterSection | null>(null);
   const [categoryPath, setCategoryPath] = useState(false);
+  const [unavailableCategory, setUnavailableCategory] = useState("");
   const closeSection = () => {
+    setUnavailableCategory("");
     setCategoryPath(false);
     setSection(null);
   };
@@ -65,7 +75,10 @@ function OpenFilters({
     });
   const rows = (key: FilterSection, list: readonly string[]) =>
     list.map((option) => {
-      const opensChildren = key === "category" && option === "Women";
+      const opensWomen = key === "category" && option === "Women";
+      const unavailableChildren =
+        key === "category" && unavailableCategoryChildren.has(option);
+      const opensChildren = opensWomen || unavailableChildren;
       const selected =
         value[key] === (key === "category" ? categoryValue(option) : option) ||
         (key === "category" && option === "All Women" && !value.category);
@@ -75,14 +88,22 @@ function OpenFilters({
           key={option}
           aria-pressed={opensChildren ? undefined : selected}
           aria-haspopup={opensChildren ? "dialog" : undefined}
-          aria-expanded={opensChildren ? categoryPath : undefined}
-          onClick={() =>
-            opensChildren ? setCategoryPath(true) : choose(key, option)
+          aria-expanded={
+            opensWomen
+              ? categoryPath
+              : unavailableChildren
+                ? unavailableCategory === option
+                : undefined
           }
+          onClick={() => {
+            if (opensWomen) setCategoryPath(true);
+            else if (unavailableChildren) setUnavailableCategory(option);
+            else choose(key, option);
+          }}
         >
           {option}
           {opensChildren ? (
-            <Icon name="arrow" />
+            <Icon name="chevron" />
           ) : (
             <span
               aria-hidden="true"
@@ -169,7 +190,7 @@ function OpenFilters({
       <Sheet
         open={section === "category" && categoryPath}
         title="Women"
-        className={`${styles.filterSheet} filter-tall`}
+        className={`${styles.filterSheet} filter-tall ${unavailableCategory ? "filter-covered" : ""}`}
         onClose={() => setCategoryPath(false)}
       >
         <div className="filter-options">
@@ -192,6 +213,16 @@ function OpenFilters({
             Done
           </button>
         </div>
+      </Sheet>
+      <Sheet
+        open={!!unavailableCategory}
+        title={unavailableCategory}
+        onClose={() => setUnavailableCategory("")}
+      >
+        <p className="sheet-copy">
+          These subcategories are not included in the captured reference. Your
+          current filters are unchanged.
+        </p>
       </Sheet>
     </>
   );

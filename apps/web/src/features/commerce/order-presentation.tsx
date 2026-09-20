@@ -44,7 +44,9 @@ export function OrderAction({
 }) {
   const content = (
     <>
-      {label === "View order archive" ? (
+      {label === "View order archive" ||
+      label === "Archive order" ||
+      label === "Unarchive order" ? (
         <svg
           className={styles.archiveActionIcon}
           viewBox="0 0 24 24"
@@ -57,12 +59,16 @@ export function OrderAction({
         >
           <path d="M4 4.5h16v4H4zM5.5 8.5v11h13v-11M9 12h6" />
         </svg>
-      ) : label === "Mark as delivered" || label === "Unmark as delivered" ? (
+      ) : label === "Mark as delivered" ||
+        label === "Mark order as delivered" ||
+        label === "Unmark as delivered" ? (
         <svg
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           aria-hidden="true"
         >
           <circle cx="12" cy="12" r="9" />
@@ -71,6 +77,18 @@ export function OrderAction({
           ) : (
             <path d="m8 12 3 3 5-6" />
           )}
+        </svg>
+      ) : label === "Report this order as fraudulent" ? (
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M10.3 3.5a2 2 0 0 1 3.4 0l8 14a2 2 0 0 1-1.7 3H4a2 2 0 0 1-1.7-3zM12 8v5m0 4h.01" />
         </svg>
       ) : (
         <Icon name={actionIcons[label] ?? "info"} />

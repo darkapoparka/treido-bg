@@ -9,7 +9,7 @@ import type { Catalog } from "../catalog/types";
 import { orderGridDeals } from "../catalog/reference/order-fixtures";
 import { formatMoney } from "../catalog/types";
 import { Icon } from "../discovery/icons";
-import { ReviewStars } from "../discovery/rating-stars";
+import { RatingStar, ReviewStars } from "../discovery/rating-stars";
 import { capturedReceipts } from "./receipt-data";
 import { shopSourceBuyer } from "./source-fixtures";
 import {
@@ -953,7 +953,7 @@ export function OrderReview({ id, catalog }: { id: string; catalog: Catalog }) {
                     onClick={() => setRating(n)}
                     key={n}
                   >
-                    ★
+                    <RatingStar />
                   </button>
                 ))}
               </div>

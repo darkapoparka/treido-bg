@@ -611,6 +611,7 @@
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
 }
 .embeddedAnswer:global(.assistant-page) {
+  scrollbar-width: none;
   padding-top: 39px;
   height: 100%;
   overflow-y: auto;
@@ -872,6 +873,18 @@
   object-fit: contain;
   border-radius: 8px;
   background: #ded7eb;
+}
+.feedbackSheet :global(.feedback-products) > .feedbackFragment {
+  flex: 0 0 37px;
+  width: 37px;
+  overflow: hidden;
+}
+.feedbackSheet :global(.feedback-products) > .feedbackFragment > img {
+  display: block;
+  width: 37px;
+  height: auto;
+  border-radius: 8px 0 0 8px;
+  background: transparent;
 }
 .feedbackSheet :global(.feedback-products) button {
   right: 8px;
@@ -1143,6 +1156,11 @@
   display: none;
 }
 .filterSheet :global(.filter-value) svg {
+  stroke-width: 3;
+}
+.filterSheet :global(.filter-options > button[aria-haspopup="dialog"] > svg) {
+  width: 16px;
+  height: 16px;
   stroke-width: 3;
 }
 .filterSheet :global(.sheet-header) h2 {

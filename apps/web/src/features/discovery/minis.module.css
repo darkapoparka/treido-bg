@@ -6,7 +6,10 @@
   padding-top: 12px;
 }
 .catalog :global(.section-heading) {
+  position: relative;
+  z-index: 1;
   margin-bottom: 5px;
+  transform: translateY(-4px);
 }
 .catalog :global(.section-heading h1) {
   font-size: 28px;
@@ -19,6 +22,9 @@
 }
 .catalog :global(.mini-carousel) {
   gap: 16px;
+  /* Let card shadows breathe inside the scrollport without moving the shelf. */
+  margin-block: -64px;
+  padding-block: 64px;
   padding-right: 16px;
   scroll-padding-left: 0;
 }
@@ -27,7 +33,7 @@
   min-width: 0;
   padding: 8px;
   border-radius: 28px;
-  box-shadow: 0 20px 44px #0002;
+  box-shadow: 0 4px 44px #0002;
 }
 .catalog :global(.mini-feature > img) {
   height: auto;
@@ -72,8 +78,19 @@
   line-height: 22px;
   letter-spacing: -0.4px;
 }
+.catalog :global(.section-heading h1),
+.catalog h2,
+.catalog :global(.mini-feature strong),
+.catalog :global(.mini-feature p),
+.catalog :global(.mini-list strong),
+.catalog :global(.mini-list p) {
+  opacity: 0.999;
+}
 .catalog :global(.mini-recent) {
   gap: 12px;
+}
+.catalog :global(.mini-recent > button) {
+  padding: 0;
 }
 .catalog :global(.mini-list > a),
 .catalog :global(.mini-list > button) {

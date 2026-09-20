@@ -1,12 +1,16 @@
-function StarRow() {
-  return Array.from({ length: 5 }, (_, index) => (
-    <svg key={index} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+export function RatingStar() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path
         fill="currentColor"
         d="M12 1.5 15.1 8.7 23 9.4 17 14.6 18.8 22.3 12 18.2 5.2 22.3 7 14.6 1 9.4 8.9 8.7Z"
       />
     </svg>
-  ));
+  );
+}
+
+function StarRow() {
+  return Array.from({ length: 5 }, (_, index) => <RatingStar key={index} />);
 }
 
 export function ReviewStars({

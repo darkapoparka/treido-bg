@@ -314,25 +314,33 @@ export function JeansAnswer({
       >
         <p>Let us know which products you preferred</p>
         <div className="feedback-products">
-          {products.map((p) => (
-            <div key={p.id}>
-              <img src={p.feedbackImage} alt={p.title} />
-              <button
-                aria-label={`Like ${p.title}`}
-                aria-pressed={votes[p.id] === true}
-                onClick={() => setVotes((v) => ({ ...v, [p.id]: true }))}
-              >
-                <Icon name="thumb-up" />
-              </button>
-              <button
-                aria-label={`Dislike ${p.title}`}
-                aria-pressed={votes[p.id] === false}
-                onClick={() => setVotes((v) => ({ ...v, [p.id]: false }))}
-              >
-                <Icon name="thumb-down" />
-              </button>
-            </div>
-          ))}
+          {products
+            .filter((p) => p.id !== "assistant-blue-skinny")
+            .map((p) => (
+              <div key={p.id}>
+                <img src={p.feedbackImage} alt={p.title} />
+                <button
+                  aria-label={`Like ${p.title}`}
+                  aria-pressed={votes[p.id] === true}
+                  onClick={() => setVotes((v) => ({ ...v, [p.id]: true }))}
+                >
+                  <Icon name="thumb-up" />
+                </button>
+                <button
+                  aria-label={`Dislike ${p.title}`}
+                  aria-pressed={votes[p.id] === false}
+                  onClick={() => setVotes((v) => ({ ...v, [p.id]: false }))}
+                >
+                  <Icon name="thumb-down" />
+                </button>
+              </div>
+            ))}
+          <div className={styles.feedbackFragment} aria-hidden="true">
+            <img
+              src="/api/reference-media/assistant-feedback-third-fragment"
+              alt=""
+            />
+          </div>
         </div>
         <label>
           Share any thoughts about the entire response

@@ -273,8 +273,14 @@ export function OnboardingPage({
           <p>
             By proceeding to use Shop, you agree to our
             <br />
-            <Link href="/about">terms of service</Link> and{" "}
-            <Link href="/about">privacy policy</Link>.
+            <Link href="https://shop.app/terms-of-service">
+              terms of service
+            </Link>{" "}
+            and{" "}
+            <Link href="https://www.shopify.com/legal/privacy/consumers">
+              privacy policy
+            </Link>
+            .
           </p>
         </div>
       </AccountPage>
@@ -356,8 +362,14 @@ export function OnboardingPage({
           <p>
             By proceeding to use Shop, you agree to our
             <br />
-            <Link href="/about">terms of service</Link> and{" "}
-            <Link href="/about">privacy policy</Link>.
+            <Link href="https://shop.app/terms-of-service">
+              terms of service
+            </Link>{" "}
+            and{" "}
+            <Link href="https://www.shopify.com/legal/privacy/consumers">
+              privacy policy
+            </Link>
+            .
           </p>
         </div>
       </AccountPage>
@@ -413,13 +425,19 @@ export function OnboardingPage({
           </div>
         )}
         <h1>
-          {step === 0
-            ? "shop"
-            : step === 1
-              ? "What are you shopping for?"
-              : step === 2
-                ? "Track all of your orders in one place"
-                : "Follow your order every step of the way"}
+          {step === 0 ? (
+            "shop"
+          ) : step === 1 ? (
+            "What are you shopping for?"
+          ) : step === 2 ? (
+            "Track all of your orders in one place"
+          ) : (
+            <>
+              Follow your order every step
+              <br />
+              of the way
+            </>
+          )}
         </h1>
         {step > 0 && step < 3 && (
           <p>
@@ -495,7 +513,10 @@ export function OnboardingPage({
             </button>
           ) : step === 2 ? (
             <>
-              <Link className="primary form-submit" href="/account/connections">
+              <Link
+                className="primary form-submit"
+                href="/account/connections?provider=gmail"
+              >
                 <img
                   className="onboarding-google-mark"
                   src="/api/reference-media/connection-google"
@@ -517,7 +538,7 @@ export function OnboardingPage({
               </button>
               <small>
                 We will also send you updates with information about your
-                orders, special offers, and more.
+                orders, special offers, and news.
               </small>
             </>
           )}

@@ -784,6 +784,11 @@ const media: Record<
     ],
     underlayKey: "assistant-black-square",
   },
+  "assistant-feedback-third-fragment": {
+    file: "flows/2e218159-702e-4708-b9aa-270dbca77f0b/002.webp",
+    // Only the photograph exposed before the feedback sheet's right edge.
+    rect: [340, 481, 37, 141],
+  },
   "assistant-white-square": {
     file: "flows/8b512345-0d92-4125-b037-4c6f05288cee/002.webp",
     rect: [18, 386, 148, 148],
@@ -1548,7 +1553,7 @@ const media: Record<
   "explore-home-citizenry-card": {
     file: "flows/5c39eb04-f5fe-43a0-92da-b79b275051e0/003.webp",
     rect: [197, 371, 172, 172],
-    roundedOcclusions: [[11, 10, 68, 22, 11]],
+    roundedOcclusions: [[11, 11, 49, 18, 9]],
     circularOcclusions: [[145, 145, 17]],
     photoRadius: 20,
   },

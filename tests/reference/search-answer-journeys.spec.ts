@@ -105,9 +105,46 @@ test("nested filter choices retain the results underlay until the root filter cl
   await sort.getByRole("button", { name: "Done", exact: true }).click();
   await expect(filter).toBeVisible();
   await expect(first).toHaveAttribute("data-result-id", "carpenter-jeans");
+  await filter.getByRole("button", { name: "Category", exact: true }).click();
+  const category = page.getByRole("dialog", { name: "Category", exact: true });
+  await category.getByRole("button", { name: "Women", exact: true }).click();
+  const women = page.getByRole("dialog", { name: "Women", exact: true });
+  const pants = women.getByRole("button", { name: "Pants", exact: true });
+  await pants.click();
+  await expect(pants).toHaveAttribute("aria-pressed", "true");
+  await expect(page).toHaveURL(/category=Pants/);
+  const selectedUrl = page.url();
+  for (const name of ["Shirts & tops", "Shoes", "Intimates", "Activewear"]) {
+    const branch = women.getByRole("button", { name, exact: true });
+    await expect(branch).toHaveAttribute("aria-haspopup", "dialog");
+    await expect(branch.locator(".radio-outline")).toHaveCount(0);
+  }
+  const shirts = women.getByRole("button", {
+    name: "Shirts & tops",
+    exact: true,
+  });
+  await shirts.click();
+  const unavailable = page.getByRole("dialog", {
+    name: "Shirts & tops",
+    exact: true,
+  });
+  await expect(unavailable).toContainText(
+    "These subcategories are not included in the captured reference.",
+  );
+  await expect(page).toHaveURL(selectedUrl);
+  await page.goBack();
+  await expect(unavailable).not.toBeVisible();
+  await expect(women).toBeVisible();
+  await expect(shirts).toBeFocused();
+  await expect(pants).toHaveAttribute("aria-pressed", "true");
+  await expect(page).toHaveURL(selectedUrl);
+  await women.getByRole("button", { name: "Done", exact: true }).click();
+  await category.getByRole("button", { name: "Done", exact: true }).click();
+  await expect(first).toHaveAttribute("data-result-id", "carpenter-jeans");
   await filter.getByRole("button", { name: "Done", exact: true }).click();
   await expect(filter).not.toBeVisible();
   await expect(page).toHaveURL(/deals=true/);
+  await expect(page).toHaveURL(/category=Pants/);
   await expect(first).not.toHaveAttribute("data-result-id", "carpenter-jeans");
 });
 
@@ -215,6 +252,7 @@ test("saving an answer recommendation updates the shared Saved library", async (
   await expect(answer).not.toBeVisible();
   await page.getByRole("link", { name: "Home", exact: true }).click();
   await page.getByRole("link", { name: "Saved", exact: true }).click();
+  await expect(page).toHaveURL(/\/saved$/, { timeout: 12000 });
   await expect(
     page.locator('.saved-grid [data-product-id="city-duaa-denim"]'),
   ).toBeVisible();
@@ -337,6 +375,11 @@ test("feedback keeps source geometry, white vote glyphs and nested focus at mobi
   await expect(
     feedback.locator(".feedback-products img").nth(1),
   ).toHaveAttribute("src", "/api/reference-media/assistant-feedback-urban");
+  const fragment = feedback.locator(
+    '.feedback-products img[src="/api/reference-media/assistant-feedback-third-fragment"]',
+  );
+  await expect(fragment).toHaveCSS("width", "37px");
+  await expect(fragment.locator("..").locator("button")).toHaveCount(0);
   await feedback.getByRole("button", { name: "Submit", exact: true }).click();
   await expect(feedback).not.toBeVisible();
   await expect(

@@ -3034,8 +3034,9 @@
   box-shadow: 0 3px 7px #00000008;
 }
 .tracking-onboarding-card .tracking-shoe {
-  width: 76px;
+  width: 80px;
   height: 80px;
+  flex-shrink: 0;
   object-fit: contain;
   background: #f8f8f8;
   border-radius: 10px;
@@ -3059,6 +3060,7 @@
 .tracking-onboarding-card > span i {
   display: block;
   position: relative;
+  width: min(154px, 100%);
   height: 2px;
   background: #5433e9;
   margin: 0 0 12px;
@@ -3074,9 +3076,21 @@
   background: #5433e9;
 }
 .tracking-onboarding-card .tracking-parcel {
-  width: 60px;
-  height: 60px;
+  width: 62px;
+  height: 49px;
+  flex-shrink: 0;
+  margin-right: 2px;
+  transform: translateY(6px);
   object-fit: contain;
+}
+@media (max-width: 360px) {
+  .onboarding-step-3 .tracking-onboarding-card {
+    gap: 8px;
+  }
+  .onboarding-step-3 .tracking-shoe {
+    width: 64px;
+    height: 64px;
+  }
 }
 
 .onboarding-step-3 .onboarding-actions {
@@ -3084,7 +3098,7 @@
   left: calc(16px + var(--account-safe-left));
   right: calc(16px + var(--account-safe-right));
   top: auto;
-  bottom: calc(43px + var(--account-safe-bottom));
+  bottom: calc(51px + var(--account-safe-bottom));
   width: auto;
   padding: 0;
   margin: 0;

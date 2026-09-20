@@ -11,6 +11,7 @@ export function InitialPayment({
   onContinue: () => void;
 }) {
   const [same, setSame] = useState(true),
+    [securityHelp, setSecurityHelp] = useState(false),
     [boundary, setBoundary] = useState(false),
     [billing, setBilling] = useState<Address | undefined>(),
     [editing, setEditing] = useState(false),
@@ -64,8 +65,25 @@ export function InitialPayment({
               pattern="[0-9]{3,4}"
               required
             />
+            <button
+              type="button"
+              className="initial-card-help"
+              aria-label="About security code"
+              aria-expanded={securityHelp}
+              onClick={() => setSecurityHelp((current) => !current)}
+            >
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <rect x="2" y="3.5" width="16" height="13" rx="2.5" />
+                <path d="M2 8h16M5 12h4" />
+              </svg>
+            </button>
           </div>
         </div>
+        {securityHelp && (
+          <p className="form-note" role="status">
+            The 3 or 4 digit security code printed on your card.
+          </p>
+        )}
         <input
           className="initial-card-name"
           aria-label="Name on card"

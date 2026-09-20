@@ -413,7 +413,7 @@ export function TrackingDetail({
         className={`full-activity-sheet ${styles.activitySheet}`}
         onClose={() => setActivity(false)}
       >
-        <Activity rows={all} />
+        <Activity rows={all} full />
       </Sheet>
       <Sheet
         open={menu}
@@ -461,42 +461,45 @@ export function TrackingDetail({
 function Activity({
   rows,
   submittedParcel = false,
+  full = false,
 }: {
   rows: string[][];
   submittedParcel?: boolean;
+  full?: boolean;
 }) {
   return (
     <div className={`source-activity ${styles.activity}`}>
-      {rows.map(([time, label]) => (
-        <div key={`${time}-${label}`}>
-          <i
-            data-event-kind={
-              label === "Successfully delivered"
-                ? "delivered"
-                : label === "Parcel data submitted to carrier"
-                  ? "carrier"
-                  : rows.length > 3
-                    ? "dot"
-                    : "parcel"
-            }
-          >
-            {label === "Successfully delivered" ? (
-              <Icon name="location" />
-            ) : label === "Parcel data submitted to carrier" &&
-              !submittedParcel ? (
-              <CarrierMark carrier="Amazon Logistics" />
-            ) : rows.length > 3 ? (
-              <span />
-            ) : (
-              <img src="/api/reference-media/parcel" alt="" />
-            )}
-          </i>
-          <span>
-            <small>{time}</small>
-            <strong>{label}</strong>
-          </span>
-        </div>
-      ))}
+      {rows.map(([time, label]) => {
+        const kind =
+          label === "Successfully delivered"
+            ? "delivered"
+            : label === "Parcel data submitted to carrier"
+              ? submittedParcel
+                ? "parcel"
+                : "carrier"
+              : !full && label === "Arrival at transport hub"
+                ? "parcel"
+                : "dot";
+        return (
+          <div key={`${time}-${label}`}>
+            <i data-event-kind={kind}>
+              {kind === "delivered" ? (
+                <Icon name="location" />
+              ) : kind === "carrier" ? (
+                <CarrierMark carrier="Amazon Logistics" />
+              ) : kind === "dot" ? (
+                <span />
+              ) : (
+                <img src="/api/reference-media/parcel" alt="" />
+              )}
+            </i>
+            <span>
+              <small>{time}</small>
+              <strong>{label}</strong>
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -1457,6 +1457,7 @@ function SourceAddressEditor({
 }) {
   const [value, setValue] = useState(initialValue);
   const [suggestions, setSuggestions] = useState(false);
+  const [phoneHelp, setPhoneHelp] = useState(false);
   const change = (key: keyof Address, next: string | boolean) => {
     const updated = { ...value, [key]: next };
     setValue(updated);
@@ -1509,6 +1510,24 @@ function SourceAddressEditor({
         />
         {key === "street" && <Icon name="search" />}
       </label>
+      {key === "phone" && variant === "sheet" && (
+        <>
+          <button
+            type="button"
+            className="source-address-phone-help"
+            aria-label="About delivery phone number"
+            aria-expanded={phoneHelp}
+            onClick={() => setPhoneHelp((current) => !current)}
+          >
+            <Icon name="question-circle" />
+          </button>
+          {phoneHelp && (
+            <p className="source-security-help" role="status">
+              A phone number is optional for this delivery address.
+            </p>
+          )}
+        </>
+      )}
       {key === "street" &&
         suggestions &&
         /1226|university|menlo/i.test(value.street) && (
@@ -1868,7 +1887,9 @@ function SourcePaymentEditor({
                 {selectedBilling.postalCode}, US
               </span>
             )}
-            <b>{billOpen ? "⌃" : "⌄"}</b>
+            <span className="source-billing-chevron" aria-hidden="true">
+              <Icon name="chevron" />
+            </span>
           </button>
           {billOpen && (
             <div className="source-billing-options">

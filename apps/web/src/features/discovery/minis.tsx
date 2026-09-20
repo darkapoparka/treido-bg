@@ -127,19 +127,35 @@ export function Minis() {
         <>
           <h2>Recently viewed</h2>
           <div className="mini-recent">
-            {state.visitedMinis.map((id) => (
-              <Link
-                key={id}
-                href={`/minis/${id}`}
-                aria-label={findMini(id)?.name ?? id}
-                onClick={() => state.visitMini(id)}
-              >
-                <img
-                  src={`/api/reference-media/mini-${id}-icon`}
-                  alt={minis.find((m) => m.id === id)?.name}
-                />
-              </Link>
-            ))}
+            {state.visitedMinis.map((id) => {
+              const mini = findMini(id);
+              if (!mini) return null;
+              const icon = (
+                <img src={`/api/reference-media/mini-${id}-icon`} alt="" />
+              );
+              return mini.available ? (
+                <Link
+                  key={id}
+                  href={`/minis/${id}`}
+                  aria-label={mini.name}
+                  onClick={() => state.visitMini(id)}
+                >
+                  {icon}
+                </Link>
+              ) : (
+                <button
+                  key={id}
+                  type="button"
+                  aria-label={mini.name}
+                  onClick={() => {
+                    state.visitMini(id);
+                    setUnavailable(mini.name);
+                  }}
+                >
+                  {icon}
+                </button>
+              );
+            })}
           </div>
         </>
       )}

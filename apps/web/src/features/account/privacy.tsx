@@ -115,7 +115,7 @@ export function ConnectionsPage() {
       </p>
       <div className="connection-benefits">
         <p>
-          <AccountIcon name="location" />
+          <AccountIcon name="truck-check" />
           Track the progress of your orders associated with your Gmail account
         </p>
         <p>
@@ -123,7 +123,7 @@ export function ConnectionsPage() {
           Shop will scan your Gmail inbox for order information from your emails
         </p>
         <p>
-          <AccountIcon name="link" />
+          <AccountIcon name="unlink" />
           Disconnect at any time from your Shop or Google accounts
         </p>
       </div>

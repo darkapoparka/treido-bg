@@ -155,6 +155,42 @@ test("flow 78 keeps Account behind the person editor and returns once with the s
   await birthday.getByRole("textbox", { name: "Month" }).fill("02");
   await birthday.getByRole("textbox", { name: "Day" }).fill("18");
   await birthday.getByRole("textbox", { name: "Year" }).fill("1995");
+  await expect(birthday.getByRole("textbox", { name: "Year" })).toHaveValue(
+    "1995",
+  );
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 485 });
+    const fields = await birthday.getByRole("textbox").evaluateAll((inputs) =>
+      inputs.map((element) => {
+        const input = element as HTMLInputElement;
+        const style = getComputedStyle(input);
+        const context = document.createElement("canvas").getContext("2d")!;
+        context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+        const rect = input.getBoundingClientRect();
+        return {
+          label: input.getAttribute("aria-label"),
+          textWidth: context.measureText(input.value).width,
+          availableWidth:
+            input.clientWidth -
+            parseFloat(style.paddingLeft) -
+            parseFloat(style.paddingRight),
+          left: rect.left,
+          right: rect.right,
+        };
+      }),
+    );
+    expect(fields).toHaveLength(3);
+    for (const field of fields) {
+      expect(
+        field.availableWidth,
+        `${field.label} must show its complete value at ${width}px`,
+      ).toBeGreaterThanOrEqual(field.textWidth);
+      expect(field.left).toBeGreaterThanOrEqual(0);
+      expect(field.right).toBeLessThanOrEqual(width);
+    }
+    await expectNoHorizontalOverflow(page);
+  }
+  await page.setViewportSize({ width: 393, height: 793 });
   await birthday.getByRole("button", { name: "Save" }).click();
 
   await expect(page.getByRole("textbox", { name: "Nickname" })).toHaveValue(

@@ -175,6 +175,25 @@ test("fresh preview cold launch completes onboarding through real controls", asy
   await expect(
     page.getByRole("link", { name: "Connect Google", exact: true }),
   ).toBeInViewport();
+  const trackingUrl = page.url();
+  await page.getByRole("link", { name: "Connect Google", exact: true }).click();
+  await expect(page).toHaveURL(/\/account\/connections\?provider=gmail$/);
+  await expect(
+    page.getByRole("heading", { name: "Connect Gmail account", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Continue to Google", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Close connection", exact: true })
+    .click();
+  await expect(page).toHaveURL(trackingUrl);
+  await expect(
+    page.getByRole("heading", {
+      name: "Track all of your orders in one place",
+      exact: true,
+    }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Skip", exact: true }).click();
   await expect(
     page.getByRole("heading", {
