@@ -1,0 +1,42 @@
+name: Agent documentation integrity
+on:
+  push:
+    paths:
+      - "**/*.md"
+      - "docs/**"
+      - ".agents/**"
+      - ".codex/**"
+      - "shopify/**"
+      - "scripts/check-agent-docs.mjs"
+      - "scripts/agent-skills.py"
+      - ".github/workflows/agent-docs.yml"
+  pull_request:
+    paths:
+      - "**/*.md"
+      - "docs/**"
+      - ".agents/**"
+      - ".codex/**"
+      - "shopify/**"
+      - "scripts/check-agent-docs.mjs"
+      - "scripts/agent-skills.py"
+      - ".github/workflows/agent-docs.yml"
+permissions:
+  contents: read
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .node-version
+      - name: Validate docs, task continuity and skill discovery metadata
+        run: node scripts/check-agent-docs.mjs
+      - name: Verify pinned upstream skill bytes and licenses offline
+        run: python3 scripts/agent-skills.py --verify
+      - name: Check whitespace
+        run: git diff --check HEAD^ HEAD

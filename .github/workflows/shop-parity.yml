@@ -1,0 +1,363 @@
+name: Shop reference parity
+on:
+  push:
+    branches: [main, astra-pro]
+    paths:
+      - "apps/web/**"
+      - "packages/contracts/**"
+      - "tests/reference/**"
+      - "scripts/shop-parity/**"
+      - "references/shop/**"
+      - "prepare-shop-reference.mjs"
+      - "playwright.reference.config.ts"
+      - "pnpm-lock.yaml"
+      - "package.json"
+      - ".github/workflows/shop-parity.yml"
+  workflow_dispatch:
+    inputs:
+      flows:
+        description: "Frozen flow numbers/ranges; capture is not acceptance"
+        default: "1-97"
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: shop-reference-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  reference:
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/astra-pro'
+    runs-on: macos-26
+    # Complete 424-frame capture plus the connected journey suite, sequentially.
+    timeout-minutes: 90
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+      TURBO_TELEMETRY_DISABLED: "1"
+      SHOP_REFERENCE_PREVIEW: "1"
+      VERCEL_ENV: preview
+      PLAYWRIGHT_CHANNEL: chromium
+      SHOP_PARITY_BASE_URL: http://127.0.0.1:6412
+      PARITY_FLOWS: ${{ inputs.flows || '1-97' }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .node-version
+      - run: npm install --global pnpm@12.3.4
+      - id: install
+        run: pnpm install --frozen-lockfile
+      - name: Inspect the installed Next.js navigation and component guides
+        shell: bash
+        run: |
+          mkdir -p .qa/shop-parity
+          printf '\n.qa/\n' >> .git/info/exclude
+          python3 - <<'PY'
+          import json, pathlib
+          root = pathlib.Path('apps/web/node_modules/next').resolve()
+          docs = root / 'dist/docs'
+          version = json.loads((root / 'package.json').read_text())['version']
+          text = ['Installed Next.js ' + version]
+          for topic in ['linking-and-navigating', 'server-and-client-components', 'use-search-params']:
+              matches = sorted(p for p in docs.rglob('*' + topic + '*') if p.is_file() and p.suffix in ['.md', '.mdx'])
+              if not matches:
+                  raise RuntimeError('Installed framework guide not found: ' + topic)
+              guide = matches[0]
+              text.extend(['\n## ' + str(guide.relative_to(root)), guide.read_text()])
+              print(version + ': ' + str(guide.relative_to(root)))
+          pathlib.Path('.qa/shop-parity/framework-guides.txt').write_text('\n'.join(text))
+          PY
+      - name: Retain installed framework guide evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: shop-framework-guides-${{ github.sha }}-${{ github.run_attempt }}
+          retention-days: 2
+          include-hidden-files: true
+          if-no-files-found: error
+          path: .qa/shop-parity/framework-guides.txt
+      - name: Verify frozen reference bytes
+        id: references
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, pathlib, platform, os
+          root = pathlib.Path('references/shop').resolve()
+          manifest = json.loads((root / 'manifest.json').read_text())
+          checked = {}
+          def verify(value):
+              if isinstance(value, dict):
+                  if 'file' in value and 'sha256' in value:
+                      name = value['file']
+                      file = (root / name).resolve()
+                      if root not in file.parents:
+                          raise RuntimeError('Reference path escapes capture root')
+                      digest = hashlib.sha256(file.read_bytes()).hexdigest()
+                      if digest != value['sha256']:
+                          raise RuntimeError('Reference SHA-256 mismatch: ' + name)
+                      checked[name] = digest
+                  for item in value.values():
+                      verify(item)
+              elif isinstance(value, list):
+                  for item in value:
+                      verify(item)
+          verify(manifest)
+          counts = {'flows': len(manifest['flows']), 'frames': sum(len(f['screens']) for f in manifest['flows']), 'standalone': len(manifest['screens']), 'verifiedFiles': len(checked), 'commit': os.environ['GITHUB_SHA'], 'platform': platform.platform()}
+          if (counts['flows'], counts['frames'], counts['standalone']) != (97, 424, 323):
+              raise RuntimeError('Frozen source inventory changed; reconcile the manifest explicitly')
+          pathlib.Path('.qa/shop-parity/provenance.json').write_text(json.dumps(counts, indent=2))
+          print(json.dumps(counts))
+          PY
+      - name: Retain the already-published frozen corpus for inspection
+        uses: actions/upload-artifact@v7
+        with:
+          name: shop-corpus-${{ github.sha }}-${{ github.run_attempt }}
+          retention-days: 2
+          if-no-files-found: error
+          compression-level: 0
+          path: |
+            references/shop/manifest.json
+            references/shop/flows/**
+            references/shop/screens/**
+      - name: Prepare ordered sources for visual inspection
+        shell: bash
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs/promises';
+          import sharp from './apps/web/node_modules/sharp/dist/index.mjs';
+          const manifest = JSON.parse(await fs.readFile('references/shop/manifest.json', 'utf8'));
+          const selected = new Set(process.env.PARITY_FLOWS.split(',').flatMap(part => {
+            if (!/^\d+(?:-\d+)?$/.test(part)) throw new Error('Invalid flow scope');
+            const [from, to = from] = part.split('-').map(Number);
+            if (from < 1 || to > manifest.flows.length || to < from) throw new Error('Flow scope outside manifest');
+            return Array.from({length: to - from + 1}, (_, i) => from + i);
+          }));
+          const out = '.qa/shop-parity/source';
+          await fs.mkdir(out, {recursive: true});
+          for (const flowNo of selected) {
+            const flow = manifest.flows[flowNo - 1];
+            const images = [];
+            for (const [i, frame] of flow.screens.entries()) {
+              if (![1179, 1180].includes(frame.width) || frame.height !== 2676) throw new Error('Source needs frame-specific normalization: ' + frame.file);
+              const input = await sharp('references/shop/' + frame.file).resize(393, 892, {fit: 'fill', kernel: sharp.kernel.lanczos3}).png().toBuffer();
+              await fs.writeFile(`${out}/f${String(flowNo).padStart(3, '0')}-${String(i + 1).padStart(3, '0')}.png`, input);
+              images.push({input, left: (i % 4) * 393, top: Math.floor(i / 4) * 892});
+            }
+            await sharp({create: {width: Math.min(4, images.length) * 393, height: Math.ceil(images.length / 4) * 892, channels: 3, background: 'white'}}).composite(images).png().toFile(`${out}/flow-${String(flowNo).padStart(3, '0')}.png`);
+          }
+          JS
+      - name: Retain ordered sources before browser work
+        uses: actions/upload-artifact@v7
+        with:
+          name: shop-sources-${{ github.sha }}-${{ github.run_attempt }}
+          retention-days: 2
+          include-hidden-files: true
+          if-no-files-found: error
+          path: |
+            .qa/shop-parity/provenance.json
+            .qa/shop-parity/source/*.png
+      - name: Restore only previously verified product originals
+        id: product-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: reference-assets/shop/products
+          key: shop-verified-media-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('references/shop/product-media-provenance.json', 'prepare-shop-reference.mjs', 'pnpm-lock.yaml') }}
+          # Formatting or tooling changes must not discard matching originals.
+          # A prefix hit is only a candidate: both preparation and --verify below
+          # still validate every asset against CURRENT provenance and dimensions.
+          restore-keys: |
+            shop-verified-media-${{ runner.os }}-${{ runner.arch }}-
+      - name: Prepare and reverify the existing allowlisted product originals
+        id: products
+        shell: bash
+        run: |
+          if ! command -v ffmpeg > /dev/null; then brew install ffmpeg; fi
+          set -o pipefail
+          node prepare-shop-reference.mjs 2>&1 | tee .qa/shop-parity/product-preparation.log
+          node prepare-shop-reference.mjs --verify
+      - name: Retain the verified product set without publishing originals
+        if: ${{ !cancelled() && steps.products.outcome == 'success' && steps.product-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v5
+        with:
+          path: reference-assets/shop/products
+          key: ${{ steps.product-cache.outputs.cache-primary-key }}
+      - name: Install browser
+        id: browser
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Web lint and typecheck
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        shell: bash
+        run: |
+          pnpm --filter @treido/web lint
+          pnpm --filter @treido/web typecheck
+          node --test scripts/shop-parity/loading-replay.test.mjs
+      - name: Record formatting diagnostics without changing evaluated source
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import difflib, json, os, pathlib, subprocess
+          roots = ['apps/web/src/features/discovery', 'tests/reference', 'scripts/shop-parity']
+          listed = subprocess.run(['pnpm', 'exec', 'prettier', '--list-different', *roots], capture_output=True, text=True)
+          if listed.returncode not in (0, 1):
+              raise RuntimeError(listed.stderr)
+          files = [line.strip() for line in listed.stdout.splitlines() if line.strip()]
+          changes = []
+          for name in files:
+              file = pathlib.Path(name)
+              if not any(file.is_relative_to(root) for root in map(pathlib.Path, roots)):
+                  raise RuntimeError('Unexpected formatter path: ' + name)
+              formatted = subprocess.run(['pnpm', 'exec', 'prettier', name], capture_output=True, text=True, check=True).stdout
+              original = file.read_text()
+              changes.extend(difflib.unified_diff(original.splitlines(True), formatted.splitlines(True), fromfile=name, tofile=name))
+          out = pathlib.Path('.qa/shop-parity')
+          out.mkdir(parents=True, exist_ok=True)
+          (out / 'formatting.patch').write_text(''.join(changes))
+          (out / 'formatting.json').write_text(json.dumps({'commit': os.environ['GITHUB_SHA'], 'mismatches': files}, indent=2))
+          print('Formatting mismatches:', ', '.join(files) or 'none')
+          PY
+      - name: Build the web preview without deployment
+        id: build_web
+        if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.products.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -o pipefail
+          pnpm --filter @treido/web build 2>&1 | tee .qa/shop-parity/build.log
+      - name: Capture exact-commit reference comparisons
+        if: ${{ !cancelled() && steps.build_web.outcome == 'success' && steps.references.outcome == 'success' && steps.products.outcome == 'success' && steps.browser.outcome == 'success' }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, signal, subprocess, time, urllib.request
+          log_path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'shop-preview.log'
+          with log_path.open('w') as log:
+              server = subprocess.Popen(['pnpm', '--filter', '@treido/web', 'exec', 'next', 'start', '--hostname', '127.0.0.1', '--port', '6412'], stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+              try:
+                  for attempt in range(90):
+                      if server.poll() is not None:
+                          raise RuntimeError('Reference preview exited: ' + log_path.read_text())
+                      try:
+                          with urllib.request.urlopen(os.environ['SHOP_PARITY_BASE_URL'], timeout=2) as response:
+                              if response.status == 200:
+                                  break
+                      except (OSError, TimeoutError):
+                          time.sleep(1)
+                  else:
+                      raise RuntimeError('Reference preview did not become ready: ' + log_path.read_text())
+                  result = subprocess.run(['node', 'scripts/shop-parity/run.mjs', 'baseline', '--all', '--flows', os.environ['PARITY_FLOWS'], '--run', 'ci-' + os.environ['GITHUB_SHA']])
+              finally:
+                  try:
+                      os.killpg(server.pid, signal.SIGTERM)
+                  except (ProcessLookupError, PermissionError):
+                      pass
+                  try:
+                      server.wait(timeout=15)
+                  except subprocess.TimeoutExpired:
+                      try:
+                          os.killpg(server.pid, signal.SIGKILL)
+                      except (ProcessLookupError, PermissionError):
+                          pass
+                      try:
+                          server.wait(timeout=5)
+                      except subprocess.TimeoutExpired:
+                          pass
+                  for attempt in range(50):
+                      try:
+                          os.killpg(server.pid, 0)
+                      except (ProcessLookupError, PermissionError):
+                          break
+                      time.sleep(0.1)
+                  else:
+                      try:
+                          os.killpg(server.pid, signal.SIGKILL)
+                      except (ProcessLookupError, PermissionError):
+                          pass
+              raise SystemExit(result.returncode)
+          PY
+      - name: Regenerate the existing frame ledger from this capture
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        shell: bash
+        run: |
+          if [ -f ".qa/shop-parity/runs/ci-$GITHUB_SHA/report.json" ]; then
+            node scripts/shop-parity/ledger.mjs "ci-$GITHUB_SHA"
+            cp shop-frame-ledger.md .qa/shop-parity/frame-ledger.md
+          fi
+      - name: Exercise every reference journey and sibling viewport
+        if: ${{ !cancelled() && steps.build_web.outcome == 'success' && steps.references.outcome == 'success' && steps.products.outcome == 'success' && steps.browser.outcome == 'success' }}
+        env:
+          # Use the same production build just captured, not an unqualified dev server.
+          REFERENCE_DEV: "0"
+          PLAYWRIGHT_JSON_OUTPUT_NAME: .qa/shop-parity/interactions.json
+        run: pnpm exec playwright test --config playwright.reference.config.ts --reporter=line,json
+      - name: Preserve failed preview states and explicit interaction captures
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import pathlib, shutil
+          source = pathlib.Path('test-results')
+          destination = pathlib.Path('.qa/shop-parity/interaction-failures')
+          for pattern in ['**/test-failed-*.png', '**/error-context.md']:
+              for item in source.glob(pattern):
+                  target = destination / item.relative_to(source)
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copyfile(item, target)
+          captures = pathlib.Path('.qa/shop-parity/interaction-captures')
+          for name in ['cart-flight.png', 'review-default.png', 'review-reasons.png', 'review-reported.png', 'store-reviews.png']:
+              for item in source.rglob(name):
+                  target = captures / item.relative_to(source)
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copyfile(item, target)
+          PY
+      - name: Publish capture summary
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        shell: bash
+        run: |
+          echo "## Shop reference evidence" >> "$GITHUB_STEP_SUMMARY"
+          echo "Evaluated commit: $GITHUB_SHA. Captures and numerical scores are not owner acceptance." >> "$GITHUB_STEP_SUMMARY"
+          report=".qa/shop-parity/runs/ci-$GITHUB_SHA/ranking.md"
+          if [ -f "$report" ]; then cat "$report" >> "$GITHUB_STEP_SUMMARY"; fi
+      - name: Retain reference/live pairs and reports only
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: shop-parity-${{ github.sha }}-${{ github.run_attempt }}
+          retention-days: 7
+          include-hidden-files: true
+          if-no-files-found: error
+          path: |
+            .qa/shop-parity/provenance.json
+            .qa/shop-parity/product-preparation.log
+            .qa/shop-parity/build.log
+            .qa/shop-parity/formatting.patch
+            .qa/shop-parity/formatting.json
+            .qa/shop-parity/frame-ledger.md
+            .qa/shop-parity/interaction-failures/**/test-failed-*.png
+            .qa/shop-parity/interaction-failures/**/error-context.md
+            .qa/shop-parity/interaction-captures/**/*.png
+            .qa/shop-parity/media-review/report.json
+            .qa/shop-parity/media-review/*.png
+            .qa/shop-parity/frame-map.json
+            .qa/shop-parity/interactions.json
+            .qa/shop-parity/runs/ci-${{ github.sha }}/report.json
+            .qa/shop-parity/runs/ci-${{ github.sha }}/ranking.md
+            .qa/shop-parity/runs/ci-${{ github.sha }}/ranking.csv
+            .qa/shop-parity/runs/ci-${{ github.sha }}/**/*.png
+      - name: Numerical diagnostic gate, not visual approval
+        if: ${{ !cancelled() && steps.references.outcome == 'success' && steps.products.outcome == 'success' && steps.browser.outcome == 'success' }}
+        shell: bash
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const report = JSON.parse(fs.readFileSync(`.qa/shop-parity/runs/ci-${process.env.GITHUB_SHA}/report.json`, 'utf8'));
+          if (report.gitHead !== process.env.GITHUB_SHA) throw new Error('Evidence commit does not match the evaluated commit');
+          const unresolved = report.rows.filter(row => row.status !== 'scored' || row.browserErrors?.length || row.maePct > 1.5 || row.badPixelPct > 8);
+          console.log(`${report.rows.length - unresolved.length}/${report.rows.length} numerical candidates; owner acceptance is separate.`);
+          if (unresolved.length) {
+            console.error('Open frame IDs:', unresolved.map(row => row.id).join(', '));
+            process.exitCode = 1;
+          }
+          JS
