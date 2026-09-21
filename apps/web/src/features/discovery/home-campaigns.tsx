@@ -558,6 +558,13 @@ export function HomeCampaigns({
                   <span>on orders over {c.threshold}</span>
                 </Link>
               )}
+              {concealed && c.id === "pura" && (
+                <img
+                  className="campaign-hidden-photo"
+                  src="/api/reference-media/home-pura-hidden-photo"
+                  alt=""
+                />
+              )}
               {concealed && (
                 <div className="campaign-hidden-message">
                   <Icon name="eye-off" />

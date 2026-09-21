@@ -754,30 +754,54 @@
     #fff;
 }
 
-/* f042-004 is an intentionally concealed field. No unknown Pura photograph or
-   product is synthesized underneath it; Undo restores the existing source still. */
+/* f042-004 exposes only the source's already-concealed photograph field.
+   Native text and controls are removed from this bounded photo; live DOM owns
+   the eye, message, Undo action and confirmation toast. */
+.campaign-pura.campaign-concealed {
+  overflow: visible;
+  margin-bottom: 3px;
+}
 .campaign-pura.campaign-concealed .campaign-art {
   opacity: 0;
 }
-.campaign-pura.campaign-concealed::before {
-  content: "";
+.campaign-hidden-photo {
   position: absolute;
-  inset: -16px;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
   pointer-events: none;
-  filter: blur(14px);
-  background:
-    radial-gradient(
-      ellipse 14% 15% at 21% 73%,
-      #638ec0 0%,
-      #7899b6a8 48%,
-      transparent 100%
-    ),
-    radial-gradient(
-      ellipse 23% 17% at 55% 73%,
-      #e7e4ddf0 0%,
-      #d3c9bb9c 58%,
-      transparent 100%
-    ),
-    radial-gradient(ellipse 13% 16% at 94% 76%, #b6c8bcc4 0%, transparent 100%),
-    linear-gradient(#796e64 0%, #786957 57%, #aaa292 80%, #787a78 100%);
+}
+.campaign-pura.campaign-concealed .campaign-hidden-photo,
+.campaign-pura.campaign-concealed .campaign-hidden-message {
+  bottom: auto;
+  height: 633px;
+}
+.campaign-pura.campaign-concealed .campaign-hidden-message > svg {
+  transform: translate(1px, 3px);
+}
+.campaign-pura.campaign-concealed .campaign-hidden-message p {
+  letter-spacing: -0.16px;
+  opacity: 0.999;
+  transform: translateY(1px);
+}
+.campaign-pura.campaign-concealed .campaign-hidden-message button {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  font-size: 15px;
+  opacity: 0.999;
+  transform: translateY(-4px);
+}
+.campaign-pura.campaign-concealed .campaign-hidden-toast {
+  bottom: -3px;
+  opacity: 0.999;
+}
+.campaign-hidden-message,
+.campaign-hidden-toast {
+  z-index: 1;
 }

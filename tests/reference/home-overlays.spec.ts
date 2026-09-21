@@ -199,6 +199,10 @@ test("campaign following and not-interested undo retain the full card", async ({
   await expect(
     card.getByRole("button", { name: "Undo", exact: true }),
   ).toBeVisible();
+  await expect(card.locator(".campaign-hidden-photo")).toHaveAttribute(
+    "src",
+    "/api/reference-media/home-pura-hidden-photo",
+  );
   expect((await card.boundingBox())?.height).toBe(630);
   await card.getByRole("button", { name: "Undo", exact: true }).click();
   await expect(

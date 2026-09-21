@@ -1098,6 +1098,22 @@ const media: Record<
     file: "flows/5f25f0ee-f19a-49a8-8f9d-ca2f3259c3c6/002.webp",
     rect: [17, 174, 359, 332],
   },
+  "home-pura-hidden-photo": {
+    file: "flows/5f25f0ee-f19a-49a8-8f9d-ca2f3259c3c6/004.webp",
+    rect: [16, 115, 361, 633],
+    photoRadius: 28,
+    lightTextOcclusions: [
+      [166, 257, 30, 30],
+      [80, 296, 201, 24],
+    ],
+    textOcclusionMode: "inpaint",
+    textOcclusionDilation: 0.75,
+    roundedOcclusions: [
+      [143, 328, 76, 46, 23],
+      [85, 591, 191, 44, 22],
+    ],
+    roundedOcclusionFill: "horizontal-gradient",
+  },
   "home-pura-menu-header": {
     file: "flows/5f25f0ee-f19a-49a8-8f9d-ca2f3259c3c6/002.webp",
     rect: [17, 115, 359, 59],
