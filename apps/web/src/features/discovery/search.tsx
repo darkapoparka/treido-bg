@@ -53,6 +53,8 @@ import "./search-loading.css";
 
 const capturedCapPhoto = "/api/reference-media/assistant-uploaded-cap";
 const composerSelector = 'form[role="search"][aria-label="Search products"]';
+const jeansComparisonStorageKey = "shop-jeans-comparison-pending";
+const jeansComparisonDurationMs = 1800;
 const filteredStoreDeals: Record<string, string> = {
   "arrow-twenty-two": "Save $5",
   "american-blues": "Save $15",
@@ -137,6 +139,9 @@ export function Search({
   const [photoError, setPhotoError] = useState("");
   const [photoUnavailable, setPhotoUnavailable] = useState(false);
   const photoOrigin = useRef<string | null>(null);
+  const jeansComparisonQueued = useRef(false);
+  const jeansComparisonUntil = useRef(0);
+  const [comparingJeans, setComparingJeans] = useState(false);
   const [pending, startTransition] = useTransition();
   if (activeDraftEntry !== draftEntry) {
     setActiveDraftEntry(draftEntry);
@@ -180,6 +185,58 @@ export function Search({
   const jeansQuery = query.trim().toLowerCase() === "jeans";
   const capturedFilteredJeans = isCapturedFilteredJeans(query, visibleFilters);
   const answerOpen = params.get("answer") === "jeans";
+  useEffect(() => {
+    if (!jeansQuery) {
+      jeansComparisonQueued.current = false;
+      jeansComparisonUntil.current = 0;
+      try {
+        sessionStorage.removeItem(jeansComparisonStorageKey);
+      } catch {}
+      const reset = window.setTimeout(() => setComparingJeans(false), 0);
+      return () => window.clearTimeout(reset);
+    }
+    let marker = "";
+    try {
+      marker = sessionStorage.getItem(jeansComparisonStorageKey) ?? "";
+    } catch {}
+    const queued = jeansComparisonQueued.current || marker === "queued";
+    jeansComparisonQueued.current = false;
+    let expiresAt = jeansComparisonUntil.current;
+    if (queued) {
+      expiresAt = Date.now() + jeansComparisonDurationMs;
+      jeansComparisonUntil.current = expiresAt;
+      try {
+        sessionStorage.setItem(jeansComparisonStorageKey, String(expiresAt));
+      } catch {}
+    } else if (!expiresAt && marker) {
+      const storedExpiry = Number(marker);
+      if (Number.isFinite(storedExpiry)) {
+        expiresAt = storedExpiry;
+        jeansComparisonUntil.current = storedExpiry;
+      }
+    }
+    const remaining = expiresAt - Date.now();
+    if (!(remaining > 0)) {
+      jeansComparisonUntil.current = 0;
+      try {
+        sessionStorage.removeItem(jeansComparisonStorageKey);
+      } catch {}
+      const reset = window.setTimeout(() => setComparingJeans(false), 0);
+      return () => window.clearTimeout(reset);
+    }
+    const reveal = window.setTimeout(() => setComparingJeans(true), 0);
+    const timeout = window.setTimeout(() => {
+      setComparingJeans(false);
+      jeansComparisonUntil.current = 0;
+      try {
+        sessionStorage.removeItem(jeansComparisonStorageKey);
+      } catch {}
+    }, remaining);
+    return () => {
+      window.clearTimeout(reveal);
+      window.clearTimeout(timeout);
+    };
+  }, [jeansQuery, query]);
   useEffect(() => {
     const entry = pendingAnswer.current;
     if (answerOpen && entry) {
@@ -283,6 +340,15 @@ export function Search({
   }
   function submitQuery(value: string) {
     const next = value.trim();
+    const compareJeans = next.toLowerCase() === "jeans";
+    jeansComparisonQueued.current = compareJeans;
+    jeansComparisonUntil.current = 0;
+    setComparingJeans(compareJeans);
+    try {
+      if (compareJeans)
+        sessionStorage.setItem(jeansComparisonStorageKey, "queued");
+      else sessionStorage.removeItem(jeansComparisonStorageKey);
+    } catch {}
     // The old entry returns to its committed query after a deliberate submit.
     // The new results entry gets its own URL seed, never the discarded editor.
     composer.update({ draft: query, photo: "", editing: false });
@@ -721,28 +787,40 @@ export function Search({
                 </div>
               </section>
               {!filtered && <CapturedJeansContinuation />}
-              <button
-                ref={answerTrigger}
-                type="button"
-                className={styles.answerTeaser}
-                onClick={openAnswer}
-                aria-label="View answer for Jeans"
-              >
-                <span className={styles.answerThumbnails}>
-                  <img
-                    src="/api/reference-media/assistant-black-square"
-                    alt=""
-                  />
-                  <img
-                    src="/api/reference-media/assistant-white-square"
-                    alt=""
-                  />
-                </span>
-                <span>
-                  From everyday straight legs to bold, vintage-inspired...{" "}
-                  <span className={styles.answerMore}>View more ›</span>
-                </span>
-              </button>
+              {comparingJeans ? (
+                <div
+                  className={styles.comparingProducts}
+                  role="status"
+                  aria-live="polite"
+                  data-search-comparing="true"
+                >
+                  <Icon name="phone" />
+                  <span>Comparing products</span>
+                </div>
+              ) : (
+                <button
+                  ref={answerTrigger}
+                  type="button"
+                  className={styles.answerTeaser}
+                  onClick={openAnswer}
+                  aria-label="View answer for Jeans"
+                >
+                  <span className={styles.answerThumbnails}>
+                    <img
+                      src="/api/reference-media/assistant-black-square"
+                      alt=""
+                    />
+                    <img
+                      src="/api/reference-media/assistant-white-square"
+                      alt=""
+                    />
+                  </span>
+                  <span>
+                    From everyday straight legs to bold, vintage-inspired...{" "}
+                    <span className={styles.answerMore}>View more ›</span>
+                  </span>
+                </button>
+              )}
             </>
           )}
         </>

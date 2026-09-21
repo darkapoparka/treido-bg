@@ -39,6 +39,23 @@ async function inspect(page: Page, name: string) {
   });
 }
 
+test("a deliberate Jeans search shows comparison progress before its answer", async ({
+  page,
+}) => {
+  await openSearch(page);
+  await input(page).fill("Jeans");
+  await button(page, "Submit search").click();
+  await expect(page).toHaveURL(/\/search\?q=Jeans$/);
+  const progress = page.locator('[data-search-comparing="true"]');
+  await expect(progress).toBeVisible();
+  await expect(progress).toHaveText("Comparing products");
+  await expect(button(page, "View answer for Jeans")).toHaveCount(0);
+  await expect(button(page, "View answer for Jeans")).toBeVisible({
+    timeout: 5000,
+  });
+  await expect(progress).toHaveCount(0);
+});
+
 test("photo drafting keeps one input and removing the photograph preserves its query", async ({
   page,
 }) => {
