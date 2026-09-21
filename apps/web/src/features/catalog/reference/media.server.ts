@@ -2595,12 +2595,12 @@ export function readReferenceMedia(key: string): Promise<Buffer> | undefined {
             .toBuffer();
           return sharp(background)
             .composite([{ input: foreground }])
-            .webp({ quality: 95 })
+            .webp({ lossless: true, effort: 4 })
             .toBuffer();
         }
-        return sharp(foreground).webp({ quality: 95 }).toBuffer();
+        return sharp(foreground).webp({ lossless: true, effort: 4 }).toBuffer();
       }
-      return crop.webp({ quality: 95 }).toBuffer();
+      return crop.webp({ lossless: true, effort: 4 }).toBuffer();
     })();
     pending.set(key, job);
     void job.catch(() => pending.delete(key));

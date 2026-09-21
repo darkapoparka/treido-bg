@@ -21,6 +21,28 @@
   mask-image: linear-gradient(transparent, #000);
   pointer-events: none;
 }
+.home-page:is(
+    [data-feed="tracking"],
+    [data-feed="recent-products"],
+    [data-feed="recent-stores"]
+  )
+  > .floating-dock[data-fade="true"]::before {
+  background: linear-gradient(
+    to bottom,
+    #fdfdfd00 15%,
+    #fdfdfd33 67%,
+    #fdfdfd80 82%,
+    #fdfdfd80
+  );
+}
+.home-page:is(
+    [data-feed="tracking"],
+    [data-feed="recent-products"],
+    [data-feed="recent-stores"]
+  )
+  > .floating-dock[data-fade="true"]::after {
+  backdrop-filter: blur(8px);
+}
 .home-campaigns {
   display: grid;
   gap: 16px;
@@ -52,6 +74,12 @@
 .campaign-drmtlgy {
   --campaign-tone: #a49889;
   color: #080808;
+}
+.campaign-drmtlgy:not(.campaign-product-grid) {
+  height: 308px;
+}
+.campaign-drmtlgy:not(.campaign-product-grid) .campaign-art {
+  height: 272px;
 }
 .campaign-mountain {
   --campaign-tone: #65606e;
@@ -111,6 +139,7 @@
   font-size: 14px;
   font-weight: 600;
   line-height: 19px;
+  opacity: 0.999;
 }
 .campaign-brand small {
   display: block;
