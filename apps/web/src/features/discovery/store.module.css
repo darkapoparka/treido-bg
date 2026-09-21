@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "ShopChemicalGeist";
+  src: url("/fonts/shop-chemical-geist.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+
 .page,
 .filter {
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
@@ -519,6 +527,10 @@
 .storeHeader[inert] {
   visibility: hidden;
 }
+.store:global(.chemical-store),
+.chemicalPinned {
+  font-family: "ShopChemicalGeist", Arial, Helvetica, sans-serif;
+}
 .store:global(.chemical-store) :global(.store-hero) {
   background:
     url("/api/reference-media/chemical-store-header-photo") center top / 100%
@@ -536,9 +548,16 @@
 .store:global(.chemical-store) :global(.category-rail .pill),
 .chemicalPinned :global(.category-rail .pill) {
   flex-shrink: 0;
-  font-weight: 600;
-  padding-right: 13px;
   gap: 6px;
+  padding-right: 13px;
+  border-color: rgb(223 214 221);
+  background: rgb(203 196 203);
+  font-weight: 600;
+}
+.chemicalCategoryLabel {
+  opacity: 0.95;
+  letter-spacing: -0.25px;
+  transform: translate(2px, -1.5px);
 }
 .store:global(.chemical-store) :global(.category-rail .pill:nth-of-type(1)),
 .chemicalPinned :global(.category-rail .pill:nth-of-type(1)) {
@@ -584,7 +603,7 @@
   background:
     url("/api/reference-media/chemical-store-header-photo") center top / 100%
       145px no-repeat,
-    #939098;
+    linear-gradient(#939098 0, #aea6ad 137px, #aea6ad 100%);
 }
 .chemicalPinned :global(.category-rail) {
   position: absolute;
@@ -609,14 +628,18 @@
   bottom: calc(-1 * (var(--dock-bottom) + env(safe-area-inset-bottom)));
   width: 100vw;
   height: calc(128px + env(safe-area-inset-bottom));
-  background: linear-gradient(#ffffff00, #eeecf3b3);
+  background: linear-gradient(#ffffff00 43%, #eeecf3b3 100%);
+  backdrop-filter: blur(20px);
+  mask-image: linear-gradient(transparent 35%, #000 75%);
   pointer-events: none;
 }
 .store:global(.chemical-store) :global(.store-recommendations) {
   padding-bottom: 13px;
   background: #d6d3d6;
 }
-.chemicalCategoryLabel,
+.store:global(.chemical-store) :global(.store-recommendations:first-of-type) {
+  padding-bottom: 14px;
+}
 .store:global(.chemical-store) :global(.store-recommendations h1),
 .store:global(.chemical-store) :global(.store-recommendations h2),
 .store:global(.chemical-store) :global(.product-copy),
@@ -626,23 +649,43 @@
 }
 .store:global(.chemical-store) :global(.store-recommendations h1),
 .store:global(.chemical-store) :global(.store-recommendations h2) {
+  margin-bottom: 9px;
+  font-weight: 650;
   line-height: 29px;
   letter-spacing: -0.65px;
-  font-weight: 600;
-  margin-bottom: 9px;
+}
+.store:global(.chemical-store)
+  :global(.store-recommendations:first-of-type h1) {
+  letter-spacing: -1.15px;
+  transform: translateY(-3px);
+}
+.store:global(.chemical-store)
+  :global(.store-recommendations:first-of-type .product-copy) {
+  position: relative;
+  top: -1px;
+}
+.store:global(.chemical-store)
+  :global(.store-recommendations:first-of-type .product-copy > strong) {
+  position: relative;
+  top: -1px;
+  letter-spacing: -0.25px;
 }
 .store:global(.chemical-store) :global(.store-recommendations .product-media) {
   background: #f5f5f5;
 }
 .store:global(.chemical-store) :global(.product-copy) > strong {
-  font-weight: 600;
+  font-weight: 650;
+}
+.store:global(.chemical-store)
+  :global(.store-recommendations:first-of-type .product-copy > span) {
+  font-weight: 450;
 }
 .store:global(.chemical-store) :global(.price-badge.deal) {
-  background: #080808;
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 600;
   padding: 1px 6px;
+  background: #080808;
+  font-size: 9.5px;
+  font-weight: 600;
+  line-height: 15px;
 }
 .store:global(.chemical-store)
   :global(.product-media img[src$="chemical-store-deep-partial"]) {
@@ -652,8 +695,8 @@
   object-fit: fill;
 }
 .store:global(.chemical-store) :global(.store-video-rail) {
-  padding-top: 17px;
   gap: 8px;
+  padding-top: 18px;
 }
 .store:global(.chemical-store) :global(.store-video-rail) > :is(a, button) {
   position: relative;
@@ -676,7 +719,7 @@
 }
 .store:global(.chemical-store) :global(.store-video-rail span) {
   left: 12px;
-  bottom: 8px;
+  bottom: 10px;
   color: #d0d0d0;
   font-weight: 400;
   line-height: 16px;
@@ -686,6 +729,11 @@
 }
 .store:global(.chemical-store) .chemicalFeatured h2 {
   margin-bottom: 11px;
+  letter-spacing: -1.1px;
+  transform: translateY(-3px);
+}
+.store:global(.chemical-store) .chemicalFeatured :global(.product-rail) {
+  transform: translateY(-1px);
 }
 .chemicalFeatured :global(.product-rail) > button {
   position: relative;
