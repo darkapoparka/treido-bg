@@ -204,6 +204,31 @@ test("the final Jeans facets render the captured merchants and leading products"
   }
 });
 
+test("Jeans typography stays source-scoped across result and filter stages", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "home-welcome");
+  await page.goto("/search?q=Jeans");
+  await expect(page.locator(".search-results").first()).toHaveCSS(
+    "font-family",
+    /ShopSearchGeist/,
+  );
+  await page.getByRole("button", { name: "Filter", exact: true }).click();
+  const root = page.getByRole("dialog", { name: "Filter", exact: true });
+  expect(
+    await root.evaluate((node) => getComputedStyle(node).fontFamily),
+  ).not.toContain("ShopSearchGeist");
+  await root.getByRole("button", { name: /Sort by/ }).click();
+  const sort = page.getByRole("dialog", { name: "Sort by", exact: true });
+  await expect(sort).toHaveCSS("font-family", /ShopSearchGeist/);
+  await sort.getByRole("button", { name: "Done", exact: true }).click();
+  await root.getByRole("button", { name: "Category", exact: true }).click();
+  const category = page.getByRole("dialog", { name: "Category", exact: true });
+  expect(
+    await category.evaluate((node) => getComputedStyle(node).fontFamily),
+  ).not.toContain("ShopSearchGeist");
+});
+
 test("Your deals toggles immediately and stays committed through quick filter reopen", async ({
   page,
 }) => {

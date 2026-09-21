@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "ShopSearchGeist";
+  src: url("/fonts/shop-chemical-geist.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+
 .page {
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
   position: relative;
@@ -240,6 +248,7 @@
 
 /* Frozen Search/answer family: f044-005, f046-002/003, f047-002/005. */
 .resultsPage {
+  font-family: "ShopSearchGeist", Arial, Helvetica, sans-serif;
   padding-top: 4px;
   padding-bottom: 190px;
 }
@@ -1230,6 +1239,12 @@
   top: 69px;
   right: max(20px, calc((100vw - 760px) / 2 + 20px));
   margin: 0;
+}
+.filterSheet {
+  font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
+}
+.filterSheet:global(.filter-short) {
+  font-family: "ShopSearchGeist", Arial, Helvetica, sans-serif;
 }
 .filterSheet :global(.sheet-header) {
   min-height: 24px;
