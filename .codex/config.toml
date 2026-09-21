@@ -1,0 +1,4 @@
+# Public documentation only; no model, approval, sandbox or secret overrides.
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
+required = false
