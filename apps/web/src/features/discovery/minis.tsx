@@ -371,7 +371,7 @@ function LocalPhotoPicker({
         12,
         Math.min(
           window.innerHeight - 158,
-          rect.bottom - 146 + (outfit ? -20 : 1),
+          rect.bottom - 146 + (outfit ? -17 : 1),
         ),
       );
       dialog.style.setProperty("--photo-menu-left", `${left}px`);
@@ -394,7 +394,11 @@ function LocalPhotoPicker({
       title={localImage ? "Photo preview" : title}
       onClose={close}
       headerless={!localImage}
-      className={localImage ? styles.localPhotoPicker : styles.photoPicker}
+      className={
+        localImage
+          ? styles.localPhotoPicker
+          : `${styles.photoPicker} ${outfit ? styles.outfitPhotoPicker : ""}`
+      }
     >
       <div ref={contents}>
         {localImage ? (

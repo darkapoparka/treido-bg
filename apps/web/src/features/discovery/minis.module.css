@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "ShopLookGeist";
+  src: url("/fonts/shop-chemical-geist.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+
 .catalog,
 .shell {
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
@@ -436,6 +444,11 @@
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
   overflow: visible;
 }
+.outfitPhotoPicker.outfitPhotoPicker {
+  background: #ffffffbc;
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+}
 .photoPicker.photoPicker[open] {
   animation: none;
 }
@@ -503,6 +516,7 @@
 }
 .look.look {
   position: relative;
+  font-family: "ShopLookGeist", Arial, Helvetica, sans-serif;
   padding: 94px 40px 74px;
   background:
     radial-gradient(
@@ -512,7 +526,7 @@
       transparent 100%
     ),
     radial-gradient(
-      ellipse 72% 43% at 80% 73%,
+      ellipse 72% 48% at 72% 72%,
       #d9d3fd 15%,
       #eeebff 60%,
       transparent 100%
@@ -542,10 +556,17 @@
   transform: translateY(-2px);
 }
 .look > p {
-  margin: 18px -12px 0;
+  margin: 15px -12px 0;
   font-size: 18px;
   line-height: 26px;
+  font-weight: 450;
   letter-spacing: 0.3px;
+}
+.look[data-look-terms="true"] > p {
+  transform: scaleX(0.95);
+}
+.look[data-look-phase="welcome"][data-look-terms="false"] > p {
+  transform: scaleX(0.985);
 }
 .look :global(.look-upload) {
   margin-top: 66px;
@@ -571,6 +592,24 @@
   height: 316px;
   margin-bottom: 50px;
   transform: rotate(3deg);
+}
+.look[data-look-phase="scanning"] > p {
+  font-size: 20px;
+}
+.look[data-look-phase="scanning"] .playback {
+  opacity: 0;
+}
+.look[data-look-phase="scanning"]::after {
+  content: "";
+  position: fixed;
+  z-index: 2;
+  right: 12px;
+  bottom: -25px;
+  left: 12px;
+  height: 34px;
+  border-radius: 26px 26px 0 0;
+  background: #fff;
+  pointer-events: none;
 }
 .look[data-look-phase="results"] {
   padding: 22px 0 32px;
@@ -621,7 +660,7 @@
 .look :global(.look-photo > button) {
   display: flex;
   align-items: center;
-  max-width: 66%;
+  max-width: 64%;
   height: 24px;
   transform: translateY(-50%);
   padding: 0;
@@ -827,8 +866,8 @@
   height: 48px;
 }
 .look .selectedOutfit {
-  margin: -17px 8px 26px;
-  padding: 20px 0;
+  margin: -19px 8px 26px;
+  padding: 17px 0 20px;
   border: 4px solid #fff;
   border-radius: 14px;
   background: #dfb2df;
@@ -839,7 +878,9 @@
   line-height: 20px;
 }
 .look .selectedOutfit > h2 {
-  margin-top: 4px;
+  margin-top: 1px;
+  font-family: Arial, Helvetica, sans-serif;
+  transform: scaleX(1.02);
 }
 .allMatches,
 .playback {
