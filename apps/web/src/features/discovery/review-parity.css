@@ -8,7 +8,8 @@
   padding-top: 15px;
   padding-bottom: 14px;
   margin-bottom: 9px;
-  box-shadow: 0 6px 24px #0000000d;
+  border-color: #f0f0f0;
+  box-shadow: 0 4px 20px #0000000f;
 }
 .reviews-page .review-card p {
   font-size: 14.3px;
@@ -22,6 +23,20 @@
 }
 .store-review-list .review-author {
   font-size: 14px;
+}
+.store-review-list {
+  gap: 15px;
+}
+.store-review-list article {
+  padding-bottom: 17px;
+  border-color: #aeada6;
+}
+.store-review-product h2 {
+  font-size: 16.2px;
+  letter-spacing: -0.6px;
+}
+.store-review-list article > p {
+  letter-spacing: -0.2px;
 }
 .store-review-list .review-helpful {
   margin-right: 16px;
@@ -64,6 +79,7 @@
 }
 .reviews-page .review-card h2 {
   margin-top: 7px;
+  font-size: 15.6px;
 }
 .reviews-page .review-card .read-more {
   margin-top: 2px;
@@ -135,4 +151,23 @@
 .review-report-reasons .sheet-actions .primary:disabled,
 .review-report-close {
   opacity: 0.999;
+}
+
+/* The source card copy uses a lighter Windows raster than Arial while the
+   captured titles retain their existing fitted width. Keep text and control
+   baselines independent so the footer hit targets do not move. */
+.reviews-page .review-card p,
+.reviews-page .read-more,
+.reviews-page .review-author,
+.reviews-page .review-helpful {
+  font-family: "Segoe UI", sans-serif;
+}
+.reviews-page .review-card > p,
+.reviews-page .review-card > .read-more {
+  position: relative;
+  top: -1px;
+}
+.reviews-page .review-card .review-helpful {
+  position: relative;
+  top: -2px;
 }
