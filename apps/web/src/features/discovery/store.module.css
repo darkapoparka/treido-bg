@@ -54,6 +54,16 @@
 .store :global(.store-promotion) {
   background: #393937;
 }
+.store :global(.promotion-owner) {
+  font-family: "ShopChemicalGeist", Arial, Helvetica, sans-serif;
+}
+.store :global(.promotion-offers > div > b) {
+  font-weight: 500;
+}
+.store :global(.promotion-offers p),
+.store :global(.promotion-offers span) {
+  font-weight: 400;
+}
 .store :global(.store-promotion > span) {
   display: flex;
   align-items: center;

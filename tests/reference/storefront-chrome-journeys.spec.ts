@@ -72,6 +72,24 @@ for (const scenario of ["following-pair", "home-welcome"] as const) {
   });
 }
 
+test("store promotions keep their captured type hierarchy", async ({
+  page,
+  baseURL,
+}) => {
+  await openStore(page, baseURL, "home-welcome");
+  await page.evaluate(() => document.fonts.ready);
+  const owner = page.locator(".promotion-owner");
+  await expect(owner).toHaveCSS("font-family", /ShopChemicalGeist/);
+  await page.locator(".store-promotion").click();
+  const offers = page.locator(".promotion-offers");
+  await expect(offers).toBeVisible();
+  for (const heading of await offers.locator("> div > b").all()) {
+    await expect(heading).toHaveCSS("font-weight", "500");
+  }
+  for (const copy of await offers.locator("p, span").all()) {
+    await expect(copy).toHaveCSS("font-weight", "400");
+  }
+});
 test("the captured empty-cart control opens an actual cart without adding an item", async ({
   page,
   baseURL,

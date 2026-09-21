@@ -20,6 +20,8 @@ Flow 97 current-head evidence uses the canonical live StoreInfo owner rather tha
 
 **Tracking limitation:** unchecked Impl/UX/Widths entries mean the full criterion is not certified by linked flow-specific evidence; they do not mean that the route or all its controls are missing. Conversely, a Test checkmark does not certify every interaction. As each family is audited, record its actual source IDs, canonical components, checked transitions and remaining exceptions here, then update only justified boxes. Keep acceptance separate. No reliable “percent of the entire app completed1:1” is established.
 
+Flow 96 KITSCH promotion evidence uses the canonical live StorePromotion owner. Run `20260921-flow96-promotion-retained` captures **6/6** states with zero replay/browser errors and improves family mean by **0.00719 MAE points**: f096-002 **3.103 -> 3.093%**, f096-003 **4.060 -> 4.029%**, f096-004 **3.468 -> 3.467%**, and f096-006 **3.225 -> 3.225%**; f096-001 and the Chemical sibling are unchanged. Disclosure/history ownership, product and search returns, pinned navigation and the real cart remain connected. Focused coverage passes **5/5**, including a computed typography regression; TypeScript, scoped ESLint, Prettier and diff checks pass. No checkbox, threshold, mask, source, recipe or acceptance state changed.
+
 ## Checkbox meaning
 
 - **Src**: every ordered source frame for the flow was opened and visually inspected.
