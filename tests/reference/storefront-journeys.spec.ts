@@ -555,6 +555,42 @@ test("Kitsch information keeps equal source columns and clean rating text", asyn
   );
 });
 
+test("Kitsch information preserves the captured description wrap at 393 pixels", async ({
+  page,
+  baseURL,
+}) => {
+  await page.setViewportSize({ width: 393, height: 793 });
+  await openScenario(page, baseURL, store + "/info");
+  await page.evaluate(() => document.fonts.ready);
+  const lineTops = await page
+    .locator(".store-description")
+    .evaluate((description) => {
+      const textNode = Array.from(description.childNodes).find(
+        (node) => node.nodeType === Node.TEXT_NODE,
+      );
+      if (!textNode?.textContent) {
+        throw new Error("Store description text node is missing");
+      }
+      const topFor = (value: string) => {
+        const start = textNode.textContent!.indexOf(value);
+        if (start < 0) {
+          throw new Error(`Missing description fragment: ${value}`);
+        }
+        const range = document.createRange();
+        range.setStart(textNode, start);
+        range.setEnd(textNode, start + value.length);
+        return Math.round(range.getBoundingClientRect().top);
+      };
+      return {
+        favorite: topFor("favorite"),
+        celebrities: topFor("celebrities."),
+        shop: topFor("Shop online"),
+      };
+    });
+  expect(lineTops.celebrities - lineTops.favorite).toBeGreaterThanOrEqual(17);
+  expect(lineTops.shop).toBe(lineTops.celebrities);
+});
+
 test("store collection and filter controls remain contained at 320, 393 and 430 pixels", async ({
   page,
   baseURL,

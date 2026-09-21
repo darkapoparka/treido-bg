@@ -333,6 +333,7 @@
 }
 
 .information {
+  font-family: "ShopChemicalGeist", Arial, Helvetica, sans-serif;
   background: #c2bfb5;
   padding-bottom: 55px;
 }
@@ -349,6 +350,9 @@
 .information :global(.store-info-brand) {
   font-size: 14px;
 }
+.information :global(.store-info-brand b) {
+  font-weight: 600;
+}
 .information :global(.store-info-brand small) {
   font-size: 12px;
   line-height: 16px;
@@ -363,8 +367,8 @@
   line-height: 18px;
 }
 .information :global(.store-info-categories) {
-  margin-top: 30px;
-  gap: 12px 16px;
+  margin-top: 29px;
+  gap: 13px 16px;
 }
 .information :global(.store-info-categories img),
 .information :global(.store-shop-all img) {
@@ -379,15 +383,15 @@
   object-position: top;
 }
 .information :global(.store-info-categories span) {
-  margin: 10px 8px 0;
+  margin: 8px 8px 0;
   line-height: 18px;
-  font-weight: 600;
+  font-weight: 550;
 }
 .information :global(.store-info-panel) {
   margin-top: 20px;
   padding: 16px;
-  background: #dbd7d0;
-  box-shadow: 0 12px 24px #322b222e;
+  background: #dbd7d1;
+  box-shadow: 0 12px 26px #322b2234;
 }
 .information :global(.store-info-links) {
   padding-bottom: 10px;
@@ -399,7 +403,7 @@
   margin: 0;
   font-size: 24px;
   line-height: 29px;
-  font-weight: 600;
+  font-weight: 550;
   letter-spacing: -0.65px;
 }
 .information :global(.store-info-panel .detail-row) {
@@ -471,8 +475,8 @@
   min-height: 116px;
   margin-top: 0;
   padding: 12px 16px 17px;
-  border: 1px solid #c2c2c0;
-  background: #cececd;
+  border: 1px solid #c1c1bf;
+  background: #cdcdcb;
 }
 .information :global(.store-review-preview > span) {
   font-size: 14px;
