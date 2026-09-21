@@ -2,7 +2,7 @@
 import { ShopSurface } from "../discovery/hydration-boundary";
 import Link from "next/link";
 import { AccountIcon } from "./icons";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { FloatingNav, Sheet } from "../discovery/components";
 import { SourceLink } from "../discovery/return-navigation";
 import {
@@ -545,13 +545,21 @@ export function PaymentEditor({
   );
   const [editBilling, setEditBilling] = useState(false);
   const [method, setMethod] = useState("card");
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    if (checkout || initialCard) return;
+    const update = () => setScrolled(window.scrollY > 80);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, [checkout, initialCard]);
   const selectedBilling =
     billingAddresses.find((address) => address.id === billing) ??
     (initialCard?.billingAddressId ? undefined : billingAddresses[0]);
   return (
     <>
       <form
-        className={`account-form card-editor ${initialCard ? "card-editor-existing" : checkout ? "card-editor-checkout" : "card-editor-profile"} ${hasNumber ? "has-number" : ""} ${validCard ? "valid-card" : ""} ${expiryValue && cvcValue ? "details-complete" : ""} ${cardName.trim() ? "has-name" : ""} ${error ? "has-error" : ""}`}
+        className={`account-form card-editor ${initialCard ? "card-editor-existing" : checkout ? "card-editor-checkout" : "card-editor-profile"} ${hasNumber ? "has-number" : ""} ${validCard ? "valid-card" : ""} ${expiryValue && cvcValue ? "details-complete" : ""} ${cardName.trim() ? "has-name" : ""} ${error ? "has-error" : ""} ${scrolled ? "is-scrolled" : ""}`}
         onSubmit={(e) => {
           e.preventDefault();
           if (method === "apple") {

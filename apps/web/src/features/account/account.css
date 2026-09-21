@@ -4278,3 +4278,170 @@
     margin-top: 10px;
   }
 }
+
+/* Measured payment-owner fitting for flows 80-82. */
+.payment-add-page:has(.card-editor-profile.valid-card),
+.payment-add-page:has(.card-editor-profile.valid-card) .account-heading,
+.payment-add-page:has(.card-editor-profile.valid-card) .account-heading::before,
+.payment-add-page:has(.card-editor-profile.valid-card) .account-heading::after {
+  background: #fcfbfc;
+}
+.card-editor-profile.valid-card .card-inputs {
+  grid-template-columns: 38.5% 33% 28.5%;
+  background: #fff;
+}
+.card-editor-profile.has-number .card-inputs,
+.card-editor-profile .card-inputs:focus-within {
+  border-color: #5532eb;
+}
+.card-editor-profile > .primary {
+  background: #5532eb;
+}
+.payment-add-page > .floating-dock > .dock-back {
+  box-shadow: 0 6px 80px #00000038;
+}
+.payment-add-page > .floating-dock > .floating-nav {
+  box-shadow: 0 10px 50px #00000018;
+}
+.profile-overview:has(.payment-card-stack) > .floating-dock > .dock-back {
+  box-shadow: 0 6px 80px #00000038;
+}
+.profile-overview:has(.payment-card-stack) > .floating-dock > .floating-nav {
+  box-shadow: 0 10px 50px #00000018;
+}
+.card-editor-profile .profile-billing h2 {
+  margin-bottom: 14px;
+  letter-spacing: -0.2px;
+  transform: translateY(1px);
+}
+.profile-billing-address > span {
+  letter-spacing: 0.08px;
+  transform: scaleX(1.02);
+  transform-origin: left center;
+  -webkit-text-stroke: 0.04px currentColor;
+}
+.card-editor-profile.is-scrolled .payment-illustration {
+  transform: translateY(2px);
+}
+.card-editor-profile.is-scrolled > .form-note.centered {
+  transform: translateY(-10px);
+}
+.card-editor-profile.is-scrolled .card-inputs {
+  transform: translateY(6px);
+}
+.card-editor-profile.is-scrolled > .form-field {
+  transform: translateY(8px);
+}
+.card-editor-profile.is-scrolled > .profile-billing {
+  transform: translateY(6px);
+}
+.card-editor-profile.is-scrolled > .primary {
+  transform: translateY(9px);
+}
+
+.payment-card-detail-page {
+  background: #fcfbfc;
+}
+.payment-card-detail-page > h2,
+.payment-card-detail-page > .account-row:not(label),
+.payment-card-detail-page > .billing-details {
+  transform: translateY(-1px);
+}
+.payment-card-detail-page.delete-confirm-open {
+  background: #fff;
+}
+.delete-confirm-open .account-heading h1 {
+  position: relative;
+}
+.delete-confirm-open .account-heading h1::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: 3px;
+  right: 1px;
+  width: 48px;
+  height: 20px;
+  background: #828282;
+}
+.delete-confirm-open > .source-payment-card {
+  height: 226px;
+  margin-top: 33px;
+  transform: translateY(-1px);
+}
+.delete-confirm-open > .source-payment-card::before {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  left: 68px;
+  top: 17px;
+  width: 31px;
+  height: 13px;
+  background: #828282;
+}
+.delete-confirm-open > .account-row:not(label) strong {
+  background: #828282;
+}
+.delete-card-confirm {
+  left: 16px;
+  right: 16px;
+  bottom: 35px;
+  width: calc(100% - 32px);
+  height: 224px;
+  min-height: 224px;
+}
+.delete-card-confirm .sheet-header {
+  margin-bottom: 24px;
+}
+.delete-card-confirm .sheet-header h2 {
+  line-height: 22px;
+  letter-spacing: -0.7px;
+  transform: translateY(4px);
+}
+.delete-card-confirm .sheet-header .icon-button {
+  margin-top: 7px;
+  transform: translateX(1px);
+}
+.delete-card-confirm > p {
+  margin-left: 5px;
+  margin-right: 5px;
+  letter-spacing: -0.1px;
+}
+.delete-card-confirm .editor-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  height: 41px;
+}
+.delete-card-confirm .editor-actions > * {
+  min-width: 0;
+  height: 41px;
+  min-height: 41px;
+}
+.delete-card-confirm .form-cancel {
+  font-size: 14px;
+  line-height: 18px;
+}
+.delete-card-confirm .danger-button {
+  background: #da2407;
+}
+
+/* Profile payment-stack alignment and saved-card privacy treatment. */
+.profile-overview:has(.payment-card-stack.multiple) {
+  background: #fcfbfc;
+}
+.profile-overview .payment-card-stack.multiple {
+  transform: translateY(-12px);
+}
+.profile-overview:has(.payment-card-stack.multiple) .profile-settings-panel {
+  transform: translateY(-6px);
+}
+.source-payment-card.masked-last4::before {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  left: 68px;
+  top: 17px;
+  width: 31px;
+  height: 13px;
+  background: #52534d;
+}

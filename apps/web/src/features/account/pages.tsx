@@ -272,7 +272,10 @@ export function ProfilePage({ catalog }: { catalog: Catalog }) {
                       href={`/account/payments?view=detail&id=${card.id}&return=profile`}
                       scroll={false}
                     >
-                      <PaymentCard last4={card.last4} />
+                      <PaymentCard
+                        last4={card.last4}
+                        masked={card.id.startsWith("card-preview-")}
+                      />
                     </Link>
                   ))}
                 </div>
@@ -1210,13 +1213,13 @@ export function PaymentsPage() {
   const [remove, setRemove] = useState(false);
   return (
     <AccountPage
-      className={
+      className={`${
         view === "list"
           ? "payment-overview"
           : view === "add"
             ? "payment-detail-page payment-add-page"
             : "payment-detail-page payment-card-detail-page"
-      }
+      } ${remove ? "delete-confirm-open" : ""}`}
       onBack={view !== "list" ? backFromSubpage : undefined}
       dockFade={view === "add"}
       title={
@@ -1251,7 +1254,10 @@ export function PaymentsPage() {
                     route.go("detail", c.id);
                   }}
                 >
-                  <PaymentCard last4={c.last4} />
+                  <PaymentCard
+                    last4={c.last4}
+                    masked={c.id.startsWith("card-preview-")}
+                  />
                 </button>
               ))}
             </div>
@@ -1475,9 +1481,15 @@ export function NotificationSettings() {
   );
 }
 export { ConnectionsPage, DeleteAccount } from "./privacy";
-function PaymentCard({ last4 = "4242" }: { last4?: string }) {
+function PaymentCard({
+  last4 = "4242",
+  masked = false,
+}: {
+  last4?: string;
+  masked?: boolean;
+}) {
   return (
-    <div className="source-payment-card">
+    <div className={`source-payment-card ${masked ? "masked-last4" : ""}`}>
       <div>
         <b>VISA</b>
         <span>•••• {last4}</span>
