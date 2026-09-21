@@ -231,10 +231,10 @@ jobs:
         shell: bash
         run: |
           python3 - <<'PY'
-          import os, pathlib, signal, subprocess, time, urllib.request
+          import os, pathlib, socket, subprocess, time, urllib.request
           log_path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'shop-preview.log'
           with log_path.open('w') as log:
-              server = subprocess.Popen(['pnpm', '--filter', '@treido/web', 'exec', 'next', 'start', '--hostname', '127.0.0.1', '--port', '6412'], stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+              server = subprocess.Popen(['node', 'node_modules/next/dist/bin/next', 'start', '--hostname', '127.0.0.1', '--port', '6412'], cwd='apps/web', stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
               try:
                   for attempt in range(90):
                       if server.poll() is not None:
@@ -249,32 +249,26 @@ jobs:
                       raise RuntimeError('Reference preview did not become ready: ' + log_path.read_text())
                   result = subprocess.run(['node', 'scripts/shop-parity/run.mjs', 'baseline', '--all', '--flows', os.environ['PARITY_FLOWS'], '--run', 'ci-' + os.environ['GITHUB_SHA']])
               finally:
-                  try:
-                      os.killpg(server.pid, signal.SIGTERM)
-                  except (ProcessLookupError, PermissionError):
-                      pass
+                  # Own the actual Next process, not pnpm's wrapper/process group.
+                  # macOS can return EPERM for a zombie-only group after wait().
+                  if server.poll() is None:
+                      server.terminate()
                   try:
                       server.wait(timeout=15)
                   except subprocess.TimeoutExpired:
-                      try:
-                          os.killpg(server.pid, signal.SIGKILL)
-                      except (ProcessLookupError, PermissionError):
-                          pass
-                      try:
-                          server.wait(timeout=5)
-                      except subprocess.TimeoutExpired:
-                          pass
+                      server.kill()
+                      server.wait()
                   for attempt in range(50):
                       try:
-                          os.killpg(server.pid, 0)
-                      except (ProcessLookupError, PermissionError):
+                          with socket.create_connection(('127.0.0.1', 6412), timeout=0.2):
+                              pass
+                      except ConnectionRefusedError:
                           break
+                      except TimeoutError:
+                          pass
                       time.sleep(0.1)
                   else:
-                      try:
-                          os.killpg(server.pid, signal.SIGKILL)
-                      except (ProcessLookupError, PermissionError):
-                          pass
+                      raise RuntimeError('Owned reference preview exited but port 6412 remains in use')
               raise SystemExit(result.returncode)
           PY
       - name: Regenerate the existing frame ledger from this capture
