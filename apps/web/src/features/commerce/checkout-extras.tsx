@@ -1,7 +1,6 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import { useState } from "react";
-import type { Catalog } from "../catalog/types";
 import { formatMoney } from "../catalog/types";
 import { Icon } from "../discovery/icons";
 import { ReviewStars } from "../discovery/review-feedback";
@@ -10,7 +9,7 @@ export const kitschCheckoutRecommendations = [
     id: "checkout-shea",
     name: "Shea Butter Exfoliating Body Wash",
     amount: 1400,
-    image: "/api/reference-media/shea-butter",
+    image: "/api/reference-media/checkout-shea-photo",
     reviews: "2888",
   },
   {
@@ -29,13 +28,11 @@ export function checkoutRecommendationsForStore(
   return storeId === "kitsch" ? kitschCheckoutRecommendations : [];
 }
 export function CheckoutExtras({
-  catalog,
   recommendations,
   onAdd,
   added = [],
   disabled = false,
 }: {
-  catalog: Catalog;
   recommendations: readonly CheckoutRecommendation[];
   onAdd?: (id: string) => void;
   added?: string[];
@@ -65,19 +62,12 @@ export function CheckoutExtras({
       </header>
       {products.map((p) => (
         <article key={p.id}>
-          <img
-            src={
-              p.id === "checkout-shea"
-                ? (catalog.products.find((x) => x.id === "shea-butter")
-                    ?.images[0] ?? p.image)
-                : p.image
-            }
-            alt=""
-          />
+          <img src={p.image} alt="" />
           <div>
             <strong>{p.name}</strong>
             <p className="checkout-recommendation-rating">
-              <ReviewStars rating={5} /> <em>{p.reviews} reviews</em>
+              <ReviewStars rating={5} variant="rounded" />{" "}
+              <em>{p.reviews} reviews</em>
             </p>
             <span>{formatMoney({ amount: p.amount, currency: "USD" })}</span>
           </div>

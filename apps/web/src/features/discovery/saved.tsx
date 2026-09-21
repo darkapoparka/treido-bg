@@ -12,6 +12,7 @@ import "./saved.css";
 import { KitschWordmark } from "./kitsch-wordmark";
 import { SavedCard } from "./saved-card";
 import { CollectionEditor } from "./collection-editor";
+import { useSheetStages } from "./sheet-stages";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Catalog, SavedListing } from "../catalog/types";
 import { resolveSavedListing } from "../catalog/types";
@@ -39,9 +40,25 @@ export function Saved({ catalog }: { catalog: Catalog }) {
   const selected = params.get("collection");
   const collection = state.collections.find((item) => item.id === selected);
   const [modal, setModal] = useState("");
+  const flow = useSheetStages({
+    open: !!modal,
+    initial: modal || "Collection options",
+    onClose: () => setModal(""),
+    onReopen: () => {
+      submitting.current = false;
+      setModal("Collection options");
+    },
+    onStart: () => {},
+  });
   const view = params.get("view");
   const panel =
-    view === "add" ? "Add from saved" : view === "ideas" ? "More ideas" : modal;
+    view === "add"
+      ? "Add from saved"
+      : view === "ideas"
+        ? "More ideas"
+        : flow.active
+          ? flow.stage
+          : modal;
   const addMode = panel === "Add from saved" || panel === "More ideas";
   const [name, setName] = useState("");
   const [visibility, setVisibility] = useState<"Private" | "Public">("Private");
@@ -190,9 +207,13 @@ export function Saved({ catalog }: { catalog: Catalog }) {
   function setPanel(value: string) {
     if (value === "Add from saved" || value === "More ideas") {
       if (!collection) return;
-      setModal("");
-      navigate(collection.id, value === "More ideas" ? "ideas" : "add");
-    } else setModal(value);
+      const enter = () =>
+        navigate(collection.id, value === "More ideas" ? "ideas" : "add");
+      if (flow.active) flow.close(enter);
+      else enter();
+    } else if (!value) flow.close();
+    else if (flow.active) flow.navigate(value);
+    else setModal(value);
   }
   function beginCreation() {
     setName("");
@@ -220,9 +241,28 @@ export function Saved({ catalog }: { catalog: Catalog }) {
         : [id, ...collection.productIds],
     });
   }
+  const previousPanel = useRef("");
   useEffect(() => {
-    if (editing) editorRef.current?.focus({ preventScroll: true });
-  }, [editing]);
+    const previous = previousPanel.current;
+    previousPanel.current = panel;
+    if (!flow.active || addMode) return;
+    const frame = requestAnimationFrame(() => {
+      const sheet =
+        document.querySelector<HTMLDialogElement>(".saved-sheet[open]");
+      const target = editing
+        ? editorRef.current
+        : panel === "Collection options"
+          ? (sheet?.querySelector<HTMLElement>(
+              '[data-collection-stage="' + CSS.escape(previous) + '"]',
+            ) ??
+            sheet?.querySelector<HTMLElement>(".collection-option-rows button"))
+          : sheet?.querySelector<HTMLElement>(
+              ".sheet-actions button, .form-submit",
+            );
+      target?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [panel, editing, flow.active, addMode]);
   useEffect(() => {
     if (selected || addMode) return;
     const id = window.history.state?.shopSavedCollectionReturn;
@@ -521,9 +561,10 @@ export function Saved({ catalog }: { catalog: Catalog }) {
         }
       />
       <Sheet
-        open={!!panel && !addMode}
+        open={flow.active && !!panel && !addMode}
+        manageHistory={false}
         headerless={editing}
-        initialFocus={editing ? ".collection-name-input" : undefined}
+        initialFocus=".collection-name-input, .collection-option-rows button, .sheet-actions button, .form-submit"
         className={`saved-sheet ${editing ? `collection-editor ${panel === "Edit name" ? "collection-editor-edit" : ""}` : panel === "Collection options" ? "collection-options-sheet" : panel === "Delete collection" ? "collection-delete-sheet" : panel === "Make public" ? "collection-public-sheet" : "collection-sharing-sheet"}`}
         title={
           panel === "Make public"
@@ -548,19 +589,22 @@ export function Saved({ catalog }: { catalog: Catalog }) {
               if (!name.trim() || submitting.current) return;
               submitting.current = true;
               if (panel === "Edit name" && collection) {
-                state.updateCollection(collection.id, { name: name.trim() });
-                setPanel("");
+                flow.close(() =>
+                  state.updateCollection(collection.id, { name: name.trim() }),
+                );
               } else {
-                const id = state.createCollection(name.trim());
-                state.updateCollection(id, { visibility });
-                setModal("");
-                navigate(id, "add", true);
+                flow.close(() => {
+                  const id = state.createCollection(name.trim());
+                  state.updateCollection(id, { visibility });
+                  navigate(id, "add", true);
+                });
               }
             }}
           />
         ) : panel === "Collection options" && collection ? (
           <div className="collection-option-rows">
             <button
+              data-collection-stage="Edit name"
               onClick={() => {
                 setName(collection.name);
                 submitting.current = false;
@@ -575,6 +619,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
               Add from saved
             </button>
             <button
+              data-collection-stage="Make public"
               title="Changes local preview visibility only; nothing is published"
               onClick={() => {
                 if (collection.visibility === "Private")
@@ -596,6 +641,7 @@ export function Saved({ catalog }: { catalog: Catalog }) {
             </button>
             <button
               className="danger-text"
+              data-collection-stage="Delete collection"
               onClick={() => setPanel("Delete collection")}
             >
               <Icon name="trash" />
@@ -646,9 +692,10 @@ export function Saved({ catalog }: { catalog: Catalog }) {
               <button
                 className="primary collection-delete"
                 onClick={() => {
-                  state.deleteCollection(collection.id);
-                  navigate(null);
-                  setPanel("");
+                  flow.close(() => {
+                    state.deleteCollection(collection.id);
+                    navigate(null);
+                  });
                 }}
               >
                 Delete

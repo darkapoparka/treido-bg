@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { ProductOptions } from "./reviews";
+import { useSheetStages } from "./sheet-stages";
 import { ReviewStars } from "./review-feedback";
 import { moveProductPhoto, productPhotoSwipe } from "./product-gallery";
 import { ProductAdditionFlight, useProductAddition } from "./product-addition";
@@ -54,10 +55,27 @@ export function ProductDetail({
     [detail, setDetail] = useState(""),
     [options, setOptions] = useState(false),
     [picker, setPicker] = useState(false),
-    [creating, setCreating] = useState(false),
     [name, setName] = useState(""),
     [toast, setToast] = useState(false),
     [subscription, setSubscription] = useState(false);
+  const pickerSubmitting = useRef(false);
+  const pickerFlow = useSheetStages<"picker" | "create">({
+    open: picker,
+    initial: "picker",
+    onClose: () => {
+      setPicker(false);
+      if (picker && state.saved.includes(product.id)) setToast(true);
+    },
+    onReopen: () => {
+      pickerSubmitting.current = false;
+      setPicker(true);
+    },
+    onStart: () => {
+      setName("");
+      pickerSubmitting.current = false;
+    },
+  });
+  const creating = pickerFlow.stage === "create";
   const [postalCode, setPostalCode] = useState("94025");
   const [postalDraft, setPostalDraft] = useState("94025");
   const [priceAlertTip, setPriceAlertTip] = useState(
@@ -212,19 +230,40 @@ export function ProductDetail({
       index === null ? null : moveProductPhoto(index, direction, photos.length),
     );
   }
-  function saveTo(id?: string) {
-    if (!state.saved.includes(product.id)) state.toggleSaved(product.id);
-    if (id) {
-      const c = state.collections.find((x) => x.id === id);
-      if (c && !c.productIds.includes(product.id))
-        state.updateCollection(id, {
-          productIds: [...c.productIds, product.id],
-        });
-    }
-    setPicker(false);
-    setCreating(false);
-    setToast(true);
+  function saveTo(id?: string, newName?: string) {
+    if (pickerSubmitting.current) return;
+    pickerSubmitting.current = true;
+    pickerFlow.close(() => {
+      if (!state.saved.includes(product.id)) state.toggleSaved(product.id);
+      if (newName) state.createCollection(newName, [product.id]);
+      else if (id) {
+        const collection = state.collections.find((item) => item.id === id);
+        if (collection && !collection.productIds.includes(product.id))
+          state.updateCollection(id, {
+            productIds: [...collection.productIds, product.id],
+          });
+      }
+      setToast(true);
+    });
   }
+  const previousPickerStage = useRef(creating);
+  useEffect(() => {
+    const fromEditor = previousPickerStage.current;
+    previousPickerStage.current = creating;
+    if (!pickerFlow.active) return;
+    const frame = requestAnimationFrame(() => {
+      document
+        .querySelector<HTMLElement>(
+          creating
+            ? '.product-save-picker[open] input[aria-label="Collection name"]'
+            : fromEditor
+              ? ".product-save-picker[open] [data-picker-create]"
+              : ".product-save-picker[open] .picker-row",
+        )
+        ?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [creating, pickerFlow.active]);
   const description = shea
     ? "Super-hydrating formula moisturizes your skin (you won’t even need body lotion post-shower!) Small plant-derived exfoliants gently exfoliate to reveal softer skin."
     : bag
@@ -811,23 +850,19 @@ export function ProductDetail({
         )}
       </Sheet>
       <Sheet
-        open={picker}
+        open={picker && pickerFlow.active}
+        manageHistory={false}
         title={creating ? "Create collection" : "Save to collection"}
         headerless={!creating}
         className={`product-save-picker ${creating ? "picker-creating" : ""}`}
-        onClose={() => {
-          if (!creating && state.saved.includes(product.id)) setToast(true);
-          setPicker(false);
-          setCreating(false);
-        }}
+        onClose={() => pickerFlow.close()}
       >
         {creating ? (
           <form
             onSubmit={(e) => {
               e.preventDefault();
               if (!name.trim()) return;
-              const id = state.createCollection(name.trim(), [product.id]);
-              saveTo(id);
+              saveTo(undefined, name.trim());
             }}
           >
             <input
@@ -841,7 +876,7 @@ export function ProductDetail({
               <button
                 type="button"
                 className="pill"
-                onClick={() => setCreating(false)}
+                onClick={() => pickerFlow.back()}
               >
                 Back
               </button>
@@ -889,10 +924,8 @@ export function ProductDetail({
             ))}
             <button
               className="picker-row"
-              onClick={() => {
-                setName("");
-                setCreating(true);
-              }}
+              data-picker-create
+              onClick={() => pickerFlow.navigate("create")}
             >
               <b aria-hidden="true">+</b>Create collection
             </button>

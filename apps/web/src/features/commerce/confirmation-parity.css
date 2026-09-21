@@ -132,3 +132,52 @@
 .receipt-page .receipt-method .receipt-payment {
   margin-bottom: 14px;
 }
+.receipt-page .account-heading {
+  margin-bottom: 15px;
+}
+.receipt-page .receipt-method + .receipt-section {
+  margin-top: 47px;
+}
+.receipt-page .receipt-card-line {
+  gap: 12px;
+}
+.receipt-page .receipt-card-number {
+  font-size: 12px;
+  color: #555;
+}
+.receipt-page .receipt-card-number > span {
+  color: inherit;
+}
+.receipt-page .receipt-payment-info {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 12px;
+  height: 12px;
+  margin-left: -5px;
+  color: #555;
+}
+.receipt-page .receipt-payment-info::after {
+  content: "";
+  position: absolute;
+  inset: -16px;
+}
+.receipt-page .receipt-payment-info svg {
+  width: 11px;
+  height: 11px;
+  stroke-width: 1.8;
+}
+.receipt-page .receipt-order-meta > strong,
+.receipt-page .receipt-order-meta > p,
+.receipt-page .receipt-product > strong,
+.receipt-page .receipt-product > span,
+.receipt-page .receipt-totals p > span,
+.receipt-page .receipt-totals p > strong,
+.receipt-page .receipt-section > h2,
+.receipt-page .receipt-section > p:not(.receipt-payment, .receipt-card-line),
+.receipt-page .receipt-payment > strong,
+.receipt-page .receipt-payment > span,
+.receipt-page .receipt-card-number,
+.receipt-page .receipt-seller > span {
+  opacity: 0.999;
+}

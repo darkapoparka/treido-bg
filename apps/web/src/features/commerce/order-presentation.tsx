@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Icon, type IconName } from "../discovery/icons";
 import { ProductCard } from "../discovery/components";
+import { SourceLink } from "../discovery/return-navigation";
 import type { Catalog } from "../catalog/types";
 import styles from "./orders-parity.module.css";
 
@@ -237,9 +238,9 @@ export function OrderRecommendations({ catalog }: { catalog: Catalog }) {
   return (
     <>
       <h2 className={styles.recommendationHeading}>
-        <Link href="/stores/kitsch">
+        <SourceLink href="/stores/kitsch" startAtTop>
           Popular at KITSCH <span aria-hidden="true">›</span>
-        </Link>
+        </SourceLink>
       </h2>
       <div className={`product-rail ${styles.orderRecommendations}`}>
         {[
@@ -255,6 +256,16 @@ export function OrderRecommendations({ catalog }: { catalog: Catalog }) {
                   key={id}
                   product={{
                     ...item,
+                    images:
+                      id === "black-conditioner-bag"
+                        ? [
+                            "/api/reference-media/confirmation-black-conditioner-photo",
+                          ]
+                        : id === "chocolate-body-bag"
+                          ? [
+                              "/api/reference-media/confirmation-chocolate-body-photo",
+                            ]
+                          : item.images,
                     ratingCount: ratingCount || item.ratingCount,
                   }}
                 />,

@@ -1153,6 +1153,7 @@ export function Receipt({ catalog, id }: { catalog: Catalog; id: string }) {
   const product = catalog.products.find((p) => p.id === order?.productId);
   const money = (amount: number) => formatMoney({ amount, currency: "USD" });
   const [shareMessage, setShareMessage] = useState("");
+  const [paymentInfo, setPaymentInfo] = useState(false);
   return (
     <AccountPage
       title="Receipt"
@@ -1182,7 +1183,16 @@ export function Receipt({ catalog, id }: { catalog: Catalog; id: string }) {
           </div>
           {shareMessage && <p role="status">{shareMessage}</p>}
           <div className="receipt-product">
-            {product && <img src={product.images[0]} alt="" />}
+            {product && (
+              <img
+                src={
+                  product.id === "shampoo-bag"
+                    ? "/api/reference-media/receipt-shampoo-bag-photo"
+                    : product.images[0]
+                }
+                alt=""
+              />
+            )}
             <strong>{order.name}</strong>
             <span>{money(data.itemAmount)}</span>
           </div>
@@ -1218,7 +1228,20 @@ export function Receipt({ catalog, id }: { catalog: Catalog; id: string }) {
               <span>{money(data.total)}</span>
             </p>
             <p className="receipt-card-line">
-              <b>VISA</b> ···· ···· ···· {data.cardLast4} <span>ⓘ</span>
+              <b>VISA</b>
+              <span className="receipt-card-number">
+                <span aria-hidden="true">···· ···· ···· </span>
+                <span className="sr-only">Visa ending </span>
+                {data.cardLast4}
+              </span>
+              <button
+                type="button"
+                className="receipt-payment-info"
+                aria-label="About this payment method"
+                onClick={() => setPaymentInfo(true)}
+              >
+                <Icon name="info" />
+              </button>
             </p>
           </section>
           <section className="receipt-section">
@@ -1250,11 +1273,28 @@ export function Receipt({ catalog, id }: { catalog: Catalog; id: string }) {
           </section>
           <section className="receipt-section">
             <h2>KITSCH</h2>
-            <Link className="receipt-seller" href="/stores/kitsch">
+            <SourceLink
+              className="receipt-seller"
+              href="/stores/kitsch"
+              startAtTop
+            >
               <img src="/api/reference-media/kitsch-logo" alt="" />
-              KITSCH
-            </Link>
+              <span>KITSCH</span>
+            </SourceLink>
           </section>
+          <Sheet
+            open={paymentInfo}
+            title="Payment method"
+            onClose={() => setPaymentInfo(false)}
+          >
+            <p className="form-note">Shop Pay · Visa ending {data.cardLast4}</p>
+            <p className="form-note">
+              Captured payment total: {money(data.total)}
+            </p>
+            <p className="form-note">
+              No additional payment details were recorded for this receipt.
+            </p>
+          </Sheet>
         </>
       ) : (
         <p>No receipt is available for this tracked order.</p>
@@ -1315,13 +1355,17 @@ export function OrderConfirmation({
               <span>{money(data.total)}</span>
             </p>
           </div>
-          <SourceLink className="muted-button" href={`/orders/${id}/receipt`}>
+          <SourceLink
+            className="muted-button"
+            href={`/orders/${id}/receipt`}
+            startAtTop
+          >
             View order receipt
           </SourceLink>
           <h2>
-            <Link href="/stores/kitsch">
+            <SourceLink href="/stores/kitsch" startAtTop>
               Popular at KITSCH <span aria-hidden="true">›</span>
-            </Link>
+            </SourceLink>
           </h2>
           <div className="product-rail">
             {["black-conditioner-bag", "chocolate-body-bag", "shower-caddy"]
@@ -1359,9 +1403,9 @@ export function OrderConfirmation({
                 />
               ))}
           </div>
-          <Link href="/deals" className="confirmation-deals">
+          <SourceLink href="/deals" className="confirmation-deals" startAtTop>
             Your deals <span aria-hidden="true">›</span>
-          </Link>
+          </SourceLink>
         </>
       ) : (
         <p>No confirmation is available for this tracked order.</p>

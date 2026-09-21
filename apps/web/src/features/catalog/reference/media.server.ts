@@ -319,6 +319,11 @@ const media: Record<
     photoRadius: 19,
     circularOcclusions: [[144, 144, 16]],
   },
+  "receipt-shampoo-bag-photo": {
+    file: "flows/c61e4d3b-629f-48b5-a322-5472f46e9b1b/002.webp",
+    rect: [16, 181, 56, 57],
+    photoRadius: 8,
+  },
   "confirmation-chocolate-body-photo": {
     file: "flows/c61e4d3b-629f-48b5-a322-5472f46e9b1b/001.webp",
     rect: [198, 550, 171, 171],
@@ -907,9 +912,15 @@ const media: Record<
     rect: [267, 452, 65, 48],
   },
 
+  "checkout-shea-photo": {
+    file: "flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/008.webp",
+    rect: [15, 329, 62, 62],
+    photoRadius: 12,
+  },
   "checkout-rosemary-oil": {
     file: "flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/008.webp",
-    rect: [14, 412, 64, 64],
+    rect: [15, 413, 62, 62],
+    photoRadius: 12,
   },
   "checkout-white-rock-item": {
     file: "flows/968f374e-69af-4adb-b913-0bb5c0e5e8b1/007.webp",

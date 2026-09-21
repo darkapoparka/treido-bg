@@ -28,6 +28,10 @@
   top: -4px;
   right: 0;
 }
+.saved-library > .saved-heading > .icon-button svg {
+  width: 18px;
+  height: 18px;
+}
 .saved-library h1 {
   margin: 0;
   font-size: 28px;
@@ -350,6 +354,7 @@
   gap: 8px;
   z-index: 10;
 }
+.saved-library > .saved-heading > .icon-button,
 .saved-heading-actions .icon-button {
   border: 1px solid #f3f3f3;
   box-shadow: 0 2px 12px #00000003;

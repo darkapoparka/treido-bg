@@ -1,11 +1,11 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AccountPage, Boundary } from "../account/forms";
 import { commitSheetQuery, Sheet, ProductCard } from "../discovery/components";
 import { Icon } from "../discovery/icons";
+import { SourceLink } from "../discovery/return-navigation";
 import { useAccount, type ReferenceOrder } from "../account/state";
 import type { Catalog } from "../catalog/types";
 import { capturedReceipts } from "./receipt-data";
@@ -292,12 +292,20 @@ export function TrackingDetail({
             >
               <ManageOrderIcon /> Manage your order
             </button>
-            <Link className="muted-button" href="/stores/kitsch">
+            <SourceLink
+              className="muted-button"
+              href="/stores/kitsch"
+              startAtTop
+            >
               Visit store
-            </Link>
-            <Link className="muted-button" href={`/orders/${order.id}`}>
+            </SourceLink>
+            <SourceLink
+              className="muted-button"
+              href={`/orders/${order.id}`}
+              startAtTop
+            >
               View order details
-            </Link>
+            </SourceLink>
           </section>
         )}
         {product && !manualLabel && (
@@ -342,10 +350,14 @@ export function TrackingDetail({
         </div>
         {!product && (
           <h2>
-            <Link href="/deals" className={styles.manualRecommendationLabel}>
+            <SourceLink
+              href="/deals"
+              className={styles.manualRecommendationLabel}
+              startAtTop
+            >
               Your deals
               <Icon name="chevron" />
-            </Link>
+            </SourceLink>
           </h2>
         )}
         {product ? (

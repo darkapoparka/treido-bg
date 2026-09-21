@@ -1,9 +1,10 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Catalog } from "../catalog/types";
-import { Sheet, consumeSheetHistory } from "./components";
+import { Sheet } from "./components";
+import { useSheetStages } from "./sheet-stages";
 import { CollectionEditor } from "./collection-editor";
 import { Icon } from "./icons";
 import { useDiscovery } from "./state";
@@ -16,29 +17,50 @@ export function FirstCollectionPrompt({ catalog }: { catalog: Catalog }) {
   const router = useRouter();
   const [startedEmpty] = useState(() => state.saved.length === 0);
   const [dismissed, setDismissed] = useState(false);
-  const [editing, setEditing] = useState(false);
   const [name, setName] = useState("");
   const [visibility, setVisibility] = useState<"Private" | "Public">("Private");
   const submitting = useRef(false);
   const first = catalog.products.find((item) => item.id === state.saved[0]);
   const suggest =
     startedEmpty && !dismissed && !!first && state.collections.length === 0;
-  function close() {
-    setDismissed(true);
-    setEditing(false);
-  }
+  const flow = useSheetStages<"prompt" | "editor">({
+    open: suggest,
+    initial: "prompt",
+    onClose: () => {
+      if (suggest) setDismissed(true);
+    },
+    onReopen: () => setDismissed(false),
+    onStart: () => {
+      setName("");
+      setVisibility("Private");
+      submitting.current = false;
+    },
+  });
+  const editing = flow.stage === "editor";
+  useEffect(() => {
+    if (!flow.active) return;
+    const frame = requestAnimationFrame(() => {
+      document
+        .querySelector<HTMLElement>(
+          editing
+            ? ".collection-editor[open] .collection-name-input"
+            : ".first-collection-sheet[open] .first-collection-create",
+        )
+        ?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [editing, flow.active]);
   return (
     <Sheet
-      open={editing || suggest}
+      open={flow.active && suggest}
+      manageHistory={false}
       title={editing ? "Create collection" : "Start your first collection"}
       headerless
       className={
         editing ? "saved-sheet collection-editor" : "first-collection-sheet"
       }
-      initialFocus={
-        editing ? ".collection-name-input" : ".first-collection-create"
-      }
-      onClose={close}
+      initialFocus=".collection-name-input, .first-collection-create"
+      onClose={() => flow.close()}
     >
       {editing ? (
         <CollectionEditor
@@ -46,19 +68,17 @@ export function FirstCollectionPrompt({ catalog }: { catalog: Catalog }) {
           visibility={visibility}
           onNameChange={setName}
           onVisibilityChange={setVisibility}
-          onCancel={close}
+          onCancel={() => flow.close()}
           onSave={() => {
             if (!name.trim() || submitting.current) return;
             submitting.current = true;
-            const id = state.createCollection(name.trim());
-            state.updateCollection(id, { visibility });
-            const consumed = consumeSheetHistory();
-            close();
-            // The same Saved selection UI handles the new collection. Its Done
-            // action replaces this entry, rather than stacking duplicate pages.
-            (consumed ? router.replace : router.push)(
-              `/saved?collection=${encodeURIComponent(id)}&view=add`,
-            );
+            flow.close(() => {
+              const id = state.createCollection(name.trim());
+              state.updateCollection(id, { visibility });
+              router.push(
+                `/saved?collection=${encodeURIComponent(id)}&view=add`,
+              );
+            });
           }}
         />
       ) : (
@@ -92,7 +112,7 @@ export function FirstCollectionPrompt({ catalog }: { catalog: Catalog }) {
           </p>
           <button
             className="primary first-collection-create"
-            onClick={() => setEditing(true)}
+            onClick={() => flow.navigate("editor")}
           >
             Create collection
           </button>

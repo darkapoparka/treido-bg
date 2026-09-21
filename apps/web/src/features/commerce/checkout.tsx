@@ -922,7 +922,6 @@ export function Checkout({
           )}
 
           <CheckoutExtras
-            catalog={catalog}
             recommendations={checkoutRecommendations}
             added={extraIds}
             disabled={processing}
