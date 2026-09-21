@@ -1,6 +1,6 @@
 # Current project status
 
-Updated 2026-09-20. This is the session entry point, not a second backlog.
+Updated 2026-09-21. This is the session entry point, not a second backlog.
 
 ## Resume handoff
 
@@ -13,6 +13,8 @@ All 97 flows / 424 ordered frames are mapped and compared, and 307 standalone im
 ## Active repair checkpoint
 
 **b302d88** has scoped evidence, not a new complete qualification. Search/Mini adds49 unique frames,7/7 new journeys and25/25 final router siblings; earlier40/40 siblings cover unchanged owners. Subsequent local commerce/collection work adds reversible collection stages, receipt/payment presentation, source-specific checkout/order recommendation media and return-path fixes. `20260921-commerce-collection-dirty` improves the scoped 21–31/60–68/79 mean by **0.08345 MAE points** versus the complete baseline; receipt top improves **4.485→2.975%** and receipt tail **4.203→3.948%**. The largest scoped regression is **+0.118**, below the 0.15 guard. Focused checkout/order journeys pass **48/48**, collection-stage journeys **9/9** at 320/393/430, and TypeScript/scoped ESLint pass. The [implementation map](../shop-implementation-map.md#current-source-checkpoint) records exact precedence. No full build, units or complete424 capture was repeated. The complete ledger below is unchanged.
+
+The current Search/assistant fitting keeps the photo and Jeans answers in their canonical live components. Final scoped evidence improves the captured photo answer **5.596→5.284%**, expanded steps **5.382→5.073%**, comparison viewport **5.833→5.545%**, and Jeans answer top **5.229→5.002%**. The tail now uses the source-confirmed wording “garage setting”; its whole-frame score moves **4.433→4.450%** despite correct copy, wrapping and geometry. All 16 flow45–47 states recapture without replay/browser errors, **28/28** focused journeys pass, and TypeScript, scoped Next ESLint, Prettier and diff checks pass. Probe fonts, sources, masks, hashes, recipes and thresholds remain unchanged. This is scoped progress, not a complete 424-frame qualification or 1:1 acceptance.
 
 The complete production-preview capture at clean **b8377ff** (application **4bda84e**), **20260920-connected-qualified-full**, covers **424/424** frozen frames: zero replay/browser errors, **2.765997% mean MAE**, **8.636994% mean bad pixels**, and **57 numerical candidates**. No frame regresses more than 0.15 MAE points against complete f77609c. The [frame ledger](../shop-frame-ledger.md) owns this exact run. **367 frames exceed a numerical threshold; owner acceptance remains 0/97. The entire app is not 1:1.**
 

@@ -729,7 +729,7 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
       <p>
         Mobbin is a brand rooted in car culture and urban movement, often
         releasing limited &quot;drops&quot; that sell out quickly. Their gear is
-        designed to be tough enough for a garage session but clean enough for a
+        designed to be tough enough for a garage setting but clean enough for a
         weekend out.
       </p>
       <p>
