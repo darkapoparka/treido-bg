@@ -972,7 +972,7 @@
   opacity: 0.999;
   font-size: 14.5px;
   line-height: 16.8px;
-  letter-spacing: 0;
+  letter-spacing: -0.05px;
 }
 
 /* Measured text flow from source17/006 and32/002; the content remains selectable. */
@@ -991,7 +991,7 @@
 }
 .shea-description-sheet .sheet-header h2 {
   letter-spacing: -1px;
-  transform: translateY(-1px);
+  transform: translate(1px, -2px);
 }
 .shea-description-sheet li {
   position: relative;
