@@ -311,3 +311,42 @@ test("expanded review matches the source section boundaries and keeps the addres
     await expect(page.locator(".checkout-pay button")).toBeEnabled();
   }
 });
+
+test("Checkout typography keeps the bundled Geist face scoped to checkout", async ({
+  page,
+}) => {
+  const fontFamily = async (selector: string) => {
+    await page.evaluate(() => document.fonts.ready);
+    return page
+      .locator(selector)
+      .first()
+      .evaluate((element) => getComputedStyle(element).fontFamily);
+  };
+
+  await useReferenceScenario(page, "checkout");
+  await page.goto("/checkout?store=kitsch");
+  await expect(page.locator(".source-checkout")).toBeVisible();
+  expect(await fontFamily(".source-checkout")).toContain("ShopCheckoutGeist");
+
+  for (const route of [
+    "/profile",
+    "/cart",
+    "/orders",
+    "/stores/kitsch",
+    "/search?q=Jeans",
+  ]) {
+    await page.goto(route);
+    await expect(page.locator("main").first()).toBeVisible();
+    await expect(page.locator(".source-checkout")).toHaveCount(0);
+    expect(await fontFamily("main")).not.toContain("ShopCheckoutGeist");
+  }
+
+  await useReferenceScenario(page, "onboarding-new");
+  await page.goto(
+    "/onboarding?step=preferences&journey=new&reference=captured",
+  );
+  await expect(page.locator(".onboarding-page")).toBeVisible();
+  expect(await fontFamily(".onboarding-page")).not.toContain(
+    "ShopCheckoutGeist",
+  );
+});

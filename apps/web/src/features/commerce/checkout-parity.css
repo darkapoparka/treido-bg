@@ -1571,3 +1571,14 @@
 .source-checkout .checkout-identity > span {
   font-size: 14.5px;
 }
+
+@font-face {
+  font-family: "ShopCheckoutGeist";
+  src: url("/fonts/shop-chemical-geist.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+.source-checkout {
+  font-family: "ShopCheckoutGeist", Arial, Helvetica, sans-serif;
+}
