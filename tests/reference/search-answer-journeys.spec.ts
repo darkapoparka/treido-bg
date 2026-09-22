@@ -430,12 +430,22 @@ test("answer captions keep the source rail rhythm without wrapping or moving the
     exact: true,
   });
   const body = answer.locator(".assistant-page");
-  const caption = body.locator(":scope > .form-note").first();
-  const rail = body.locator(".assistant-product-rail").first();
-  await expect(body.locator(":scope > h2").first()).toHaveCSS(
-    "font-size",
-    "19px",
-  );
+  const headings = body.locator(":scope > h2");
+  const captions = body.locator(":scope > .form-note");
+  const caption = captions.first();
+  const rail = body.locator(":scope > .assistant-product-rail").first();
+  const wideRail = body.locator(":scope > .assistant-wide-rail");
+  await expect(headings.first()).toHaveCSS("font-size", "19px");
+  await expect(headings).toHaveCount(2);
+  await expect(captions).toHaveCount(2);
+  for (const heading of [headings.first(), headings.nth(1)]) {
+    await expect(heading).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, -2)");
+  }
+  for (const note of [captions.first(), captions.nth(1)]) {
+    await expect(note).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, -1)");
+  }
+  await expect(rail).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 1)");
+  await expect(wideRail).toHaveCSS("transform", "none");
   for (const width of [320, 393, 430]) {
     await page.setViewportSize({ width, height: 793 });
     await expect(caption).toHaveCSS("white-space", "nowrap");

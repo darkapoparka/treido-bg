@@ -733,12 +733,14 @@
 .embeddedAnswer > h2 {
   letter-spacing: -0.3px;
   margin: 16px 0 1px;
+  transform: translateY(-2px);
 }
 .embeddedAnswer > :global(.form-note) {
   margin-bottom: 13px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: clip;
+  transform: translateY(-1px);
 }
 .answerBody :global(.assistant-edit) {
   position: sticky;
@@ -764,6 +766,9 @@
 }
 .embeddedAnswer :global(.assistant-product-rail) {
   margin: 12px -16px 22px 0;
+}
+.embeddedAnswer > :global(.assistant-product-rail):first-of-type {
+  transform: translateY(1px);
 }
 .embeddedAnswer :global(.assistant-wide-rail) {
   margin-top: 15px;
