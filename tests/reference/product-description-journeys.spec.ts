@@ -55,6 +55,39 @@ for (const id of ["shampoo-bag", "shea-butter"] as const) {
     );
     if (id === "shea-butter") {
       expect(dialogFontFamily).toContain("ShopProductDescriptionGeist");
+      const wrap = await dialog.getByRole("listitem").evaluateAll((items) => {
+        const wordTop = (item: Element, word: string) => {
+          const node = item.firstChild;
+          const text = node?.textContent ?? "";
+          const index = text.indexOf(word);
+          if (!node || node.nodeType !== Node.TEXT_NODE || index < 0) {
+            throw new Error(`Missing text node or word: ${word}`);
+          }
+          const range = document.createRange();
+          range.setStart(node, index);
+          range.setEnd(node, index + word.length);
+          return range.getBoundingClientRect().top;
+        };
+        return {
+          letterSpacing: getComputedStyle(items[0]).letterSpacing,
+          first: {
+            your: wordTop(items[0], "your"),
+            skin: wordTop(items[0], "skin"),
+            post: wordTop(items[0], "post-"),
+            shower: wordTop(items[0], "shower!"),
+          },
+          second: {
+            gently: wordTop(items[1], "gently"),
+            exfoliate: wordTop(items[1], "exfoliate"),
+            to: wordTop(items[1], "to"),
+          },
+        };
+      });
+      expect(wrap.letterSpacing).toBe("-0.1px");
+      expect(wrap.first.your).toBe(wrap.first.skin);
+      expect(wrap.first.post).not.toBe(wrap.first.shower);
+      expect(wrap.second.gently).toBe(wrap.second.exfoliate);
+      expect(wrap.second.exfoliate).not.toBe(wrap.second.to);
     } else {
       expect(dialogFontFamily).not.toContain("ShopProductDescriptionGeist");
     }

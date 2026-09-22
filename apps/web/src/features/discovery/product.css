@@ -999,7 +999,7 @@
 .shea-description-sheet li {
   position: relative;
   list-style: none;
-  letter-spacing: 0.1px;
+  letter-spacing: -0.1px;
 }
 .shea-description-sheet li::before {
   content: "";
