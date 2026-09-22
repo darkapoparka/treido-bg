@@ -61,6 +61,8 @@ The following Beauty fit aligns the Scent/Favorites transition, raises brand tex
 
 The Kitsch Collections rail now shows the third source tile to the viewport edge. `20260923-store-collection-rail-final` scores **3/3** flow-14 states, improving f014-001 **3.468 -> 3.440% MAE** without moving its siblings; storefront geometry/return/width journeys pass **3/3**. The Coastal image crop and typography still differ. Continue the source-wide fitting and complete-corpus recapture; no flow is accepted yet.
 
+The complete current-head run `20260923-current-head-full` scores **424/424** frames across **97/97** flows, zero browser/replay errors, and **2.5939% mean MAE**, versus **2.6065%** in the previous full run. This is the current comparison baseline, not 1:1 acceptance. Next: fit the Coastal tile crop and remaining media/type differences against the frozen source; **0/97** flows are owner accepted.
+
 ## Task 4 - Build data, identity and catalog
 
 Owner: [architecture.md](architecture.md), [detailed requirements](docs/product/requirements.md), [native.md](native.md). On an explicitly authorized fresh development target, implement the new product-led PostgreSQL/Prisma schema, Clerk identity mapping and business/resource permissions. Do not import legacy schema or data automatically.
