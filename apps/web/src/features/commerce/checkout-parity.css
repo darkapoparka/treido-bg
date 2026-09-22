@@ -928,6 +928,11 @@
   gap: 0;
   padding-bottom: 0;
 }
+.source-payment-editor-scrolled > .source-card-method,
+.source-payment-editor-scrolled > .source-apple-choice,
+.source-payment-editor-scrolled > .source-billing-group {
+  transform: translateY(-17px);
+}
 .source-card-method {
   padding: 0 14px 14px;
   background: #f5f5f6;

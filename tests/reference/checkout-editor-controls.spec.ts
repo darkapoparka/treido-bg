@@ -121,6 +121,31 @@ test("payment field helpers preserve entered values and let the buyer correct th
   await expect(
     editor.getByRole("textbox", { name: "Security code", exact: true }),
   ).toHaveValue("123");
+  await editor.evaluate((dialog) => {
+    dialog.scrollTop = 60;
+    dialog.dispatchEvent(new Event("scroll"));
+  });
+  const paymentForm = editor.locator(".source-payment-editor");
+  await expect(paymentForm).toHaveClass(/source-payment-editor-scrolled/);
+  for (const selector of [
+    ".source-card-method",
+    ".source-apple-choice",
+    ".source-billing-group",
+  ]) {
+    await expect(editor.locator(selector)).toHaveCSS(
+      "transform",
+      "matrix(1, 0, 0, 1, 0, -17)",
+    );
+  }
+  await editor.evaluate((dialog) => {
+    dialog.scrollTop = 0;
+    dialog.dispatchEvent(new Event("scroll"));
+  });
+  await expect(paymentForm).not.toHaveClass(/source-payment-editor-scrolled/);
+  await expect(editor.locator(".source-card-method")).toHaveCSS(
+    "transform",
+    "none",
+  );
   await editor.getByRole("button", { name: "Cancel", exact: true }).click();
   await expect(
     page.getByRole("button", { name: /Pay another way/ }),

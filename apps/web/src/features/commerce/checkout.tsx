@@ -1931,6 +1931,8 @@ function SourcePaymentEditor({
   const [nickname, setNickname] = useState("");
   const [securityHelp, setSecurityHelp] = useState(false);
   const nameInput = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [scrolled, setScrolled] = useState(false);
   const [billing, setBilling] = useState(selectedAddressId);
   const [billOpen, setBillOpen] = useState(false);
   const [billingEditor, setBillingEditor] = useState(false);
@@ -1946,10 +1948,21 @@ function SourcePaymentEditor({
   const selectedBilling = billingAddresses.find(
     (entry) => entry.id === billing,
   );
+  useEffect(() => {
+    const sheet = formRef.current?.closest<HTMLDialogElement>(
+      ".source-payment-sheet",
+    );
+    if (!sheet) return;
+    const syncScrollState = () => setScrolled(sheet.scrollTop >= 40);
+    syncScrollState();
+    sheet.addEventListener("scroll", syncScrollState, { passive: true });
+    return () => sheet.removeEventListener("scroll", syncScrollState);
+  }, []);
   return (
     <>
       <form
-        className="source-payment-editor"
+        ref={formRef}
+        className={`source-payment-editor${scrolled ? " source-payment-editor-scrolled" : ""}`}
         onSubmit={(event) => {
           event.preventDefault();
           setBoundary(true);
