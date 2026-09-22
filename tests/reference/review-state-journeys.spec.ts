@@ -113,6 +113,7 @@ test("review reporting validates a reason, cancels without a mark, and preserves
   const thanks = page.getByRole("dialog", { name: "Thanks for reporting" });
   await expect(thanks).toBeVisible();
   await expect(thanks.getByRole("status")).toContainText("No report was sent");
+  await expect(thanks.getByRole("status")).toHaveCSS("min-height", "90px");
   await button(page, "Close").click();
   await expect(wes.locator(".review-reported-label")).toBeVisible();
   await expect(wes.locator(".review-helpful")).toBeDisabled();
