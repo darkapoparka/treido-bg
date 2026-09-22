@@ -274,9 +274,11 @@
 }
 
 /* Source flow 51: keep Beauty's own category, brand and deal-card geometry. */
+/* The source pills are white; reserve scrollable padding for their shadow while
+   keeping the pill and following hero at their recorded y positions. */
 .page[data-category="Beauty"] :global(.category-rail) {
-  margin: 14px -16px 38px 0;
-  padding: 0;
+  margin: -6px -16px 7px -16px;
+  padding: 20px 0 30px 16px;
   gap: 8px;
 }
 .page[data-category="Beauty"] :global(.category-rail) > a {
@@ -287,7 +289,7 @@
   padding: 4px;
   gap: 8px;
   background: #fff;
-  box-shadow: 0 8px 24px #00000007;
+  box-shadow: 0 8px 24px #0000000f;
   font-size: 14px;
 }
 /* The frozen Beauty rail exposes a narrow edge of the fourth photo at 393px. */

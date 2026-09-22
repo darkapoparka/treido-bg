@@ -55,6 +55,8 @@ Acceptance: source/live pairs, actual family interactions, Back/Forward/focus/sc
 
 The same checkpoint now includes Beauty pill widths, heading type, Bestsellers spacing and its circular control in the canonical component. The final flow-50/51 run scores **10/10** frames without browser errors; Beauty improves from **3.5973 to 3.4657%** mean MAE. Three Explore siblings are unchanged and its Home-entry capture varies by +0.0128 points. Focused journeys cover the source section links, Save/cart and 320/393/430 widths. Continue the remaining Beauty photography, type and shared control fitting before the full capture; owner acceptance is still open.
 
+The white Beauty pills now retain their source-visible gray shadow inside the horizontal rail. The subsequent six-frame flow-51 run improves its pill frame **3.5810 -> 3.1850%** and family mean **3.4657 -> 3.3997%**; all six Explore entry journeys pass, including 320/393/430 containment. Continue the remaining source differences and complete-corpus capture before acceptance.
+
 ## Task 4 - Build data, identity and catalog
 
 Owner: [architecture.md](architecture.md), [detailed requirements](docs/product/requirements.md), [native.md](native.md). On an explicitly authorized fresh development target, implement the new product-led PostgreSQL/Prisma schema, Clerk identity mapping and business/resource permissions. Do not import legacy schema or data automatically.
