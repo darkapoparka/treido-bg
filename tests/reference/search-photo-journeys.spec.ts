@@ -167,6 +167,41 @@ test("photo answer edit search and Back preserve history without horizontal over
   ).toBeVisible();
 });
 
+test("photo answer typography keeps the captured title and second shelf offsets scoped", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "search-photo");
+  await page.goto("/assistant?example=photo");
+  await page.evaluate(() => document.fonts.ready);
+
+  const title = page.getByRole("heading", {
+    name: "Find me a baseball cap like this",
+    exact: true,
+  });
+  await expect(title).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, -1)");
+
+  const headings = page.locator(".photo-assistant > h2");
+  await expect(headings).toHaveCount(2);
+  await expect(headings.nth(0)).toHaveCSS(
+    "transform",
+    "matrix(1, 0, 0, 1, 0, -1)",
+  );
+  await expect(headings.nth(1)).toHaveCSS(
+    "transform",
+    "matrix(1, 0, 0, 1, 0, -2)",
+  );
+
+  const notes = page.locator(".photo-assistant > .form-note");
+  await expect(notes).toHaveCount(2);
+  await expect(notes.nth(0)).toHaveCSS(
+    "transform",
+    "matrix(1, 0, 0, 1, 0, -1)",
+  );
+  await expect(notes.nth(1)).toHaveCSS(
+    "transform",
+    "matrix(1, 0, 0, 1, 1, -2)",
+  );
+});
 test("photo comparison preserves source framing and non-interactive gallery indicators", async ({
   page,
 }) => {
