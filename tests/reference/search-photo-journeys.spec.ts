@@ -167,7 +167,7 @@ test("photo answer edit search and Back preserve history without horizontal over
   ).toBeVisible();
 });
 
-test("photo answer typography keeps the captured title and second shelf offsets scoped", async ({
+test("photo answer typography keeps the captured text offsets scoped", async ({
   page,
 }) => {
   await useReferenceScenario(page, "search-photo");
@@ -201,6 +201,19 @@ test("photo answer typography keeps the captured title and second shelf offsets 
     "transform",
     "matrix(1, 0, 0, 1, 1, -2)",
   );
+  const comparisonCopy = page.locator(
+    '.photo-assistant > p[class*="photoComparisonCopy"]',
+  );
+  await expect(comparisonCopy).toHaveCSS("letter-spacing", "normal");
+  await expect(comparisonCopy).toHaveCSS(
+    "transform",
+    "matrix(1, 0, 0, 1, 1, 0)",
+  );
+
+  const brandCopy = page.locator(
+    ".photo-assistant > .assistant-answer-card:nth-of-type(2) + p",
+  );
+  await expect(brandCopy).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 1)");
 });
 test("photo comparison preserves source framing and non-interactive gallery indicators", async ({
   page,
