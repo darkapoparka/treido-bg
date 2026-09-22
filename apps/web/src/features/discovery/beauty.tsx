@@ -136,9 +136,14 @@ export function BeautySections({ catalog }: { catalog: Catalog }) {
           ))}
         </div>
       </section>
-      <section className="beauty-section">
+      <section className="beauty-section beauty-bestsellers-section">
         <SourceLink href="/search?category=Beauty">
-          <h2>Bestsellers ›</h2>
+          <h2>
+            Bestsellers{" "}
+            <span className="beauty-heading-chevron" aria-hidden="true">
+              ›
+            </span>
+          </h2>
         </SourceLink>
         <div className="product-rail beauty-bestsellers">
           {catalog.products

@@ -2,6 +2,16 @@
   padding-top: 12px;
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
 }
+@font-face {
+  font-family: "ShopBeautyGeist";
+  src: url("/fonts/shop-chemical-geist.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+.page[data-category="Beauty"] {
+  font-family: "ShopBeautyGeist", Arial, Helvetica, sans-serif;
+}
 .page > h1 {
   font-size: 28px;
   line-height: 34px;
@@ -271,13 +281,27 @@
 }
 .page[data-category="Beauty"] :global(.category-rail) > a {
   height: 40px;
-  padding: 4px 12px 4px 4px;
+  min-width: 0;
+  overflow: hidden;
+  justify-content: flex-start;
+  padding: 4px;
   gap: 8px;
   background: #fff;
   box-shadow: 0 8px 24px #00000007;
   font-size: 14px;
 }
+/* The frozen Beauty rail exposes a narrow edge of the fourth photo at 393px. */
+.page[data-category="Beauty"] :global(.category-rail) > a:nth-child(1) {
+  flex: 0 0 116px;
+}
+.page[data-category="Beauty"] :global(.category-rail) > a:nth-child(2) {
+  flex: 0 0 110px;
+}
+.page[data-category="Beauty"] :global(.category-rail) > a:nth-child(3) {
+  flex: 0 0 107px;
+}
 .page[data-category="Beauty"] :global(.beauty-category-icon) {
+  flex: none;
   width: 32px;
   height: 32px;
 }
@@ -373,6 +397,29 @@
 .page[data-category="Beauty"] :global(.beauty-section) h2 {
   line-height: 22px;
   margin-bottom: 12px;
+  font-weight: 550;
+}
+.page[data-category="Beauty"] :global(.beauty-bestsellers-section) {
+  margin-top: 36px;
+}
+.page[data-category="Beauty"] :global(.explore-shelf) h2 {
+  font-weight: 550;
+}
+.page[data-category="Beauty"] :global(.beauty-section > a > h2) {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.page[data-category="Beauty"] :global(.beauty-heading-chevron) {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #f3f4f5;
+  font-size: 22px;
+  line-height: 20px;
+  font-weight: 400;
 }
 .page[data-category="Beauty"] :global(.product-card) {
   flex: 0 0 172px;

@@ -53,6 +53,8 @@ Acceptance: source/live pairs, actual family interactions, Back/Forward/focus/sc
 
 2026-09-23 checkpoint: the current local `main` checkout continues the connected Shop work and includes a source-measured 2px vertical fit for the root Explore hero arrow. Its exact four-frame comparison, viewport measurements and before/after captures are in the [Explore checkpoint](shop-implementation-map.md#explore-source-fitting-checkpoint-2026-09-18). Next: continue frame-by-frame source comparisons on the unresolved Explore/Beauty layouts and other open Shop states, then refresh the complete 424-frame capture. All97 flows remain in scope; numerical candidates do not grant owner acceptance.
 
+The same checkpoint now includes Beauty pill widths, heading type, Bestsellers spacing and its circular control in the canonical component. The final flow-50/51 run scores **10/10** frames without browser errors; Beauty improves from **3.5973 to 3.4657%** mean MAE. Three Explore siblings are unchanged and its Home-entry capture varies by +0.0128 points. Focused journeys cover the source section links, Save/cart and 320/393/430 widths. Continue the remaining Beauty photography, type and shared control fitting before the full capture; owner acceptance is still open.
+
 ## Task 4 - Build data, identity and catalog
 
 Owner: [architecture.md](architecture.md), [detailed requirements](docs/product/requirements.md), [native.md](native.md). On an explicitly authorized fresh development target, implement the new product-led PostgreSQL/Prisma schema, Clerk identity mapping and business/resource permissions. Do not import legacy schema or data automatically.
