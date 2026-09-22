@@ -49,6 +49,15 @@ for (const id of ["shampoo-bag", "shea-butter"] as const) {
       exact: true,
     });
     await expect(dialog).toBeVisible();
+    await page.evaluate(() => document.fonts.ready);
+    const dialogFontFamily = await dialog.evaluate(
+      (element) => getComputedStyle(element).fontFamily,
+    );
+    if (id === "shea-butter") {
+      expect(dialogFontFamily).toContain("ShopProductDescriptionGeist");
+    } else {
+      expect(dialogFontFamily).not.toContain("ShopProductDescriptionGeist");
+    }
     if (id === "shampoo-bag") {
       await expect(dialog).toContainText(
         "Our patented design preserves the life of your bar.",

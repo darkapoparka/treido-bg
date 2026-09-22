@@ -1014,3 +1014,15 @@
 .shea-description-sheet ul + p {
   margin-top: 28px;
 }
+
+@font-face {
+  font-family: "ShopProductDescriptionGeist";
+  src: url("/fonts/shop-chemical-geist.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+
+.shea-description-sheet {
+  font-family: "ShopProductDescriptionGeist", Arial, Helvetica, sans-serif;
+}
