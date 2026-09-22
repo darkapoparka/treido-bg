@@ -79,6 +79,26 @@ test("existing order opens the complete captured receipt without a new purchase"
     ).toBeVisible();
   await expect(page.locator(".receipt-total")).toContainText("$10.82");
   await expect(page.getByText("-$1.35", { exact: true })).toBeVisible();
+  const shipping = page.locator(".receipt-section").filter({
+    has: page.getByRole("heading", { name: "Shipping address", exact: true }),
+  });
+  const receiptSpacing = await shipping.evaluate((section) => {
+    const heading = section.querySelector("h2");
+    if (!heading) throw new Error("Receipt section heading is missing");
+    return {
+      sectionMargin: getComputedStyle(section).marginTop,
+      headingGap: getComputedStyle(heading).marginBottom,
+    };
+  });
+  expect(receiptSpacing).toEqual({ sectionMargin: "47px", headingGap: "17px" });
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+    ).toBe(true);
+  }
 });
 
 test("email auth has source-specific code stage and stops at verification boundary", async ({
