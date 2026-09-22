@@ -437,6 +437,8 @@ Tasks 3/5/6, flows 50-51, extend `e92763b` on `main`. The media handler recovers
 
 Root Explore uses the measured source department colors, a root-only Segoe Variable Text treatment for category/Minis/shelf copy, and the measured 36px hero arrow control. Beauty retains its separate calibrated composition and type. The shelf mappings select root-flow photographs only on root Explore; Beauty keeps its own distinct flow media. Product routes, shared Save state, Minis visit history, category navigation, cart behavior and responsive containment are unchanged.
 
+On 2026-09-23, the root Explore arrow path was moved **2px up** to match the frozen f050-002 glyph centroid; its 36px circle and banner geometry remain fixed. The circle stays 17px from the hero's right edge and 18px from its bottom at 386, 393, 447, 768, 1024 and 1440px widths, with no document overflow. `20260923-explore-banner-final` captures **4/4** flow-50 frames with zero browser errors; only f050-002 changes, improving **2.569733 -> 2.567045% MAE**. Same-size 447x920 before/after captures are `.qa/shop-parity/runs/20260923-explore-banner-fix/before-447.png` and `after-447.png`. This source-grounded microfit remains above the 1.5% frame threshold and does not qualify Explore or the full clone.
+
 The retained root run is `.qa/shop-parity/runs/20260918-explore-systemic-flow50/`, Chromium/Edge at 393x793 against `http://127.0.0.1:6441`:
 
 | Frame | Complete baseline | Current | Delta (percentage points) |

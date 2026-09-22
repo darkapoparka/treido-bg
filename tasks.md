@@ -51,7 +51,7 @@ The active web reconstruction uses isolated reference data through the existing 
 
 Acceptance: source/live pairs, actual family interactions, Back/Forward/focus/scroll, relevant 320/430 containment and scoped types/lint/tests. Keep numeric candidates distinct from owner acceptance.
 
-2026-09-20 checkpoint: application **b302d88** adds connected Search/Mini drafts, Gift collection identity and Skin/wide-leg controls after **fe3d5e6**, **6b89210** and **30f336e**. Exact49-frame scoped evidence,7/7 new journeys,25/25 final router siblings and earlier complete424 qualification remain in the [current checkpoint](shop-implementation-map.md#current-source-checkpoint). Next: Receipt/Orders/checkout recommendation variants, shared PDP/review finishing, Home hearts and collection-stage history. All97 flows remain in scope;367 frames in the prior full run exceed a diagnostic threshold and coverage grants no owner acceptance.
+2026-09-23 checkpoint: the current local `main` checkout continues the connected Shop work and includes a source-measured 2px vertical fit for the root Explore hero arrow. Its exact four-frame comparison, viewport measurements and before/after captures are in the [Explore checkpoint](shop-implementation-map.md#explore-source-fitting-checkpoint-2026-09-18). Next: continue frame-by-frame source comparisons on the unresolved Explore/Beauty layouts and other open Shop states, then refresh the complete 424-frame capture. All97 flows remain in scope; numerical candidates do not grant owner acceptance.
 
 ## Task 4 - Build data, identity and catalog
 

@@ -89,6 +89,9 @@
   padding: 9px;
   background: rgb(255 255 255 / 16%);
 }
+.page:not([data-category]) :global(.editorial-hero svg path) {
+  transform: translateY(-2px);
+}
 .page :global(.explore-categories) {
   gap: 8px;
   margin: 12px 0 80px;
