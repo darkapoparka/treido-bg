@@ -231,6 +231,68 @@ test("review footer controls retain source geometry and keyboard behavior at mob
     await page.setViewportSize({ width, height: 793 });
     const wes = row(page, "wes");
     const helpful = wes.locator(".review-helpful");
+    await expect(page.locator(".section-heading h1")).toHaveCSS(
+      "font-size",
+      "28.4px",
+    );
+    await expect(page.locator(".section-heading h1")).toHaveCSS(
+      "letter-spacing",
+      "-1.7px",
+    );
+    await expect(page.locator(".review-summary strong")).toHaveCSS(
+      "font-size",
+      "28.2px",
+    );
+    await expect(page.locator(".review-summary strong")).toHaveCSS(
+      "letter-spacing",
+      "-0.4px",
+    );
+    await expect(wes.locator("h2")).toHaveCSS("letter-spacing", "-0.4px");
+    const body = wes.locator(":scope > p");
+    await expect(body).toHaveCSS("font-size", "14.2px");
+    await expect(body).toHaveCSS("letter-spacing", "0.025px");
+    expect(
+      await body.evaluate((element) => getComputedStyle(element).fontFamily),
+    ).toContain("Segoe UI");
+    await expect(wes.locator(".review-author")).toHaveCSS(
+      "letter-spacing",
+      "0.1px",
+    );
+    await expect(helpful).toHaveCSS("font-size", "12.3px");
+    await expect(helpful).toHaveCSS("letter-spacing", "-0.1px");
+    if (width === 393) {
+      const wrap = await body.evaluate((element) => {
+        const node = element.firstChild;
+        const text = node?.textContent ?? "";
+        const wordTop = (phrase: string) => {
+          const index = text.indexOf(phrase);
+          if (!node || node.nodeType !== Node.TEXT_NODE || index < 0) {
+            throw new Error(`Missing text node or phrase: ${phrase}`);
+          }
+          const range = document.createRange();
+          range.setStart(node, index);
+          range.setEnd(node, index + phrase.length);
+          return range.getBoundingClientRect().top;
+        };
+        return {
+          think: wordTop("think"),
+          all: wordTop("all products"),
+          products: wordTop("products need"),
+          man: wordTop("Being a man"),
+          allergies: wordTop("with allergies"),
+          someone: wordTop("someone"),
+          final: wordTop("has finally"),
+          works: wordTop("works"),
+        };
+      });
+      expect(wrap.think).toBe(wrap.all);
+      expect(wrap.all).not.toBe(wrap.products);
+      expect(wrap.products).toBe(wrap.man);
+      expect(wrap.man).not.toBe(wrap.allergies);
+      expect(wrap.allergies).toBe(wrap.someone);
+      expect(wrap.someone).not.toBe(wrap.final);
+      expect(wrap.final).toBe(wrap.works);
+    }
     await helpful.focus();
     await page.keyboard.press("Space");
     await expect(helpful).toHaveAttribute("aria-pressed", "true");

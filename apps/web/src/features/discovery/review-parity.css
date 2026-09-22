@@ -12,8 +12,9 @@
   box-shadow: 0 4px 20px #0000000f;
 }
 .reviews-page .review-card p {
-  font-size: 14.3px;
+  font-size: 14.2px;
   line-height: 18px;
+  letter-spacing: 0.025px;
 }
 .reviews-page .review-card footer {
   margin-top: 12px;
@@ -69,7 +70,12 @@
 
 .reviews-page > .section-heading h1 {
   color: #303030;
-  letter-spacing: -1.5px;
+  font-size: 28.4px;
+  letter-spacing: -1.7px;
+}
+.reviews-page > .review-summary > div > strong {
+  font-size: 28.2px;
+  letter-spacing: -0.4px;
 }
 .reviews-page .review-rating-stars {
   color: #e4bf2c;
@@ -80,16 +86,19 @@
 .reviews-page .review-card h2 {
   margin-top: 7px;
   font-size: 15.6px;
+  letter-spacing: -0.4px;
 }
 .reviews-page .review-card .read-more {
   margin-top: 2px;
 }
 .reviews-page .review-card .review-author {
   font-size: 11.5px;
+  letter-spacing: 0.1px;
 }
 .reviews-page .review-card .review-helpful {
   margin-right: 6px;
-  font-size: 12.5px;
+  font-size: 12.3px;
+  letter-spacing: -0.1px;
 }
 
 /* Product review cards have smaller footer gaps when their body needs no
