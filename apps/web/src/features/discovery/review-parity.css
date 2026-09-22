@@ -171,3 +171,15 @@
   position: relative;
   top: -2px;
 }
+
+/* Report reason labels use the source's wider Windows system metrics while
+   the sheet title, subtitle and footer controls retain their fitted stack. */
+.review-report-reasons .review-reason-options :is(strong, small) {
+  font-family: "Segoe UI", sans-serif;
+}
+.review-report-reasons .review-reason-options strong {
+  letter-spacing: 0.145px;
+}
+.review-report-reasons .review-reason-options small {
+  letter-spacing: 0.01px;
+}

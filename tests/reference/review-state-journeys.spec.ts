@@ -187,6 +187,26 @@ test("all report reasons and closing controls remain usable at 320, 393 and 430 
     const options = button(page, "More options for Wes's review");
     await options.click();
     await button(page, "Report this review").click();
+    await page.evaluate(() => document.fonts.ready);
+    const reasonFamilies = await page
+      .locator(".review-reason-options :is(strong, small)")
+      .evaluateAll((elements) =>
+        elements.map((element) => getComputedStyle(element).fontFamily),
+      );
+    expect(reasonFamilies.every((family) => family.includes("Segoe UI"))).toBe(
+      true,
+    );
+    await expect(
+      page.locator(".review-reason-options strong").first(),
+    ).toHaveCSS("letter-spacing", "0.145px");
+    await expect(
+      page.locator(".review-reason-options small").first(),
+    ).toHaveCSS("letter-spacing", "0.01px");
+    expect(
+      await page
+        .locator(".review-report-title")
+        .evaluate((element) => getComputedStyle(element).fontFamily),
+    ).not.toContain("Segoe UI");
     const reason = page.getByRole("radio", { name: "It’s spam", exact: true });
     await reason.check();
     await expect(reason).toBeChecked();
