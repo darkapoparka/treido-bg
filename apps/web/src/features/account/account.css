@@ -2031,14 +2031,14 @@
 }
 .intro-powered {
   position: absolute;
-  top: calc(17px + var(--account-safe-top));
+  top: calc(12px + var(--account-safe-top));
   left: 0;
   width: 100%;
   text-align: center;
   font-size: 12px;
 }
 .intro-powered b {
-  font-size: 15px;
+  font-size: 12px;
   font-style: italic;
 }
 .intro-objects {
@@ -2716,11 +2716,11 @@
 .intro-powered b {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
 }
 .intro-powered svg {
-  width: 15px;
-  height: 18px;
+  width: 13px;
+  height: 14px;
 }
 .returning-login {
   text-align: center;
@@ -2764,6 +2764,7 @@
 .source-intro > h1 img {
   display: block;
   margin: 0 auto;
+  transform: translateY(4px);
 }
 .auth-art {
   display: block;
