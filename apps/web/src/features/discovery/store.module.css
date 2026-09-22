@@ -201,6 +201,7 @@
     .store-hero-kitsch > .store-recommendations + .store-recommendations
   ) {
   margin-top: 17px;
+  overflow: visible;
 }
 .store
   :global(.store-hero-kitsch .store-recommendations .product-copy > strong) {
@@ -212,6 +213,7 @@
 }
 .store :global(.store-collection-rail) {
   gap: 8px;
+  width: calc(100% + 32px);
 }
 .store :global(.store-collection-rail img) {
   border: 5px solid #c5c4be;

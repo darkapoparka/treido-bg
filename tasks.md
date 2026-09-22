@@ -59,6 +59,8 @@ The white Beauty pills now retain their source-visible gray shadow inside the ho
 
 The following Beauty fit aligns the Scent/Favorites transition, raises brand text while retaining product-image placement, matches the nails arrow tint and lightens Bestsellers titles. `20260923-beauty-sections-final` scores **6/6** at **3.1418% mean MAE**, compared with **3.3997%** before; the Explore entry/cart journeys pass **8/8** and final Beauty/width subset passes **3/3**. Continue Beauty media/type fitting and the other open Shop states before the complete 424-frame capture. No flow is accepted yet.
 
+The Kitsch Collections rail now shows the third source tile to the viewport edge. `20260923-store-collection-rail-final` scores **3/3** flow-14 states, improving f014-001 **3.468 -> 3.440% MAE** without moving its siblings; storefront geometry/return/width journeys pass **3/3**. The Coastal image crop and typography still differ. Continue the source-wide fitting and complete-corpus recapture; no flow is accepted yet.
+
 ## Task 4 - Build data, identity and catalog
 
 Owner: [architecture.md](architecture.md), [detailed requirements](docs/product/requirements.md), [native.md](native.md). On an explicitly authorized fresh development target, implement the new product-led PostgreSQL/Prisma schema, Clerk identity mapping and business/resource permissions. Do not import legacy schema or data automatically.
