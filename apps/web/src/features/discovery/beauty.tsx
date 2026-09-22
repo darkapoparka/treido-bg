@@ -77,7 +77,7 @@ export function BeautySections({ catalog }: { catalog: Catalog }) {
         copy="Moisturizers, spot patches, and invisible SPF."
         image="beauty-starter-photo"
       />
-      <section className="beauty-section">
+      <section className="beauty-section beauty-scent-section">
         <h2>Scent &amp; body</h2>
         <div className="beauty-category-grid">
           {[
@@ -107,7 +107,7 @@ export function BeautySections({ catalog }: { catalog: Catalog }) {
           ))}
         </div>
       </section>
-      <section className="beauty-section">
+      <section className="beauty-section beauty-favorites-section">
         <h2>Favorites for a reason</h2>
         <div className="beauty-brand-grid">
           {brands.map((b) => (

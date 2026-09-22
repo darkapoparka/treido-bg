@@ -57,6 +57,8 @@ The same checkpoint now includes Beauty pill widths, heading type, Bestsellers s
 
 The white Beauty pills now retain their source-visible gray shadow inside the horizontal rail. The subsequent six-frame flow-51 run improves its pill frame **3.5810 -> 3.1850%** and family mean **3.4657 -> 3.3997%**; all six Explore entry journeys pass, including 320/393/430 containment. Continue the remaining source differences and complete-corpus capture before acceptance.
 
+The following Beauty fit aligns the Scent/Favorites transition, raises brand text while retaining product-image placement, matches the nails arrow tint and lightens Bestsellers titles. `20260923-beauty-sections-final` scores **6/6** at **3.1418% mean MAE**, compared with **3.3997%** before; the Explore entry/cart journeys pass **8/8** and final Beauty/width subset passes **3/3**. Continue Beauty media/type fitting and the other open Shop states before the complete 424-frame capture. No flow is accepted yet.
+
 ## Task 4 - Build data, identity and catalog
 
 Owner: [architecture.md](architecture.md), [detailed requirements](docs/product/requirements.md), [native.md](native.md). On an explicitly authorized fresh development target, implement the new product-led PostgreSQL/Prisma schema, Clerk identity mapping and business/resource permissions. Do not import legacy schema or data automatically.

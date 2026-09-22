@@ -371,6 +371,11 @@
 }
 .page[data-category="Beauty"]
   > :global(.beauty-editorial-rail)
+  :global(.editorial-hero svg) {
+  background: #ae7456bf;
+}
+.page[data-category="Beauty"]
+  > :global(.beauty-editorial-rail)
   > :global(.beauty-editorial-continuation) {
   flex: 0 0 64px;
   border-radius: 28px;
@@ -400,6 +405,15 @@
   line-height: 22px;
   margin-bottom: 12px;
   font-weight: 550;
+}
+.page[data-category="Beauty"] :global(.beauty-scent-section) h2 {
+  margin-bottom: 10px;
+}
+.page[data-category="Beauty"] :global(.beauty-scent-section) {
+  margin-top: 38px;
+}
+.page[data-category="Beauty"] :global(.beauty-favorites-section) {
+  margin-top: 36px;
 }
 .page[data-category="Beauty"] :global(.beauty-bestsellers-section) {
   margin-top: 36px;
@@ -437,6 +451,9 @@
   font-size: 12px;
   line-height: 16px;
 }
+.page[data-category="Beauty"] :global(.product-copy strong) {
+  font-weight: 600;
+}
 .page[data-category="Beauty"] :global(.product-rail) {
   gap: 8px;
 }
@@ -453,7 +470,7 @@
 }
 .page :global(.beauty-brand-mark) {
   display: block;
-  height: 72px;
+  height: 68px;
   min-height: 0;
   margin: 0 -8px;
 }
@@ -475,7 +492,7 @@
 }
 .page :global(.beauty-brand) p {
   position: relative;
-  margin: 0 0 10px;
+  margin: 0 0 14px;
   font-size: 12px;
   line-height: 16px;
 }
