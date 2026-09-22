@@ -151,6 +151,9 @@
   gap: 8px;
   margin-top: 25px;
 }
+.pdp-purchase-buttons-added {
+  margin-top: 29px;
+}
 .pdp-purchase-buttons button {
   height: 52px;
   border: 1px solid #ffffff80;

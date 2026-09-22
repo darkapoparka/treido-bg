@@ -11,6 +11,8 @@ test("bag addition commits once, shows its flight and confirmation, then opens t
   await useReferenceScenario(page, "home-welcome");
   await page.goto(product);
   const add = page.locator(".pdp-purchase-buttons .primary");
+  const purchase = page.locator(".pdp-purchase-buttons");
+  await expect(purchase).toHaveCSS("margin-top", "25px");
   await add.scrollIntoViewIfNeeded();
   await add.click({ trial: true });
   const scroll = await page.evaluate(() => scrollY);
@@ -27,6 +29,7 @@ test("bag addition commits once, shows its flight and confirmation, then opens t
   await expect(add).toHaveAttribute("data-addition", "confirmed");
   await expect(add).toHaveText("Added to cart");
   await expect(page.getByRole("button", { name: "Buy now" })).toBeDisabled();
+  await expect(purchase).toHaveCSS("margin-top", "29px");
   await expect(add).toHaveAttribute("data-addition", "idle");
   await expect(add).toHaveText("Add to cart");
   await expect(flight).toHaveCount(0);
@@ -102,4 +105,26 @@ test("leaving during a product flight removes its artwork and never opens a dela
   await expect(page.locator(".dock-cart-count")).toHaveText("1");
   await expect(page.locator(".product-addition-flight")).toHaveCount(0);
   await expect(page.getByRole("dialog")).not.toBeVisible();
+});
+
+test("bag added purchase spacing remains contained at mobile widths", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    await useReferenceScenario(page, "home-welcome");
+    await page.goto(product);
+    const purchase = page.locator(".pdp-purchase-buttons");
+    await expect(purchase).toHaveCSS("margin-top", "25px");
+    await page
+      .getByRole("button", { name: "Add to cart", exact: true })
+      .click();
+    await expect(purchase).toHaveCSS("margin-top", "29px");
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
 });

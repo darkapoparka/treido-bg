@@ -565,7 +565,9 @@ export function ProductDetail({
               </div>
             </div>
           ) : (
-            <div className="pdp-purchase-buttons">
+            <div
+              className={`pdp-purchase-buttons${bag && added ? " pdp-purchase-buttons-added" : ""}`}
+            >
               <button
                 className="primary"
                 data-addition={bag ? addition.phase : undefined}
