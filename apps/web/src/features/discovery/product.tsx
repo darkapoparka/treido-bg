@@ -27,6 +27,7 @@ import {
 import { Icon } from "./icons";
 import { CartOverlay as Cart, CartOffer } from "../commerce/checkout";
 import { useDiscovery } from "./state";
+import { COLLECTION_NAME_MAX_LENGTH } from "./saved-model";
 import { useAccount } from "../account/state";
 import styles from "./product-detail.module.css";
 import "./product.css";
@@ -341,7 +342,16 @@ export function ProductDetail({
         </span>
       </span>
       <div className="product-underlay" ref={productUnderlay}>
-        {store && <StoreRow store={store} onMore={() => setOptions(true)} />}
+        {store && (
+          <StoreRow
+            store={
+              product.detail?.merchantRatingCount
+                ? { ...store, ratingCount: product.detail.merchantRatingCount }
+                : store
+            }
+            onMore={() => setOptions(true)}
+          />
+        )}
         {photos.length > 0 && (
           <div className="product-gallery" ref={galleryRail}>
             {photos.map((src, i) => (
@@ -869,6 +879,7 @@ export function ProductDetail({
           >
             <input
               aria-label="Collection name"
+              maxLength={COLLECTION_NAME_MAX_LENGTH}
               autoFocus
               value={name}
               onChange={(e) => setName(e.target.value)}

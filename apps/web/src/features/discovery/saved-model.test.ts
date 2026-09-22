@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  COLLECTION_NAME_MAX_LENGTH,
+  decodeSavedCollections,
   savedCollectionsReducer,
   type Collection,
   type SavedCollectionsState,
@@ -18,6 +20,45 @@ const initial = (): SavedCollectionsState => ({
 });
 
 describe("local Saved and collection membership", () => {
+  it("keeps valid Saved state when an oversized create or rename is rejected", () => {
+    const before = savedCollectionsReducer(initial(), {
+      type: "update-collection",
+      id: "first",
+      value: { name: "My renamed collection", productIds: ["new-product"] },
+    });
+    const name = "x".repeat(COLLECTION_NAME_MAX_LENGTH + 1);
+    for (const action of [
+      {
+        type: "create-collection",
+        collection: { ...collection("second"), name },
+      },
+      { type: "update-collection", id: "first", value: { name } },
+    ] as const) {
+      const next = savedCollectionsReducer(before, action);
+      expect(next).toBe(before);
+      expect(decodeSavedCollections(JSON.stringify(next), initial())).toEqual(
+        before,
+      );
+    }
+  });
+
+  it("round-trips collection names at the supported length boundary", () => {
+    const name = "x".repeat(COLLECTION_NAME_MAX_LENGTH);
+    const created = savedCollectionsReducer(initial(), {
+      type: "create-collection",
+      collection: { ...collection("second", ["new-product"]), name },
+    });
+    const renamed = savedCollectionsReducer(created, {
+      type: "update-collection",
+      id: "first",
+      value: { name },
+    });
+    expect(renamed.collections.map((item) => item.name)).toEqual([name, name]);
+    expect(decodeSavedCollections(JSON.stringify(renamed), initial())).toEqual(
+      renamed,
+    );
+  });
+
   it("saves a product selected while creating a collection", () => {
     const next = savedCollectionsReducer(initial(), {
       type: "create-collection",

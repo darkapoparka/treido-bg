@@ -21,12 +21,13 @@
 }
 .store-reviews > .section-heading h1 {
   font-weight: 600;
+  color: #303030;
 }
 .store-review-list .review-author {
   font-size: 14px;
 }
 .store-review-list {
-  gap: 15px;
+  gap: 16px;
 }
 .store-review-list article {
   padding-bottom: 17px;
@@ -38,6 +39,19 @@
 }
 .store-review-list article > p {
   letter-spacing: -0.2px;
+  transform: translateY(-2px);
+}
+.store-review-product .review-rating-stars {
+  transform: translateY(-2px);
+}
+.store-review-summary > b {
+  transform: translateY(2px);
+}
+.store-review-summary .review-rating-stars {
+  transform: translate(3px, -3px);
+}
+.store-review-summary small {
+  transform: translate(3px, 1px);
 }
 .store-review-list .review-helpful {
   margin-right: 16px;

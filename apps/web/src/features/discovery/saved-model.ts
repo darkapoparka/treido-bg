@@ -1,3 +1,5 @@
+export const COLLECTION_NAME_MAX_LENGTH = 500;
+
 export type Collection = {
   id: string;
   name: string;
@@ -52,6 +54,8 @@ export function savedCollectionsReducer(
       };
     }
     case "create-collection": {
+      if (action.collection.name.length > COLLECTION_NAME_MAX_LENGTH)
+        return state;
       if (state.collections.some((c) => c.id === action.collection.id))
         return state;
       const collection = {
@@ -64,6 +68,11 @@ export function savedCollectionsReducer(
       };
     }
     case "update-collection": {
+      if (
+        action.value.name !== undefined &&
+        action.value.name.length > COLLECTION_NAME_MAX_LENGTH
+      )
+        return state;
       const existing = state.collections.find((c) => c.id === action.id);
       if (!existing) return state;
       const collection: Collection = {
@@ -124,7 +133,7 @@ export function decodeSavedCollections(
         !item.id ||
         item.id.length > 200 ||
         typeof item.name !== "string" ||
-        item.name.length > 500 ||
+        item.name.length > COLLECTION_NAME_MAX_LENGTH ||
         !["Private", "Public"].includes(item.visibility) ||
         !ids(item.productIds) ||
         (item.collaborationPromptDismissed !== undefined &&

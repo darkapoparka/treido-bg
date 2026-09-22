@@ -27,6 +27,88 @@ async function openScenario(
   ).toBeAttached();
 }
 
+test("oversized collection rename preserves Saved memberships through reload", async ({
+  page,
+  baseURL,
+}) => {
+  await openScenario(
+    page,
+    baseURL,
+    "saved-collection-expanded",
+    "/saved?collection=source-favs",
+  );
+  const products = await page
+    .locator(".saved-grid > article")
+    .evaluateAll((items) =>
+      items.map((item) => item.getAttribute("data-product-id")),
+    );
+  const name = page.getByRole("textbox", {
+    name: "Collection name",
+    exact: true,
+  });
+  await button(page, "Collection options").click();
+  await button(page, "Edit name").click();
+  await name.fill("Retained custom name");
+  await button(page, "Save").click();
+  await expect(
+    page.getByRole("heading", { name: "Retained custom name", exact: true }),
+  ).toBeVisible();
+
+  await button(page, "Collection options").click();
+  await button(page, "Edit name").click();
+  const boundaryName = "Collection " + "x".repeat(489);
+  await name.fill(boundaryName + "over the limit");
+  await expect(name).toHaveValue(boundaryName);
+  await button(page, "Save").click();
+  await expect(
+    page.getByRole("heading", { name: boundaryName, exact: true }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: boundaryName, exact: true }),
+  ).toBeVisible();
+  expect(
+    await page
+      .locator(".saved-grid > article")
+      .evaluateAll((items) =>
+        items.map((item) => item.getAttribute("data-product-id")),
+      ),
+  ).toEqual(products);
+});
+
+test("oversized PDP collection creation keeps existing collections after reload", async ({
+  page,
+  baseURL,
+}) => {
+  await openScenario(
+    page,
+    baseURL,
+    "saved-collection-expanded",
+    "/products/shampoo-bag",
+  );
+  await button(page, "Save product").click();
+  await button(page, "Create collection").click();
+  const name = page.getByRole("textbox", {
+    name: "Collection name",
+    exact: true,
+  });
+  const boundaryName = "Product " + "x".repeat(492);
+  await name.fill(boundaryName + "over the limit");
+  await expect(name).toHaveValue(boundaryName);
+  await name.press("Enter");
+  await expect(page.getByRole("dialog")).not.toBeVisible();
+  await page.goto("/saved");
+  await expect(button(page, "Private Favs")).toBeVisible();
+  await button(page, `Private ${boundaryName}`).click();
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: boundaryName, exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.locator('.saved-grid [data-product-id="shampoo-bag"]'),
+  ).toBeVisible();
+});
+
 for (const width of [320, 393, 430]) {
   test(`collection stages retain the draft and actual opener through Back/Forward at ${width}px`, async ({
     page,

@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 import type { Ref } from "react";
 import { Icon } from "./icons";
+import { COLLECTION_NAME_MAX_LENGTH } from "./saved-model";
 import "./saved.css";
 
 export function CollectionEditor({
@@ -56,6 +57,7 @@ export function CollectionEditor({
         aria-label="Collection name"
         placeholder="Collection name"
         value={name}
+        maxLength={COLLECTION_NAME_MAX_LENGTH}
         onChange={(event) => onNameChange(event.target.value)}
         autoComplete="off"
         enterKeyHint="done"

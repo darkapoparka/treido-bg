@@ -190,6 +190,7 @@
 }
 .store :global(.store-hero-kitsch .store-recommendations) {
   background: #d9d8d1;
+  font-family: "ShopChemicalGeist", Arial, Helvetica, sans-serif;
 }
 .store :global(.store-hero-kitsch .store-recommendations h1),
 .store :global(.store-hero-kitsch .store-recommendations h2) {
@@ -213,7 +214,7 @@
 }
 .store :global(.store-collection-rail) {
   gap: 8px;
-  width: calc(100% + 32px);
+  width: calc(100% + 16px);
 }
 .store :global(.store-collection-rail img) {
   border: 5px solid #c5c4be;
@@ -228,6 +229,22 @@
   display: block;
   margin-inline: 8px;
   white-space: nowrap;
+}
+.store
+  :global(.store-hero-kitsch .store-recommendations :is(h1, h2, .product-copy)),
+.store :global(.store-collection-rail > a > span) {
+  transform: translateY(-2px);
+}
+/* Isolate text compositing from the photographs to retain grayscale glyph
+   edges in the captured storefront and collection surfaces. */
+.store :global(.store-recommendations :is(h1, h2, .product-copy)),
+.store :global(.store-collection-rail > a > span),
+.collection :global(.product-copy),
+.collection :global(.store-criteria .pill),
+.collection :global(.store-collection-hero h1),
+.collection :global(.collection-store),
+.collection :global(.collection-promotion) {
+  opacity: 0.999;
 }
 .store :global(.store-category-navigation.is-pinned) {
   background: #393937;
@@ -265,6 +282,7 @@
 
 .collection {
   background: #c2bfb5;
+  font-family: "ShopChemicalGeist", Arial, Helvetica, sans-serif;
 }
 .collection :global(.floating-dock[data-fade="true"])::before {
   background: transparent;

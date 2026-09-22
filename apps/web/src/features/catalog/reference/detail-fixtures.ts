@@ -47,6 +47,18 @@ export function productDetailProjection(
   products: readonly Product[],
   scenario: string | undefined,
 ): readonly Product[] {
+  // These PDP histories show a later count than the store-information capture.
+  // Keep it local to product presentation, not the storefront aggregate.
+  if (scenario === "home-welcome" || scenario === "product-reporting") {
+    return products.map((product) =>
+      product.id === "shea-butter"
+        ? {
+            ...product,
+            detail: { ...product.detail, merchantRatingCount: "195K" },
+          }
+        : product,
+    );
+  }
   if (scenario !== "kitsch-product-saving-offer") return products;
   return products.map((product) =>
     product.id === "shea-butter"

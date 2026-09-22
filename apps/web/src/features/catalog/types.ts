@@ -21,6 +21,8 @@ export type Product = Readonly<{
   ratingCount: string;
   promotion?: string;
   detail?: Readonly<{
+    /** Merchant rating displayed in this product's captured source history. */
+    merchantRatingCount?: string;
     lowStock?: boolean;
     arrivalLabel?: string;
     promotionTerms?: string;
