@@ -1,13 +1,25 @@
+@font-face {
+  font-family: "ShopOrdersGeist";
+  src: url("/fonts/shop-chemical-geist.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+
 .list,
+.review,
+.orderMenu {
+  font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
+}
 .detail,
 .tracking,
-.review,
 .newOrder,
 .manualForm,
-.orderMenu,
 .trackingEditor,
-.activitySheet {
-  font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
+.activitySheet,
+.list:global(.archive-page),
+.list:has(:global(.order-empty-source)) {
+  font-family: "ShopOrdersGeist", Arial, Helvetica, sans-serif;
 }
 @media (prefers-reduced-motion: reduce) {
   .tracking :global(.delivery-confetti) {

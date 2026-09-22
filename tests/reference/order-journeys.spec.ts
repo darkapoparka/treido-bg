@@ -1027,6 +1027,55 @@ test("manual packages do not expose unrelated geography and review help returns 
   await expect(help).toBeFocused();
 });
 
+test("Orders typography keeps source-specific faces scoped to their owning surfaces", async ({
+  page,
+}) => {
+  const fontFamily = async (selector: string) => {
+    await page.evaluate(() => document.fonts.ready);
+    return page
+      .locator(selector)
+      .first()
+      .evaluate((element) => getComputedStyle(element).fontFamily);
+  };
+
+  await useReferenceScenario(page, "orders-transit");
+  await page.goto("/orders");
+  await expect(page.locator(".tracking-card")).toBeVisible();
+  expect(await fontFamily(".source-orders-page")).not.toContain(
+    "ShopOrdersGeist",
+  );
+
+  await page.goto("/orders/REF-1001?state=in-transit");
+  await expect(page.locator(".order-status")).toBeVisible();
+  expect(await fontFamily(".order-status")).toContain("ShopOrdersGeist");
+  await page
+    .getByRole("button", { name: "Order options", exact: true })
+    .click();
+  await expect(page.locator(".source-order-menu")).toBeVisible();
+  expect(await fontFamily(".source-order-menu")).not.toContain(
+    "ShopOrdersGeist",
+  );
+
+  await useReferenceScenario(page, "orders-empty");
+  await page.goto("/orders");
+  await expect(page.locator(".order-empty-source")).toBeVisible();
+  expect(await fontFamily(".source-orders-page")).toContain("ShopOrdersGeist");
+  await page.goto("/orders/new");
+  await expect(page.locator(".account-form")).toBeVisible();
+  expect(await fontFamily(".account-form")).toContain("ShopOrdersGeist");
+
+  await useReferenceScenario(page, "orders-archived");
+  await page.goto("/orders/archived");
+  await expect(page.locator(".archive-page")).toBeVisible();
+  expect(await fontFamily(".archive-page")).toContain("ShopOrdersGeist");
+
+  await useReferenceScenario(page, "orders-delivered");
+  await page.goto("/orders/REF-1001/review");
+  await expect(page.locator(".order-review-page")).toBeVisible();
+  expect(await fontFamily(".order-review-page")).not.toContain(
+    "ShopOrdersGeist",
+  );
+});
 for (const width of [320, 393, 430]) {
   test(`order and manual-entry surfaces stay within ${width}px`, async ({
     page,
