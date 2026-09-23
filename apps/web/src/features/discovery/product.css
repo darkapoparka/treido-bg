@@ -177,6 +177,11 @@
 .product-page[data-product-id="shampoo-bag"] .pdp-purchase-buttons .primary {
   background: linear-gradient(#5034e4, #4b33db);
 }
+.product-page[data-product-id="shampoo-bag"]
+  .pdp-purchase-buttons-added
+  .primary {
+  background: #5434ec;
+}
 .pdp-offer-link {
   font-size: 12px;
   color: var(--color-accent);

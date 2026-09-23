@@ -294,6 +294,11 @@ test("modified merchant navigation preserves the current page and scroll entry",
   page,
 }) => {
   await page.goto("/products/shea-butter");
+  // Capture the interactive entry, after Next initializes router history.
+  // The SSR entry can still be null while its merchant link is inert.
+  await expect(
+    page.locator('[data-shop-interactive="true"]').first(),
+  ).toBeAttached();
   const source = page.locator(".pdp-delivery > a");
   const y = await placeSource(page, source);
   const history = await page.evaluate(() =>
