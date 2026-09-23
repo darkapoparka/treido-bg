@@ -2,9 +2,9 @@
 
 Generated from the frozen manifest and deterministic replay definitions. This is a frame index, not a second work queue. `shop-parity-checklist.md` owns flow acceptance.
 
-**Corpus:** 97 flows / 424 ordered frames. **Mapped:** 424/424. **Scored in this run:** 424/424. **Numerical candidates:** 80; not automatic visual acceptance.
+**Corpus:** 97 flows / 424 ordered frames. **Mapped:** 424/424. **Scored in this run:** 424/424. **Numerical candidates:** 80; **344** are above at least one threshold. No automatic visual acceptance.
 
-Evidence run: `20260923-final-parity-verified`; created 2026-09-23T19:07:32.051Z; source HEAD `104242212f7291ba6a73b6b20cae574ab9ee874a` (the report records the working-tree state). Viewport: 393x793.
+Evidence run: `20260923-final-session-parity-audit`; created 2026-09-23T20:13:11.243Z; source HEAD `48a4cc521fe88b71753c9274ef317151bac17b73`; viewport: 393x793. The report records zero failed, replay-error or browser-error frames.
 
 A numerical candidate requires MAE <= 1.5% and bad-pixel-12 <= 8%. Direct region inspection, complete UX coverage, sibling regression checks and owner acceptance are still required. Unchecked entries are not complete.
 
