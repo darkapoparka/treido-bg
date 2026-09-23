@@ -235,6 +235,7 @@ const heading = (name) => ({
   exact: true,
 });
 const top = { type: "scroll", y: 0 };
+const supportChatGuard = { selector: ".support-chat-page" };
 const profileFrame = () => ({
   state: "profile-payment-methods",
   actions: prepareProfile,
@@ -377,7 +378,14 @@ Object.assign(flowRecipes, {
       { state: "support-options", actions: [heading("Support")] },
       {
         state: "support-chat-empty",
-        actions: [click("link", /Support Chat/), heading("Support"), top],
+        actions: [
+          click("link", /Support Chat/),
+          { type: "waitUrl", url: "**/support/chat" },
+          { type: "waitVisible", selector: ".support-chat-page" },
+          heading("Support"),
+          top,
+        ],
+        captureGuard: supportChatGuard,
       },
       {
         state: "support-chat-draft",
@@ -389,6 +397,7 @@ Object.assign(flowRecipes, {
             value: "Is it possible to cancel an order and request a refund?",
           },
         ],
+        captureGuard: supportChatGuard,
       },
       {
         state: "support-chat-captured-reply-pending",
@@ -400,10 +409,12 @@ Object.assign(flowRecipes, {
             name: "Preparing captured reply",
           },
         ],
+        captureGuard: supportChatGuard,
       },
       {
         state: "support-chat-captured-answer",
         actions: [{ type: "waitVisible", role: "link", name: /Go to orders/ }],
+        captureGuard: supportChatGuard,
       },
     ],
   },

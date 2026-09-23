@@ -207,6 +207,9 @@
   margin: 0 0 10px;
   letter-spacing: -0.3px;
 }
+.page:not([data-category]) :global(.explore-shelf) h2 {
+  color: #444;
+}
 .shelfChevron {
   display: grid;
   place-items: center;

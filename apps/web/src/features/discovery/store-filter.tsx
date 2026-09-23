@@ -219,10 +219,13 @@ export function StoreFilter() {
         </div>
       ) : (
         <div className="store-filter-options">
-          <button onClick={() => openStoreFilter("sort")}>
+          <button
+            aria-label={sale ? `Sort by, currently ${sort}` : undefined}
+            onClick={() => openStoreFilter("sort")}
+          >
             Sort by
             <span>
-              {sort}
+              {!sale && sort}
               <Icon name="back" />
             </span>
           </button>

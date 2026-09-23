@@ -753,7 +753,9 @@
   line-height: 30px;
   font-weight: 600;
   letter-spacing: -0.5px;
-  text-shadow: 1px 1px white;
+  -webkit-text-stroke: 1px white;
+  paint-order: stroke fill;
+  text-shadow: 0 2px 2px rgb(64 16 171 / 28%);
 }
 .look :global(#look-blazer > h2) {
   transform: translateY(-4px);
