@@ -220,7 +220,7 @@ Shopify reference acquisition remains separately unresolved in [its source recor
 
 ## Next action
 
-Continue the ordered family audit from the refreshed complete ranking and ledger, applying changes only where the frozen source supports them. Preserve the corrected Profile, review truncation, Support draft/pending geometry and source-specific product headers alongside existing Search/checkout/Orders history. Remaining typography/media/control differences, the three pinned original-media failures and exact Chemical/Pura motion stay open. Latest Mobbin access requires a paid plan; do not bypass the denial. The eighth notification row remains unidentified in downloaded sources; preserve that obligation without inventing its title. Validate coherent related batches and keep source approval separate.
+Continue the ordered family audit from the refreshed complete ranking and ledger, applying changes only where the frozen source supports them. Preserve the corrected Profile, review truncation, Support draft/pending geometry and source-specific product headers alongside existing Search/checkout/Orders history. Remaining typography/media/control differences, the three pinned original-media failures and exact Chemical/Pura motion stay open. Latest Mobbin access requires a paid plan; do not bypass the denial. The eighth notification row remains unidentified in downloaded sources; preserve that obligation without inventing its title. Validate coherent related batches and keep source approval separate. The local `main` batch passed the fast-forward check at last fetch, but the configured Git credential selector still needs interactive authentication; fetch again before retrying the push. No credentials were changed.
 
 ## Dated setup and integration evidence
 
