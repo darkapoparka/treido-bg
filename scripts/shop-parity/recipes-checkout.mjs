@@ -130,16 +130,30 @@ export const checkoutRecipes = {
             "The source returns to the Kitsch bag after the disconnected White Rock checkout. The named checkout history restores that seller context.",
         },
       ),
-      state("kitsch-pay-processing", [
-        click("button", /Pay now \$10\.82/),
-        { type: "waitVisible", selector: '.source-checkout[aria-busy="true"]' },
-      ]),
+      state(
+        "kitsch-pay-processing",
+        [
+          { type: "pauseClock" },
+          click("button", /Pay now \$10\.82/),
+          { type: "advanceClock", ms: 800 },
+          {
+            type: "waitVisible",
+            selector: '.source-checkout[aria-busy="true"]',
+          },
+          { type: "waitVisible", selector: '[data-processing-caption="true"]' },
+        ],
+        {
+          captureGuard: { selector: '[data-processing-caption="true"]' },
+          afterCapture: [{ type: "resumeClock" }],
+        },
+      ),
       state(
         "captured-order-confirmation",
         [
           visible("dialog", "Payment service is not connected"),
           click("link", "View captured source confirmation"),
           visible("heading", "Order confirmed"),
+          { type: "waitVisible", selector: '[data-confirmation-stage="0"]' },
           top,
         ],
         {

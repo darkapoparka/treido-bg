@@ -39,21 +39,77 @@ async function inspect(page: Page, name: string) {
   });
 }
 
-test("a deliberate Jeans search shows comparison progress before its answer", async ({
+test("a repeated Jeans search plays every captured phase and then reveals its answer", async ({
   page,
 }) => {
   await openSearch(page);
+  await page.clock.install();
   await input(page).fill("Jeans");
   await button(page, "Submit search").click();
   await expect(page).toHaveURL(/\/search\?q=Jeans$/);
-  const progress = page.locator('[data-search-comparing="true"]');
+  const progress = page.locator("[data-search-progress]");
   await expect(progress).toBeVisible();
-  await expect(progress).toHaveText("Comparing products");
+  await page.clock.pauseAt(
+    new Date(await page.evaluate(() => Date.now() + 60_000)),
+  );
+  // Submit the same query again: the old boolean effect could stick forever
+  // because neither its query nor route dependency changed.
+  await input(page).fill("Jeans");
+  await input(page).press("Enter");
+  await page.clock.runFor(1);
+  await expect(progress).toHaveText("Thinking");
   await expect(button(page, "View answer for Jeans")).toHaveCount(0);
-  await expect(button(page, "View answer for Jeans")).toBeVisible({
-    timeout: 5000,
-  });
+  for (const [elapsed, label] of [
+    [2600, "Researching categories"],
+    [2000, "Browsing results"],
+    [2000, "Comparing products"],
+    [2000, "Thinking"],
+  ] as const) {
+    await page.clock.fastForward(elapsed);
+    await expect(progress).toHaveText(label);
+    await expect(button(page, "View answer for Jeans")).toHaveCount(0);
+  }
+  await page.clock.fastForward(1400);
+  await expect(button(page, "View answer for Jeans")).toBeVisible();
   await expect(progress).toHaveCount(0);
+});
+
+test("captured progress resumes elapsed time on reload and a different query cancels it", async ({
+  page,
+}) => {
+  await openSearch(page);
+  await page.clock.install();
+  await page.goto("/search?q=Jeans");
+  await expect(button(page, "View answer for Jeans")).toBeVisible();
+  await expect(page.locator("[data-search-progress]")).toHaveCount(0);
+  await page.clock.pauseAt(
+    new Date(await page.evaluate(() => Date.now() + 60_000)),
+  );
+  await input(page).fill("Jeans");
+  await input(page).press("Enter");
+  await page.clock.runFor(1);
+  await expect(page.locator("[data-search-progress]")).toHaveText("Thinking");
+  await page.clock.fastForward(2700);
+  await expect(page.locator("[data-search-progress]")).toHaveText(
+    "Researching categories",
+  );
+  await page.reload();
+  await page.clock.runFor(1);
+  await expect(page.locator("[data-search-progress]")).toHaveText(
+    "Researching categories",
+  );
+  await input(page).fill("Soap");
+  await input(page).press("Enter");
+  await page.clock.runFor(1);
+  await expect(page).toHaveURL(/q=Soap/);
+  await expect(page.locator("[data-search-progress]")).toHaveCount(0);
+  await expect(button(page, "View answer for Jeans")).toHaveCount(0);
+  // Return before the original deadline: cancellation, not expiry, must settle it.
+  await page.goBack();
+  await page.clock.runFor(1);
+  await expect(page).toHaveURL(/q=Jeans/);
+  await expect(button(page, "View answer for Jeans")).toBeVisible();
+  await expect(page.locator("[data-search-progress]")).toHaveCount(0);
 });
 
 test("photo drafting keeps one input and removing the photograph preserves its query", async ({

@@ -206,6 +206,14 @@
 .review-report-reasons .review-reason-options small {
   letter-spacing: 0.01px;
 }
+.review-report-reasons .sheet-actions > button {
+  font-size: 16px;
+  padding-inline: 20px;
+  border: 1px solid transparent;
+}
+.review-report-reasons .sheet-actions > .pill {
+  border-color: var(--color-line);
+}
 
 /* Preserve the source sheet rhythm while the disconnected preview keeps its
    confirmation copy honest and selectable. */

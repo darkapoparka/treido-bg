@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sheet } from "../discovery/components";
 import { AddressEditor } from "../account/forms";
 import { blankAddress, type Address } from "../account/state";
@@ -10,6 +10,14 @@ export function InitialPayment({
   address?: Address;
   onContinue: () => void;
 }) {
+  const [pending, setPending] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
   const [same, setSame] = useState(true),
     [securityHelp, setSecurityHelp] = useState(false),
     [boundary, setBoundary] = useState(false),
@@ -22,6 +30,7 @@ export function InitialPayment({
         className="initial-payment"
         onSubmit={(e) => {
           e.preventDefault();
+          if (pending) return;
           const number = String(
             new FormData(e.currentTarget).get("cardNumber") ?? "",
           ).replace(/\s/g, "");
@@ -34,7 +43,11 @@ export function InitialPayment({
             setEditing(true);
             return;
           }
-          setBoundary(true);
+          setPending(true);
+          timer.current = setTimeout(() => {
+            setPending(false);
+            setBoundary(true);
+          }, 650);
         }}
       >
         <div className="initial-card-fields">
@@ -143,7 +156,18 @@ export function InitialPayment({
           </button>
         )}
         <div className="checkout-pay">
-          <button className="primary">Continue to review</button>
+          <button
+            className="primary"
+            disabled={pending}
+            aria-label="Continue to review"
+            aria-busy={pending}
+          >
+            {pending ? (
+              <span className="captured-button-spinner" aria-hidden="true" />
+            ) : (
+              "Continue to review"
+            )}
+          </button>
         </div>
       </form>
       <Sheet

@@ -12,6 +12,7 @@ import { Icon } from "../discovery/icons";
 import { DecorativeVideo } from "../discovery/decorative-video";
 import { RatingStar, ReviewStars } from "../discovery/rating-stars";
 import { capturedReceipts } from "./receipt-data";
+import { useCapturedConfirmation } from "./captured-transition";
 import { shopSourceBuyer } from "./source-fixtures";
 import { useManualOrderDraft } from "./manual-order-draft";
 import {
@@ -1309,13 +1310,20 @@ export function OrderConfirmation({
   id: string;
   catalog: Catalog;
 }) {
+  const confirmationStage = useCapturedConfirmation(id);
+  const detailsPending = confirmationStage === 1;
+  const recommendationsPending = confirmationStage !== 0;
   const { orders } = useAccount();
   const order = orders.find((o) => o.id === id),
     data = capturedReceipts[id];
   const product = catalog.products.find((p) => p.id === order?.productId);
   const money = (amount: number) => formatMoney({ amount, currency: "USD" });
   return (
-    <AccountPage className="order-confirmation-page" back={false} dockFade>
+    <AccountPage
+      className={`order-confirmation-page ${detailsPending ? "is-confirmation-loading" : ""}`}
+      back={false}
+      dockFade
+    >
       <Link
         className="review-close"
         href={`/orders/${id}`}
@@ -1325,87 +1333,148 @@ export function OrderConfirmation({
       </Link>
       {order && data ? (
         <>
-          <header className="confirmation-heading">
+          <header
+            className="confirmation-heading"
+            data-confirmation-stage={confirmationStage}
+          >
             <div>
               <h1>Order confirmed</h1>
-              <small>Order No. #{data.displayOrderNumber}</small>
+              {!detailsPending && (
+                <small>Order No. #{data.displayOrderNumber}</small>
+              )}
             </div>
-            <img src="/api/reference-media/kitsch-logo" alt="KITSCH" />
+            {detailsPending ? (
+              <span
+                className="confirmation-brand-placeholder"
+                aria-hidden="true"
+              >
+                K
+              </span>
+            ) : (
+              <img src="/api/reference-media/kitsch-logo" alt="KITSCH" />
+            )}
           </header>
-          <section className="confirmation-destination">
-            <small>Ships to</small>
-            <div>
-              <strong>
-                {data.street} {data.city}, {data.region}, {data.postalCode}, US
-              </strong>
-              {product && <img src={product.images[0]} alt="" />}
+          {detailsPending ? (
+            <div
+              className="confirmation-details-skeleton"
+              role="status"
+              aria-label="Loading captured order details"
+            >
+              <div className="confirmation-address-skeleton" aria-hidden="true">
+                <i />
+                <i />
+                <b />
+              </div>
+              <p>Total</p>
+              <i aria-hidden="true" />
+              <button className="muted-button" disabled>
+                View order receipt
+              </button>
             </div>
-          </section>
-          <section className="confirmation-delivery">
-            <small>Estimated delivery</small>
-            <strong>Expected by Aug 3</strong>
-          </section>
-          <div className="confirmation-total">
-            <p>
-              <span>Total</span>
-              <span>{money(data.total)}</span>
-            </p>
-            <p>
-              <span>Shop Pay ···· {data.cardLast4}</span>
-              <span>{money(data.total)}</span>
-            </p>
-          </div>
-          <SourceLink
-            className="muted-button"
-            href={`/orders/${id}/receipt`}
-            startAtTop
-          >
-            View order receipt
-          </SourceLink>
-          <h2>
-            <SourceLink href="/stores/kitsch" startAtTop>
-              Popular at KITSCH <span aria-hidden="true">›</span>
-            </SourceLink>
-          </h2>
-          <div className="product-rail">
-            {["black-conditioner-bag", "chocolate-body-bag", "shower-caddy"]
-              .map((id) => catalog.products.find((p) => p.id === id))
-              .filter((p) => !!p)
-              .map((p) => (
-                <ProductCard
-                  key={p.id}
-                  ratingStars={
-                    p.id === "black-conditioner-bag" ? 4.5 : undefined
-                  }
-                  product={{
-                    ...p,
-                    images:
-                      p.id === "black-conditioner-bag"
-                        ? [
-                            "/api/reference-media/confirmation-black-conditioner-photo",
-                          ]
-                        : p.id === "chocolate-body-bag"
-                          ? [
-                              "/api/reference-media/confirmation-chocolate-body-photo",
-                            ]
-                          : p.images,
-                    title:
-                      p.id === "chocolate-body-bag"
-                        ? "Chocolate Body Wash Bar B…"
-                        : p.title,
-                    ratingCount:
-                      p.id === "black-conditioner-bag"
-                        ? "2.8K"
-                        : p.id === "chocolate-body-bag"
-                          ? "749"
-                          : p.ratingCount,
-                  }}
-                />
+          ) : (
+            <>
+              <section className="confirmation-destination">
+                <small>Ships to</small>
+                <div>
+                  <strong>
+                    {data.street} {data.city}, {data.region}, {data.postalCode},
+                    US
+                  </strong>
+                  {product && <img src={product.images[0]} alt="" />}
+                </div>
+              </section>
+              <section className="confirmation-delivery">
+                <small>Estimated delivery</small>
+                <strong>Expected by Aug 3</strong>
+              </section>
+              <div className="confirmation-total">
+                <p>
+                  <span>Total</span>
+                  <span>{money(data.total)}</span>
+                </p>
+                <p>
+                  <span>Shop Pay ···· {data.cardLast4}</span>
+                  <span>{money(data.total)}</span>
+                </p>
+              </div>
+              <SourceLink
+                className="muted-button"
+                href={`/orders/${id}/receipt`}
+                startAtTop
+              >
+                View order receipt
+              </SourceLink>
+            </>
+          )}
+          {recommendationsPending ? (
+            <div
+              className="confirmation-shelves-skeleton"
+              role="status"
+              aria-label="Loading captured recommendations"
+            >
+              {[0, 1].map((shelf) => (
+                <div key={shelf} aria-hidden="true">
+                  <i />
+                  <div>
+                    <b />
+                    <b />
+                    <b />
+                  </div>
+                </div>
               ))}
-          </div>
-          <SourceLink href="/deals" className="confirmation-deals" startAtTop>
-            Your deals <span aria-hidden="true">›</span>
-          </SourceLink>
+            </div>
+          ) : (
+            <>
+              <h2>
+                <SourceLink href="/stores/kitsch" startAtTop>
+                  Popular at KITSCH <span aria-hidden="true">›</span>
+                </SourceLink>
+              </h2>
+              <div className="product-rail">
+                {["black-conditioner-bag", "chocolate-body-bag", "shower-caddy"]
+                  .map((id) => catalog.products.find((p) => p.id === id))
+                  .filter((p) => !!p)
+                  .map((p) => (
+                    <ProductCard
+                      key={p.id}
+                      ratingStars={
+                        p.id === "black-conditioner-bag" ? 4.5 : undefined
+                      }
+                      product={{
+                        ...p,
+                        images:
+                          p.id === "black-conditioner-bag"
+                            ? [
+                                "/api/reference-media/confirmation-black-conditioner-photo",
+                              ]
+                            : p.id === "chocolate-body-bag"
+                              ? [
+                                  "/api/reference-media/confirmation-chocolate-body-photo",
+                                ]
+                              : p.images,
+                        title:
+                          p.id === "chocolate-body-bag"
+                            ? "Chocolate Body Wash Bar B…"
+                            : p.title,
+                        ratingCount:
+                          p.id === "black-conditioner-bag"
+                            ? "2.8K"
+                            : p.id === "chocolate-body-bag"
+                              ? "749"
+                              : p.ratingCount,
+                      }}
+                    />
+                  ))}
+              </div>
+              <SourceLink
+                href="/deals"
+                className="confirmation-deals"
+                startAtTop
+              >
+                Your deals <span aria-hidden="true">›</span>
+              </SourceLink>
+            </>
+          )}
         </>
       ) : (
         <p>No confirmation is available for this tracked order.</p>

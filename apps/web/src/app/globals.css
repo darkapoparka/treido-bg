@@ -201,6 +201,9 @@ h2 {
   height: 56px;
   box-shadow: 0 12px 32px #0000000b;
 }
+.floating-dock > .dock-back {
+  box-shadow: 0 6px 100px #00000080;
+}
 .dock-back svg {
   width: 20px;
   height: 20px;

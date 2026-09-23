@@ -6,6 +6,8 @@ test("Jeans results open the captured answer over their exact query and return t
 }) => {
   await useReferenceScenario(page, "home-welcome");
   await page.goto("/search?q=Jeans");
+  const queryInput = page.locator('input[aria-label="Search products"]');
+  await expect(queryInput).toHaveValue("Jeans");
   const results = page.locator("[data-result-id]");
   await expect(results.nth(0)).toHaveAttribute(
     "data-result-id",
@@ -26,18 +28,26 @@ test("Jeans results open the captured answer over their exact query and return t
   });
   await expect(answer).toBeVisible();
   await expect(page).toHaveURL(/q=Jeans&answer=jeans/);
+  await expect(queryInput).toHaveValue("");
+  await expect(queryInput).toHaveAttribute("placeholder", "Search");
   await expect(
     answer.getByRole("heading", { name: "Jeans", exact: true }),
   ).toBeFocused();
   await page.goBack();
   await expect(answer).not.toBeVisible();
   await expect(page).toHaveURL(/\/search\?q=Jeans$/);
+  await expect(queryInput).toHaveValue("Jeans");
   await expect(trigger).toBeFocused();
   await page.goForward();
   await expect(answer).toBeVisible();
+  await expect(queryInput).toHaveValue("");
+  await page.reload();
+  await expect(answer).toBeVisible();
+  await expect(queryInput).toHaveValue("");
   await page.keyboard.press("Escape");
   await expect(answer).not.toBeVisible();
   await expect(page).toHaveURL(/\/search\?q=Jeans$/);
+  await expect(queryInput).toHaveValue("Jeans");
   await expect(trigger).toBeFocused();
 });
 

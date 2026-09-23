@@ -443,11 +443,6 @@
 .source-about .floating-nav a[aria-current] {
   color: #090909;
 }
-:is(.support-page, .source-about, .payment-card-detail-page)
-  > .floating-dock
-  > .dock-back {
-  box-shadow: 0 6px 100px #00000080;
-}
 @media (max-width: 350px) {
   .account-security-page .account-row {
     gap: 8px;

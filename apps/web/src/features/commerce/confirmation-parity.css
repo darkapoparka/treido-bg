@@ -181,3 +181,82 @@
 .receipt-page .receipt-seller > span {
   opacity: 0.999;
 }
+/* The one-shot captured confirmation loads details before its product shelves. */
+.confirmation-brand-placeholder {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  color: white;
+  background: #c3c6c7;
+  font-size: 20px;
+}
+.confirmation-details-skeleton i,
+.confirmation-details-skeleton b,
+.confirmation-shelves-skeleton i,
+.confirmation-shelves-skeleton b {
+  display: block;
+  background: #f0f2f3;
+  border-radius: 6px;
+}
+.confirmation-address-skeleton {
+  position: relative;
+  height: 71px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.confirmation-address-skeleton i:first-child {
+  width: 80px;
+  height: 18px;
+}
+.confirmation-address-skeleton i + i {
+  width: calc(100% - 62px);
+  height: 20px;
+  margin-top: 10px;
+}
+.confirmation-address-skeleton b {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+}
+.confirmation-details-skeleton > p {
+  font-size: 14px;
+  line-height: 18px;
+  margin: 18px 0 4px;
+}
+.confirmation-details-skeleton > i {
+  height: 20px;
+}
+.confirmation-details-skeleton > button.muted-button {
+  width: 100%;
+  height: 40px;
+  min-height: 40px;
+  margin-top: 16px;
+  font-size: 14px;
+  opacity: 1;
+  background: #f3f4f4;
+}
+.confirmation-shelves-skeleton {
+  overflow: hidden;
+  margin-right: -16px;
+}
+.confirmation-shelves-skeleton > div {
+  margin-top: 36px;
+}
+.confirmation-shelves-skeleton i {
+  width: 120px;
+  height: 25px;
+  margin-bottom: 12px;
+}
+.confirmation-shelves-skeleton > div > div {
+  display: flex;
+  gap: 16px;
+}
+.confirmation-shelves-skeleton b {
+  flex: 0 0 155px;
+  height: 155px;
+  border-radius: 20px;
+}

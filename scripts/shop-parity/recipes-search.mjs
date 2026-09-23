@@ -109,9 +109,18 @@ export const searchRecipes = {
       },
       {
         state: "products-loaded-before-answer",
-        actions: [{ type: "releaseRsc" }, resultsReady, top],
+        actions: [
+          { type: "releaseRsc" },
+          resultsReady,
+          {
+            type: "waitVisible",
+            selector: '[data-search-progress="comparing"]',
+          },
+          top,
+        ],
+        captureGuard: { selector: '[data-search-progress="comparing"]' },
         notes:
-          "Source has Comparing products while the result cards load. No provider is connected; current captured answer is immediately available. This remains a visual/service-boundary difference.",
+          "A deliberate Jeans submit plays the recorded local answer-preview phases. Capture the real Comparing products phase after results resolve; direct result entries remain immediate and no provider activity is claimed.",
       },
       {
         state: "jeans-results-with-answer-teaser",

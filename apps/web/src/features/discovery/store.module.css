@@ -285,7 +285,7 @@
   font-family: "ShopChemicalGeist", Arial, Helvetica, sans-serif;
 }
 .collection :global(.floating-dock[data-fade="true"])::before {
-  background: transparent;
+  background: linear-gradient(transparent 15%, #fdfdfde6);
   backdrop-filter: blur(20px);
   mask-image: linear-gradient(transparent 15%, #000);
 }
@@ -299,6 +299,9 @@
 }
 .collection > :global(.product-grid) {
   column-gap: 12px;
+}
+.collection > :global(.collection-partial-products) {
+  margin-top: 14px;
 }
 .collection[data-collection="best-sellers"] > :global(.product-grid) {
   column-gap: 10px;

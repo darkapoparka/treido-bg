@@ -25,6 +25,11 @@ import "./cart-parity.css";
 export { CartContents } from "./cart";
 import { InitialPayment } from "./initial-payment";
 import {
+  armCapturedConfirmation,
+  reviewStageEnds,
+  useCapturedTransition,
+} from "./captured-transition";
+import {
   CheckoutExtras,
   checkoutRecommendationsForStore,
 } from "./checkout-extras";
@@ -222,7 +227,14 @@ export function Checkout({
   const [storeOffers, setStoreOffers] = useState(true);
   const [textOfferPhone, setTextOfferPhone] = useState("");
   const [processing, setProcessing] = useState(false);
+  const [processingCaption, setProcessingCaption] = useState(false);
+  const paymentTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  useEffect(() => () => paymentTimers.current.forEach(clearTimeout), []);
   const [paymentBoundary, setPaymentBoundary] = useState(false);
+  const reviewTransition = useCapturedTransition(reviewStageEnds);
+  const reviewStage = reviewTransition.stage;
+  const reviewPending = reviewStage !== 0;
+  const cancelReview = reviewTransition.cancel;
 
   const resolvedLines = state.cart.flatMap((line) => {
     const product = catalog.products.find((p) => p.id === line.productId);
@@ -262,6 +274,8 @@ export function Checkout({
     ? 35
     : 0;
   const total = subtotal + fee + tax;
+  const previewPayAmount =
+    reviewStage === 3 ? subtotal : reviewStage === 4 ? subtotal + fee : total;
   const savings = lines.reduce(
     (n, line) =>
       n +
@@ -281,6 +295,7 @@ export function Checkout({
     verification: "phone" | "code" = "phone",
     replaceEntry = false,
   ) => {
+    reviewTransition.cancel();
     const url = new URL(window.location.href);
     if (next === "review") url.searchParams.delete("stage");
     else url.searchParams.set("stage", next);
@@ -300,6 +315,9 @@ export function Checkout({
     navigateSetup("phone", next);
   useEffect(() => {
     const restore = () => {
+      cancelReview();
+      paymentTimers.current.forEach(clearTimeout);
+      setProcessing(false);
       const params = new URLSearchParams(window.location.search);
       const next = params.get("stage");
       updateStep(
@@ -317,7 +335,7 @@ export function Checkout({
     };
     window.addEventListener("popstate", restore);
     return () => window.removeEventListener("popstate", restore);
-  }, []);
+  }, [cancelReview]);
   const toggle = (section: CheckoutSection) =>
     setExpanded((current) =>
       current.includes(section)
@@ -387,7 +405,8 @@ export function Checkout({
   return (
     <ShopSurface
       className={`shop-page checkout-page source-checkout ${step !== "review" ? "is-setup" : ""} ${addressSearching ? "is-address-searching" : ""} ${processing ? "is-processing" : ""}`}
-      aria-busy={processing}
+      aria-busy={processing || reviewPending}
+      data-review-stage={reviewStage}
     >
       <header className="checkout-header">
         {step === "review" ? (
@@ -477,16 +496,32 @@ export function Checkout({
       ) : step === "payment-setup" ? (
         <InitialPayment
           address={addressDraft.street ? addressDraft : address}
-          onContinue={() => setStep("review")}
+          onContinue={() => {
+            setStep("review");
+            setExpanded([]);
+            reviewTransition.start();
+          }}
         />
       ) : (
         <>
+          {reviewStage === 1 && (
+            <div
+              className="captured-review-loading"
+              role="status"
+              aria-label="Loading captured checkout"
+            >
+              <i />
+            </div>
+          )}
           <div className="checkout-identity">
             <strong>shop</strong>
             <span>{shopSourceBuyer.email}</span>
           </div>
 
-          <div className="checkout-group source-checkout-group">
+          <div
+            className="checkout-group source-checkout-group"
+            inert={reviewPending || processing}
+          >
             <section className="checkout-section">
               <button
                 className="checkout-section-toggle"
@@ -875,11 +910,41 @@ export function Checkout({
             <input
               type="checkbox"
               checked={storeOffers}
-              disabled={processing}
+              disabled={processing || reviewPending}
               onChange={(event) => setStoreOffers(event.target.checked)}
             />
             <span>Sign me up for news and offers from this store</span>
           </label>
+
+          {(reviewStage === 3 || reviewStage === 4) && (
+            <div
+              className="captured-review-extras-loading"
+              role="status"
+              aria-label="Loading captured recommendations"
+            >
+              <i />
+              {reviewStage === 3 && (
+                <div className="captured-review-skeleton" aria-hidden="true">
+                  <header>
+                    <b />
+                    <i />
+                    <i />
+                  </header>
+                  {[0, 1].map((row) => (
+                    <div key={row}>
+                      <i />
+                      <span>
+                        <b />
+                        <b />
+                        <b />
+                      </span>
+                      <i />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {hasCapturedKitschMerchandising && (
             <section className="checkout-text-offers">
@@ -895,7 +960,7 @@ export function Checkout({
                   placeholder="Phone number"
                   autoComplete="tel-national"
                   value={textOfferPhone}
-                  disabled={processing}
+                  disabled={processing || reviewPending}
                   onChange={(event) => setTextOfferPhone(event.target.value)}
                 />
                 <button
@@ -924,7 +989,7 @@ export function Checkout({
           <CheckoutExtras
             recommendations={checkoutRecommendations}
             added={extraIds}
-            disabled={processing}
+            disabled={processing || reviewPending}
             onAdd={(id) =>
               setExtraIds((current) =>
                 current.includes(id) ? current : [...current, id],
@@ -936,7 +1001,7 @@ export function Checkout({
             {!summary && (
               <button
                 className="add-discount-pill"
-                disabled={processing}
+                disabled={processing || reviewPending}
                 onClick={() => setSummary(true)}
               >
                 <Icon name="price-tag" /> Add discount
@@ -944,7 +1009,7 @@ export function Checkout({
             )}
             <button
               className="source-total-row"
-              disabled={processing}
+              disabled={processing || reviewPending}
               aria-expanded={summary}
               onClick={() => setSummary((current) => !current)}
             >
@@ -1057,7 +1122,7 @@ export function Checkout({
                   <input
                     aria-label="Discount code"
                     placeholder="Discount code or gift card"
-                    disabled={processing}
+                    disabled={processing || reviewPending}
                     value={code}
                     onChange={(event) => {
                       setCode(event.target.value);
@@ -1155,21 +1220,33 @@ export function Checkout({
               onClick={() => {
                 if (processing) return;
                 setProcessing(true);
-                window.setTimeout(() => {
-                  setProcessing(false);
-                  setPaymentBoundary(true);
-                }, 900);
+                setProcessingCaption(false);
+                paymentTimers.current = [
+                  setTimeout(() => setProcessingCaption(true), 750),
+                  setTimeout(() => {
+                    setProcessing(false);
+                    setPaymentBoundary(true);
+                  }, 1100),
+                ];
               }}
-              disabled={!address || !selectedPayment || processing}
+              disabled={
+                !address || !selectedPayment || processing || reviewPending
+              }
             >
               {processing ? (
-                <span className="processing-label">
-                  <i aria-hidden="true" /> Processing...
+                <span
+                  className="processing-label"
+                  data-processing-caption={processingCaption}
+                >
+                  <i aria-hidden="true" />{" "}
+                  {processingCaption && "Processing..."}
                 </span>
               ) : (
                 <>
                   <span>Pay now</span>
-                  <b>{formatMoney({ amount: total, currency: "USD" })}</b>
+                  <b>
+                    {formatMoney({ amount: previewPayAmount, currency: "USD" })}
+                  </b>
                 </>
               )}
             </button>
@@ -1371,7 +1448,20 @@ export function Checkout({
           <Link
             className="primary form-submit"
             href="/orders/REF-1001/confirmation"
-            onClick={() => setPaymentBoundary(false)}
+            onClick={(event) => {
+              // Sheet consumes ordinary internal navigation in its capture
+              // handler, before Next Link can call onNavigate.
+              if (
+                event.button !== 0 ||
+                event.metaKey ||
+                event.ctrlKey ||
+                event.shiftKey ||
+                event.altKey
+              )
+                return;
+              armCapturedConfirmation("REF-1001");
+              setPaymentBoundary(false);
+            }}
           >
             View captured source confirmation
           </Link>
@@ -1402,6 +1492,14 @@ function SourcePhoneSetup({
 }) {
   const [code, setCode] = useState("");
   const [processing, setProcessing] = useState(false);
+  const [nextPending, setNextPending] = useState(false);
+  const nextTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (nextTimer.current) clearTimeout(nextTimer.current);
+    },
+    [],
+  );
   const [boundary, setBoundary] = useState(false);
   const digits = phone.replace(/\D/g, "");
   const beginBoundary = () => {
@@ -1418,8 +1516,14 @@ function SourcePhoneSetup({
         className="source-phone-setup"
         onSubmit={(event) => {
           event.preventDefault();
-          if (stage === "phone") onStageChange("code");
-          else if (code.length === 6) beginBoundary();
+          if (stage === "phone") {
+            if (nextPending) return;
+            setNextPending(true);
+            nextTimer.current = setTimeout(() => {
+              setNextPending(false);
+              onStageChange("code");
+            }, 650);
+          } else if (code.length === 6) beginBoundary();
         }}
       >
         <div className="checkout-steps source-phone-steps">
@@ -1459,9 +1563,15 @@ function SourcePhoneSetup({
             </p>
             <button
               className="primary source-phone-next"
-              disabled={digits.length < 7}
+              disabled={digits.length < 7 || nextPending}
+              aria-label="Next"
+              aria-busy={nextPending}
             >
-              Next
+              {nextPending ? (
+                <span className="captured-button-spinner" aria-hidden="true" />
+              ) : (
+                "Next"
+              )}
             </button>
           </>
         ) : (

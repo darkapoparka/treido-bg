@@ -32,6 +32,8 @@ const HEIGHT = 793;
 const SOURCE_NORMALIZED_HEIGHT = 892;
 const SOURCE_TOP_CROP = 59;
 const BAD_PIXEL_THRESHOLD = 12;
+const pausedClocks = new WeakSet();
+const installedClocks = new WeakSet();
 
 function routeHint(flowNo) {
   if (flowNo === 1) return ["onboarding", "/onboarding"];
@@ -265,6 +267,22 @@ async function perform(page, action, loadingReplay) {
       const rect = node.getBoundingClientRect();
       window.scrollBy(0, rect.top - targetY);
     }, action.y);
+  } else if (action.type === "pauseClock") {
+    if (!installedClocks.has(page)) {
+      await page.clock.install();
+      installedClocks.add(page);
+    }
+    await page.clock.pauseAt(
+      new Date(await page.evaluate(() => Date.now() + 60_000)),
+    );
+    pausedClocks.add(page);
+  } else if (action.type === "advanceClock") {
+    if (!pausedClocks.has(page))
+      throw new Error("Advance requires a paused capture clock");
+    await page.clock.runFor(action.ms);
+  } else if (action.type === "resumeClock") {
+    await page.clock.resume();
+    pausedClocks.delete(page);
   } else if (action.type === "waitVisible") {
     await roleLocator(page, action).waitFor({
       state: "visible",
@@ -355,10 +373,17 @@ async function settle(page) {
         await image.decode();
       }),
     ]);
-    await new Promise((resolve) =>
-      requestAnimationFrame(() => requestAnimationFrame(resolve)),
-    );
   });
+  const painted = page.evaluate(
+    () =>
+      new Promise((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve)),
+      ),
+  );
+  // Keep font/image and two-paint readiness even when a short recorded state
+  // is sampled under Playwright's clock. No application state is injected.
+  if (pausedClocks.has(page)) await page.clock.runFor(50);
+  await painted;
 }
 
 async function normalizeReference(sourcePath, outputPath) {

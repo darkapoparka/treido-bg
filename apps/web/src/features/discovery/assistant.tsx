@@ -300,6 +300,7 @@ export function JeansAnswer({
           icon="thumb-up"
           label="Give positive feedback"
           pressed={sentiment === "positive"}
+          filled={false}
           onClick={() => {
             setFeedbackSentiment("positive");
             setFeedback(true);
@@ -309,6 +310,7 @@ export function JeansAnswer({
           icon="thumb-down"
           label="Give negative feedback"
           pressed={sentiment === "negative"}
+          filled={false}
           onClick={() => {
             setFeedbackSentiment("negative");
             setFeedback(true);

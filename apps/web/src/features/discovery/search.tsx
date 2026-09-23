@@ -39,6 +39,7 @@ import {
   searchStores,
 } from "./search-model";
 import { SearchLoading } from "./search-loading";
+import { jeansProgressAt, type CapturedJeansProgress } from "./search-progress";
 import {
   inheritSearchDraftOwners,
   prepareSearchDraftOwner,
@@ -53,8 +54,7 @@ import "./search-loading.css";
 
 const capturedCapPhoto = "/api/reference-media/assistant-uploaded-cap";
 const composerSelector = 'form[role="search"][aria-label="Search products"]';
-const jeansComparisonStorageKey = "shop-jeans-comparison-pending";
-const jeansComparisonDurationMs = 1800;
+const jeansProgressStorageKey = "shop-jeans-preview-started";
 const filteredStoreDeals: Record<string, string> = {
   "arrow-twenty-two": "Save $5",
   "american-blues": "Save $15",
@@ -139,9 +139,11 @@ export function Search({
   const [photoError, setPhotoError] = useState("");
   const [photoUnavailable, setPhotoUnavailable] = useState(false);
   const photoOrigin = useRef<string | null>(null);
-  const jeansComparisonQueued = useRef(false);
-  const jeansComparisonUntil = useRef(0);
-  const [comparingJeans, setComparingJeans] = useState(false);
+  const jeansProgressQueued = useRef(false);
+  const jeansProgressStarted = useRef(0);
+  const [jeansProgressRequest, setJeansProgressRequest] = useState(0);
+  const [jeansProgress, setJeansProgress] =
+    useState<CapturedJeansProgress | null>(null);
   const [pending, startTransition] = useTransition();
   if (activeDraftEntry !== draftEntry) {
     setActiveDraftEntry(draftEntry);
@@ -187,56 +189,51 @@ export function Search({
   const answerOpen = params.get("answer") === "jeans";
   useEffect(() => {
     if (!jeansQuery) {
-      jeansComparisonQueued.current = false;
-      jeansComparisonUntil.current = 0;
+      // A submit may still be moving from the composer to its result route.
+      if (pending && jeansProgressQueued.current) return;
+      jeansProgressQueued.current = false;
+      jeansProgressStarted.current = 0;
       try {
-        sessionStorage.removeItem(jeansComparisonStorageKey);
+        sessionStorage.removeItem(jeansProgressStorageKey);
       } catch {}
-      const reset = window.setTimeout(() => setComparingJeans(false), 0);
+      const reset = window.setTimeout(() => setJeansProgress(null), 0);
       return () => window.clearTimeout(reset);
     }
-    let marker = "";
-    try {
-      marker = sessionStorage.getItem(jeansComparisonStorageKey) ?? "";
-    } catch {}
-    const queued = jeansComparisonQueued.current || marker === "queued";
-    jeansComparisonQueued.current = false;
-    let expiresAt = jeansComparisonUntil.current;
-    if (queued) {
-      expiresAt = Date.now() + jeansComparisonDurationMs;
-      jeansComparisonUntil.current = expiresAt;
+    jeansProgressQueued.current = false;
+    let startedAt = jeansProgressStarted.current;
+    if (!startedAt) {
       try {
-        sessionStorage.setItem(jeansComparisonStorageKey, String(expiresAt));
+        startedAt = Number(sessionStorage.getItem(jeansProgressStorageKey));
       } catch {}
-    } else if (!expiresAt && marker) {
-      const storedExpiry = Number(marker);
-      if (Number.isFinite(storedExpiry)) {
-        expiresAt = storedExpiry;
-        jeansComparisonUntil.current = storedExpiry;
+      jeansProgressStarted.current = startedAt;
+    }
+    let timeout: number;
+    const advance = () => {
+      const now = Date.now();
+      const phase = jeansProgressAt(startedAt, now);
+      setJeansProgress(phase);
+      if (phase) {
+        timeout = window.setTimeout(advance, startedAt + phase.until - now);
+      } else {
+        jeansProgressStarted.current = 0;
+        try {
+          sessionStorage.removeItem(jeansProgressStorageKey);
+        } catch {}
       }
-    }
-    const remaining = expiresAt - Date.now();
-    if (!(remaining > 0)) {
-      jeansComparisonUntil.current = 0;
-      try {
-        sessionStorage.removeItem(jeansComparisonStorageKey);
-      } catch {}
-      const reset = window.setTimeout(() => setComparingJeans(false), 0);
-      return () => window.clearTimeout(reset);
-    }
-    const reveal = window.setTimeout(() => setComparingJeans(true), 0);
-    const timeout = window.setTimeout(() => {
-      setComparingJeans(false);
-      jeansComparisonUntil.current = 0;
-      try {
-        sessionStorage.removeItem(jeansComparisonStorageKey);
-      } catch {}
-    }, remaining);
-    return () => {
-      window.clearTimeout(reveal);
-      window.clearTimeout(timeout);
     };
-  }, [jeansQuery, query]);
+    timeout = window.setTimeout(advance, 0);
+    return () => window.clearTimeout(timeout);
+  }, [jeansQuery, query, jeansProgressRequest, pending]);
+  useEffect(() => {
+    return () => {
+      // Keep elapsed time across Search reloads, but cancel on route departure.
+      if (window.location.pathname !== "/search") {
+        try {
+          sessionStorage.removeItem(jeansProgressStorageKey);
+        } catch {}
+      }
+    };
+  }, []);
   useEffect(() => {
     const entry = pendingAnswer.current;
     if (answerOpen && entry) {
@@ -340,14 +337,16 @@ export function Search({
   }
   function submitQuery(value: string) {
     const next = value.trim();
-    const compareJeans = next.toLowerCase() === "jeans";
-    jeansComparisonQueued.current = compareJeans;
-    jeansComparisonUntil.current = 0;
-    setComparingJeans(compareJeans);
+    const previewJeans = next.toLowerCase() === "jeans";
+    const startedAt = previewJeans ? Date.now() : 0;
+    jeansProgressQueued.current = previewJeans;
+    jeansProgressStarted.current = startedAt;
+    setJeansProgress(jeansProgressAt(startedAt, Date.now()));
+    setJeansProgressRequest((request) => request + 1);
     try {
-      if (compareJeans)
-        sessionStorage.setItem(jeansComparisonStorageKey, "queued");
-      else sessionStorage.removeItem(jeansComparisonStorageKey);
+      if (previewJeans)
+        sessionStorage.setItem(jeansProgressStorageKey, String(startedAt));
+      else sessionStorage.removeItem(jeansProgressStorageKey);
     } catch {}
     // The old entry returns to its committed query after a deliberate submit.
     // The new results entry gets its own URL seed, never the discarded editor.
@@ -423,10 +422,10 @@ export function Search({
         key="query"
         ref={inputRef}
         aria-label="Search products"
-        placeholder="Search or ask anything"
+        placeholder={answerOpen ? "Search" : "Search or ask anything"}
         autoComplete="off"
         enterKeyHint="search"
-        value={draft}
+        value={answerOpen ? "" : draft}
         onFocus={() => setFocused(true)}
         onChange={(e) => {
           setDraft(e.target.value);
@@ -787,15 +786,16 @@ export function Search({
                 </div>
               </section>
               {!filtered && <CapturedJeansContinuation />}
-              {comparingJeans ? (
+              {jeansProgress ? (
                 <div
                   className={styles.comparingProducts}
                   role="status"
                   aria-live="polite"
-                  data-search-comparing="true"
+                  data-search-progress={jeansProgress.id}
+                  aria-label="Recorded Jeans answer preview"
                 >
-                  <Icon name="phone" />
-                  <span>Comparing products</span>
+                  <span className={styles.progressSpinner} aria-hidden="true" />
+                  <span>{jeansProgress.label}</span>
                 </div>
               ) : (
                 <button
