@@ -46,7 +46,7 @@ test("photo assistant entry retains a local preview and opens the captured answe
     page.getByRole("heading", { name: "Find me a baseball cap like this" }),
   ).toBeVisible();
   await page.getByRole("button", { name: /Assistant steps/ }).click();
-  await expect(page.getByText("Searched for products")).toBeVisible();
+  await expect(page.getByText("Search for products")).toBeVisible();
 });
 
 test("captured outfit labels open the complete results from their first group", async ({

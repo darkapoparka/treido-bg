@@ -589,7 +589,7 @@ function PhotoAssistant({ catalog }: { catalog: Catalog }) {
       </button>
       {steps && (
         <div className="assistant-step-list">
-          <small>Searched for products</small>
+          <small>Search for products</small>
           {[
             "Mobbin black baseball cap",
             "Mobbin hat black",

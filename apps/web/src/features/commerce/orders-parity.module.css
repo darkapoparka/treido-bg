@@ -1764,6 +1764,17 @@
 .waitingTracking :global(.tracking-order-card) {
   margin-bottom: 14px;
 }
+.waitingTracking::after {
+  content: "";
+  position: fixed;
+  z-index: 19;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: calc(var(--dock-bottom) + env(safe-area-inset-bottom));
+  background: #fff;
+  pointer-events: none;
+}
 .tracking :global(.delivery-preview[data-waiting="true"]) {
   margin-top: 14px;
   padding: 15px 16px 16px;
