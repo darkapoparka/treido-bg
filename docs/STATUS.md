@@ -4,7 +4,7 @@ Updated 2026-09-23. This is the session entry point, not a second backlog.
 
 ## Resume handoff
 
-Continue from the existing local **main** checkout and frozen Shop source. The latest Beauty pass restores the visible gray shadow around its white category pills, aligns Scent/Favorites sections and brand text, and fits the nails arrow tint. Kitsch Collections now shows the third tile to the viewport edge. `20260923-current-head-full` captures **424/424** frames across **97/97** flows with zero browser/replay errors and **2.5939% mean MAE**; exact scoped comparisons and remaining differences are in the [implementation map](../shop-implementation-map.md#explore-source-fitting-checkpoint-2026-09-18). Preserve this checkout and later changes. The [copyable execution prompt](../single-session-execution.md#new-session-prompt) and [shared-component audit map](../shop-implementation-map.md#shared-component-audit) own continuation. Next: fit the Coastal collection tile crop and remaining source media/type details against this current full baseline; source acceptance remains **0/97**.
+Continue from the existing local **main** checkout and frozen Shop source. **fd34bc7** refines Kitsch/store reviews/PDP source variants and prevents oversized collection names from resetting saved data; **132bf51** preserves the Bag's added-button variant and settles the navigation-test hydration boundary. The full **20260923-finalization-full** capture at fd34bc7 scores **424/424** frames with zero browser/replay errors and **2.586946% mean MAE**; the later **26/26** Bag-family capture has no regression. Full journeys initially pass **427/428**, then the original failure and 31 siblings pass after the test setup fix; units pass **134/134**. Exact evidence, failures, source recovery attempts and not-run checks are in the [current implementation checkpoint](../shop-implementation-map.md#current-source-checkpoint). **72 frames are numerical candidates; 352 still exceed at least one threshold; owner acceptance remains 0/97.** Continue remaining shared typography/media and exact motion work. The [copyable execution prompt](../single-session-execution.md#new-session-prompt) owns continuation mechanics.
 
 The earlier Beauty implementation is commit **7a5789a**; subsequent measured fits are recorded in the implementation map. Remote `main` was independently rewritten to an import history during that session; merge **3ec2256** preserved both histories with an unchanged application tree and was pushed to `origin/main`. The fully merged superseded `wip/shop-parity-fitting-20260913` branch was removed locally and on origin; only `main` and `astra-pro` remain. The three pre-existing untracked Inter probe fonts were left untouched.
 
@@ -12,7 +12,9 @@ For the 2026-09-22 onboarding pass, the existing local preview at `http://127.0.
 
 All 97 flows / 424 ordered frames are mapped and compared, and 307 standalone images are reconciled. The existing September 13 video audit actually inspected complete quarter-second sequence sheets for all 16 videos (309 samples, 4,310 decoded frames); the old “poster-only” description was stale. This session also examines selected full-rate motion. Coverage, motion inspection and passing tests are separate from 1:1 acceptance.
 
-## Active repair checkpoint
+## Preceding dated repair evidence
+
+These records preserve earlier scoped runs and their original limitations. Their next-action statements are historical; the resume handoff above and Next action below own current work.
 
 Flow 1’s committed **9f83c50** fit aligns the “Powered by Shopify” lockup and moves the Shop wordmark down 4px. Follow-up **52c7edd** adjusts only the discovery headline’s top offset and letter spacing to match its captured source bounds; line breaks, artwork, and CTA remain unchanged. Final run `20260922-onboarding-discover-title-fit-main-52c7edd` captures **15/15** frames with zero replay/browser errors. Against the exact 9f83c50 run, f001-003 improves **1.878425→1.528215% MAE** and the flow mean improves **1.707742→1.684394%**; the other 14 frames are numerically unchanged. The previously recorded lockup comparison against `20260922-current-head-full` improved f001-002 **1.303464→1.057655%**, with no scored regression. The 393×793 source/live/heatmap comparison and open-browser inspection show the revised headline and live policy/continue links. CSS Prettier and `git diff --check` pass. No journey suite, build, 320/430 discovery-width check, or full 424-frame recapture was run; flow acceptance remains open. Final source/live/heatmap: `.qa/shop-parity/runs/20260922-onboarding-discover-title-fit-main-52c7edd/f001-003/`.
 
@@ -190,7 +192,7 @@ Retained runs `20260918-store-text-f14`, `-f15`, `-f96` and `-f97` scored **16/1
 
 ## Working context
 
-Use the existing `J:\treido-bg` checkout of `darkapoparka/treido-bg`, canonical **main**, with one writer. The historical September 13 integration extended **`4d0539f2d0cd70f884941cc83f05ff075365542d`**; the active September 19 repair is recorded above. The local writer owns all current edits. [AGENTS.md](../AGENTS.md) and [Codex setup](agents/codex.md) own branch policy, runtime ownership and synchronization.
+Use the existing `J:\treido-bg` checkout of `darkapoparka/treido-bg`, canonical **main**, with one writer. The historical September 13 integration extended **`4d0539f2d0cd70f884941cc83f05ff075365542d`**; the current September 23 checkpoint is recorded above. The local writer owns all current edits. [AGENTS.md](../AGENTS.md) and [Codex setup](agents/codex.md) own branch policy, runtime ownership and synchronization.
 
 The active work remains the Shop **mobile-web** portions of Tasks 3/5/6. Finish and approve the frozen UI and connected flows, then adapt the same implementation to the producer-first food marketplace under [product.md](../product.md) and [web.md](../web.md). Backend, native, merchant/admin, food branding and release remain separate work.
 
@@ -218,7 +220,7 @@ Shopify reference acquisition remains separately unresolved in [its source recor
 
 ## Next action
 
-Implement Receipt spacing/payment information, source-specific Orders recommendations, remaining receipt/recommendation returns and checkout thumbnail/rounded-star variants. Then shared PDP/review finishing, Home accessory hearts and PDP collection creation history; Saved options/edit/public/delete stage history follows. Root Browser confirms both collection-stage gaps in ignored `20260920-pdp-collection-root-audit.json` and `20260920-saved-stage-root-audit.json`. Preserve source Cancel semantics and one writer. Continue every unresolved family; passing tests do not establish1:1.
+Use the full fd34bc7 ranking plus the later 132bf51 Bag-family evidence to continue the remaining review, description and Search-answer text/media fitting, then their sibling source sequences. Receipt information/recommendations and collection-stage history are already implemented; do not restart those old queues. Resolve the three pinned original-media verification failures and exact Chemical/Pura motion evidence through authorized sources. Preserve all 97 flows, source exceptions, controls, hashes and thresholds; validate each related batch and keep owner acceptance separate.
 
 ## Dated setup and integration evidence
 
