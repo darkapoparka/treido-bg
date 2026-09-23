@@ -1528,9 +1528,17 @@
 }
 .photoAnswer :global(.assistant-answer-card) strong {
   font-weight: 600;
+  margin-bottom: 5px;
+}
+.photoAnswer :global(.assistant-answer-card) ul {
+  margin-top: 11px;
 }
 .photoAnswer :global(.assistant-answer-card) > div:last-child {
+  font-family: "ShopSearchGeist", Arial, Helvetica, sans-serif;
   opacity: 0.999;
+}
+.photoAnswer :global(.assistant-answer-card) .photoSellerLogo {
+  font-size: 16px;
 }
 .photoAnswer > :global(.assistant-answer-card):first-of-type {
   margin-bottom: 16px;
