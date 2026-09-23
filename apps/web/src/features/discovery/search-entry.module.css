@@ -1609,7 +1609,16 @@
   width: 100%;
   max-width: 760px;
   height: 44px;
-  background: linear-gradient(#fff 0, #ffffffdd 40%, #ffffff00);
+  background-image:
+    linear-gradient(#fff, #fff),
+    linear-gradient(#fff 0, #ffffffdd 40%, #ffffff00);
+  background-size:
+    72px 20px,
+    100% 44px;
+  background-position:
+    calc(32px + min(166px, 48vw)) top,
+    center top;
+  background-repeat: no-repeat;
   pointer-events: none;
   z-index: 3;
 }
