@@ -12,8 +12,8 @@ type DeliveryConfettiPiece = readonly [
 ];
 
 // Video232 waits about 300ms, rises in a narrow column, then spreads and falls
-// with a sparse tail through three seconds. These particles retain the still
-// when reduced motion is requested; every piece remains live DOM.
+// with a sparse tail through three seconds. The piece anchors are measured
+// against the delivered-state capture at 393px; each piece remains live DOM.
 const deliveryConfetti: readonly DeliveryConfettiPiece[] = [
   [
     147,
@@ -69,8 +69,8 @@ const deliveryConfetti: readonly DeliveryConfettiPiece[] = [
   [187, 218, 29, 4, "#dbe969", 1, "999px"],
   [198, 220, 2, 17, "#b8e0d2", 44, "999px"],
   [
-    74,
-    242,
+    79,
+    239,
     30,
     22,
     "#8971f0",
@@ -100,8 +100,8 @@ const deliveryConfetti: readonly DeliveryConfettiPiece[] = [
   ],
   [14, 243, 25, 23, "#5e41e9", -18, "70% 30% 70% 30%"],
   [
-    308,
-    255,
+    315,
+    251,
     18,
     12,
     "#44ae86",
@@ -134,10 +134,10 @@ const deliveryConfetti: readonly DeliveryConfettiPiece[] = [
     "polygon(29px 0px,30px 0px,27px 4px,24px 7px,21px 10px,19px 13px,16px 16px,13px 19px,10px 22px,8px 25px,4px 28px,3px 25px,1px 24px,0px 22px,0px 21px,2px 18px,5px 15px,9px 12px,14px 9px,19px 6px,24px 3px)",
   ],
 
-  [263, 300, 27, 22, "#e8affb", 20, "50% 55% 45% 50%"],
+  [270, 300, 27, 22, "#e8affb", 20, "50% 55% 45% 50%"],
   [
-    261,
-    309,
+    259,
+    311,
     24,
     26,
     "#5434ec",
@@ -145,7 +145,7 @@ const deliveryConfetti: readonly DeliveryConfettiPiece[] = [
     undefined,
     "polygon(14px 0px,24px 6px,20px 12px,16px 18px,9px 26px,0px 20px)",
   ],
-  [29, 310, 4, 31, "#816de0", -28, "2px"],
+  [29, 314, 4, 31, "#816de0", -28, "2px"],
   [116, 317, 10, 25, "#e8adfc", 5, "999px"],
   [
     245,
@@ -183,8 +183,8 @@ const deliveryConfetti: readonly DeliveryConfettiPiece[] = [
   ],
   [360, 363, 5, 27, "#5b3de5", -6, "1px"],
   [
-    371,
-    375,
+    369,
+    377,
     22,
     16,
     "#7fc9ac",
@@ -205,9 +205,9 @@ const deliveryConfetti: readonly DeliveryConfettiPiece[] = [
     "polygon(33px 0px,30px 4px,26px 8px,23px 12px,17px 16px,10px 20px,0px 26px,7px 17px,10px 14px,14px 10px,20px 6px,28px 2px)",
   ],
   [43, 124, 16, 24, "#944de9", -20, "100% 0 100% 0"],
-  [182, 409, 13, 6, "#c365fa", -10, "100% 0 100% 0"],
-  [276, 411, 19, 39, "#f06b30", -29, "50%"],
-  [250, 448, 26, 15, "#b8d92a", 8, "50%"],
+  [174, 410, 13, 6, "#c365fa", -10, "100% 0 100% 0"],
+  [279, 411, 19, 39, "#f06b30", -29, "50%"],
+  [245, 448, 26, 15, "#b8d92a", 8, "50%"],
   [
     331,
     453,
@@ -219,7 +219,7 @@ const deliveryConfetti: readonly DeliveryConfettiPiece[] = [
     "polygon(0 56%, 60% 0, 100% 62%, 42% 100%)",
   ],
   [266, 460, 25, 9, "#278e43", -4, "100% 0 100% 0"],
-  [56, 464, 18, 25, "#009b67", -9, undefined, "polygon(0 0, 100% 56%, 0 100%)"],
+  [58, 462, 18, 25, "#009b67", -9, undefined, "polygon(0 0, 100% 56%, 0 100%)"],
 ];
 export function DeliveryConfetti() {
   return (
