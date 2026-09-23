@@ -41,6 +41,39 @@ async function capture(page: Page, name: string) {
   await page.screenshot({ path: test.info().outputPath(`${name}.png`) });
 }
 
+test("payment processing hides the captured close control at mobile widths", async ({
+  page,
+}) => {
+  await prepare(page, "/checkout?store=kitsch");
+  const pay = page.getByRole("button", { name: /Pay now \$10\.82/ });
+  const close = page.getByRole("link", { name: "Close checkout", exact: true });
+  await expect(pay).toBeEnabled();
+  await expect(close).toBeVisible();
+
+  await pause(page);
+  await pay.click();
+  await page.clock.fastForward(800);
+  await expect(page.locator("main.source-checkout")).toHaveAttribute(
+    "aria-busy",
+    "true",
+  );
+  await expect(page.locator(".processing-label")).toHaveAttribute(
+    "data-processing-caption",
+    "true",
+  );
+
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    await expect(close).toBeHidden();
+  }
+
+  await page.clock.fastForward(400);
+  await expect(
+    page.getByRole("dialog", { name: "Payment service is not connected" }),
+  ).toBeVisible();
+  await expect(close).toBeVisible();
+});
+
 test("captured review resolves its rows and shelves before enabling payment", async ({
   page,
 }) => {
