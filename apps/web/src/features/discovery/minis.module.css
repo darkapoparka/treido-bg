@@ -1024,6 +1024,14 @@
   line-height: 21px;
   font-weight: 600;
 }
+.gift :global([data-gift-step="5"] > .gift-message) {
+  color: #333;
+  opacity: 0.999;
+}
+.gift :global([data-gift-step="5"]) {
+  position: relative;
+  top: -3px;
+}
 .gift .giftWelcome > p {
   margin: 0;
   font: inherit;
@@ -1186,14 +1194,6 @@
   font-size: 11px;
   line-height: 16px;
   text-decoration: underline;
-}
-.giftExample {
-  display: block;
-  margin-top: 7px;
-  color: #818181;
-  font-size: 10px;
-  line-height: 14px;
-  font-weight: 400;
 }
 .gift :global(.gift-results) {
   gap: 12px;

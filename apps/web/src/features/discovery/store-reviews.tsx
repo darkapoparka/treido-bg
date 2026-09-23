@@ -184,7 +184,7 @@ export function StoreReviews() {
             </footer>
             {reported[review.id] && (
               <small className="review-reported-label">
-                You reported this review &#183; local preview
+                You reported this review
               </small>
             )}
           </article>

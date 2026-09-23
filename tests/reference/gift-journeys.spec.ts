@@ -149,6 +149,9 @@ test("Gift's captured loading states resolve to the right products without submi
   await expect(phase(page, "results")).toBeVisible();
   await expect(page.locator(".gift-result-row")).toHaveCount(3);
   await expect(page.locator(".gift-result-row img")).toHaveCount(3);
+  await expect(
+    page.getByText("Recorded gift example", { exact: true }),
+  ).toHaveCount(0);
   const resultGeometry = await giftResultGeometry(page);
   expect(resultGeometry.gaps).toEqual([12, 12]);
   expect(resultGeometry.firstTop).toBeGreaterThanOrEqual(222);

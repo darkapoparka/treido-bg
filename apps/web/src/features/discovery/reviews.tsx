@@ -260,7 +260,7 @@ export function Reviews({
           </footer>
           {reported[review.id] && (
             <small className="review-reported-label">
-              You reported this review · local preview
+              You reported this review
             </small>
           )}
         </article>

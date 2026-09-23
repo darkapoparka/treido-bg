@@ -1567,9 +1567,6 @@ export function GiftSense({ catalog }: { catalog: Catalog }) {
                     He’s a thoughtful, tech-loving guy who enjoys quiet
                     creativity and outdoor fun, so these picks balance his
                     passions and offer comfort and inspiration.
-                    <small className={styles.giftExample}>
-                      Recorded gift example
-                    </small>
                   </div>
                   <div className="gift-results">
                     {products.map((product) => (
