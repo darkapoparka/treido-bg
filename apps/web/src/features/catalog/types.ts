@@ -23,6 +23,13 @@ export type Product = Readonly<{
   detail?: Readonly<{
     /** Merchant rating displayed in this product's captured source history. */
     merchantRatingCount?: string;
+    merchantLogoOutline?: boolean;
+    promotionIcon?: "plain-bag";
+    /** Display-only merchant snapshot behind the captured report notes. */
+    reportNotesMerchant?: Readonly<{
+      ratingCount: string;
+      logoOutline: boolean;
+    }>;
     lowStock?: boolean;
     arrivalLabel?: string;
     promotionTerms?: string;

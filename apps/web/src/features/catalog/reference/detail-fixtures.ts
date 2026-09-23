@@ -20,6 +20,7 @@ export const detailProducts: readonly Product[] = [
       lowStock: true,
       arrivalLabel: "Arrives as soon as Wed, Jul 29",
       promotionTerms: "Applied at checkout. Ends Aug 4",
+      promotionIcon: "plain-bag",
       markdownLabel: "30% off",
       completeDescription: true,
     },
@@ -54,7 +55,20 @@ export function productDetailProjection(
       product.id === "shea-butter"
         ? {
             ...product,
-            detail: { ...product.detail, merchantRatingCount: "195K" },
+            detail: {
+              ...product.detail,
+              merchantRatingCount: "195K",
+              // Flow 38/004-005 records a later merchant snapshot. Its cause
+              // is not captured; reporting does not change store statistics.
+              ...(scenario === "product-reporting"
+                ? {
+                    reportNotesMerchant: {
+                      ratingCount: "195.3K",
+                      logoOutline: false,
+                    },
+                  }
+                : {}),
+            },
           }
         : product,
     );
@@ -69,6 +83,8 @@ export function productDetailProjection(
             ...product.detail,
             arrivalLabel: "Arrives as soon as Sun, Aug 2",
             promotionTerms: "Applied at checkout",
+            promotionIcon: "plain-bag",
+            merchantLogoOutline: false,
           },
         }
       : product,

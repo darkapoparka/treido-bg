@@ -15,11 +15,13 @@ test("Saved collection returns to its stable tile and source scroll through dock
   await page.goto("/saved");
   const tile = page.getByRole("button", { name: "Private Favs", exact: true });
   await expect(tile).toBeVisible();
+  await expect(tile).toBeEnabled();
   await tile.evaluate((element) => {
     window.scrollTo({ top: 100, behavior: "instant" });
     (element as HTMLElement).focus({ preventScroll: true });
   });
   const y = await page.evaluate(() => scrollY);
+  await expect(tile).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/collection=source-favs/);
   await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);

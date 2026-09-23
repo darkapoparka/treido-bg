@@ -612,6 +612,10 @@
 .support-chat-page:has(.support-typing) .support-chat-composer {
   height: 54px;
 }
+.support-chat-composer:has(.support-send) {
+  height: 66px;
+  padding-right: 8px;
+}
 .support-chat-composer textarea {
   flex: 1;
   min-width: 0;

@@ -307,12 +307,14 @@ export function ProductOptions({
   open,
   onClose,
   onReopen,
+  onReportNotesChange,
 }: {
   storeId?: string;
   productId?: string;
   open: boolean;
   onClose: () => void;
   onReopen: () => void;
+  onReportNotesChange?: (open: boolean) => void;
 }) {
   const router = useRouter(),
     state = useDiscovery();
@@ -341,6 +343,9 @@ export function ProductOptions({
     },
   });
   const view = flow.stage;
+  useEffect(() => {
+    onReportNotesChange?.(open && view === "notes");
+  }, [open, view, onReportNotesChange]);
   useEffect(() => {
     if (!open) return;
     if (view === "menu" && previousView.current !== "menu") {

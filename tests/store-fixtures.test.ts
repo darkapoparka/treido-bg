@@ -53,7 +53,7 @@ describe("recorded KITSCH product-entry snapshots", () => {
     expect(kitsch).not.toHaveProperty("promotionSavings");
   });
 
-  it("projects only the later save-entry labels and retains canonical prices and stock", () => {
+  it("projects the later save-entry presentation and retains canonical prices and stock", () => {
     const name = "kitsch-product-saving-offer";
     const products = referenceCatalog.products;
     const shea = products.find((product) => product.id === "shea-butter")!;
@@ -66,6 +66,8 @@ describe("recorded KITSCH product-entry snapshots", () => {
         ...shea.detail,
         arrivalLabel: "Arrives as soon as Sun, Aug 2",
         promotionTerms: "Applied at checkout",
+        promotionIcon: "plain-bag",
+        merchantLogoOutline: false,
       },
     });
     expect(savedEntry.price).toBe(shea.price);

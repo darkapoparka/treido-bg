@@ -59,6 +59,14 @@ export function ProductDetail({
     [name, setName] = useState(""),
     [toast, setToast] = useState(false),
     [subscription, setSubscription] = useState(false);
+  const [reportNotesOpen, setReportNotesOpen] = useState(false);
+  const reportMerchant = reportNotesOpen
+    ? product.detail?.reportNotesMerchant
+    : undefined;
+  const merchantRatingCount =
+    reportMerchant?.ratingCount ?? product.detail?.merchantRatingCount;
+  const merchantLogoOutline =
+    reportMerchant?.logoOutline ?? product.detail?.merchantLogoOutline;
   const pickerSubmitting = useRef(false);
   const pickerFlow = useSheetStages<"picker" | "create">({
     open: picker,
@@ -322,6 +330,7 @@ export function ProductDetail({
     <ShopSurface
       className={`shop-page product-page ${cart ? "cart-visible" : ""} ${photos.length ? "" : styles.detailsOnly}`}
       data-product-id={product.id}
+      data-merchant-outline={merchantLogoOutline === false ? "none" : undefined}
       data-price-tip={priceAlertTip ? "visible" : "dismissed"}
       onPointerDownCapture={() => {
         if (priceAlertTip) setPriceAlertTip(false);
@@ -345,8 +354,8 @@ export function ProductDetail({
         {store && (
           <StoreRow
             store={
-              product.detail?.merchantRatingCount
-                ? { ...store, ratingCount: product.detail.merchantRatingCount }
+              merchantRatingCount
+                ? { ...store, ratingCount: merchantRatingCount }
                 : store
             }
             onMore={() => setOptions(true)}
@@ -444,7 +453,7 @@ export function ProductDetail({
               onClick={() => setDetail("Offer details")}
             >
               <img
-                src={`/api/reference-media/${product.id === "midi-shirtdress" ? "dress-deal-tag" : "deal-tag"}`}
+                src={`/api/reference-media/${product.detail?.promotionIcon === "plain-bag" ? "dress-deal-tag" : "deal-tag"}`}
                 alt=""
               />
               <span>
@@ -787,6 +796,7 @@ export function ProductDetail({
         open={options}
         onClose={() => setOptions(false)}
         onReopen={() => setOptions(true)}
+        onReportNotesChange={setReportNotesOpen}
       />
       <Sheet
         open={gallery !== null}

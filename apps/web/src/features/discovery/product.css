@@ -867,6 +867,9 @@
   outline: 1px solid #5433eb;
   outline-offset: 2px;
 }
+.product-page[data-merchant-outline="none"] .product-underlay > .store-row img {
+  outline: none;
+}
 .product-page .product-gallery img,
 .product-page .product-underlay .product-grid .product-media img {
   filter: brightness(0.96);
