@@ -1,10 +1,10 @@
 # Current project status
 
-Updated 2026-09-23. This is the session entry point, not a second backlog.
+Updated 2026-09-24. This is the session entry point, not a second backlog.
 
 ## Resume handoff
 
-Continue in the existing `J:\treido-bg` checkout on **main**. The final capture ran on HEAD **48a4cc5**; its reviewed application source tree is **aff7dd8** (including source fixes **2302ad1** and **1042422**). The run `20260923-final-session-parity-audit` used the verified preview at `http://127.0.0.1:6412` and Chrome 153, and scored **424/424 frames / 97/97 flows**, with zero failed frames or replay/browser errors, **2.521205522% mean MAE**, **7.604345516% mean bad pixels**, **80 numerical candidates**, and **344** above at least one threshold. Compared with `20260923-final-parity-verified`, mean changes are **-0.000000873 MAE points** and **-0.000454823 bad-pixel points**; top-20 ranking is unchanged. The final-source reference suite passes **434/434 tests across 76 files**, with Search/photo **18/18** at 320/393/430 and order siblings **42/42**. Fresh direct pairs f032-002 and f063-002 and the previously ranked sibling pairs show no further correction supported by local evidence. See the [current implementation checkpoint](../shop-implementation-map.md#current-source-checkpoint) for exact fixes, run artifacts and limits. Source acceptance remains **0/97**; this does not establish 1:1 approval.
+Continue in the existing J:\treido-bg checkout on main. Source commit 9daf340 corrects processing Close visibility from frozen frame f021-009 and adds a 320/393/430px regression. Complete run 20260924-payment-processing-close on Chrome 154.0.8037.57, Node 24.19.0 and source HEAD 9daf340a586acfd15f8ec399081e5251447a7fee scores 424/424 frames / 97/97 flows, with zero failed/replay/browser-error frames, 2.521149550% mean MAE, 7.604741752% mean bad pixels, 80 numerical candidates and 344 above at least one threshold. Latest ranked top 20 were directly reviewed; remaining differences are small raster/alignment changes and confetti positions. The full reference suite passes 435/435 tests across 76 files in 15.9 minutes. Earlier Search/photo 18/18 and order siblings 42/42 remain valid. See the implementation checkpoint for pairs, comparison, transient failure, checks and source limits. Source acceptance remains 0/97; owner approval has not been recorded.
 
 The earlier Beauty implementation is commit **7a5789a**; subsequent measured fits are recorded in the implementation map. Remote `main` was independently rewritten to an import history during that session; merge **3ec2256** preserved both histories with an unchanged application tree and was pushed to `origin/main`. The fully merged superseded `wip/shop-parity-fitting-20260913` branch was removed locally and on origin; only `main` and `astra-pro` remain. The three pre-existing untracked Inter probe fonts were left untouched.
 
@@ -220,7 +220,7 @@ Shopify reference acquisition remains separately unresolved in [its source recor
 
 ## Next action
 
-The ranked source/live audit is complete at **48a4cc5**. The final 424-frame run and 434-test suite pass on application source **aff7dd8**; direct review found no additional locally supported correction. The next concrete action is owner/design review of the remaining named source exceptions and acceptance decisions (currently **0/97**). Exact missing media hashes, unavailable Chemical/Pura motion, dock-obscured notification title and paid Mobbin access are recorded in the [current implementation checkpoint](../shop-implementation-map.md#current-source-checkpoint); preserve those limits without inventing source content or bypassing access. For publication, use the per-command Credential Manager helper and push only after confirming `origin/main` is an ancestor of `HEAD`.
+The latest source-backed correction is committed on main and its complete capture and 435-test suite pass. The next action is owner/design review of the frozen/live evidence and explicit acceptance decisions; none of the 97 flows is marked accepted. Exact missing media, unavailable Chemical/Pura motion and dock-obscured notification title are in the implementation checkpoint. Mobbin remains paid and was not used. Do not invent source content or bypass these evidence limits.
 
 ## Dated setup and integration evidence
 
