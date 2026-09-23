@@ -503,6 +503,12 @@
   overflow-y: auto;
   scrollbar-width: none;
 }
+.support-chat-page:not(:has(.support-message.user)) .support-chat-scroll {
+  margin-bottom: 27px;
+}
+.support-chat-page:has(.support-typing) .support-chat-scroll {
+  margin-bottom: 13px;
+}
 .support-chat-messages {
   min-height: 100%;
   display: flex;
@@ -541,6 +547,9 @@
   opacity: 0.42;
 }
 .support-message.response {
+  border-bottom-right-radius: 8px;
+}
+.support-chat-messages > .support-message:not(.user):not(.response) {
   border-bottom-right-radius: 8px;
 }
 .support-message.response p + p {
@@ -599,6 +608,9 @@
   border: 1px solid #dedede;
   border-radius: 25px;
   background: #fff;
+}
+.support-chat-page:has(.support-typing) .support-chat-composer {
+  height: 54px;
 }
 .support-chat-composer textarea {
   flex: 1;

@@ -8,6 +8,66 @@ const row = (page: Page, id: string) =>
 const button = (page: Page, name: string) =>
   page.getByRole("button", { name, exact: true });
 
+test("review previews retain their last partial word and full text through resize and expansion", async ({
+  page,
+}) => {
+  await open(page, product);
+  const review = row(page, "juanita");
+  const paragraph = review.locator(":scope > p");
+  const body =
+    "I love the body soap you sent me and I use the liquid shampoo. I love it but it’s just great for my hair and everything I’ve had from you for all my hair products and all my ties and all I have loved everything.";
+  await expect(paragraph).toHaveText(body);
+  // At the source width, part of the final word belongs on the fourth line.
+  // A whole-word clamp incorrectly moves all of it beyond the visible box.
+  await expect
+    .poll(() =>
+      paragraph.evaluate((element) => {
+        let offset = element.textContent!.lastIndexOf("everything");
+        const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+        while (walker.nextNode()) {
+          const node = walker.currentNode;
+          if (offset < node.textContent!.length) {
+            const range = document.createRange();
+            range.setStart(node, offset);
+            range.setEnd(node, offset + 1);
+            return (
+              range.getBoundingClientRect().top <
+              element.getBoundingClientRect().bottom
+            );
+          }
+          offset -= node.textContent!.length;
+        }
+        return false;
+      }),
+    )
+    .toBe(true);
+  for (const width of [320, 430, 393]) {
+    await page.setViewportSize({ width, height: 793 });
+    await expect(paragraph).toHaveText(body);
+    await expect
+      .poll(() =>
+        paragraph.evaluate((element) => {
+          const lineHeight = Number.parseFloat(
+            getComputedStyle(element).lineHeight,
+          );
+          return element.getBoundingClientRect().height <= lineHeight * 4 + 1;
+        }),
+      )
+      .toBe(true);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
+  await review.getByRole("button", { name: "Read more", exact: true }).click();
+  await expect(paragraph).toHaveText(body);
+  await expect(paragraph).not.toHaveClass("review-truncated");
+  await review.getByRole("button", { name: "Read less", exact: true }).click();
+  await expect(paragraph).toHaveClass("review-truncated");
+  await expect(paragraph).toHaveText(body);
+});
+
 async function open(page: Page, path: string) {
   await useReferenceScenario(page, "home-welcome");
   await page.goto(path);

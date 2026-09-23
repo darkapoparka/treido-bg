@@ -7,23 +7,9 @@ import type { Catalog } from "../catalog/types";
 import { IconButton, ProductCard } from "./components";
 import { KitschWordmark } from "./kitsch-wordmark";
 import { useDiscovery } from "./state";
+import { recentStoreCover } from "./recent-store-media";
 import styles from "./search-entry.module.css";
 import photoStyles from "./search-photo.module.css";
-
-const recentCover: Record<string, string> = {
-  kitsch: "recent-kitsch-cover",
-  pura: "recent-pura-cover",
-  drmtlgy: "recent-drmtlgy-photo",
-  "loaded-tea": "recent-loaded-logo",
-};
-const homeRecentCover: Record<string, string> = {
-  drmtlgy: "home-recent-drmtlgy-cover",
-};
-function getRecentCover(storeId: string, surface: "search" | "home") {
-  return surface === "home"
-    ? (homeRecentCover[storeId] ?? recentCover[storeId])
-    : recentCover[storeId];
-}
 
 export function RecentSearchItems({
   catalog,
@@ -89,24 +75,24 @@ export function RecentSearchItems({
             />
           ) : store ? (
             <SourceLink
-              className={`${styles.store} ${getRecentCover(store.id, surface) ? styles.capturedStore : ""} ${store.id === "loaded-tea" ? styles.logoStore : ""} ${store.id === "drmtlgy" && surface !== "home" ? styles.partialStore : ""}`}
+              className={`${styles.store} ${recentStoreCover(store.id, surface) ? styles.capturedStore : ""} ${store.id === "loaded-tea" ? styles.logoStore : ""} ${store.id === "drmtlgy" && surface !== "home" ? styles.partialStore : ""}`}
               data-recent-store={store.id}
               href={`/stores/${store.id}`}
               aria-label={`Visit ${store.name}`}
             >
-              {(getRecentCover(store.id, surface) ||
+              {(recentStoreCover(store.id, surface) ||
                 store.coverImage ||
                 store.logo) && (
                 <img
                   src={
-                    getRecentCover(store.id, surface)
-                      ? `/api/reference-media/${getRecentCover(store.id, surface)}`
+                    recentStoreCover(store.id, surface)
+                      ? `/api/reference-media/${recentStoreCover(store.id, surface)}`
                       : store.coverImage || store.logo
                   }
                   alt=""
                 />
               )}
-              {(!getRecentCover(store.id, surface) ||
+              {(!recentStoreCover(store.id, surface) ||
                 (store.id === "drmtlgy" && surface !== "home")) && (
                 <span className={styles.wordmark} aria-hidden="true">
                   {store.id === "kitsch" ? <KitschWordmark /> : store.name}

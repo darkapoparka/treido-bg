@@ -819,6 +819,9 @@
   line-height: 20px;
   resize: none;
 }
+.product-options-sheet textarea:not(:placeholder-shown) {
+  padding-top: 7px;
+}
 .product-report-optional {
   flex: none;
   margin-top: 8px;
@@ -830,6 +833,13 @@
 /* Product-only fitting from the ordered source17–20 and32–39 pairs. */
 .product-page {
   background: #fdfdfd;
+}
+.product-page .store-row > .icon-button[aria-label="More options"] {
+  background: transparent;
+}
+.product-page .store-row > .icon-button[aria-label="More options"] svg {
+  stroke-width: 4;
+  transform: translateX(-5px);
 }
 /* The captured product content fades beneath the existing floating dock.
    This layer never intercepts a product, purchase action, or navigation control. */

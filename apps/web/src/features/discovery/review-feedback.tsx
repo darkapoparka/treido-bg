@@ -6,6 +6,48 @@ import { useSheetStages } from "./sheet-stages";
 
 export { ReviewStars } from "./rating-stars";
 
+function measureReview(element: HTMLParagraphElement, body: string) {
+  const style = getComputedStyle(element);
+  const lines = Number.parseInt(style.webkitLineClamp, 10);
+  const lineHeight = Number.parseFloat(style.lineHeight);
+  const clone = element.cloneNode(false) as HTMLParagraphElement;
+  clone.removeAttribute("id");
+  clone.setAttribute("aria-hidden", "true");
+  clone.textContent = body;
+  Object.assign(clone.style, {
+    position: "absolute",
+    visibility: "hidden",
+    pointerEvents: "none",
+    width: `${element.getBoundingClientRect().width}px`,
+    display: "block",
+    height: "auto",
+    maxHeight: "none",
+    webkitLineClamp: "unset",
+  });
+  element.after(clone);
+  try {
+    const overflows = clone.scrollHeight > element.clientHeight + 1;
+    let split: [number, number] | null = null;
+    if (overflows && lines > 0 && lineHeight > 0 && clone.firstChild) {
+      const range = document.createRange();
+      let firstLine: number | undefined;
+      for (const word of body.matchAll(/\S+/gu)) {
+        range.setStart(clone.firstChild, word.index);
+        range.setEnd(clone.firstChild, word.index + 1);
+        const top = range.getBoundingClientRect().top;
+        firstLine ??= top;
+        if (top - firstLine >= lines * lineHeight - 1) {
+          split = [word.index, word.index + word[0].length];
+          break;
+        }
+      }
+    }
+    return { overflows, split };
+  } finally {
+    clone.remove();
+  }
+}
+
 // Whether a review needs expansion depends on rendered lines, not character
 // count. Keep its paragraph mounted while measuring and opening other sheets.
 export function ReviewBody({
@@ -18,6 +60,10 @@ export function ReviewBody({
   onToggle: () => void;
 }) {
   const [overflows, setOverflows] = useState(false);
+  const [breakWord, setBreakWord] = useState<{
+    body: string;
+    range: [number, number] | null;
+  }>({ body, range: null });
   const ref = useRef<HTMLParagraphElement>(null);
   const id = useId();
   useEffect(() => {
@@ -25,7 +71,16 @@ export function ReviewBody({
     if (!element || expanded) return;
     let active = true;
     const measure = () => {
-      if (active) setOverflows(element.scrollHeight > element.clientHeight + 1);
+      if (!active) return;
+      const { overflows, split } = measureReview(element, body);
+      setOverflows(overflows);
+      setBreakWord((previous) =>
+        previous.body === body &&
+        previous.range?.[0] === split?.[0] &&
+        previous.range?.[1] === split?.[1]
+          ? previous
+          : { body, range: split },
+      );
     };
     const frame = requestAnimationFrame(measure);
     // A clamped paragraph can keep the same box height while font metrics alter
@@ -40,10 +95,23 @@ export function ReviewBody({
     };
   }, [body, expanded]);
   if (!body) return null;
+  const split = !expanded && breakWord.body === body ? breakWord.range : null;
   return (
     <>
       <p ref={ref} id={id} className={expanded ? "" : "review-truncated"}>
-        {body}
+        {split ? (
+          <>
+            {body.slice(0, split[0])}
+            {/* Only the final overflowing word may break within a word, as in
+                the native capture. Earlier wrapping and copied text stay intact. */}
+            <span style={{ wordBreak: "break-all" }}>
+              {body.slice(split[0], split[1])}
+            </span>
+            {body.slice(split[1])}
+          </>
+        ) : (
+          body
+        )}
       </p>
       {(expanded || overflows) && (
         <button

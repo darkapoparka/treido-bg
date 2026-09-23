@@ -873,6 +873,10 @@
 }
 
 /* One recent-activity rail for products, stores and Minis (flow 69). */
+.profile-overview:has(.profile-recent-rail + .profile-settings-panel)
+  .profile-recent-heading {
+  margin-bottom: 10px;
+}
 .profile-recent-heading > a,
 .profile-order-heading > a {
   display: inline-flex;
@@ -930,22 +934,32 @@
   line-height: 13px;
 }
 .profile-recent-rail .save-button {
-  width: 40px;
-  height: 40px;
-  bottom: 8px;
-  right: 8px;
+  width: 32px;
+  height: 32px;
+  bottom: 12px;
+  right: 12px;
   background: #999a96b8;
   color: white;
 }
 .profile-recent-rail .save-button svg {
-  width: 22px;
-  height: 22px;
+  width: 16px;
+  height: 16px;
 }
 .profile-recent-store::after {
   content: "";
   position: absolute;
   inset: 0;
   background: #0005;
+}
+.profile-recent-store[data-captured-cover]::after {
+  content: none;
+}
+.profile-recent-store[data-captured-cover] {
+  border: 1px solid #d8d8d8;
+}
+.profile-recent-store[data-captured-cover] > img {
+  width: 100%;
+  height: 100%;
 }
 .profile-recent-store > span {
   position: absolute;
@@ -1106,6 +1120,9 @@
 
 .profile-overview .profile-recent-rail + .profile-payment-heading {
   margin-top: 42px;
+}
+.profile-overview .profile-recent-rail + .profile-settings-panel {
+  margin-top: 45px;
 }
 
 /* Wallet and settings share the captured compact text scale. */

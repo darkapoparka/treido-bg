@@ -733,6 +733,11 @@ const media: Record<
     circularOcclusions: [[146, 27, 17]],
     photoRadius: 19,
   },
+  "profile-recent-kitsch-cover": {
+    file: "flows/cf77c541-39be-418c-91ef-2ca98f8d9f73/004.webp",
+    rect: [17, 116, 110, 110],
+    photoRadius: 23,
+  },
   "recent-pura-cover": {
     file: "flows/1cb8d743-c728-4317-8c60-1cc3c2761f8c/002.webp",
     rect: [202, 493, 172, 172],

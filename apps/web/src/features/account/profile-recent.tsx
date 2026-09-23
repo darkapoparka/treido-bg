@@ -7,6 +7,7 @@ import { Icon } from "../discovery/icons";
 import { KitschWordmark } from "../discovery/kitsch-wordmark";
 import { findMini, miniHref } from "../discovery/mini-model";
 import { useDiscovery } from "../discovery/state";
+import { recentStoreCover } from "../discovery/recent-store-media";
 
 export function ProfileRecent({ catalog }: { catalog: Catalog }) {
   const state = useDiscovery();
@@ -54,20 +55,25 @@ export function ProfileRecent({ catalog }: { catalog: Catalog }) {
           }
           const store = catalog.stores.find((s) => s.id === item.id);
           if (!store) return null;
-          const image =
-            store.coverImage ??
-            catalog.products.find((p) => p.storeId === store.id)?.images[0];
+          const capturedCover = recentStoreCover(store.id, "profile");
+          const image = capturedCover
+            ? `/api/reference-media/${capturedCover}`
+            : (store.coverImage ??
+              catalog.products.find((p) => p.storeId === store.id)?.images[0]);
           return (
             <Link
               key={`store-${item.id}`}
               href={`/stores/${store.id}`}
               className="profile-recent-store"
+              data-captured-cover={capturedCover || undefined}
               aria-label={`Visit ${store.name}`}
             >
               {image && <img src={image} alt="" />}
-              <span>
-                {store.id === "kitsch" ? <KitschWordmark /> : store.name}
-              </span>
+              {!capturedCover && (
+                <span>
+                  {store.id === "kitsch" ? <KitschWordmark /> : store.name}
+                </span>
+              )}
             </Link>
           );
         })}
