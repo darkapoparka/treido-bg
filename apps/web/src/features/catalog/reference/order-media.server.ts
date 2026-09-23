@@ -5,7 +5,54 @@ import sharp from "sharp";
 
 let tirePhoto: Promise<Buffer> | undefined;
 let orderBrandMark: Promise<Buffer> | undefined;
-let manualParcelPhoto: Promise<Buffer> | undefined;
+const parcelPhotos = new Map<string, Promise<Buffer>>();
+
+async function isolateEventParcel(input: Buffer) {
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const seen = new Uint8Array(info.width * info.height);
+  const queue: number[] = [];
+  const visit = (x: number, y: number) => {
+    if (x < 0 || y < 0 || x >= info.width || y >= info.height) return;
+    const pixel = y * info.width + x;
+    if (seen[pixel]) return;
+    seen[pixel] = 1;
+    const offset = pixel * 4;
+    const channels = [data[offset], data[offset + 1], data[offset + 2]];
+    if (
+      Math.min(...channels) < 239 ||
+      Math.max(...channels) - Math.min(...channels) > 8
+    )
+      return;
+    data[offset + 3] = 0;
+    queue.push(pixel);
+  };
+  // Remove only the edge-connected tile matte. The white package label is
+  // enclosed by the parcel, so it remains intact (unlike a global color key).
+  for (let x = 0; x < info.width; x++) {
+    visit(x, 0);
+    visit(x, info.height - 1);
+  }
+  for (let y = 0; y < info.height; y++) {
+    visit(0, y);
+    visit(info.width - 1, y);
+  }
+  for (let cursor = 0; cursor < queue.length; cursor++) {
+    const x = queue[cursor] % info.width,
+      y = Math.floor(queue[cursor] / info.width);
+    visit(x - 1, y);
+    visit(x + 1, y);
+    visit(x, y - 1);
+    visit(x, y + 1);
+  }
+  return sharp(data, {
+    raw: { width: info.width, height: info.height, channels: 4 },
+  })
+    .webp({ lossless: true })
+    .toBuffer();
+}
 
 function readOrderBrandMark() {
   if (!orderBrandMark) {
@@ -93,9 +140,9 @@ function readTrackingMap(key: string, file: string) {
   return trackingMaps.get(key)!;
 }
 
-function readManualParcelPhoto() {
-  if (!manualParcelPhoto) {
-    manualParcelPhoto = (async () => {
+function readParcelPhoto(kind: "manual" | "event") {
+  if (!parcelPhotos.has(kind)) {
+    const job = (async () => {
       // Flow 68 exposes the complete package photograph at 72 CSS pixels.
       // Extract only that photographic tile; every card, label and control
       // surrounding it remains live React/CSS.
@@ -109,21 +156,24 @@ function readManualParcelPhoto() {
       if (!metadata.width)
         throw new Error("Manual parcel photograph has no width");
       const scale = metadata.width / 393;
-      return sharp(input)
-        .extract({
-          left: Math.round(289 * scale),
-          top: Math.round(137 * scale),
-          width: Math.round(72 * scale),
-          height: Math.round(72 * scale),
-        })
-        .webp({ quality: 95 })
-        .toBuffer();
+      // The event variant keeps just the complete parcel and its shadow, not
+      // the surrounding gray tile. Its source contains no navigation/ring ink.
+      const [left, top, width, height] =
+        kind === "event" ? [292, 154, 66, 46] : [289, 137, 72, 72];
+      const crop = sharp(input).extract({
+        left: Math.round(left * scale),
+        top: Math.round(top * scale),
+        width: Math.round(width * scale),
+        height: Math.round(height * scale),
+      });
+      return kind === "event"
+        ? isolateEventParcel(await crop.png().toBuffer())
+        : crop.webp({ quality: 95 }).toBuffer();
     })();
-    void manualParcelPhoto.catch(() => {
-      manualParcelPhoto = undefined;
-    });
+    parcelPhotos.set(kind, job);
+    void job.catch(() => parcelPhotos.delete(kind));
   }
-  return manualParcelPhoto;
+  return parcelPhotos.get(kind)!;
 }
 
 // The same photograph appears twice. f063-002 shows its full lower edge above
@@ -131,7 +181,8 @@ function readManualParcelPhoto() {
 // identically aligned photograph in f061-006. No hidden pixels are generated.
 export function readOrderMedia(key: string): Promise<Buffer> | undefined {
   if (key === "order-brand-mark") return readOrderBrandMark();
-  if (key === "order-manual-parcel") return readManualParcelPhoto();
+  if (key === "order-manual-parcel") return readParcelPhoto("manual");
+  if (key === "order-event-parcel") return readParcelPhoto("event");
   if (Object.hasOwn(trackingMapFiles, key))
     return readTrackingMap(key, trackingMapFiles[key]);
   if (key !== "order-tire-trim-photo") return undefined;

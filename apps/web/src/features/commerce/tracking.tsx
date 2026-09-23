@@ -503,7 +503,7 @@ function Activity({
               ) : kind === "dot" ? (
                 <span />
               ) : (
-                <img src="/api/reference-media/parcel" alt="" />
+                <img src="/api/reference-media/order-event-parcel" alt="" />
               )}
             </i>
             <span>

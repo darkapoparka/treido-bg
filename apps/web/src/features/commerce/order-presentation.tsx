@@ -256,6 +256,10 @@ export function OrderRecommendations({ catalog }: { catalog: Catalog }) {
                   key={id}
                   product={{
                     ...item,
+                    title:
+                      id === "chocolate-body-bag"
+                        ? "Chocolate Body Wash Bar Bag"
+                        : item.title,
                     images:
                       id === "black-conditioner-bag"
                         ? [

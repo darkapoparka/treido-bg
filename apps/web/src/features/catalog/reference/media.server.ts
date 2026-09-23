@@ -447,20 +447,16 @@ const media: Record<
     file: "flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/010.webp",
     // Only the captured photographic header is available. Native navigation and
     // rating ink are removed and rendered as live DOM by the tracking surface.
-    rect: [17, 752, 352, 100],
-    occlusions: [[100, 2, 160, 58]],
-    lightTextOcclusions: [[283, 28, 69, 25]],
-    circularOcclusions: [
-      [29, 31, 30],
-      [100, 31, 30],
-      [260, 31, 30],
-    ],
+    rect: [17, 760, 352, 92],
+    roundedOcclusions: [[68, 3, 224, 59, 29.5]],
+    lightTextOcclusions: [[283, 20, 69, 25]],
+    circularOcclusions: [[29, 32, 30]],
     photoRadius: 28,
   },
   "order-inspired-next-fragment": {
     file: "flows/d3bf7c94-4d9e-4298-a255-eaf177f9efd1/010.webp",
     // The source reveals only this narrow leading edge of the next card.
-    rect: [377, 752, 16, 100],
+    rect: [377, 760, 16, 92],
   },
   "order-deal-blue-bag": {
     file: "flows/8f406a69-ad1c-4de8-a699-12aa504efb74/006.webp",

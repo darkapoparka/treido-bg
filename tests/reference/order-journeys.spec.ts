@@ -390,8 +390,8 @@ test("captured Amazon label tracking keeps a compact carrier handoff at mobile w
       heading.getBoundingClientRect().bottom
     );
   });
-  expect(recommendationGap).toBeGreaterThanOrEqual(8);
-  expect(recommendationGap).toBeLessThanOrEqual(10);
+  expect(recommendationGap).toBeGreaterThanOrEqual(12);
+  expect(recommendationGap).toBeLessThanOrEqual(14);
 
   const inspiredRail = page.locator("[data-order-inspired-rail]");
   const inspiredCard = page.locator("[data-order-inspired-card]");
@@ -444,14 +444,16 @@ test("captured Amazon label tracking keeps a compact carrier handoff at mobile w
   });
   expect(inspiredGeometry.headingTop).toBeGreaterThanOrEqual(667);
   expect(inspiredGeometry.headingTop).toBeLessThanOrEqual(671);
-  expect(inspiredGeometry.cardTop).toBeGreaterThanOrEqual(691);
-  expect(inspiredGeometry.cardTop).toBeLessThanOrEqual(695);
+  // Flow 61/010 photograph begins at source y760 (normalized y701).
+  // The preceding eight pixels are outside the photo, not its background.
+  expect(inspiredGeometry.cardTop).toBeGreaterThanOrEqual(699);
+  expect(inspiredGeometry.cardTop).toBeLessThanOrEqual(703);
   expect(inspiredGeometry.cardLeft).toBeGreaterThanOrEqual(16);
   expect(inspiredGeometry.cardLeft).toBeLessThanOrEqual(18);
   expect(inspiredGeometry.cardWidth).toBeGreaterThanOrEqual(351);
   expect(inspiredGeometry.cardWidth).toBeLessThanOrEqual(353);
-  expect(inspiredGeometry.cardHeight).toBeGreaterThanOrEqual(99);
-  expect(inspiredGeometry.cardHeight).toBeLessThanOrEqual(101);
+  expect(inspiredGeometry.cardHeight).toBeGreaterThanOrEqual(91);
+  expect(inspiredGeometry.cardHeight).toBeLessThanOrEqual(93);
   expect(inspiredGeometry.nextLeft).toBeGreaterThanOrEqual(376);
   expect(inspiredGeometry.nextLeft).toBeLessThanOrEqual(378);
   expect(inspiredGeometry.nextWidth).toBeGreaterThanOrEqual(15);

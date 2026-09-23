@@ -150,6 +150,9 @@ export const checkoutRecipes = {
       state(
         "captured-order-confirmation",
         [
+          // Isolated-frame replay did not take frame 9's screenshot, so its
+          // afterCapture hook has not run. Resume in either replay mode.
+          { type: "resumeClock" },
           visible("dialog", "Payment service is not connected"),
           click("link", "View captured source confirmation"),
           visible("heading", "Order confirmed"),
@@ -308,6 +311,7 @@ export const checkoutRecipes = {
           visible("dialog", "Payment service is not connected"),
           click("button", "Continue with saved payment method"),
           visible("heading", "Review & Pay"),
+          { type: "waitVisible", selector: '[data-review-stage="0"]' },
           top,
         ],
         {

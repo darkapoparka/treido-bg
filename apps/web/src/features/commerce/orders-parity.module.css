@@ -790,8 +790,8 @@
   height: 20px;
 }
 .activity :global(i) > img {
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 20px;
   object-fit: contain;
 }
 .activity :global(i) .amazonMark {
@@ -1782,10 +1782,17 @@
   min-height: 50px;
   padding: 13px 0;
   font-weight: 500;
+  gap: 12px;
 }
 .tracking :global(.tracking-action-panel) .action > svg {
   width: 22px;
   height: 22px;
+}
+.tracking:not(.manualTracking) :global(.tracking-action-panel) .action > svg {
+  width: 24px;
+  height: 24px;
+  margin-block: -1px;
+  transform: translateX(4px);
 }
 .inTransitTracking :global(.delivery-preview) {
   padding: 18px 16px 15px;
@@ -1825,6 +1832,7 @@
 }
 .labelTracking .recommendationHeading {
   margin-bottom: 9px;
+  transform: translateY(-4px);
 }
 .inTransitTracking .recommendationHeading.recommendationHeading {
   margin: 23px 0 12px;
@@ -1893,7 +1901,7 @@
   letter-spacing: -0.5px;
 }
 .tracking .inspiredHeading {
-  margin: 34px 0 1px;
+  margin: 34px 0 9px;
   font-size: 18px;
   line-height: 23px;
 }
@@ -1901,14 +1909,14 @@
   display: flex;
   gap: 8px;
   width: calc(100vw - 17px);
-  height: 100px;
+  height: 92px;
   margin-left: 1px;
   overflow: hidden;
 }
 .inspiredPartialCard {
   position: relative;
   flex: 0 0 calc(100vw - 41px);
-  height: 100px;
+  height: 92px;
   overflow: hidden;
   border-radius: 28px;
   background: linear-gradient(180deg, #888984 0%, #b5b9bb 72%, #e8eaeb 100%);
@@ -1922,7 +1930,7 @@
 }
 .inspiredPartialRating {
   position: absolute;
-  top: 37px;
+  top: 29px;
   right: 15px;
   z-index: 1;
   color: rgba(255, 255, 255, 0.58);
@@ -1934,7 +1942,7 @@
 }
 .inspiredPartialNext {
   flex: 0 0 16px;
-  height: 100px;
+  height: 92px;
   overflow: hidden;
 }
 
