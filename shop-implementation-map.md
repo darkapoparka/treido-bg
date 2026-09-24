@@ -4,6 +4,20 @@ Current checkout/branch policy is owned by [AGENTS.md](AGENTS.md); use [single-s
 
 ## Current source checkpoint
 
+### Final subpixel parity batch — 2026-09-24
+
+- Implementation commits: **4182287** and **fa98783** on `main`.
+- Canonical owners changed:
+  - `apps/web/src/features/discovery/following.css`: `.following-heading h1` and `.following-empty :is(h2, p, .primary)` receive `translate: 0 0.25px`.
+  - `apps/web/src/features/discovery/store.module.css`: `.information :global(.store-info-panel h2)` receives `translate: 0 -0.25px`.
+- These are source-measured raster-placement adjustments only. DOM semantics, selectable copy, routes, history, focus, persistence, fixtures, media and shared geometry are unchanged.
+- Retained scoped evidence: `20260924-following-store-info-retained`, nine overlapping frames, mean MAE delta **-0.032888982**. f005-002 improves **4.006414792 -> 3.980173606%**; f097-004 improves **2.661724539 -> 2.391963625%**. A 0.5px Following move and broader store-info text translations were rejected after sibling regressions.
+- Complete retained evidence: `20260924-final-subpixel-parity`, **424/424 frames**, **97/97 flows**, zero failed/non-scored frames, replay errors or browser errors, **2.516165989% mean MAE**, **4.838211548% worst-frame MAE**, and **-0.000711547 mean-MAE points** versus `20260924-final-photo-saved-parity`.
+- Interaction/regression evidence: `following.spec.ts` plus `storefront-journeys.spec.ts` pass **25/25**, covering real Saved/follow controls, Back/Forward, scroll and focus restoration, Escape, persistence, description wrapping, equal category columns and 320/393/430 containment. Exact-commit CI passes lint, Prettier, TypeScript, **136/136 units**, production web build and smoke.
+- The current cloud parity workflow stopped at the provenance boundary because external provider bytes no longer reproduce several allowlisted derivations and motion checksums. It preserved the known-good files and skipped build/capture rather than weakening hashes. The prior complete reference suite remains **437/437**; source acceptance remains **0/97**.
+- Remaining visual residuals are the ranked app-owned/source-boundary differences already recorded below, including the photo-answer and full-description families plus unavailable original media/motion and platform-owned surfaces. Do not call the reconstruction pixel-identical while those differences remain.
+
+
 Source commit **3d6e3fa** retains the canonical Search/photo and Saved collection components while correcting two source-measured surfaces. `.photoAnswer .assistant-composer > input` receives only `background: #fffffff9`; its 56px geometry, 36px bottom gap, focus behavior and routes are unchanged. `.saved-collection:has(.invite-collaborators)` uses a 17px Featured brands top gap only when `.saved-sheet[open]` is absent, so Collection options and confirmation dialogs retain the source-like 32px underlay spacing.
 
 Complete run `.qa/shop-parity/runs/20260924-final-photo-saved-parity/` replays **424/424 frames across 97/97 flows** at 393x793 in continuous-flow mode from Git HEAD **3d6e3fa92e5839c1f9a217faf7da73456e1cdf24**. All 424 rows are scored with zero replay or browser errors. Aggregate results are **2.516877536% mean MAE**, **7.599413875% mean bad pixels**, and **4.838211548% worst-frame MAE**. The formerly transient f096-004 now scores **3.122648%** in the complete run.
