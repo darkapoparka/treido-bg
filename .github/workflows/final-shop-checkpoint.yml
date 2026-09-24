@@ -1,0 +1,101 @@
+name: Final Shop checkpoint
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/final-shop-checkpoint.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: final-shop-checkpoint
+  cancel-in-progress: false
+
+jobs:
+  checkpoint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: main
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .node-version
+
+      - name: Record verified final checkpoint
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          status_path = Path("docs/STATUS.md")
+          status = status_path.read_text()
+          status_marker = "### 2026-09-24 final subpixel parity checkpoint"
+          status_block = r'''
+          ### 2026-09-24 final subpixel parity checkpoint
+
+          Remote `main` now contains implementation commits **4182287** (`Refine Following text parity`) and **fa98783** (`Refine store information heading parity`). They change only the canonical CSS owners: the empty Following heading, message and live primary action move **0.25px downward**, while captured store-information panel headings move **0.25px upward**. Text remains selectable and the controls remain real DOM. No route, fixture, product copy, media, source screenshot, mask, hash, replay recipe, threshold, acceptance record or protected probe font changed.
+
+          Same-runtime scoped run `20260924-following-store-info-retained` compares nine overlapping frames against `20260924-final-photo-saved-parity` and improves mean MAE by **0.032888982 points**. Empty Following f005-002 improves **4.006414792 -> 3.980173606%**, and store-information reviews f097-004 improves **2.661724539 -> 2.391963625%**; the other retained siblings are unchanged within replay precision. Broader text shifts and a larger Following shift were explicitly rejected because they regressed sibling states.
+
+          Continuous local run `20260924-final-subpixel-parity` captures **424/424 ordered frames across 97/97 flows**, with zero failed/non-scored frames, replay errors or browser errors. Mean MAE is **2.516165989%**, an improvement of **0.000711547 points** over the preceding complete run; worst-frame MAE remains **4.838211548%** at f045-006. Source acceptance remains **0/97**. This is the strongest measured reconstruction from the frozen evidence, not owner acceptance or a claim of literal pixel identity.
+
+          The touched owners pass the complete `following.spec.ts` plus `storefront-journeys.spec.ts` set, **25/25**, including Back/Forward, Escape and focus restoration, saved/follow persistence, and 320/393/430 containment. Exact-commit CI passes repository lint, Prettier, TypeScript, **136/136 unit tests**, the production web build and the web smoke test. The foundation workflow is red only at the unrelated native Expo compatibility check because its installed Expo packages lag the versions expected by the SDK; native work is outside this Shop reconstruction.
+
+          The exact-commit parity workflow verifies the frozen inventory (**97 flows, 424 ordered frames, 323 standalone images, 755 verified files**), web lint/typecheck and formatting, but intentionally does not publish a new cloud capture after `prepare-shop-reference.mjs` detects provider-byte checksum drift in several cached derivations and motion files. Existing verified files were preserved, candidate bytes were retained for inspection only, and no checksum or provenance guard was weakened. The last complete reference suite remains **437/437** from `20260924-final-photo-saved-parity`; the current changed owners are covered by the passing 25-test scoped suite and the complete local replay above.
+
+          The Remote Desktop link dropped after the complete replay and before the final local qualification log and post-push tree could be reread. The last observed local tree contained only the two intended CSS edits plus the known pre-existing generated `apps/web/tsconfig.json`, audit build directory and three untracked Inter probe fonts. Remote `main` is canonical; when the local link returns, fetch and reconcile by fast-forward-safe means only—never reset, clean, discard or silently stash those files.
+          '''.strip()
+          if status_marker not in status:
+              heading = "## Resume handoff\n"
+              if heading not in status:
+                  raise SystemExit("STATUS resume heading not found")
+              status = status.replace(heading, heading + "\n" + status_block + "\n\n", 1)
+              status_path.write_text(status)
+
+          map_path = Path("shop-implementation-map.md")
+          implementation_map = map_path.read_text()
+          map_marker = "### Final subpixel parity batch — 2026-09-24"
+          map_block = r'''
+          ### Final subpixel parity batch — 2026-09-24
+
+          - Implementation commits: **4182287** and **fa98783** on `main`.
+          - Canonical owners changed:
+            - `apps/web/src/features/discovery/following.css`: `.following-heading h1` and `.following-empty :is(h2, p, .primary)` receive `translate: 0 0.25px`.
+            - `apps/web/src/features/discovery/store.module.css`: `.information :global(.store-info-panel h2)` receives `translate: 0 -0.25px`.
+          - These are source-measured raster-placement adjustments only. DOM semantics, selectable copy, routes, history, focus, persistence, fixtures, media and shared geometry are unchanged.
+          - Retained scoped evidence: `20260924-following-store-info-retained`, nine overlapping frames, mean MAE delta **-0.032888982**. f005-002 improves **4.006414792 -> 3.980173606%**; f097-004 improves **2.661724539 -> 2.391963625%**. A 0.5px Following move and broader store-info text translations were rejected after sibling regressions.
+          - Complete retained evidence: `20260924-final-subpixel-parity`, **424/424 frames**, **97/97 flows**, zero failed/non-scored frames, replay errors or browser errors, **2.516165989% mean MAE**, **4.838211548% worst-frame MAE**, and **-0.000711547 mean-MAE points** versus `20260924-final-photo-saved-parity`.
+          - Interaction/regression evidence: `following.spec.ts` plus `storefront-journeys.spec.ts` pass **25/25**, covering real Saved/follow controls, Back/Forward, scroll and focus restoration, Escape, persistence, description wrapping, equal category columns and 320/393/430 containment. Exact-commit CI passes lint, Prettier, TypeScript, **136/136 units**, production web build and smoke.
+          - The current cloud parity workflow stopped at the provenance boundary because external provider bytes no longer reproduce several allowlisted derivations and motion checksums. It preserved the known-good files and skipped build/capture rather than weakening hashes. The prior complete reference suite remains **437/437**; source acceptance remains **0/97**.
+          - Remaining visual residuals are the ranked app-owned/source-boundary differences already recorded below, including the photo-answer and full-description families plus unavailable original media/motion and platform-owned surfaces. Do not call the reconstruction pixel-identical while those differences remain.
+          '''.strip()
+          if map_marker not in implementation_map:
+              heading = "## Current source checkpoint\n"
+              if heading not in implementation_map:
+                  raise SystemExit("implementation-map checkpoint heading not found")
+              implementation_map = implementation_map.replace(
+                  heading, heading + "\n" + map_block + "\n\n", 1
+              )
+              map_path.write_text(implementation_map)
+          PY
+
+          node scripts/check-agent-docs.mjs
+          git diff --check
+
+      - name: Commit checkpoint and remove one-shot workflow
+        shell: bash
+        run: |
+          rm .github/workflows/final-shop-checkpoint.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/STATUS.md shop-implementation-map.md .github/workflows/final-shop-checkpoint.yml
+          git diff --cached --check
+          git commit -m "docs(shop): record final parity checkpoint"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "$GITHUB_SHA"
+          git push origin HEAD:main
