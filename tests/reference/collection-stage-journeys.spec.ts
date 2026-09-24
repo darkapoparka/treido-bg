@@ -178,6 +178,42 @@ for (const width of [320, 393, 430]) {
   });
 }
 
+test("collection featured brands preserve captured spacing with and without a sheet", async ({
+  page,
+  baseURL,
+}) => {
+  const heading = page.getByRole("heading", {
+    name: "Featured brands",
+    exact: true,
+  });
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    await openScenario(
+      page,
+      baseURL,
+      "saved-collection-expanded",
+      "/saved?collection=source-favs",
+    );
+    await expect(heading).toHaveCSS("margin-top", "17px");
+    await button(page, "Collection options").click();
+    await expect(dialog(page, "Collection options")).toBeVisible();
+    await expect(heading).toHaveCSS("margin-top", "32px");
+    await button(page, "Delete collection").click();
+    await expect(
+      dialog(page, "Are you sure you want to delete this collection?"),
+    ).toBeVisible();
+    await expect(heading).toHaveCSS("margin-top", "32px");
+    await button(page, "Cancel").click();
+    await expect(page.getByRole("dialog")).not.toBeVisible();
+    await expect(heading).toHaveCSS("margin-top", "17px");
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
+});
+
 test("first-save editor Back/Forward retains its draft and Cancel keeps the saved product", async ({
   page,
   baseURL,

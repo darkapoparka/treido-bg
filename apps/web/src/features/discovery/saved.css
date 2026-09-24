@@ -951,8 +951,9 @@
 .saved-collection:has(.invite-collaborators) .saved-grid {
   row-gap: 18px;
 }
-.saved-collection:has(.invite-collaborators) > .featured-heading {
-  margin-top: 24px;
+.saved-collection:has(.invite-collaborators):not(:has(.saved-sheet[open]))
+  > .featured-heading {
+  margin-top: 17px;
 }
 .saved-selection .saved-heading h1:not(.sr-only) {
   transform: translateY(-6px);

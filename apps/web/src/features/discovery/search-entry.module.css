@@ -1581,6 +1581,7 @@
   bottom: calc(36px + env(safe-area-inset-bottom));
 }
 .photoAnswer :global(.assistant-composer) > input {
+  background: #fffffff9;
   box-shadow: 0 0 40px #0000001c;
 }
 .photoAnswer :global(.assistant-answer-card) .photoCardMedia {

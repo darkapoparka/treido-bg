@@ -407,6 +407,36 @@ test("captured cap title controls retain the same honest boundary and keyboard f
   expect(new URL(page.url()).pathname).toBe("/assistant");
 });
 
+test("photo answer composer preserves the measured frosted mobile surface", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "search-photo");
+  await page.goto("/assistant?example=photo&steps=1");
+  const composer = page.getByRole("textbox", {
+    name: "Ask a follow-up",
+    exact: true,
+  });
+  await expect(composer).toBeVisible();
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    const geometry = await composer.evaluate((node) => {
+      const rect = node.getBoundingClientRect();
+      return {
+        height: rect.height,
+        bottomGap: innerHeight - rect.bottom,
+        backgroundColor: getComputedStyle(node).backgroundColor,
+        overflow: document.documentElement.scrollWidth > innerWidth,
+      };
+    });
+    expect(geometry).toEqual({
+      height: 56,
+      bottomGap: 36,
+      backgroundColor: "rgba(255, 255, 255, 0.976)",
+      overflow: false,
+    });
+  }
+});
+
 test("structured photo continuations retain only their captured pixels and leave the composer usable", async ({
   page,
 }) => {
