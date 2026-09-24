@@ -221,3 +221,10 @@
 .review-report-thanks .review-report-confirmation {
   min-height: 90px;
 }
+
+/* Keep the submitted product-review mark on the captured source baseline. */
+.reviews-page .review-reported-label {
+  margin-top: 1px;
+  padding-right: 5px;
+  font-size: 13.5px;
+}

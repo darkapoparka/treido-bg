@@ -180,13 +180,13 @@ test("review reporting validates a reason, cancels without a mark, and preserves
   await expect(thanks.getByRole("status")).toContainText("No report was sent");
   await expect(thanks.getByRole("status")).toHaveCSS("min-height", "90px");
   await button(page, "Close").click();
-  await expect(wes.locator(".review-reported-label")).toBeVisible();
-  await expect(wes.locator(".review-reported-label")).toHaveText(
-    "You reported this review",
-  );
-  await expect(wes.locator(".review-reported-label")).not.toContainText(
-    "local preview",
-  );
+  const reportedLabel = wes.locator(".review-reported-label");
+  await expect(reportedLabel).toBeVisible();
+  await expect(reportedLabel).toHaveText("You reported this review");
+  await expect(reportedLabel).not.toContainText("local preview");
+  await expect(reportedLabel).toHaveCSS("font-size", "13.5px");
+  await expect(reportedLabel).toHaveCSS("margin-top", "1px");
+  await expect(reportedLabel).toHaveCSS("padding-right", "5px");
   await expect(wes.locator(".review-helpful")).toBeDisabled();
   await expect(wes.getByRole("button", { name: "Read less" })).toBeVisible();
   await expect(options).toBeFocused();
