@@ -943,3 +943,8 @@
   pointer-events: none;
   background: linear-gradient(transparent, #fdfdfdea);
 }
+
+/* Source-aligned subpixel heading placement for the captured store-info panels. */
+.information :global(.store-info-panel h2) {
+  translate: 0 -0.25px;
+}
