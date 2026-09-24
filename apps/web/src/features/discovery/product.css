@@ -997,6 +997,7 @@
   font-size: 14.5px;
   line-height: 16.8px;
   letter-spacing: -0.05px;
+  transform: translate(-0.3px, 0.4px);
 }
 
 /* Measured text flow from source17/006 and32/002; the content remains selectable. */

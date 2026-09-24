@@ -17,6 +17,11 @@ test("review previews retain their last partial word and full text through resiz
   const body =
     "I love the body soap you sent me and I use the liquid shampoo. I love it but it’s just great for my hair and everything I’ve had from you for all my hair products and all my ties and all I have loved everything.";
   await expect(paragraph).toHaveText(body);
+  const bodyTransform = await paragraph.evaluate((element) => {
+    const matrix = new DOMMatrix(getComputedStyle(element).transform);
+    return matrix.m42;
+  });
+  expect(bodyTransform).toBeCloseTo(0.4, 3);
   // At the source width, part of the final word belongs on the fourth line.
   // A whole-word clamp incorrectly moves all of it beyond the visible box.
   await expect

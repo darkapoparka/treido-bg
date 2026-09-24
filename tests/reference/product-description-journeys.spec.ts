@@ -55,6 +55,14 @@ for (const id of ["shampoo-bag", "shea-butter"] as const) {
     );
     if (id === "shea-butter") {
       expect(dialogFontFamily).toContain("ShopProductDescriptionGeist");
+      const copyTransform = await dialog
+        .locator(".sheet-copy")
+        .evaluate((element) => {
+          const matrix = new DOMMatrix(getComputedStyle(element).transform);
+          return { x: matrix.m41, y: matrix.m42 };
+        });
+      expect(copyTransform.x).toBeCloseTo(-0.3, 3);
+      expect(copyTransform.y).toBeCloseTo(0.4, 3);
       const wrap = await dialog.getByRole("listitem").evaluateAll((items) => {
         const wordTop = (item: Element, word: string) => {
           const node = item.firstChild;
