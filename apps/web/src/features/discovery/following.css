@@ -301,6 +301,13 @@
   color: #747474;
   font-size: 14px;
 }
+
+/* Source-aligned subpixel text placement for the empty Following capture. */
+.following-heading h1,
+.following-empty :is(h2, p, .primary) {
+  translate: 0 0.25px;
+}
+
 @media (max-width: 350px) {
   .following-empty h2 {
     font-size: 23px;
