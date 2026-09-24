@@ -521,6 +521,11 @@ export function Storefront({
   catalog: Catalog;
 }) {
   const [cart, setCart] = useState(false);
+  const expandedPromotion = useSyncExternalStore(
+    subscribePromotion,
+    promotionExpanded,
+    () => false,
+  );
   const { viewStore, reportedProducts, followed } = useDiscovery();
   const params = useSearchParams();
   const reported = params.get("reported");
@@ -784,7 +789,10 @@ export function Storefront({
         fade={isKitsch}
         cart={reported ? undefined : () => setCart(true)}
         showCartWhenEmpty={
-          !reported && isKitsch && store.promotionSavings !== 15
+          !reported &&
+          isKitsch &&
+          !expandedPromotion &&
+          store.promotionSavings !== 15
         }
       />
       <Cart catalog={catalog} open={cart} onClose={() => setCart(false)} />

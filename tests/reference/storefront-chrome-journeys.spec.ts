@@ -80,7 +80,13 @@ test("store promotions keep their captured type hierarchy", async ({
   await page.evaluate(() => document.fonts.ready);
   const owner = page.locator(".promotion-owner");
   await expect(owner).toHaveCSS("font-family", /ShopChemicalGeist/);
+  const emptyCart = page.getByRole("button", {
+    name: "Open cart",
+    exact: true,
+  });
+  await expect(emptyCart).toBeVisible();
   await page.locator(".store-promotion").click();
+  await expect(emptyCart).toHaveCount(0);
   const offers = page.locator(".promotion-offers");
   await expect(offers).toBeVisible();
   for (const heading of await offers.locator("> div > b").all()) {
@@ -89,6 +95,9 @@ test("store promotions keep their captured type hierarchy", async ({
   for (const copy of await offers.locator("p, span").all()) {
     await expect(copy).toHaveCSS("font-weight", "400");
   }
+  await page.locator(".store-promotion").click();
+  await expect(page.locator(".promotion-offers")).toHaveCount(0);
+  await expect(emptyCart).toBeVisible();
 });
 test("the captured empty-cart control opens an actual cart without adding an item", async ({
   page,
