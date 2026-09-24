@@ -149,6 +149,21 @@ test("Get the Look connects source hotspots, selected panel, all result groups a
   await expect(
     page.getByRole("complementary", { name: "Get the Look terms notice" }),
   ).toBeVisible();
+  const termsNotice = page.getByRole("complementary", {
+    name: "Get the Look terms notice",
+  });
+  await expect(termsNotice).toHaveCSS("padding", "16.5px 20px");
+  await expect(termsNotice).toHaveCSS("background-color", "rgb(42, 42, 42)");
+  const termsCopy = termsNotice.locator("p");
+  await expect(termsCopy).toHaveCSS("font-weight", "375");
+  await expect(termsCopy).toHaveCSS("letter-spacing", "-0.02px");
+  await expect(termsCopy).toHaveCSS("translate", "0.25px");
+  const dismissTerms = termsNotice.getByRole("button", {
+    name: "Dismiss Get the Look terms notice",
+    exact: true,
+  });
+  await expect(dismissTerms).toHaveCSS("width", "28px");
+  await expect(dismissTerms).toHaveCSS("height", "28px");
   await page
     .getByRole("button", {
       name: "Dismiss Get the Look terms notice",
@@ -223,6 +238,33 @@ test("Get the Look connects source hotspots, selected panel, all result groups a
     )
     .toBe(70);
   await expect(page.locator(".look-results section[id]")).toHaveCount(3);
+  const blazerHeading = page.locator("#look-blazer > h2");
+  const shirtHeading = page.locator("#look-shirt > h2");
+  const skirtHeading = page.locator("#look-skirt > h2");
+  await expect(blazerHeading).toHaveCSS(
+    "transform",
+    "matrix(1, 0, 0, 1, -1.5, -4)",
+  );
+  await expect(shirtHeading).toHaveCSS("font-weight", "500");
+  await expect(skirtHeading).toHaveCSS(
+    "transform",
+    "matrix(1, 0, 0, 1, -0.75, 1)",
+  );
+  await expect(page.locator("#look-shirt > .product-rail")).toHaveCSS(
+    "transform",
+    "matrix(1, 0, 0, 1, 0, -0.5)",
+  );
+  const resultCopy = page.locator("#look-blazer .product-copy").first();
+  await expect(resultCopy).toHaveCSS("translate", "0.5px -1.5px");
+  await expect(resultCopy).toHaveCSS("opacity", "0.94");
+  await expect(resultCopy.locator("strong")).toHaveCSS(
+    "letter-spacing",
+    "0.15px",
+  );
+  await expect(resultCopy.locator(":scope > span:last-child")).toHaveCSS(
+    "letter-spacing",
+    "0.1px",
+  );
   await expect(page.locator("#look-blazer > h2")).toBeFocused();
   await expect(
     page.locator('.look-results a[href="/products/look-black-crew"]').first(),
@@ -270,6 +312,26 @@ test("the native-photo boundary offers a local file, cancels cleanly, and keeps 
   page,
 }) => {
   await page.goto("/minis/look");
+  const termsNotice = page.getByRole("complementary", {
+    name: "Get the Look terms notice",
+  });
+  for (const width of [320, 393, 430]) {
+    await page.setViewportSize({ width, height: 793 });
+    const noticeBounds = await termsNotice.boundingBox();
+    expect(Math.round(noticeBounds?.x ?? -1), `Terms x at ${width}px`).toBe(8);
+    expect(
+      Math.round(noticeBounds?.width ?? -1),
+      `Terms width at ${width}px`,
+    ).toBe(width - 16);
+    const viewport = await page.evaluate(() => ({
+      client: innerWidth,
+      scroll: document.documentElement.scrollWidth,
+    }));
+    expect(viewport.scroll, `Terms overflow at ${width}px`).toBeLessThanOrEqual(
+      viewport.client,
+    );
+  }
+  await page.setViewportSize({ width: 393, height: 793 });
   await page.getByRole("button", { name: "Choose Photo", exact: true }).click();
   const chooser = page.getByRole("dialog", {
     name: "Choose Photo",
