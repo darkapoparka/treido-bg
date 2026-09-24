@@ -2,12 +2,12 @@
   font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, sans-serif;
 }
 @media (max-width: 700px) {
-  /* The photo keeps its 16px inset while neighboring photos can reach either
-     viewport edge. This is the same scroll padding used when closing photos. */
+  /* The first photo keeps its 16px page inset. Later snapped photos retain the
+     source's extra 8px lead while the preceding photo edge stays visible. */
   .product-page .product-gallery {
     margin-inline: -16px;
     padding-inline: 16px;
-    scroll-padding-inline: 16px;
+    scroll-padding-inline: 24px;
   }
   .product-page .product-gallery > button {
     flex-basis: 100%;

@@ -101,6 +101,13 @@ export function ProductDetail({
   }, [priceAlertTip]);
   const addition = useProductAddition();
   const galleryRail = useRef<HTMLDivElement>(null);
+  const gallerySnapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (gallerySnapTimer.current) clearTimeout(gallerySnapTimer.current);
+    },
+    [],
+  );
   const productUnderlay = useRef<HTMLDivElement>(null);
   const [cartPresentation, setCartPresentation] = useState<{
     scrollY: number;
@@ -145,6 +152,39 @@ export function ProductDetail({
         "/api/reference-media/shea-gallery-shower",
       ]
     : product.images;
+  function queueCapturedGalleryLead(rail: HTMLDivElement) {
+    if (gallerySnapTimer.current) clearTimeout(gallerySnapTimer.current);
+    gallerySnapTimer.current = setTimeout(() => {
+      if (!window.matchMedia("(max-width: 700px)").matches) return;
+      const slides = Array.from(rail.children).filter(
+        (node): node is HTMLElement => node instanceof HTMLElement,
+      );
+      if (!slides.length) return;
+      const inset = parseFloat(getComputedStyle(rail).paddingLeft) || 16;
+      let target = 0;
+      let nearestDistance = Number.POSITIVE_INFINITY;
+      for (const [index, slide] of slides.entries()) {
+        const candidate = Math.max(
+          0,
+          slide.offsetLeft - inset - (index === 0 ? 0 : 8),
+        );
+        const distance = Math.abs(rail.scrollLeft - candidate);
+        if (distance < nearestDistance) {
+          target = candidate;
+          nearestDistance = distance;
+        }
+      }
+      if (Math.abs(rail.scrollLeft - target) > 0.5) {
+        const inlineSnap = rail.style.scrollSnapType;
+        rail.style.scrollSnapType = "none";
+        rail.scrollLeft = target;
+        requestAnimationFrame(() => {
+          if (inlineSnap) rail.style.scrollSnapType = inlineSnap;
+          else rail.style.removeProperty("scroll-snap-type");
+        });
+      }
+    }, 40);
+  }
   const price =
     subscription && shea ? { ...product.price, amount: 1050 } : product.price;
   function add(showFeedback = true) {
@@ -362,7 +402,11 @@ export function ProductDetail({
           />
         )}
         {photos.length > 0 && (
-          <div className="product-gallery" ref={galleryRail}>
+          <div
+            className="product-gallery"
+            ref={galleryRail}
+            onScroll={(event) => queueCapturedGalleryLead(event.currentTarget)}
+          >
             {photos.map((src, i) => (
               <button
                 key={src}

@@ -162,12 +162,12 @@ for (const width of [320, 393, 430, 467]) {
       exact: true,
     });
     await expect(selected).toBeFocused();
-    await expect.poll(async () => (await selected.boundingBox())?.x).toBe(16);
+    await expect.poll(async () => (await selected.boundingBox())?.x).toBe(24);
     await expect.poll(() => page.evaluate(() => scrollY)).toBe(y);
     const previous = await page
       .getByRole("button", { name: "View product image 2", exact: true })
       .boundingBox();
-    expect(previous!.x + previous!.width).toBe(8);
+    expect(previous!.x + previous!.width).toBe(16);
     await selected.click();
     await page.goBack();
     await expect(selected).toBeFocused();
