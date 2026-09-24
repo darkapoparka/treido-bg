@@ -213,7 +213,17 @@ test("photo answer typography keeps the captured text offsets scoped", async ({
   const brandCopy = page.locator(
     ".photo-assistant > .assistant-answer-card:nth-of-type(2) + p",
   );
-  await expect(brandCopy).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 1)");
+  await expect(brandCopy).toHaveCSS("letter-spacing", "-0.08px");
+  await expect(brandCopy).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0.5, 1)");
+
+  const preferenceQuestion = page.locator(
+    ".photo-assistant > .assistant-answer-card:nth-of-type(2) + p + p",
+  );
+  await expect(preferenceQuestion).toHaveCSS("letter-spacing", "-0.12px");
+  await expect(preferenceQuestion).toHaveCSS(
+    "transform",
+    "matrix(1, 0, 0, 1, -1, 1)",
+  );
 });
 test("photo comparison preserves source framing and non-interactive gallery indicators", async ({
   page,

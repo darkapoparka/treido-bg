@@ -1553,7 +1553,12 @@
   margin-top: 16px;
 }
 .photoAnswer > :global(.assistant-answer-card):nth-of-type(2) + p {
-  transform: translateY(1px);
+  letter-spacing: -0.08px;
+  transform: translate(0.5px, 1px);
+}
+.photoAnswer > :global(.assistant-answer-card):nth-of-type(2) + p + p {
+  letter-spacing: -0.12px;
+  transform: translate(-1px, 1px);
 }
 .photoPagination {
   position: absolute;
