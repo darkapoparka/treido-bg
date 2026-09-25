@@ -4,6 +4,31 @@ Current checkout/branch policy is owned by [AGENTS.md](AGENTS.md); use [single-s
 
 ## Current source checkpoint
 
+### Final qualified parity batches — 2026-09-25
+
+- Implementation commits on `main`: **8a01128**, **dc1d119**, **2869de1**, **b60dacb**, **3c3176a**, and **257f0b9**.
+- Canonical owners changed:
+  - `search-entry.module.css`: source-measured lower photo-answer paragraph tracking and subpixel placement.
+  - `minis.module.css`: Get the Look terms panel and all-matching-pieces heading/card-copy geometry and typography.
+  - `store.tsx`: promotion expansion is subscribed as live state, and the captured empty-cart dock action is absent only while the promotion is expanded.
+  - `review-parity.css`: the reported-review label owns its measured size, padding and placement.
+  - `product.css` and `product.tsx`: later inline-gallery photos lead by 24px with a debounced selected-photo snap while the first-photo edge remains unchanged.
+  - `saved-selection-preview.tsx` and `saved.css`: the real 32px selection-header image completes from its source-shaped rise animation plus a one-second settle grace, cancels obsolete timers on transition or unmount, and leaves no replay after Done or reduced-motion cancellation.
+- Regression owners changed: `search-photo-journeys.spec.ts`, `minis-photo-journeys.spec.ts`, `storefront-chrome-journeys.spec.ts`, `review-state-journeys.spec.ts`, and `store-product-return-journeys.spec.ts`; `source-motion-journeys.spec.ts` provides the Saved motion, cancellation and completion qualification.
+
+- Scoped retained evidence:
+  - Photo answer `20260924-flow45-preference-weight-before -> 20260924-flow45-lower-copy-fit`: 8-frame mean **3.380481323 -> 3.305236573%**; f045-007 **4.740317775 -> 4.623226519%** and f045-008 **4.070700285 -> 3.585833543%**.
+  - Get the Look `20260924-flow58-before-late -> 20260924-flow58-look-copy-fit`: 8-frame mean **3.288193677 -> 3.166034923%**; f058-002 **4.056673696 -> 3.821713958%**, f058-006 **2.262137246 -> 2.166314681%**, and f058-008 **4.113532953 -> 3.466787265%**.
+  - Promotion dock `20260924-flow96-promotion-dock-before -> 20260924-flow96-promotion-dock-after`: 6-frame mean **3.028351242 -> 3.028516922%**; the **+0.000165680** aggregate change is retained because direct source/live inspection proves the expanded source omits the extra cart action.
+  - Reported review `20260925-flow36-report-label-before -> 20260925-flow36-report-label-font135`: 6-frame mean **3.652066930 -> 3.512494934%**; f036-005 **3.381680207 -> 3.275640853%** and f036-006 **4.284726887 -> 3.553334270%**.
+  - Inline gallery `20260925-flow17-gallery-before -> 20260925-flow17-gallery-lead24`: 9-frame mean **3.177606146 -> 2.985527219%**; f017-004 **3.457977287 -> 1.729266944%**, with the other eight states unchanged within replay precision.
+  - Saved preview motion: final `source-motion-journeys.spec.ts` passes **4/4**; the stabilized transition also passes a **20-repeat** completion-grace run and a **10-repeat** layout run. At **320/393/430px**, the live photograph is **32x32**, remains within the 44px header and causes no document overflow.
+
+- Complete retained evidence: `20260925-final-qualified-parity`, application source HEAD **257f0b9ac33d3ded9efe25b5eec233f5995a0c29**, **424/424 scored frames**, **97/97 flows**, zero failed/non-scored frames, replay errors or browser-error rows, **2.506522401% mean MAE**, **7.561290155% mean bad pixels**, and **4.838211548% worst-frame MAE**. Mean MAE improves **0.009643588 points** and mean bad pixels improve **0.035036544 points** versus `20260924-final-subpixel-parity`.
+- Direct review: the latest top 30 ranked source/live/overlay/heatmap pairs preserve the frozen copy, imagery, hierarchy, controls and route-owned states. Remaining high-ranked ink is dominated by text raster/subpixel edges, source-media compression/crop, motion or confetti positions, and platform-owned keyboard/browser surfaces; no further source-backed shared-owner change was retained without a sibling regression.
+- Verification: complete exact-checkpoint reference suite **437/437 in 76 files**, focused changed-owner journeys **54/54**, final source-motion coverage **4/4**, units **136/136**, Next route type generation, web/contracts/mobile TypeScript, correctly scoped web and test ESLint, scoped Prettier, `git diff --check`, and documentation integrity all pass. The initial complete-suite attempt hit J: artifact-space exhaustion at test 35; its evidence was moved intact to H:, and the clean passing rerun uses H: output without deleting user data.
+- Integrity and limits: no frozen source, comparison mask, hash, recipe, frame order, threshold, fixture, acceptance record or protected probe font changed. The three inherited original-media checksum limits and the documented unavailable/platform-owned surfaces remain. Source acceptance is still **0/97**; do not call this checkpoint pixel-identical.
+
 ### Final subpixel parity batch — 2026-09-24
 
 - Implementation commits: **4182287** and **fa98783** on `main`.

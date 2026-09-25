@@ -1,8 +1,22 @@
 # Current project status
 
-Updated 2026-09-24. This is the session entry point, not a second backlog.
+Updated 2026-09-25. This is the session entry point, not a second backlog.
 
 ## Resume handoff
+
+### 2026-09-25 final qualified visual-parity checkpoint
+
+Current `main` contains six source-backed implementation commits: **8a01128** (`Refine photo answer lower copy parity`), **dc1d119** (`Refine Get the Look visual parity`), **2869de1** (`Match expanded promotion dock state`), **b60dacb** (`Refine reported review mark parity`), **3c3176a** (`Match inline product gallery lead`), and **257f0b9** (`Stabilize Saved preview motion`). The changes stay in the canonical Search, Mini, Store, Review, Product and Saved owners plus focused regression coverage; routes, catalog facts, frozen references, masks, hashes, recipes, thresholds and acceptance records are unchanged.
+
+The retained fixes align the lower photo-answer comparison/preferences copy, Get the Look terms and all-matches typography, the expanded-promotion dock state, the reported-review mark, the selected inline-gallery photo lead, and the Saved selection-header transition. The Saved preview remains a real 32px image, completes from the actual `saved-preview-rise` animation plus a one-second settle grace, cancels pending completion when the selection changes or the component unmounts, and disappears without replay after Done or reduced-motion cancellation. Same-runtime scoped means improve **3.380481323 -> 3.305236573%** for photo answer, **3.288193677 -> 3.166034923%** for Get the Look, **3.652066930 -> 3.512494934%** for reported review, and **3.177606146 -> 2.985527219%** for inline gallery. The promotion family changes **3.028351242 -> 3.028516922%** because removing an incorrect empty-cart control adds **0.000165680** aggregate raster error; direct source/live inspection confirms the expanded source frame has no such control, so the source-correct state is retained.
+
+Continuous local run `20260925-final-qualified-parity`, captured from application source **257f0b9ac33d3ded9efe25b5eec233f5995a0c29**, contains **424/424 ordered scored frames across 97/97 flows**, with zero failed/non-scored frames, replay errors or browser-error rows. Mean MAE is **2.506522401%**, mean bad pixels are **7.561290155%**, and worst-frame MAE remains **4.838211548%** at f045-006. Against `20260924-final-subpixel-parity`, mean MAE improves by **0.009643588 points** and mean bad pixels improve by **0.035036544 points**. The complete run is retained both locally and under `H:\treido-test-artifacts\shop-parity-runs\20260925-final-qualified-parity`.
+
+The latest ranked top 30 were inspected directly as source/live/overlay/heatmap pairs. Visible copy, imagery, card/sheet hierarchy, controls and route-owned states remain intact; the remaining high scores are dominated by text raster/subpixel edges, source-media compression/crop, motion or confetti positions, and platform-owned keyboard/browser surfaces. No further source-backed shared-owner correction was retained without a connected sibling regression.
+
+The exact application checkpoint passes the complete reference suite **437/437 in 76 files**, including the five changed-owner journey files **54/54** and final source-motion coverage **4/4**. Units pass **136/136**. Next route type generation, web/contracts/mobile TypeScript, correctly scoped web and test ESLint, scoped Prettier, `git diff --check`, and the documentation integrity checker pass. Saved preview geometry was also measured at **320/393/430px**: the live photograph remains **32x32**, stays inside the 44px header, and creates no horizontal overflow; the final motion run, a 20-repeat grace run and a 10-repeat layout run all pass. The first complete reference attempt was stopped after J: exhausted its remaining space while writing a failure artifact; that artifact was moved intact to `H:\treido-test-artifacts\20260925-reference-enospc`, and the clean passing rerun wrote artifacts to H: without deleting user data.
+
+Original-media verification still preserves the known `store-hero`, `shower-caddy`, and `rice-shampoo` checksum boundaries; exact uncaptured Chemical/Pura motion, the dock-obscured notification title, paid Mobbin material, and platform-owned keyboard/browser chrome remain explicit limits. Source acceptance remains **0/97**. This checkpoint is the strongest retained reconstruction from the frozen evidence, not a claim of complete pixel identity. After the checkpoint documentation is committed, the working tree keeps only the known protected generated `apps/web/tsconfig.json`, audit directory and three Inter probe fonts outside parity commits.
 
 ### 2026-09-24 final subpixel parity checkpoint
 
