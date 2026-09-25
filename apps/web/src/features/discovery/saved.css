@@ -587,11 +587,13 @@
 }
 @keyframes saved-preview-rise {
   from {
-    translate: 0 24px;
+    inset-block-start: 24px;
+    inset-block-end: auto;
     opacity: 0.2;
   }
   to {
-    translate: 0 0;
+    inset-block-start: 0;
+    inset-block-end: auto;
     opacity: 1;
   }
 }

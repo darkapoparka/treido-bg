@@ -1,5 +1,11 @@
 "use client";
+
+import { useEffect, useRef } from "react";
+
 /* eslint-disable @next/next/no-img-element -- Reuses the chosen product photographs. */
+
+// Keep the keyed final frame stable while rapid preference or selection changes can cancel it.
+const PREVIEW_SETTLE_GRACE_MS = 1000;
 
 export type SavedPreviewTransition = {
   id: number;
@@ -17,6 +23,23 @@ export function SavedSelectionPreview({
   transition: SavedPreviewTransition | null;
   onComplete: (id: number) => void;
 }) {
+  const completionTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (completionTimer.current !== null) {
+      window.clearTimeout(completionTimer.current);
+      completionTimer.current = null;
+    }
+  }, [transition?.id]);
+
+  useEffect(
+    () => () => {
+      if (completionTimer.current !== null)
+        window.clearTimeout(completionTimer.current);
+    },
+    [],
+  );
+
   return (
     <span className="saved-selection-preview">
       {transition?.previousImage && (
@@ -33,8 +56,16 @@ export function SavedSelectionPreview({
         className={transition ? "saved-preview-incoming" : undefined}
         src={image}
         alt={`${count} selected items`}
-        onAnimationEnd={() => {
-          if (transition) onComplete(transition.id);
+        onAnimationEnd={(event) => {
+          if (!transition || event.animationName !== "saved-preview-rise")
+            return;
+          if (completionTimer.current !== null)
+            window.clearTimeout(completionTimer.current);
+          const transitionId = transition.id;
+          completionTimer.current = window.setTimeout(() => {
+            completionTimer.current = null;
+            onComplete(transitionId);
+          }, PREVIEW_SETTLE_GRACE_MS);
         }}
       />
     </span>
