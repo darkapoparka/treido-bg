@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { Catalog } from "../catalog/types";
 import { previewOnboardedCookie } from "../catalog/reference/session";
 import { AccountIcon } from "./icons";
@@ -185,6 +185,59 @@ const currentIntroObjects = [
     ],
   },
 ] as const;
+
+function LiveNotificationSkipDialog({
+  open,
+  onClose,
+  onSkip,
+  onTurnOn,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSkip: () => void;
+  onTurnOn: () => void;
+}) {
+  if (!open) return null;
+  return (
+    <div className="live-notification-skip-backdrop">
+      <section
+        className="live-notification-skip-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="live-notification-skip-title"
+        aria-describedby="live-notification-skip-copy"
+        onKeyDown={(event) => {
+          if (event.key !== "Escape") return;
+          event.preventDefault();
+          onClose();
+        }}
+      >
+        <h2 id="live-notification-skip-title">Skip notifications?</h2>
+        <p id="live-notification-skip-copy">
+          You won{"\u2019"}t be able to receive order updates from Shop.
+        </p>
+        <div className="live-notification-skip-actions">
+          <button
+            className="live-notification-skip-action"
+            type="button"
+            autoFocus
+            onClick={onSkip}
+          >
+            Skip
+          </button>
+          <button
+            className="live-notification-turn-on-action"
+            type="button"
+            onClick={onTurnOn}
+          >
+            Turn on
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export function SupportPage() {
   return (
     <AccountPage title="Support" className="account-settings-page support-page">
@@ -374,12 +427,18 @@ export function OnboardingPage({
   };
   const [choice, setChoice] = useState("");
   const [permission, setPermission] = useState(false);
+  const [skipConfirmation, setSkipConfirmation] = useState(false);
+  const liveSkipButtonRef = useRef<HTMLButtonElement>(null);
   const [introPhase, setIntroPhase] = useState<IntroPhase>(0);
   const capturedReference = params.get("reference") === "captured";
   const reducedMotion = useReducedMotion();
   const motion = !reducedMotion && !capturedReference;
   const currentLiveIntro = !capturedReference;
   const visibleIntroPhase = motion ? introPhase : 0;
+  const closeSkipConfirmation = () => {
+    setSkipConfirmation(false);
+    window.requestAnimationFrame(() => liveSkipButtonRef.current?.focus());
+  };
   if (params.get("step") === "splash" || params.get("step") === "signout")
     return (
       <ShopSplash
@@ -577,10 +636,15 @@ export function OnboardingPage({
         className={`onboarding-page onboarding-step-${step} ${params.get("journey") === "returning" ? "returning-onboarding" : ""} ${step === 3 && currentLiveIntro ? "current-updates-intro" : ""}`}
       >
         <button
+          ref={step === 3 && currentLiveIntro ? liveSkipButtonRef : undefined}
           className="onboarding-skip"
           onClick={() => {
             if (params.get("journey") === "returning") {
               finishPreviewOnboarding("/?journey=returning");
+              return;
+            }
+            if (step === 3 && currentLiveIntro) {
+              setSkipConfirmation(true);
               return;
             }
             if (step < 3) setStep(step + 1);
@@ -714,6 +778,7 @@ export function OnboardingPage({
             <>
               <button
                 className="primary form-submit"
+                disabled={skipConfirmation}
                 onClick={() => setPermission(true)}
               >
                 Get tracking updates
@@ -726,6 +791,18 @@ export function OnboardingPage({
           )}
         </div>
       </div>
+      <LiveNotificationSkipDialog
+        open={step === 3 && currentLiveIntro && skipConfirmation}
+        onClose={closeSkipConfirmation}
+        onSkip={() => {
+          setSkipConfirmation(false);
+          finishPreviewOnboarding();
+        }}
+        onTurnOn={() => {
+          setSkipConfirmation(false);
+          setPermission(true);
+        }}
+      />
       <Boundary
         open={permission}
         onClose={() => setPermission(false)}

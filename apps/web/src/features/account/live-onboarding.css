@@ -175,6 +175,85 @@
   line-height: 1.05;
 }
 
+.current-updates-intro .onboarding-actions .primary:disabled {
+  opacity: 1;
+  color: #8c8c8c;
+  background: #eff0f0;
+}
+
+.live-notification-skip-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(0 0 0 / 60%);
+}
+
+.live-notification-skip-dialog {
+  box-sizing: border-box;
+  width: min(320px, calc(100vw - 32px));
+  height: 194px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  color: #111;
+  background: #ece6f0;
+  border-radius: 28px;
+  text-align: left;
+}
+
+.live-notification-skip-dialog h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.15px;
+  line-height: 23px;
+}
+
+.live-notification-skip-dialog p {
+  width: 272px;
+  max-width: 100%;
+  margin: 16px 0 0;
+  color: #454149;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: -0.05px;
+  line-height: 17px;
+}
+
+.live-notification-skip-actions {
+  width: 136px;
+  height: 48px;
+  margin: auto 0 0 auto;
+  display: flex;
+  gap: 8px;
+}
+
+.live-notification-skip-actions button {
+  height: 48px;
+  padding: 0;
+  appearance: none;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.live-notification-skip-action {
+  width: 48px;
+  color: #df2c1f;
+}
+
+.live-notification-turn-on-action {
+  width: 80px;
+  color: #111;
+}
 @media (max-height: 680px) {
   .current-track-intro > h1 {
     top: calc(76px + var(--account-safe-top));

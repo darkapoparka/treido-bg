@@ -62,6 +62,67 @@ test("tracking illustration advances through recorded stages without changing th
   ).toBeVisible();
 });
 
+test("current tracking updates preserves the native notification skip confirmation", async ({
+  page,
+}) => {
+  await useReferenceScenario(page, "onboarding-new");
+  await page.setViewportSize({ width: 427, height: 876 });
+  await page.goto("/onboarding?step=updates&journey=new");
+
+  const skipTrigger = page.getByRole("button", { name: "Skip", exact: true });
+  await skipTrigger.click();
+  const dialog = page.getByRole("dialog", { name: "Skip notifications?" });
+  await expect(dialog).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Get tracking updates", exact: true }),
+  ).toBeDisabled();
+  await expect(dialog).toHaveCSS("background-color", "rgb(236, 230, 240)");
+  await expect(page.locator(".live-notification-skip-backdrop")).toHaveCSS(
+    "background-color",
+    "rgba(0, 0, 0, 0.6)",
+  );
+  await expect(
+    dialog.getByText("You won’t be able to receive order updates from Shop.", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  const skipAction = dialog.getByRole("button", { name: "Skip", exact: true });
+  const turnOnAction = dialog.getByRole("button", {
+    name: "Turn on",
+    exact: true,
+  });
+  await expect(skipAction).toBeFocused();
+  await expect(turnOnAction).toBeVisible();
+  const dialogBox = await dialog.boundingBox();
+  expect(dialogBox?.x).toBeCloseTo(53.5, 0);
+  expect(dialogBox?.y).toBeCloseTo(341, 0);
+  expect(dialogBox?.width).toBeCloseTo(320, 0);
+  expect(dialogBox?.height).toBeCloseTo(194, 0);
+  await page.screenshot({
+    path: test.info().outputPath("skip-notifications-dialog.png"),
+  });
+
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(skipTrigger).toBeFocused();
+  await expect(
+    page.getByRole("button", { name: "Get tracking updates", exact: true }),
+  ).toBeEnabled();
+
+  await skipTrigger.click();
+  await dialog.getByRole("button", { name: "Turn on", exact: true }).click();
+  await expect(
+    page.getByText("Notifications unavailable", { exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Back to preview", exact: true })
+    .click();
+
+  await skipTrigger.click();
+  await dialog.getByRole("button", { name: "Skip", exact: true }).click();
+  await expect(page).toHaveURL(/\/$/);
+});
+
 test("intro headlines share one history entry and reduced motion keeps source stills", async ({
   page,
 }) => {
