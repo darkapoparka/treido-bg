@@ -22,18 +22,30 @@ const headlines = [
   </>,
 ];
 
-export function IntroHeadline({ motion }: { motion: boolean }) {
-  const [index, setIndex] = useState(0);
+export type IntroPhase = 0 | 1 | 2 | 3;
+
+export function IntroHeadline({
+  motion,
+  onPhaseChange,
+}: {
+  motion: boolean;
+  onPhaseChange?: (phase: IntroPhase) => void;
+}) {
+  const [index, setIndex] = useState<IntroPhase>(0);
   useEffect(() => {
-    if (!motion) return;
-    // Video002: one marketing surface, four headlines, unchanged actions.
-    const durations = [2250, 1750, 1750, 2000];
-    let current = 0;
-    const restart = setTimeout(() => setIndex(0), 0);
+    const restart = setTimeout(() => {
+      setIndex(0);
+      onPhaseChange?.(0);
+    }, 0);
+    if (!motion) return () => clearTimeout(restart);
+    // The current Shop app changes both copy and object composition together.
+    const durations = [1000, 1000, 1000, 1000];
+    let current: IntroPhase = 0;
     let timer: ReturnType<typeof setTimeout>;
     const advance = () => {
-      current = (current + 1) % headlines.length;
+      current = ((current + 1) % headlines.length) as IntroPhase;
       setIndex(current);
+      onPhaseChange?.(current);
       timer = setTimeout(advance, durations[current]);
     };
     timer = setTimeout(advance, durations[0]);
@@ -41,7 +53,7 @@ export function IntroHeadline({ motion }: { motion: boolean }) {
       clearTimeout(restart);
       clearTimeout(timer);
     };
-  }, [motion]);
+  }, [motion, onPhaseChange]);
   const visible = motion ? index : 0;
   return (
     <h1

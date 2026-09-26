@@ -1,0 +1,204 @@
+/* Current installed Shop entry surfaces. The frozen Mobbin routes remain scoped
+   to reference=captured and continue to use account.css unchanged. */
+.current-live-intro .intro-objects img {
+  animation: none;
+  transition:
+    left 440ms cubic-bezier(0.22, 0.72, 0.2, 1),
+    top 440ms cubic-bezier(0.22, 0.72, 0.2, 1),
+    width 440ms cubic-bezier(0.22, 0.72, 0.2, 1),
+    height 440ms cubic-bezier(0.22, 0.72, 0.2, 1);
+  will-change: left, top, width, height;
+}
+
+.current-live-intro > h1 {
+  top: min(364px, 41.55dvh);
+}
+
+.current-live-intro > .intro-cycle-copy {
+  font-size: 26px;
+  letter-spacing: -0.7px;
+}
+
+.current-live-intro .intro-actions {
+  bottom: calc(24px + var(--account-safe-bottom));
+}
+
+.current-live-intro .intro-cycle-copy > span {
+  animation-duration: 220ms;
+}
+
+.current-live-intro .intro-actions .primary {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.current-track-intro {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+  background: #fdfdfd;
+}
+
+.current-track-intro .account-heading {
+  display: none;
+}
+
+.current-track-intro .onboarding-skip {
+  top: calc(16px + var(--account-safe-top));
+  right: calc(24px + var(--account-safe-right));
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.current-track-intro > h1 {
+  position: absolute;
+  top: calc(114px + var(--account-safe-top));
+  left: 16px;
+  right: 16px;
+  margin: 0;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.8px;
+  line-height: 1.12;
+}
+
+.current-track-intro > p {
+  position: absolute;
+  top: calc(158px + var(--account-safe-top));
+  left: 16px;
+  right: 16px;
+  margin: 0;
+  color: #454545;
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.current-track-intro > img {
+  position: absolute;
+  top: calc(290px + var(--account-safe-top));
+  left: 50%;
+  width: 248px;
+  height: 248px;
+  margin: 0;
+  object-fit: contain;
+  transform: translateX(-50%);
+}
+
+.current-track-intro > .primary {
+  bottom: calc(73px + var(--account-safe-bottom));
+  left: calc(16px + var(--account-safe-left));
+  right: calc(16px + var(--account-safe-right));
+  width: auto;
+  min-height: 44px;
+  height: 44px;
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.current-updates-intro > h1 {
+  top: min(108px, 12.33dvh);
+  left: 16px;
+  right: 16px;
+  max-width: none;
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: -0.7px;
+}
+
+.current-updates-intro .onboarding-skip {
+  top: calc(2px + var(--account-safe-top));
+  right: calc(16px + var(--account-safe-right));
+  min-width: 62px;
+  min-height: 40px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+}
+
+.current-updates-intro .tracking-onboarding-card {
+  top: min(386px, 44.06dvh);
+  height: 96px;
+  padding: 8px;
+  gap: 8px;
+  border-color: #ededed;
+  border-radius: 12px;
+}
+
+.current-updates-intro .tracking-onboarding-card .tracking-shoe {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+}
+
+.current-updates-intro .tracking-onboarding-card > span small {
+  font-size: 14px;
+}
+
+.current-updates-intro .tracking-onboarding-card > span strong {
+  margin: 4px 0 8px;
+  font-size: 18px;
+  line-height: 1.05;
+}
+
+.current-updates-intro .tracking-onboarding-card > span i {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.current-updates-intro .tracking-onboarding-card .tracking-parcel,
+.current-updates-intro .tracking-onboarding-card .tracking-art-video {
+  width: 64px;
+  height: 64px;
+  right: 8px;
+  top: 16px;
+  margin: 0;
+  transform: none;
+}
+
+.current-updates-intro .onboarding-actions {
+  bottom: calc(16px + var(--account-safe-bottom));
+}
+
+.current-updates-intro .onboarding-actions .primary {
+  min-height: 48px;
+  height: 48px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.current-updates-intro .onboarding-actions small {
+  margin-top: 14px;
+  font-size: 14px;
+  line-height: 1.05;
+}
+
+@media (max-height: 680px) {
+  .current-track-intro > h1 {
+    top: calc(76px + var(--account-safe-top));
+    font-size: 24px;
+  }
+
+  .current-track-intro > p {
+    top: calc(116px + var(--account-safe-top));
+    font-size: 14px;
+  }
+
+  .current-track-intro > img {
+    top: calc(155px + var(--account-safe-top));
+    width: 220px;
+    height: 220px;
+  }
+
+  .current-track-intro > .primary {
+    bottom: calc(24px + var(--account-safe-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .current-live-intro .intro-objects img {
+    transition: none;
+  }
+}

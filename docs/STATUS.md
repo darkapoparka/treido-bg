@@ -1,8 +1,16 @@
 # Current project status
 
-Updated 2026-09-25. This is the session entry point, not a second backlog.
+Updated 2026-09-26. This is the session entry point, not a second backlog.
 
 ## Resume handoff
+
+### 2026-09-26 live Android Shop onboarding checkpoint
+
+The official Shop application (`com.shopify.arrive`) is installed and running on the dedicated `emulator-5560`; the JustFit/gym emulator `5556` was not used. The current live Android onboarding was inspected at 1280x2856 / 3x density and compared directly against the canonical web preview. The fresh web entry now follows the current installed application while every frozen Mobbin route remains available under `reference=captured`.
+
+The retained implementation matches the live four-phase one-second intro sequence, including per-phase object asset, position and size changes; the current `Let's track your recent order` surface; and the live `Follow your order every step of the way` tracking-update surface. The latter now uses the measured 427x876 geometry: 108px heading top, 386px / 395x96 tracking card, 80px product media, 64px status media, 48px primary action and source-aligned two-line disclosure. Current-only rules live in `live-onboarding.css`; the earlier frozen owners and their routes remain scoped and unchanged.
+
+Focused reference coverage passes **8/8**, including the complete captured onboarding siblings, live cold launch, four intro phases, reduced motion, exact tracking stages and the measured live update geometry. Next route generation, web TypeScript, scoped web/test ESLint, Prettier and `git diff --check` pass. The known protected generated `apps/web/tsconfig.json`, audit build directory and three Inter probe fonts remain untouched and excluded. This checkpoint covers the live onboarding family only; it is not a new 424-frame qualification or a claim that the entire application is now 1:1.
 
 ### 2026-09-25 final qualified visual-parity checkpoint
 

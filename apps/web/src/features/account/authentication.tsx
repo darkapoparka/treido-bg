@@ -105,10 +105,21 @@ export function LoginPage() {
     updateProfile,
   ]);
 
-  if (screen === "track")
+  if (screen === "track") {
+    const currentTrackIntro = journey === "new" && !captured;
     return (
-      <AccountPage dock={false} className="returning-login">
-        <Link className="onboarding-skip" href="/onboarding?step=tracking">
+      <AccountPage
+        dock={false}
+        className={`returning-login${currentTrackIntro ? " current-track-intro" : ""}`}
+      >
+        <Link
+          className="onboarding-skip"
+          href={
+            currentTrackIntro
+              ? "/login?journey=new"
+              : "/onboarding?step=tracking"
+          }
+        >
           Skip
         </Link>
         <h1>Let’s track your recent order</h1>
@@ -122,6 +133,7 @@ export function LoginPage() {
         </button>
       </AccountPage>
     );
+  }
 
   const showingSignIn = screen === "signing-in" && captured;
   const passkey = screen === "passkey";

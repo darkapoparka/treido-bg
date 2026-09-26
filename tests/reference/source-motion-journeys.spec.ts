@@ -5,6 +5,7 @@ test("tracking illustration advances through recorded stages without changing th
   page,
 }) => {
   await useReferenceScenario(page, "onboarding-new");
+  await page.setViewportSize({ width: 427, height: 876 });
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/onboarding?step=updates&journey=new");
   const demo = page.locator("[data-tracking-demo]");
@@ -22,6 +23,28 @@ test("tracking illustration advances through recorded stages without changing th
   });
   await expect(demo).toHaveAttribute("data-tracking-demo", "In transit");
   await expect(demo).toContainText("ETA: Monday Sep 1");
+  const headingBox = await page
+    .locator(".current-updates-intro > h1")
+    .boundingBox();
+  const cardBox = await demo.boundingBox();
+  const actionBox = await page
+    .getByRole("button", { name: "Get tracking updates", exact: true })
+    .boundingBox();
+  const disclosureBox = await page
+    .locator(".current-updates-intro .onboarding-actions small")
+    .boundingBox();
+  expect(headingBox?.y).toBeCloseTo(108, 0);
+  expect(cardBox?.x).toBeCloseTo(16, 0);
+  expect(cardBox?.y).toBeCloseTo(386, 0);
+  expect(cardBox?.width).toBeCloseTo(395, 0);
+  expect(cardBox?.height).toBeCloseTo(96, 0);
+  expect(actionBox?.y ?? 0).toBeGreaterThanOrEqual(768);
+  expect(actionBox?.y ?? 0).toBeLessThan(769);
+  expect(actionBox?.height).toBeCloseTo(48, 0);
+  expect((disclosureBox?.y ?? 0) + (disclosureBox?.height ?? 0)).toBeCloseTo(
+    860,
+    0,
+  );
   await page.screenshot({
     path: test.info().outputPath("tracking-in-transit.png"),
   });
@@ -45,23 +68,32 @@ test("intro headlines share one history entry and reduced motion keeps source st
   await useReferenceScenario(page, "onboarding-new");
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.clock.install();
-  await page.goto("/onboarding");
+  await page.goto("/onboarding?journey=new");
   const heading = page.locator("[data-intro-headline]");
+  const objects = page.locator("[data-intro-phase]");
   await expect(heading).toHaveAttribute("data-intro-headline", "0");
+  await expect(objects).toHaveAttribute("data-intro-phase", "0");
+  await expect(page.locator('[data-intro-object="hat"]')).toHaveAttribute(
+    "src",
+    "/api/reference-media/discover-hat",
+  );
   await page.clock.pauseAt(
     new Date(await page.evaluate(() => Date.now() + 100)),
   );
   const historyLength = await page.evaluate(() => history.length);
-  await page.clock.fastForward(2250);
+  await page.clock.fastForward(1000);
   await expect(heading).toContainText("Track your orders");
+  await expect(objects).toHaveAttribute("data-intro-phase", "1");
   await page.screenshot({
     path: test.info().outputPath("intro-track-headline.png"),
   });
-  await page.clock.fastForward(1750);
+  await page.clock.fastForward(1000);
   await expect(heading).toContainText("Discover your next");
+  await expect(objects).toHaveAttribute("data-intro-phase", "2");
   expect(await page.evaluate(() => history.length)).toBe(historyLength);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(heading).toHaveAttribute("data-intro-headline", "0");
+  await expect(objects).toHaveAttribute("data-intro-phase", "0");
   await page.clock.fastForward(8000);
   await expect(heading).toHaveAttribute("data-intro-headline", "0");
   await page.goto("/onboarding?step=updates");

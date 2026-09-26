@@ -4,6 +4,7 @@ import "./globals.css";
 import "@/features/account/account.css";
 import "@/features/account/profile.css";
 import "@/features/account/settings.css";
+import "@/features/account/live-onboarding.css";
 import "@/features/commerce/continuation.css";
 import "@/features/commerce/checkout-parity.css";
 import { AccountProvider } from "@/features/account/state";

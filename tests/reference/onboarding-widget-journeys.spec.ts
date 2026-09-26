@@ -126,7 +126,7 @@ test("widget links open the corresponding local order and return to the same pre
   ).toBeVisible();
 });
 
-test("fresh preview cold launch completes onboarding through real controls", async ({
+test("fresh preview cold launch follows the current Shop entry controls", async ({
   page,
   context,
 }) => {
@@ -141,91 +141,21 @@ test("fresh preview cold launch completes onboarding through real controls", asy
   await page.getByRole("link", { name: "Get Started", exact: true }).click();
   await expect(
     page.getByRole("heading", {
-      name: "Discover your next favorite brand",
+      name: "Let’s track your recent order",
       exact: true,
     }),
   ).toBeVisible();
-  await page
-    .getByRole("link", { name: "Continue to sign in", exact: true })
-    .click();
-  await page
-    .getByRole("textbox", { name: "Email", exact: true })
-    .fill("alexsmith.mobbin+3@gmail.com");
-  await page.getByRole("button", { name: "Continue", exact: true }).click();
-  await page
-    .getByRole("textbox", { name: "Verification code", exact: true })
-    .fill("530547");
   await expect(
-    page.getByRole("heading", {
-      name: "What are you shopping for?",
+    page.getByText("Select ‘Allow paste’ to check for order information", {
       exact: true,
     }),
-  ).toBeVisible({ timeout: 12000 });
-  await page.getByRole("button", { name: "Everything", exact: true }).click();
+  ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Next", exact: true }),
+    page.getByRole("button", { name: "Track my order", exact: true }),
   ).toBeInViewport();
-  await page.getByRole("button", { name: "Next", exact: true }).click();
+  await page.getByRole("link", { name: "Skip", exact: true }).click();
   await expect(
-    page.getByRole("heading", {
-      name: "Track all of your orders in one place",
-      exact: true,
-    }),
+    page.getByRole("heading", { name: "Sign in to Shop", exact: true }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: "Connect Google", exact: true }),
-  ).toBeInViewport();
-  const trackingUrl = page.url();
-  await page.getByRole("link", { name: "Connect Google", exact: true }).click();
-  await expect(page).toHaveURL(/\/account\/connections\?provider=gmail$/);
-  await expect(
-    page.getByRole("heading", { name: "Connect Gmail account", exact: true }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Continue to Google", exact: true }),
-  ).toBeVisible();
-  await page
-    .getByRole("button", { name: "Close connection", exact: true })
-    .click();
-  await expect(page).toHaveURL(trackingUrl);
-  await expect(
-    page.getByRole("heading", {
-      name: "Track all of your orders in one place",
-      exact: true,
-    }),
-  ).toBeVisible();
-  await page.getByRole("button", { name: "Skip", exact: true }).click();
-  await expect(
-    page.getByRole("heading", {
-      name: "Follow your order every step of the way",
-      exact: true,
-    }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Get tracking updates", exact: true }),
-  ).toBeInViewport();
-  await page.getByRole("button", { name: "Skip", exact: true }).click();
-  await expect(page).toHaveURL(/\/$/);
-  await expect(
-    page.getByRole("link", { name: "Profile", exact: true }),
-  ).toBeVisible({ timeout: 12000 });
-  const cookies = await context.cookies();
-  expect(
-    cookies.some(
-      (cookie) =>
-        cookie.name === "shop-preview-onboarded" && cookie.value === "1",
-    ),
-  ).toBe(true);
-
-  await page.goBack();
-  await expect(
-    page.getByRole("heading", {
-      name: "Follow your order every step of the way",
-      exact: true,
-    }),
-  ).toBeVisible();
-  await page.goForward();
-  await expect(
-    page.getByRole("link", { name: "Profile", exact: true }),
-  ).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Email" })).toBeVisible();
 });

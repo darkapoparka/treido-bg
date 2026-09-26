@@ -13,7 +13,178 @@ import { ShopSplash } from "./reference-transitions";
 import { navigateAccountStage } from "./stage-history";
 import { SourceLink } from "../discovery/return-navigation";
 import { useReducedMotion } from "../discovery/motion-preference";
-import { IntroHeadline, TrackingIllustration } from "./onboarding-motion";
+import {
+  IntroHeadline,
+  TrackingIllustration,
+  type IntroPhase,
+} from "./onboarding-motion";
+
+const currentIntroObjects = [
+  {
+    name: "chair",
+    assets: ["intro-chair", "intro-chair", "intro-chair", "intro-chair"],
+    positions: [
+      [1, 404],
+      [43, 205],
+      [220, 128],
+      [108, 581],
+    ],
+    sizes: [
+      [50, 81],
+      [49, 80],
+      [58, 76],
+      [54, 76],
+    ],
+  },
+  {
+    name: "clock",
+    assets: ["intro-clock", "intro-clock", "intro-clock", "intro-clock"],
+    positions: [
+      [19, 247],
+      [138, 130],
+      [307, 204],
+      [7, 441],
+    ],
+    sizes: [
+      [73, 75],
+      [87, 87],
+      [91, 92],
+      [90, 90],
+    ],
+  },
+  {
+    name: "ball",
+    assets: ["intro-ball", "intro-ball", "intro-ball", "intro-ball"],
+    positions: [
+      [69, 462],
+      [7, 343],
+      [97, 211],
+      [222, 491],
+    ],
+    sizes: [
+      [91, 91],
+      [91, 91],
+      [91, 91],
+      [91, 91],
+    ],
+  },
+  {
+    name: "candle",
+    assets: [
+      "discover-candle",
+      "discover-candle",
+      "discover-candle",
+      "discover-candle",
+    ],
+    positions: [
+      [186, 555],
+      [39, 483],
+      [10, 285],
+      [343, 472],
+    ],
+    sizes: [
+      [55, 66],
+      [53, 65],
+      [53, 65],
+      [51, 65],
+    ],
+  },
+  {
+    name: "hat",
+    assets: ["discover-hat", "discover-hat", "discover-hat", "discover-hat"],
+    positions: [
+      [94, 192],
+      [262, 209],
+      [365, 350],
+      [-26, 297],
+    ],
+    sizes: [
+      [131, 91],
+      [127, 99],
+      [130, 110],
+      [130, 90],
+    ],
+  },
+  {
+    name: "lipstick",
+    assets: [
+      "intro-lipstick",
+      "intro-lipstick",
+      "discover-lipstick",
+      "intro-lipstick",
+    ],
+    positions: [
+      [273, 515],
+      [135, 549],
+      [17, 407],
+      [337, 347],
+    ],
+    sizes: [
+      [92, 53],
+      [85, 67],
+      [62, 89],
+      [87, 64],
+    ],
+  },
+  {
+    name: "watering",
+    assets: [
+      "intro-watering",
+      "intro-watering",
+      "intro-watering",
+      "intro-watering",
+    ],
+    positions: [
+      [347, 349],
+      [265, 491],
+      [83, 497],
+      [289, 178],
+    ],
+    sizes: [
+      [127, 114],
+      [127, 115],
+      [127, 115],
+      [127, 113],
+    ],
+  },
+  {
+    name: "basket",
+    assets: ["intro-basket", "intro-basket", "intro-basket", "intro-basket"],
+    positions: [
+      [257, 181],
+      [364, 313],
+      [309, 505],
+      [78, 189],
+    ],
+    sizes: [
+      [77, 66],
+      [76, 65],
+      [77, 65],
+      [77, 64],
+    ],
+  },
+  {
+    name: "calculator",
+    assets: [
+      "intro-calculator",
+      "intro-calculator",
+      "intro-calculator",
+      "intro-calculator",
+    ],
+    positions: [
+      [391, 242],
+      [413, 436],
+      [233, 589],
+      [199, 133],
+    ],
+    sizes: [
+      [47, 51],
+      [49, 52],
+      [49, 54],
+      [51, 55],
+    ],
+  },
+] as const;
 export function SupportPage() {
   return (
     <AccountPage title="Support" className="account-settings-page support-page">
@@ -203,8 +374,12 @@ export function OnboardingPage({
   };
   const [choice, setChoice] = useState("");
   const [permission, setPermission] = useState(false);
+  const [introPhase, setIntroPhase] = useState<IntroPhase>(0);
+  const capturedReference = params.get("reference") === "captured";
   const reducedMotion = useReducedMotion();
-  const motion = !reducedMotion && params.get("reference") !== "captured";
+  const motion = !reducedMotion && !capturedReference;
+  const currentLiveIntro = !capturedReference;
+  const visibleIntroPhase = motion ? introPhase : 0;
   if (params.get("step") === "splash" || params.get("step") === "signout")
     return (
       <ShopSplash
@@ -295,7 +470,7 @@ export function OnboardingPage({
     return (
       <AccountPage
         dock={false}
-        className={`source-intro ${motion ? "intro-motion" : ""}`}
+        className={`source-intro ${motion ? "intro-motion" : ""} ${currentLiveIntro ? "current-live-intro" : ""}`}
       >
         <small className="intro-powered">
           Powered by{" "}
@@ -312,47 +487,67 @@ export function OnboardingPage({
             shopify
           </b>
         </small>
-        <div className="intro-objects">
-          {[
-            ["chair", 180, 143, 51, 82],
-            ["clock", 278, 214, 80, 81],
-            ["ball", 58, 247, 93, 92],
-            ["candle", 0, 334, 38, 64],
-            ["hat", 330, 357, 63, 102],
-            ["lipstick", 0, 465, 81, 69],
-            ["watering", 84, 532, 127, 115],
-            ["basket", 308, 509, 76, 68],
-            ["calculator", 246, 606, 49, 52],
-          ].map(([name, x, y, w, h]) => (
-            <img
-              key={name}
-              src={`/api/reference-media/intro-${name}`}
-              alt=""
-              style={{
-                left: `${(Number(x) / 393) * 100}%`,
-                top: `${((Number(y) - 59) / 793) * 100}dvh`,
-                width: Number(w),
-                height: Number(h),
-              }}
-            />
-          ))}
+        <div className="intro-objects" data-intro-phase={visibleIntroPhase}>
+          {currentLiveIntro
+            ? currentIntroObjects.map((object) => {
+                const [x, y] = object.positions[visibleIntroPhase];
+                const [width, height] = object.sizes[visibleIntroPhase];
+                return (
+                  <img
+                    key={object.name}
+                    data-intro-object={object.name}
+                    src={`/api/reference-media/${object.assets[visibleIntroPhase]}`}
+                    alt=""
+                    style={{
+                      left: `${(x / 427) * 100}%`,
+                      top: `${(y / 876) * 100}dvh`,
+                      width,
+                      height,
+                      objectFit: "fill",
+                    }}
+                  />
+                );
+              })
+            : [
+                ["chair", 180, 143, 51, 82],
+                ["clock", 278, 214, 80, 81],
+                ["ball", 58, 247, 93, 92],
+                ["candle", 0, 334, 38, 64],
+                ["hat", 330, 357, 63, 102],
+                ["lipstick", 0, 465, 81, 69],
+                ["watering", 84, 532, 127, 115],
+                ["basket", 308, 509, 76, 68],
+                ["calculator", 246, 606, 49, 52],
+              ].map(([name, x, y, w, h]) => (
+                <img
+                  key={name}
+                  data-intro-object={name}
+                  src={`/api/reference-media/intro-${name}`}
+                  alt=""
+                  style={{
+                    left: `${(Number(x) / 393) * 100}%`,
+                    top: `${((Number(y) - 59) / 793) * 100}dvh`,
+                    width: Number(w),
+                    height: Number(h),
+                  }}
+                />
+              ))}
         </div>
-        <IntroHeadline motion={motion} />
+        <IntroHeadline motion={motion} onPhaseChange={setIntroPhase} />
         <div className="intro-actions">
           <Link
             className="primary form-submit"
             href={
               params.get("journey") === "new"
-                ? "/onboarding?step=discover&journey=new" +
-                  (params.get("reference") === "captured"
-                    ? "&reference=captured"
-                    : "")
-                : params.get("reference") === "captured"
+                ? capturedReference
+                  ? "/onboarding?step=discover&journey=new&reference=captured"
+                  : "/login?screen=track&journey=new"
+                : capturedReference
                   ? "/login?screen=track&reference=captured"
                   : "/login?screen=track"
             }
             onNavigate={(event) => {
-              if (params.get("journey") !== "new") return;
+              if (params.get("journey") !== "new" || !capturedReference) return;
               event.preventDefault();
               const query = new URLSearchParams(params);
               query.set("step", "discover");
@@ -379,7 +574,7 @@ export function OnboardingPage({
   return (
     <AccountPage dock={false}>
       <div
-        className={`onboarding-page onboarding-step-${step} ${params.get("journey") === "returning" ? "returning-onboarding" : ""}`}
+        className={`onboarding-page onboarding-step-${step} ${params.get("journey") === "returning" ? "returning-onboarding" : ""} ${step === 3 && currentLiveIntro ? "current-updates-intro" : ""}`}
       >
         <button
           className="onboarding-skip"

@@ -20,8 +20,7 @@ export default async function Page() {
   const cookieStore = await cookies();
   const scenario = cookieStore.get(referenceScenarioCookie)?.value;
   const onboarded = cookieStore.get(previewOnboardedCookie)?.value === "1";
-  if (!scenario && !onboarded)
-    redirect("/onboarding?step=splash&journey=new&reference=captured");
+  if (!scenario && !onboarded) redirect("/onboarding?step=splash&journey=new");
   return (
     <Suspense fallback={<HomeLoading />}>
       <HomeContent />
